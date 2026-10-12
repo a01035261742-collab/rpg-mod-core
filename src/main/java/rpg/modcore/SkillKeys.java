@@ -67,7 +67,7 @@ public final class SkillKeys {
     /** 지금 키가 from 이면 to 로 (기본값이 아니어도) */
     private static void moveFrom(KeyMapping mapping, String from, String to) {
         try {
-            if (mapping.getKey().equals(InputConstants.getKey(from))) {
+            if (from.equals(mapping.saveString())) {
                 mapping.setKey(InputConstants.getKey(to));
             }
         } catch (RuntimeException ignored) {
