@@ -1,12 +1,35 @@
 name: build
 on: [push, workflow_dispatch]
+permissions:
+  contents: write
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
         with: { distribution: temurin, java-version: '25' }
-      - run: chmod +x gradlew && ./gradlew build --no-daemon
-      - uses: actions/upload-artifact@v4
-        with: { name: rpg-mod-core, path: build/libs/*.jar }
+      - name: Build
+        run: |
+          chmod +x gradlew
+          set -o pipefail
+          ./gradlew build --no-daemon --stacktrace 2>&1 | tee build.log
+      - name: Report errors
+        if: failure()
+        run: |
+          grep -nE "error|What went wrong|Could not|FAILURE|Caused by|\.java:[0-9]+" build.log | head -60 > err.txt || true
+          tail -40 build.log >> err.txt
+          msg=$(sed ':a;N;$!ba;s/%/%25/g;s/\r//g;s/\n/%0A/g' err.txt)
+          echo "::error title=build::$msg"
+      - name: Publish jar to build branch
+        if: success()
+        run: |
+          mkdir -p /tmp/out && cp build/libs/*.jar /tmp/out/
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git checkout --orphan build-output
+          git rm -rf . -q
+          cp /tmp/out/*.jar .
+          git add *.jar
+          git commit -m "build ${GITHUB_SHA}"
+          git push -f origin build-output
