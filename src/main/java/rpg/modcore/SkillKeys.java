@@ -74,7 +74,7 @@ public final class SkillKeys {
             while (keys[i].consumeClick()) pressed = true;
             if (!pressed) continue;
             if (client.player == null || client.getConnection() == null) continue;
-            if (client.screen != null) continue;   // 채팅·인벤토리 등 창이 열려 있으면 무시
+            if (!client.mouseHandler.isMouseGrabbed()) continue;   // 채팅·인벤토리 등 창이 열려 있으면(마우스 풀림) 무시
             if (wait[i] > 0) continue;              // 꾹 누를 때 너무 자주 보내지 않게
             wait[i] = REPEAT_TICKS;
             client.getConnection().sendCommand("trigger rpg_sk set " + (i + 1));
