@@ -62,8 +62,12 @@ public final class SkillKeys {
     }
 
     private static void move(KeyMapping mapping, String from, String to) {
-        if (mapping.getDefaultKey().equals(InputConstants.getKey(from)) && mapping.isDefault()) {
-            mapping.setKey(InputConstants.getKey(to));
+        try {
+            if (mapping.getDefaultKey().equals(InputConstants.getKey(from)) && mapping.isDefault()) {
+                mapping.setKey(InputConstants.getKey(to));
+            }
+        } catch (RuntimeException ignored) {
+            // 키 이름을 못 찾으면 그냥 두기 (게임이 멈추지 않게)
         }
     }
 
