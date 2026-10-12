@@ -17,10 +17,24 @@ jobs:
       - name: Report errors
         if: failure()
         run: |
-          grep -nE "error|What went wrong|Could not|FAILURE|Caused by|\.java:[0-9]+" build.log | head -60 > err.txt || true
-          tail -40 build.log >> err.txt
+          grep -A4 -E "\.java:[0-9]+: error" build.log | head -80 > err.txt || true
           msg=$(sed ':a;N;$!ba;s/%/%25/g;s/\r//g;s/\n/%0A/g' err.txt)
           echo "::error title=build::$msg"
+      - name: Inspect API
+        if: failure()
+        run: |
+          J=$(find ~/.gradle/caches -name "minecraft-*client*.jar" -o -name "minecraft-merged*.jar" -o -name "minecraft-clientOnly*.jar" | grep -v sources | head -1)
+          echo "JAR=$J"
+          [ -z "$J" ] && J=$(find ~/.gradle/caches ~/.gradle -path "*fabric-loom*" -name "*.jar" | grep -i minecraft | grep -v sources | head -1)
+          echo "JAR=$J" > api.txt
+          javap -cp "$J" com.mojang.blaze3d.platform.InputConstants >> api.txt 2>&1 || true
+          javap -cp "$J" 'com.mojang.blaze3d.platform.InputConstants$Key' >> api.txt 2>&1 || true
+          javap -cp "$J" net.minecraft.client.KeyMapping >> api.txt 2>&1 || true
+          javap -cp "$J" net.minecraft.client.Minecraft | grep -iE "screen|getConnection|player" >> api.txt 2>&1 || true
+          grep -vE "KEY_[A-Z0-9_]+;$" api.txt | head -150 > api2.txt
+          grep -E "KEY_(Q|E|R|F|I|Z|X);" api.txt >> api2.txt || true
+          msg=$(sed ':a;N;$!ba;s/%/%25/g;s/\r//g;s/\n/%0A/g' api2.txt)
+          echo "::error title=api::$msg"
       - name: Publish jar to build branch
         if: success()
         run: |
