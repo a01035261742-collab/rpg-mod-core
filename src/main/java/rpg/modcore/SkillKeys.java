@@ -37,7 +37,6 @@ public final class SkillKeys {
         for (int i = 0; i < 4; i++) {
             keys[i] = KeyMappingHelper.registerKeyMapping(new KeyMapping(
                     "key.rpgmodcore.skill" + (i + 1),
-                    InputConstants.Type.KEYSYM,
                     defaults[i],
                     CATEGORY));
         }
@@ -50,9 +49,9 @@ public final class SkillKeys {
         Path flag = FabricLoader.getInstance().getConfigDir().resolve("rpgmodcore-keys-setup-done");
         if (Files.exists(flag)) return;
         Options o = client.options;
-        move(o.keyInventory, InputConstants.KEY_E, InputConstants.KEY_I);
-        move(o.keyDrop, InputConstants.KEY_Q, InputConstants.KEY_Z);
-        move(o.keySwapOffhand, InputConstants.KEY_F, InputConstants.KEY_X);
+        move(o.keyInventory, "key.keyboard.e", "key.keyboard.i");
+        move(o.keyDrop, "key.keyboard.q", "key.keyboard.z");
+        move(o.keySwapOffhand, "key.keyboard.f", "key.keyboard.x");
         KeyMapping.resetMapping();
         o.save();
         try {
@@ -62,10 +61,9 @@ public final class SkillKeys {
         }
     }
 
-    private static void move(KeyMapping mapping, int from, int to) {
-        if (mapping.getDefaultKey().equals(InputConstants.Type.KEYSYM.getOrCreate(from))
-                && mapping.isDefault()) {
-            mapping.setKey(InputConstants.Type.KEYSYM.getOrCreate(to));
+    private static void move(KeyMapping mapping, String from, String to) {
+        if (mapping.getDefaultKey().equals(InputConstants.getKey(from)) && mapping.isDefault()) {
+            mapping.setKey(InputConstants.getKey(to));
         }
     }
 
