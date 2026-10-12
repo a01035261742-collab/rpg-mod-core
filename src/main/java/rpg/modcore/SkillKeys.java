@@ -18,7 +18,7 @@ import java.nio.file.Path;
  * [RPG Mod Core] 스킬 단축키 모듈.
  * Q·E·R·F 를 누르면 서버에 "/trigger rpg_sk set 1~4" 를 보내고, 데이터팩이 그 스킬을 발동한다.
  * trigger 라서 권한(op)이 필요 없다. 같은 키 연타도 매번 전송된다.
- * 처음 실행할 때 한 번, 겹치는 바닐라 키를 옮긴다: 인벤토리 E→I, 버리기 Q→Z, 손 바꾸기 F→X
+ * 처음 실행할 때 한 번, 겹치는 바닐라 키를 옮긴다: 인벤토리 E→Tab, 플레이어 목록 Tab→I, 버리기 Q→Z, 손 바꾸기 F→X
  */
 public final class SkillKeys {
     /** 키를 꾹 누르고 있을 때 반복 전송 간격 (틱) */
@@ -46,10 +46,13 @@ public final class SkillKeys {
 
     /** 처음 한 번만: 스킬 키와 겹치는 바닐라 키를 다른 키로 옮긴다 (사용자가 이미 바꾼 키는 건드리지 않음) */
     private static void firstRunSetup(Minecraft client) {
-        Path flag = FabricLoader.getInstance().getConfigDir().resolve("rpgmodcore-keys-setup-done");
+        Path flag = FabricLoader.getInstance().getConfigDir().resolve("rpgmodcore-keys-setup-v2");
         if (Files.exists(flag)) return;
         Options o = client.options;
-        move(o.keyInventory, "key.keyboard.e", "key.keyboard.i");
+        // 인벤토리 → Tab (v1에서 I로 옮겨진 것도 Tab으로), 원래 Tab이던 플레이어 목록 → I
+        move(o.keyInventory, "key.keyboard.e", "key.keyboard.tab");
+        moveFrom(o.keyInventory, "key.keyboard.i", "key.keyboard.tab");
+        move(o.keyPlayerList, "key.keyboard.tab", "key.keyboard.i");
         move(o.keyDrop, "key.keyboard.q", "key.keyboard.z");
         move(o.keySwapOffhand, "key.keyboard.f", "key.keyboard.x");
         KeyMapping.resetMapping();
@@ -61,6 +64,17 @@ public final class SkillKeys {
         }
     }
 
+    /** 지금 키가 from 이면 to 로 (기본값이 아니어도) */
+    private static void moveFrom(KeyMapping mapping, String from, String to) {
+        try {
+            if (mapping.getKey().equals(InputConstants.getKey(from))) {
+                mapping.setKey(InputConstants.getKey(to));
+            }
+        } catch (RuntimeException ignored) {
+        }
+    }
+
+    /** 기본 키(from)를 그대로 쓰고 있으면 to 로 */
     private static void move(KeyMapping mapping, String from, String to) {
         try {
             if (mapping.getDefaultKey().equals(InputConstants.getKey(from)) && mapping.isDefault()) {
