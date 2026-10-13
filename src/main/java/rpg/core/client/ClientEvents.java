@@ -28,6 +28,7 @@ public final class ClientEvents {
     public static final KeyMapping STAT_KEY = new KeyMapping("key.rpgcore.stats", InputConstants.KEY_K, CATEGORY);
     public static final KeyMapping SKILL_WINDOW_KEY = new KeyMapping("key.rpgcore.skills", InputConstants.KEY_L, CATEGORY);
     public static final KeyMapping PASSIVE_KEY = new KeyMapping("key.rpgcore.passives", InputConstants.KEY_N, CATEGORY);
+    public static final KeyMapping PARTY_KEY = new KeyMapping("key.rpgcore.party", InputConstants.KEY_P, CATEGORY);
     public static final KeyMapping DODGE_KEY = new KeyMapping("key.rpgcore.dodge", InputConstants.KEY_LALT, CATEGORY);
     public static final String[] SLOT_LABELS = {"Q", "E", "R", "F", "Z", "X"};
     public static final KeyMapping[] SKILL_KEYS = {
@@ -47,6 +48,7 @@ public final class ClientEvents {
             e.register(SKILL_WINDOW_KEY);
             e.register(PASSIVE_KEY);
             e.register(DODGE_KEY);
+            e.register(PARTY_KEY);
             for (KeyMapping k : SKILL_KEYS) e.register(k);
         }
 
@@ -82,6 +84,7 @@ public final class ClientEvents {
             while (STAT_KEY.consumeClick()) if (free) mc.setScreen(new StatScreen());
             while (SKILL_WINDOW_KEY.consumeClick()) if (free) mc.setScreen(new SkillScreen());
             while (PASSIVE_KEY.consumeClick()) if (free) mc.setScreen(new PassiveScreen());
+            while (PARTY_KEY.consumeClick()) if (free) mc.setScreen(new PartyScreen());
             for (int i = 0; i < 6; i++) {
                 if (wait[i] > 0) wait[i]--;
                 boolean pressed = false;
@@ -107,9 +110,17 @@ public final class ClientEvents {
          * 인벤토리 E→Tab, 플레이어 목록 Tab→`, 버리기 Q→Backspace, 손 바꾸기 F→없음
          */
         private static void moveVanillaKeys(Minecraft mc) {
+            Options o = mc.options;
+            // v2: 소셜 상호작용(P)을 파티 창에 양보
+            Path flag2 = FMLPaths.CONFIGDIR.get().resolve("rpgcore-keys-v2");
+            if (!Files.exists(flag2)) {
+                move(o.keySocialInteractions, "key.keyboard.p", null);
+                KeyMapping.resetMapping();
+                o.save();
+                try { Files.writeString(flag2, "done"); } catch (IOException ignored) {}
+            }
             Path flag = FMLPaths.CONFIGDIR.get().resolve("rpgcore-keys-v1");
             if (Files.exists(flag)) return;
-            Options o = mc.options;
             move(o.keyInventory, "key.keyboard.e", "key.keyboard.tab");
             move(o.keyPlayerList, "key.keyboard.tab", "key.keyboard.grave.accent");
             move(o.keyDrop, "key.keyboard.q", "key.keyboard.backspace");

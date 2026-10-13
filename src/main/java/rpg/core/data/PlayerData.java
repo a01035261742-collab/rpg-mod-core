@@ -39,6 +39,15 @@ public class PlayerData {
     public long sprintEnd;
     public double sprintPct;
 
+    // 다운·부활 (저장 안 함)
+    public long downEnd;              // 0 = 다운 아님
+    public java.util.UUID reviver;
+    public long reviveStart;
+    public int reviveNeed;
+    public boolean forceDie;
+
+    public boolean isDown() { return downEnd > 0; }
+
     // 계산값 (저장 안 함)
     public double maxHp = 1, maxMp = 1;
     public final Map<String, Double> bonus = new HashMap<>();   // 패시브 합계 (stat → 값)
@@ -167,5 +176,7 @@ public class PlayerData {
         b.writeVarInt((int) Math.max(0, dodgeEnd - now));
         b.writeVarInt(dodgeLen);
         b.writeVarInt((int) Math.max(0, sprintEnd - now));
+        b.writeVarInt(isDown() ? (int) Math.max(0, downEnd - now) : -1);
+        b.writeVarInt(reviver != null && reviveNeed > 0 ? (int) Math.min(100, (now - reviveStart) * 100 / reviveNeed) : -1);
     }
 }

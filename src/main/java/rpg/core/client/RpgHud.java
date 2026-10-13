@@ -22,6 +22,8 @@ public final class RpgHud {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null || mc.options.hideGui || !ClientData.ready || mc.player.isSpectator()) return;
         skillBar(g, mc.font, w, h);
+        partyHud(g, mc.font, w, h);
+        downHud(g, mc.font, w, h);
         if (mc.player.isCreative()) return;
         Font font = mc.font;
         int cx = w / 2;
@@ -101,6 +103,36 @@ public final class RpgHud {
         if (sl > 0) {
             String t = "질주 " + (sl + 19) / 20 + "s";
             g.drawString(font, t, x0, y0 - 10, 0xFF80E0FF, true);
+        }
+    }
+
+    /** 왼쪽: 파티원 체력 (나 빼고) */
+    private static void partyHud(GuiGraphics g, Font font, int w, int h) {
+        String me = Minecraft.getInstance().getUser().getName();
+        int y = h / 2 - 40;
+        for (rpg.core.net.Net.Member m : ClientParty.MEMBERS) {
+            if (m.name().equals(me)) continue;
+            String name = (m.leader() ? "★" : "") + m.name() + " Lv." + m.level();
+            g.drawString(font, name, 6, y, m.down() ? 0xFFFF6060 : m.near() ? 0xFFFFFFFF : 0xFF909090, true);
+            double r = m.maxHp() <= 0 ? 0 : Math.max(0, Math.min(1, m.hp() / m.maxHp()));
+            g.fill(6, y + 10, 86, y + 14, 0xFF401010);
+            g.fill(6, y + 10, 6 + (int) (80 * r), y + 14, m.down() ? 0xFF808080 : 0xFFD03030);
+            if (m.down()) g.drawString(font, "다운!", 90, y + 7, 0xFFFF6060, true);
+            y += 20;
+        }
+    }
+
+    /** 내가 다운됐을 때 / 부활 진행 */
+    private static void downHud(GuiGraphics g, Font font, int w, int h) {
+        if (ClientData.downLeft < 0) return;
+        int left = ClientData.left(ClientData.downLeft);
+        g.fill(0, 0, w, h, 0x40FF0000);
+        String t = "쓰러졌어요! " + (left + 19) / 20 + "초 안에 동료가 우클릭하면 부활";
+        g.drawCenteredString(font, t, w / 2, h / 2 - 30, 0xFFFF8080);
+        if (ClientData.reviveProgress >= 0) {
+            int bw = 120, bx = w / 2 - bw / 2, by = h / 2 - 16;
+            g.fill(bx - 1, by - 1, bx + bw + 1, by + 7, 0xFF000000);
+            g.fill(bx, by, bx + bw * ClientData.reviveProgress / 100, by + 6, 0xFF60FF60);
         }
     }
 

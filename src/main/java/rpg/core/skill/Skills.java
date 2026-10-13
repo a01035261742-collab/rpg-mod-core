@@ -70,6 +70,7 @@ public final class Skills {
     public static void use(ServerPlayer p, int slot) {
         if (slot < 0 || slot >= PlayerData.SLOTS || !p.isAlive()) return;
         PlayerData d = RpgData.get(p);
+        if (d.isDown()) return;
         String id = d.slots[slot];
         if (id == null) return;
         Defs.SkillDef s = Defs.SKILLS.get(id);
@@ -120,6 +121,7 @@ public final class Skills {
     public static void dodge(ServerPlayer p, float dx, float dz) {
         if (!p.isAlive() || p.isPassenger()) return;
         PlayerData d = RpgData.get(p);
+        if (d.isDown()) return;
         long now = p.level().getGameTime();
         if (now < d.dodgeEnd) return;
         Vec3 dir = new Vec3(dx, 0, dz);

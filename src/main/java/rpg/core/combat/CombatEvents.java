@@ -112,8 +112,16 @@ public final class CombatEvents {
         PlayerData d = RpgData.get(killer);
         long gold = Math.round(m.gold * (1.0 + d.goldBonus() / 100.0));
         d.gold += gold;
-        Net.reward(killer, m.exp, gold);
-        Progress.giveExp(killer, m.exp);
+        RpgData.sync(killer);
+        // 경험치: 근처 파티원끼리 균등 분배 + 인원당 보너스
+        var members = rpg.core.party.Parties.nearby(killer);
+        int n = members.size();
+        double total = m.exp * (1 + rpg.core.balance.Balance.partyBonusPerMember * (n - 1) / 100.0);
+        long each = Math.max(1, Math.round(total / n));
+        for (ServerPlayer mem : members) {
+            Net.reward(mem, each, mem == killer ? gold : 0);
+            Progress.giveExp(mem, each);
+        }
     }
 
     /** RPG 몹은 바닐라 드롭·경험치 구슬 없음 (드롭은 나중에 RPG 드롭으로) */

@@ -21,6 +21,7 @@ public final class ClientData {
     public static final java.util.Map<String, Integer> passives = new java.util.HashMap<>();
     public static final int[] cdLeft = new int[6], cdLen = new int[6];
     public static int dodgeLeft, dodgeLen, sprintLeft;
+    public static int downLeft = -1, reviveProgress = -1;
     public static long receivedAt;
 
     public static void read(FriendlyByteBuf b) {
@@ -42,6 +43,7 @@ public final class ClientData {
         for (int i = 0; i < n; i++) passives.put(b.readUtf(), b.readVarInt());
         for (int i = 0; i < 6; i++) { cdLeft[i] = b.readVarInt(); cdLen[i] = b.readVarInt(); }
         dodgeLeft = b.readVarInt(); dodgeLen = b.readVarInt(); sprintLeft = b.readVarInt();
+        downLeft = b.readVarInt(); reviveProgress = b.readVarInt();
         receivedAt = System.currentTimeMillis();
         ready = true;
     }

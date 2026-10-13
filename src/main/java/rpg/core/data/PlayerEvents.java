@@ -94,7 +94,7 @@ public final class PlayerEvents {
         boolean changed = false;
         if (sp.tickCount % 20 == 0) {
             changed |= d.recalc();
-            if (sp.isAlive() && d.hp > 0) {
+            if (sp.isAlive() && d.hp > 0 && !d.isDown()) {
                 double hp0 = d.hp, mp0 = d.mp;
                 d.hp = Math.min(d.maxHp, d.hp + d.maxHp * Balance.hpRegenPct / 100.0 * (1 + d.bonus("hpRegenPct") / 100.0));
                 d.mp = Math.min(d.maxMp, d.mp + d.maxMp * Balance.mpRegenPct / 100.0 * (1 + d.bonus("mpRegenPct") / 100.0));

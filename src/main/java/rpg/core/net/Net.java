@@ -46,6 +46,67 @@ public final class Net {
                 .encoder(Learn::encode).decoder(Learn::new).consumerMainThread(Learn::handle).add();
         CH.messageBuilder(DefsSync.class, id++, NetworkDirection.PLAY_TO_CLIENT)
                 .encoder(DefsSync::encode).decoder(DefsSync::new).consumerMainThread(DefsSync::handle).add();
+        CH.messageBuilder(PartySync.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(PartySync::encode).decoder(PartySync::new).consumerMainThread(PartySync::handle).add();
+        CH.messageBuilder(PartyAction.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(PartyAction::encode).decoder(PartyAction::new).consumerMainThread(PartyAction::handle).add();
+    }
+
+    // ───────── 서버 → 클라: 파티 정보 ─────────
+    public record Member(String name, int level, float hp, float maxHp, boolean down, boolean leader, boolean near) {}
+
+    public static void partyTo(ServerPlayer p) {
+        java.util.List<Member> list = new java.util.ArrayList<>();
+        var party = rpg.core.party.Parties.of(p);
+        if (party != null && p.getServer() != null) {
+            for (java.util.UUID id : party.members) {
+                ServerPlayer m = p.getServer().getPlayerList().getPlayer(id);
+                if (m == null) continue;
+                PlayerData d = rpg.core.data.RpgData.get(m);
+                boolean near = m.level() == p.level() && m.distanceToSqr(p) <= rpg.core.balance.Balance.partyRange * rpg.core.balance.Balance.partyRange;
+                list.add(new Member(m.getGameProfile().getName(), d.level, (float) d.hp, (float) d.maxHp, d.isDown(), party.leader.equals(id), near));
+            }
+        }
+        java.util.UUID inv = rpg.core.party.Parties.pendingInvite(p);
+        String inviter = "";
+        if (inv != null && p.getServer() != null) {
+            ServerPlayer ip = p.getServer().getPlayerList().getPlayer(inv);
+            if (ip != null) inviter = ip.getGameProfile().getName();
+        }
+        CH.send(PacketDistributor.PLAYER.with(() -> p), new PartySync(list, inviter));
+    }
+
+    public record PartySync(java.util.List<Member> members, String inviter) {
+        PartySync(FriendlyByteBuf b) { this(readMembers(b), b.readUtf(32)); }
+        private static java.util.List<Member> readMembers(FriendlyByteBuf b) {
+            int n = b.readVarInt();
+            java.util.List<Member> l = new java.util.ArrayList<>();
+            for (int i = 0; i < n; i++) l.add(new Member(b.readUtf(32), b.readVarInt(), b.readFloat(), b.readFloat(), b.readBoolean(), b.readBoolean(), b.readBoolean()));
+            return l;
+        }
+        void encode(FriendlyByteBuf b) {
+            b.writeVarInt(members.size());
+            for (Member m : members) {
+                b.writeUtf(m.name(), 32); b.writeVarInt(m.level()); b.writeFloat(m.hp()); b.writeFloat(m.maxHp());
+                b.writeBoolean(m.down()); b.writeBoolean(m.leader()); b.writeBoolean(m.near());
+            }
+            b.writeUtf(inviter, 32);
+        }
+        void handle(Supplier<NetworkEvent.Context> ctx) {
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> rpg.core.client.ClientParty.set(members, inviter));
+            ctx.get().setPacketHandled(true);
+        }
+    }
+
+    // ───────── 클라 → 서버: 파티 창 버튼 (0 초대 1 수락 2 거절 3 나가기 4 추방) ─────────
+    public record PartyAction(int action, String name) {
+        PartyAction(FriendlyByteBuf b) { this(b.readVarInt(), b.readUtf(32)); }
+        void encode(FriendlyByteBuf b) { b.writeVarInt(action); b.writeUtf(name, 32); }
+        void handle(Supplier<NetworkEvent.Context> ctx) {
+            ServerPlayer p = ctx.get().getSender();
+            if (p != null) rpg.core.party.PartyCommand.act(p, action, name);
+            ctx.get().setPacketHandled(true);
+        }
     }
 
     public static void defsTo(ServerPlayer p) {

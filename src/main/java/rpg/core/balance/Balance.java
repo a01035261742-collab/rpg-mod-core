@@ -32,6 +32,10 @@ public final class Balance {
     public static double critBase = 5.0, critPerDex = 0.1, healPerInt = 0.5, dropPerLuk = 0.2, goldPerLuk = 0.3;
     public static double expBase = 15, expPower = 2.0, expLinear = 30;
     public static int skillPointsPerLevel = 2, passivePointsPerLevel = 1;
+    public static int partyMax = 6;
+    public static double partyRange = 40, partyBonusPerMember = 10, deathExpLossPct = 30;
+    public static boolean downEverywhere = true;
+    public static double downSeconds = 30, reviveSeconds = 3, reviveHpPct = 30;
     public static double dodgeCooldown = 3.0, dodgePower = 1.1;
     public static int dodgeIframes = 8;
     public static double mastery = 0.8, critDamage = 1.5, fistAttack = 5, defPerVit = 1.0, defConstant = 100;
@@ -91,6 +95,12 @@ public final class Balance {
             passivePointsPerLevel = i(o, "passivePointsPerLevel", passivePointsPerLevel);
             dodgeCooldown = d(o, "dodgeCooldown", dodgeCooldown); dodgePower = d(o, "dodgePower", dodgePower);
             dodgeIframes = i(o, "dodgeIframes", dodgeIframes);
+            partyMax = i(o, "partyMax", partyMax); partyRange = d(o, "partyRange", partyRange);
+            partyBonusPerMember = d(o, "partyBonusPerMember", partyBonusPerMember);
+            deathExpLossPct = d(o, "deathExpLossPct", deathExpLossPct);
+            downEverywhere = o.has("downEverywhere") ? o.get("downEverywhere").getAsBoolean() : downEverywhere;
+            downSeconds = d(o, "downSeconds", downSeconds); reviveSeconds = d(o, "reviveSeconds", reviveSeconds);
+            reviveHpPct = d(o, "reviveHpPct", reviveHpPct);
             defPerVit = d(o, "defPerVit", defPerVit); defConstant = d(o, "defConstant", defConstant);
             huntingDimensions = new java.util.HashSet<>();
             if (o.has("huntingDimensions")) o.getAsJsonArray("huntingDimensions").forEach(x -> huntingDimensions.add(x.getAsString()));
