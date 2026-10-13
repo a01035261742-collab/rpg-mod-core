@@ -99,6 +99,7 @@ public final class ClientEvents {
             if (e.phase != TickEvent.Phase.END) return;
             Minecraft mc = Minecraft.getInstance();
             if (!keysMoved) { keysMoved = true; moveVanillaKeys(mc); }
+            if (mc.player != null && mc.player.tickCount % 100 == 1) killInnateKey(mc);
             boolean free = mc.player != null && mc.screen == null;
             while (STAT_KEY.consumeClick()) if (free) mc.setScreen(new StatScreen());
             while (SKILL_WINDOW_KEY.consumeClick()) if (free) mc.setScreen(new SkillScreen());
@@ -149,6 +150,17 @@ public final class ClientEvents {
             KeyMapping.resetMapping();
             o.save();
             try { Files.writeString(flag, "done"); } catch (IOException ignored) {}
+        }
+
+        /** Epic Fight 무기 고유 스킬은 안 씀: 키가 묶여 있으면 항상 해제 (좌클릭 꾹 = 특수 공격 막기) */
+        private static void killInnateKey(Minecraft mc) {
+            for (KeyMapping k : mc.options.keyMappings) {
+                if (k.getName().equals("key.epicfight.weapon_innate_skill") && !k.isUnbound()) {
+                    k.setKey(InputConstants.UNKNOWN);
+                    KeyMapping.resetMapping();
+                    mc.options.save();
+                }
+            }
         }
 
         private static void move(KeyMapping m, String from, String to) {
