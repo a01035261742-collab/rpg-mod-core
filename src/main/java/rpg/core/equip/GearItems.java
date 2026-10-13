@@ -124,4 +124,7 @@ public final class GearItems {
 
     public static final Mat CHAIN = new Mat("chainmail", SoundEvents.ARMOR_EQUIP_CHAIN);
     public static final Mat IRON = new Mat("iron", SoundEvents.ARMOR_EQUIP_IRON);
+    public static final Mat GOLD = new Mat("gold", SoundEvents.ARMOR_EQUIP_GOLD);
+    public static final Mat DIAMOND = new Mat("diamond", SoundEvents.ARMOR_EQUIP_DIAMOND);
+    public static final Mat NETHERITE = new Mat("netherite", SoundEvents.ARMOR_EQUIP_NETHERITE);
 }

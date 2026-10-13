@@ -52,7 +52,8 @@ public final class ZoneCommand {
             return ok(c, "사냥터 지팡이 지급 (좌클릭·우클릭으로 두 점)");
         }));
         root.then(Commands.literal("gear").requires(s -> s.hasPermission(2))
-                .then(Commands.argument("level", IntegerArgumentType.integer(1, 10)).executes(c -> {
+                .then(Commands.argument("level", IntegerArgumentType.integer(1, 40))
+                        .suggests((c, b) -> SharedSuggestionProvider.suggest(new String[]{"1", "10", "20", "30", "40"}, b)).executes(c -> {
                     int lv = IntegerArgumentType.getInteger(c, "level");
                     var p = c.getSource().getPlayerOrException();
                     int n = 0;

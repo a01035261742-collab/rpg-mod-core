@@ -31,7 +31,10 @@ public final class ModItems {
             "earring_1", "earring_10", "ring_1", "ring_10", "pendant_1", "pendant_10", "medal_1", "medal_10"};
 
     static {
-        for (String id : BASIC) GEAR.add(ITEMS.register(id, () -> id.startsWith("archer_bow")
+        java.util.List<String> all = new java.util.ArrayList<>(java.util.List.of(BASIC));
+        for (String b : new String[]{"warrior_sword", "archer_bow", "mage_staff", "thief_dagger", "gloves", "cape", "belt", "earring", "ring", "pendant", "medal"})
+            for (int lv : new int[]{20, 30, 40}) all.add(b + "_" + lv);   // 테스트 장비 Lv20·30·40
+        for (String id : all) GEAR.add(ITEMS.register(id, () -> id.startsWith("archer_bow")
                 ? new rpg.core.equip.GearItems.Bow(new Item.Properties(), id)
                 : new rpg.core.equip.GearItems.Basic(new Item.Properties(), id)));
         String[][] armor = {{"hat", "HELMET"}, {"top", "CHESTPLATE"}, {"bottom", "LEGGINGS"}, {"shoes", "BOOTS"}};
@@ -39,6 +42,9 @@ public final class ModItems {
             var type = net.minecraft.world.item.ArmorItem.Type.valueOf(a[1]);
             GEAR.add(ITEMS.register(a[0] + "_1", () -> new rpg.core.equip.GearItems.Armor(rpg.core.equip.GearItems.CHAIN, type, new Item.Properties(), a[0] + "_1")));
             GEAR.add(ITEMS.register(a[0] + "_10", () -> new rpg.core.equip.GearItems.Armor(rpg.core.equip.GearItems.IRON, type, new Item.Properties(), a[0] + "_10")));
+            GEAR.add(ITEMS.register(a[0] + "_20", () -> new rpg.core.equip.GearItems.Armor(rpg.core.equip.GearItems.GOLD, type, new Item.Properties(), a[0] + "_20")));
+            GEAR.add(ITEMS.register(a[0] + "_30", () -> new rpg.core.equip.GearItems.Armor(rpg.core.equip.GearItems.DIAMOND, type, new Item.Properties(), a[0] + "_30")));
+            GEAR.add(ITEMS.register(a[0] + "_40", () -> new rpg.core.equip.GearItems.Armor(rpg.core.equip.GearItems.NETHERITE, type, new Item.Properties(), a[0] + "_40")));
         }
     }
 

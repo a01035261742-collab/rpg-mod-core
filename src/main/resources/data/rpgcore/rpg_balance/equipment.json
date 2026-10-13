@@ -288,6 +288,453 @@
     "int": 2,
     "luk": 2
    }
+  },
+  "warrior_sword_20": {
+   "slot": "weapon",
+   "job": 1,
+   "level": 20,
+   "stats": {
+    "atk": 43,
+    "str": 4
+   },
+   "speed": 1.6
+  },
+  "warrior_sword_30": {
+   "slot": "weapon",
+   "job": 1,
+   "level": 30,
+   "stats": {
+    "atk": 56,
+    "str": 6
+   },
+   "speed": 1.6
+  },
+  "warrior_sword_40": {
+   "slot": "weapon",
+   "job": 1,
+   "level": 40,
+   "stats": {
+    "atk": 69,
+    "str": 8
+   },
+   "speed": 1.6
+  },
+  "archer_bow_20": {
+   "slot": "weapon",
+   "job": 2,
+   "level": 20,
+   "stats": {
+    "atk": 41,
+    "dex": 4
+   },
+   "speed": 1.4
+  },
+  "archer_bow_30": {
+   "slot": "weapon",
+   "job": 2,
+   "level": 30,
+   "stats": {
+    "atk": 54,
+    "dex": 6
+   },
+   "speed": 1.4
+  },
+  "archer_bow_40": {
+   "slot": "weapon",
+   "job": 2,
+   "level": 40,
+   "stats": {
+    "atk": 67,
+    "dex": 8
+   },
+   "speed": 1.4
+  },
+  "mage_staff_20": {
+   "slot": "weapon",
+   "job": 3,
+   "level": 20,
+   "stats": {
+    "matk": 46,
+    "int": 4
+   },
+   "speed": 1.2
+  },
+  "mage_staff_30": {
+   "slot": "weapon",
+   "job": 3,
+   "level": 30,
+   "stats": {
+    "matk": 60,
+    "int": 6
+   },
+   "speed": 1.2
+  },
+  "mage_staff_40": {
+   "slot": "weapon",
+   "job": 3,
+   "level": 40,
+   "stats": {
+    "matk": 74,
+    "int": 8
+   },
+   "speed": 1.2
+  },
+  "thief_dagger_20": {
+   "slot": "weapon",
+   "job": 4,
+   "level": 20,
+   "stats": {
+    "atk": 41,
+    "luk": 4
+   },
+   "speed": 2.0
+  },
+  "thief_dagger_30": {
+   "slot": "weapon",
+   "job": 4,
+   "level": 30,
+   "stats": {
+    "atk": 54,
+    "luk": 6
+   },
+   "speed": 2.0
+  },
+  "thief_dagger_40": {
+   "slot": "weapon",
+   "job": 4,
+   "level": 40,
+   "stats": {
+    "atk": 67,
+    "luk": 8
+   },
+   "speed": 2.0
+  },
+  "hat_20": {
+   "slot": "hat",
+   "job": 0,
+   "level": 20,
+   "stats": {
+    "def": 13,
+    "hp": 50
+   }
+  },
+  "hat_30": {
+   "slot": "hat",
+   "job": 0,
+   "level": 30,
+   "stats": {
+    "def": 18,
+    "hp": 70
+   }
+  },
+  "hat_40": {
+   "slot": "hat",
+   "job": 0,
+   "level": 40,
+   "stats": {
+    "def": 23,
+    "hp": 90
+   }
+  },
+  "top_20": {
+   "slot": "top",
+   "job": 0,
+   "level": 20,
+   "stats": {
+    "def": 19,
+    "hp": 75
+   }
+  },
+  "top_30": {
+   "slot": "top",
+   "job": 0,
+   "level": 30,
+   "stats": {
+    "def": 26,
+    "hp": 105
+   }
+  },
+  "top_40": {
+   "slot": "top",
+   "job": 0,
+   "level": 40,
+   "stats": {
+    "def": 33,
+    "hp": 135
+   }
+  },
+  "bottom_20": {
+   "slot": "bottom",
+   "job": 0,
+   "level": 20,
+   "stats": {
+    "def": 16,
+    "hp": 60
+   }
+  },
+  "bottom_30": {
+   "slot": "bottom",
+   "job": 0,
+   "level": 30,
+   "stats": {
+    "def": 22,
+    "hp": 85
+   }
+  },
+  "bottom_40": {
+   "slot": "bottom",
+   "job": 0,
+   "level": 40,
+   "stats": {
+    "def": 28,
+    "hp": 110
+   }
+  },
+  "shoes_20": {
+   "slot": "shoes",
+   "job": 0,
+   "level": 20,
+   "stats": {
+    "def": 10,
+    "hp": 35
+   }
+  },
+  "shoes_30": {
+   "slot": "shoes",
+   "job": 0,
+   "level": 30,
+   "stats": {
+    "def": 14,
+    "hp": 50
+   }
+  },
+  "shoes_40": {
+   "slot": "shoes",
+   "job": 0,
+   "level": 40,
+   "stats": {
+    "def": 18,
+    "hp": 65
+   }
+  },
+  "gloves_20": {
+   "slot": "gloves",
+   "job": 0,
+   "level": 20,
+   "stats": {
+    "def": 6,
+    "atk": 2,
+    "matk": 2
+   }
+  },
+  "gloves_30": {
+   "slot": "gloves",
+   "job": 0,
+   "level": 30,
+   "stats": {
+    "def": 8,
+    "atk": 3,
+    "matk": 3
+   }
+  },
+  "gloves_40": {
+   "slot": "gloves",
+   "job": 0,
+   "level": 40,
+   "stats": {
+    "def": 10,
+    "atk": 4,
+    "matk": 4
+   }
+  },
+  "cape_20": {
+   "slot": "cape",
+   "job": 0,
+   "level": 20,
+   "stats": {
+    "def": 8,
+    "hp": 40,
+    "vit": 4
+   }
+  },
+  "cape_30": {
+   "slot": "cape",
+   "job": 0,
+   "level": 30,
+   "stats": {
+    "def": 11,
+    "hp": 55,
+    "vit": 6
+   }
+  },
+  "cape_40": {
+   "slot": "cape",
+   "job": 0,
+   "level": 40,
+   "stats": {
+    "def": 14,
+    "hp": 70,
+    "vit": 8
+   }
+  },
+  "belt_20": {
+   "slot": "belt",
+   "job": 0,
+   "level": 20,
+   "stats": {
+    "hp": 65,
+    "def": 4
+   }
+  },
+  "belt_30": {
+   "slot": "belt",
+   "job": 0,
+   "level": 30,
+   "stats": {
+    "hp": 90,
+    "def": 6
+   }
+  },
+  "belt_40": {
+   "slot": "belt",
+   "job": 0,
+   "level": 40,
+   "stats": {
+    "hp": 115,
+    "def": 8
+   }
+  },
+  "earring_20": {
+   "slot": "earring",
+   "job": 0,
+   "level": 20,
+   "stats": {
+    "str": 5,
+    "dex": 5,
+    "int": 5,
+    "luk": 5
+   }
+  },
+  "earring_30": {
+   "slot": "earring",
+   "job": 0,
+   "level": 30,
+   "stats": {
+    "str": 7,
+    "dex": 7,
+    "int": 7,
+    "luk": 7
+   }
+  },
+  "earring_40": {
+   "slot": "earring",
+   "job": 0,
+   "level": 40,
+   "stats": {
+    "str": 9,
+    "dex": 9,
+    "int": 9,
+    "luk": 9
+   }
+  },
+  "ring_20": {
+   "slot": "ring",
+   "job": 0,
+   "level": 20,
+   "stats": {
+    "str": 3,
+    "dex": 3,
+    "int": 3,
+    "luk": 3,
+    "hp": 20
+   }
+  },
+  "ring_30": {
+   "slot": "ring",
+   "job": 0,
+   "level": 30,
+   "stats": {
+    "str": 4,
+    "dex": 4,
+    "int": 4,
+    "luk": 4,
+    "hp": 30
+   }
+  },
+  "ring_40": {
+   "slot": "ring",
+   "job": 0,
+   "level": 40,
+   "stats": {
+    "str": 5,
+    "dex": 5,
+    "int": 5,
+    "luk": 5,
+    "hp": 40
+   }
+  },
+  "pendant_20": {
+   "slot": "pendant",
+   "job": 0,
+   "level": 20,
+   "stats": {
+    "hp": 80,
+    "mp": 50,
+    "vit": 4
+   }
+  },
+  "pendant_30": {
+   "slot": "pendant",
+   "job": 0,
+   "level": 30,
+   "stats": {
+    "hp": 110,
+    "mp": 70,
+    "vit": 6
+   }
+  },
+  "pendant_40": {
+   "slot": "pendant",
+   "job": 0,
+   "level": 40,
+   "stats": {
+    "hp": 140,
+    "mp": 90,
+    "vit": 8
+   }
+  },
+  "medal_20": {
+   "slot": "medal",
+   "job": 0,
+   "level": 20,
+   "stats": {
+    "str": 3,
+    "dex": 3,
+    "int": 3,
+    "luk": 3
+   }
+  },
+  "medal_30": {
+   "slot": "medal",
+   "job": 0,
+   "level": 30,
+   "stats": {
+    "str": 4,
+    "dex": 4,
+    "int": 4,
+    "luk": 4
+   }
+  },
+  "medal_40": {
+   "slot": "medal",
+   "job": 0,
+   "level": 40,
+   "stats": {
+    "str": 5,
+    "dex": 5,
+    "int": 5,
+    "luk": 5
+   }
   }
  },
  "options": {
