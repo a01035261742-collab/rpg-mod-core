@@ -46,5 +46,16 @@
   "item.rpgcore.medal_10": "숙련 모험가 훈장",
   "container.rpgcore.equip": "장비",
   "item.rpgcore.red_potion": "빨간 물약",
-  "item.rpgcore.blue_potion": "파란 물약"
+  "item.rpgcore.blue_potion": "파란 물약",
+  "item.rpgcore.gold_pouch": "골드 주머니",
+  "item.rpgcore.rotten_chunk": "썩은 살점",
+  "item.rpgcore.zombie_heart": "좀비 심장",
+  "item.rpgcore.bone_shard": "뼈 조각",
+  "item.rpgcore.glowing_skull": "빛나는 두개골",
+  "item.rpgcore.web_bundle": "거미줄 뭉치",
+  "item.rpgcore.venom_sac": "거미 독샘",
+  "item.rpgcore.slime_goo": "슬라임 점액",
+  "item.rpgcore.slime_core": "슬라임 핵",
+  "item.rpgcore.star_fragment": "별의 조각",
+  "item.rpgcore.scroll_fragment": "주문서 조각"
 }

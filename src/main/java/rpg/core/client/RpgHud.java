@@ -13,7 +13,8 @@ public final class RpgHud {
     private static final java.util.List<Note> NOTES = new java.util.ArrayList<>();
 
     public static void addReward(long exp, long gold) {
-        String t = "+" + String.format("%,d", exp) + " EXP" + (gold > 0 ? "   +" + String.format("%,d", gold) + " G" : "");
+        String t = exp > 0 ? "+" + String.format("%,d", exp) + " EXP" + (gold > 0 ? "   +" + String.format("%,d", gold) + " G" : "")
+                : "+" + String.format("%,d", gold) + " G";
         NOTES.add(new Note(t, System.currentTimeMillis()));
         if (NOTES.size() > 5) NOTES.remove(0);
     }

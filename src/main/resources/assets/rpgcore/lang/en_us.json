@@ -46,5 +46,16 @@
   "item.rpgcore.medal_10": "Medal 10",
   "container.rpgcore.equip": "Equipment",
   "item.rpgcore.red_potion": "Red Potion",
-  "item.rpgcore.blue_potion": "Blue Potion"
+  "item.rpgcore.blue_potion": "Blue Potion",
+  "item.rpgcore.gold_pouch": "Gold Pouch",
+  "item.rpgcore.rotten_chunk": "Rotten Chunk",
+  "item.rpgcore.zombie_heart": "Zombie Heart",
+  "item.rpgcore.bone_shard": "Bone Shard",
+  "item.rpgcore.glowing_skull": "Glowing Skull",
+  "item.rpgcore.web_bundle": "Web Bundle",
+  "item.rpgcore.venom_sac": "Venom Sac",
+  "item.rpgcore.slime_goo": "Slime Goo",
+  "item.rpgcore.slime_core": "Slime Core",
+  "item.rpgcore.star_fragment": "Star Fragment",
+  "item.rpgcore.scroll_fragment": "Scroll Fragment"
 }

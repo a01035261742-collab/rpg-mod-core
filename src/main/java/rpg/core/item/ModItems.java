@@ -40,6 +40,22 @@ public final class ModItems {
         }
     }
 
+    // 드롭: 골드 주머니 · 몹 재료 (일반/희귀) · 강화 재료 (강화 단계에서 쓸 자리)
+    public static final RegistryObject<Item> GOLD_POUCH = ITEMS.register("gold_pouch", () -> new rpg.core.loot.GoldPouch(new Item.Properties()));
+    public static final java.util.List<RegistryObject<Item>> MATERIALS = new java.util.ArrayList<>();
+    private static final String[][] MAT = {
+            {"rotten_chunk", "c"}, {"zombie_heart", "r"}, {"bone_shard", "c"}, {"glowing_skull", "r"},
+            {"web_bundle", "c"}, {"venom_sac", "r"}, {"slime_goo", "c"}, {"slime_core", "r"}};
+    static {
+        for (String[] m : MAT) {
+            boolean rare = m[1].equals("r");
+            MATERIALS.add(ITEMS.register(m[0], () -> new Material(new Item.Properties().rarity(rare ? Rarity.UNCOMMON : Rarity.COMMON),
+                    rare ? "희귀 몹 재료 · 제작/판매" : "몹 재료 · 제작/판매")));
+        }
+        MATERIALS.add(ITEMS.register("star_fragment", () -> new Material(new Item.Properties().rarity(Rarity.RARE), "강화 재료 (강화 시스템에서 사용 예정)")));
+        MATERIALS.add(ITEMS.register("scroll_fragment", () -> new Material(new Item.Properties().rarity(Rarity.RARE), "주문서 재료 (강화 시스템에서 사용 예정)")));
+    }
+
     public static final RegistryObject<Item> ZONE_WAND = ITEMS.register("zone_wand",
             () -> new rpg.core.zone.ZoneWand(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC)));
 
@@ -51,6 +67,7 @@ public final class ModItems {
                 out.accept(RED_POTION.get());
                 out.accept(BLUE_POTION.get());
                 for (var g : GEAR) out.accept(g.get());
+                for (var m : MATERIALS) out.accept(m.get());
                 out.accept(ZONE_WAND.get());
             })
             .build());
