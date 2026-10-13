@@ -13,12 +13,19 @@ import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.model.DefaultedEntityGeoModel;
 import software.bernie.geckolib.model.data.EntityModelData;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
+import software.bernie.geckolib.renderer.layer.AutoGlowingGeoLayer;
 
-/** GeckoLib 몹 공통 렌더러: 모델·애니·텍스처는 id 로 자동 연결, 머리는 시선 방향 추가 회전, 엘리트 1.3배 */
+/** GeckoLib 몹 공통 렌더러: 모델·애니·텍스처는 id 로 자동 연결, 머리는 시선 방향 추가 회전, 엘리트 1.3배, 선택적 발광 마스크 */
 public class RpgGeoRenderer extends GeoEntityRenderer<GeoRpgMonster> {
     public RpgGeoRenderer(EntityRendererProvider.Context ctx, String id, float shadow) {
+        this(ctx, id, shadow, false);
+    }
+
+    /** glow = textures/entity/<id>_glowmask.png 부분을 어두운 곳에서도 밝게 (눈 등) */
+    public RpgGeoRenderer(EntityRendererProvider.Context ctx, String id, float shadow, boolean glow) {
         super(ctx, new Model(id));
         this.shadowRadius = shadow;
+        if (glow) addRenderLayer(new AutoGlowingGeoLayer<>(this));
     }
 
     @Override
