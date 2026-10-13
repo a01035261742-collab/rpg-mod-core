@@ -46,8 +46,12 @@ public final class ModItems {
     public static final RegistryObject<Item> GOLD_POUCH = ITEMS.register("gold_pouch", () -> new rpg.core.loot.GoldPouch(new Item.Properties()));
     public static final java.util.List<RegistryObject<Item>> MATERIALS = new java.util.ArrayList<>();
     private static final String[][] MAT = {
-            {"rotten_chunk", "c"}, {"zombie_heart", "r"}, {"bone_shard", "c"}, {"glowing_skull", "r"},
-            {"web_bundle", "c"}, {"venom_sac", "r"}, {"slime_goo", "c"}, {"slime_core", "r"}};
+            {"pig_hide", "c"}, {"golden_hoof", "r"}, {"cow_hide", "c"}, {"cow_horn", "r"}, {"slime_goo", "c"}, {"slime_core", "r"},
+            {"rat_tail", "c"}, {"rat_tooth", "r"}, {"dog_fur", "c"}, {"dog_fang", "r"}, {"bee_sting", "c"}, {"royal_jelly", "r"},
+            {"boar_bristle", "c"}, {"boar_tusk", "r"}, {"bear_pelt", "c"}, {"bear_paw", "r"}, {"spore_dust", "c"}, {"spirit_cap", "r"},
+            {"tiny_cap", "c"}, {"glow_spore", "r"}, {"toxic_cap", "c"}, {"soldier_badge", "r"}, {"fairy_wing", "c"}, {"fairy_dust", "r"},
+            {"spore_silk", "c"}, {"spore_gland", "r"}, {"witch_herb", "c"}, {"odd_potion", "r"}, {"dark_silk", "c"}, {"dark_eye", "r"},
+            {"beast_shell", "c"}, {"beast_core", "r"}};
     static {
         for (String[] m : MAT) {
             boolean rare = m[1].equals("r");

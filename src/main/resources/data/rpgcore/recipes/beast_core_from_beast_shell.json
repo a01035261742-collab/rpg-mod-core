@@ -1,0 +1,19 @@
+{
+ "type": "rpgcore:gold_shaped",
+ "category": "misc",
+ "gold": 58,
+ "pattern": [
+  "XXX",
+  "XXX",
+  "XXX"
+ ],
+ "key": {
+  "X": {
+   "item": "rpgcore:beast_shell"
+  }
+ },
+ "result": {
+  "item": "rpgcore:beast_core",
+  "count": 1
+ }
+}

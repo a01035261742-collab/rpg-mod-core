@@ -3,15 +3,15 @@
  "category": "equipment",
  "gold": 30,
  "pattern": [
-  "LWL",
-  "LLL"
+  "CPC",
+  "CCC"
  ],
  "key": {
-  "L": {
-   "item": "minecraft:leather"
+  "C": {
+   "item": "rpgcore:cow_hide"
   },
-  "W": {
-   "item": "rpgcore:web_bundle"
+  "P": {
+   "item": "rpgcore:pig_hide"
   }
  },
  "result": {

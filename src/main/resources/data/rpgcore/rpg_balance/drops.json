@@ -2,14 +2,214 @@
  "_설명": "확률은 %. 골드 외 전부 운(LUK) 드롭률 보너스가 곱해짐. 드롭은 막타 플레이어 기준, ownerSeconds 동안 그 사람만 주움",
  "ownerSeconds": 30,
  "goldChance": 100,
- "potion": {"chance": 8, "redRatio": 70},
- "gear": {"chance": 2, "levelRange": 10},
- "enhance": {"chance": 1.5, "items": {"star_fragment": 70, "scroll_fragment": 30}},
+ "potion": {
+  "chance": 8,
+  "redRatio": 70
+ },
+ "gear": {
+  "chance": 2,
+  "levelRange": 10
+ },
+ "enhance": {
+  "chance": 1.5,
+  "items": {
+   "star_fragment": 70,
+   "scroll_fragment": 30
+  }
+ },
  "_mobs": "items = [아이템, 확률%]. potion/gear/enhance 를 몹마다 덮어쓸 수 있음",
  "mobs": {
-  "zombie":   {"items": [["rotten_chunk", 40], ["zombie_heart", 3]]},
-  "skeleton": {"items": [["bone_shard", 40], ["glowing_skull", 3]]},
-  "spider":   {"items": [["web_bundle", 40], ["venom_sac", 3]]},
-  "slime":    {"items": [["slime_goo", 40], ["slime_core", 3]]}
+  "pig": {
+   "items": [
+    [
+     "pig_hide",
+     40
+    ],
+    [
+     "golden_hoof",
+     3
+    ]
+   ]
+  },
+  "cow": {
+   "items": [
+    [
+     "cow_hide",
+     40
+    ],
+    [
+     "cow_horn",
+     3
+    ]
+   ]
+  },
+  "slime": {
+   "items": [
+    [
+     "slime_goo",
+     40
+    ],
+    [
+     "slime_core",
+     3
+    ]
+   ]
+  },
+  "rat": {
+   "items": [
+    [
+     "rat_tail",
+     40
+    ],
+    [
+     "rat_tooth",
+     3
+    ]
+   ]
+  },
+  "wild_dog": {
+   "items": [
+    [
+     "dog_fur",
+     40
+    ],
+    [
+     "dog_fang",
+     3
+    ]
+   ]
+  },
+  "bee": {
+   "items": [
+    [
+     "bee_sting",
+     40
+    ],
+    [
+     "royal_jelly",
+     3
+    ]
+   ]
+  },
+  "boar": {
+   "items": [
+    [
+     "boar_bristle",
+     40
+    ],
+    [
+     "boar_tusk",
+     3
+    ]
+   ]
+  },
+  "bear": {
+   "items": [
+    [
+     "bear_pelt",
+     40
+    ],
+    [
+     "bear_paw",
+     3
+    ]
+   ]
+  },
+  "mush_spirit": {
+   "items": [
+    [
+     "spore_dust",
+     40
+    ],
+    [
+     "spirit_cap",
+     3
+    ]
+   ]
+  },
+  "mush_kid": {
+   "items": [
+    [
+     "tiny_cap",
+     40
+    ],
+    [
+     "glow_spore",
+     3
+    ]
+   ]
+  },
+  "mush_soldier": {
+   "items": [
+    [
+     "toxic_cap",
+     40
+    ],
+    [
+     "soldier_badge",
+     3
+    ]
+   ]
+  },
+  "mush_fairy": {
+   "items": [
+    [
+     "fairy_wing",
+     40
+    ],
+    [
+     "fairy_dust",
+     3
+    ]
+   ]
+  },
+  "spore_spider": {
+   "items": [
+    [
+     "spore_silk",
+     40
+    ],
+    [
+     "spore_gland",
+     3
+    ]
+   ]
+  },
+  "spore_witch": {
+   "items": [
+    [
+     "witch_herb",
+     40
+    ],
+    [
+     "odd_potion",
+     3
+    ]
+   ]
+  },
+  "dark_spider": {
+   "items": [
+    [
+     "dark_silk",
+     40
+    ],
+    [
+     "dark_eye",
+     3
+    ]
+   ]
+  },
+  "mush_beast": {
+   "items": [
+    [
+     "beast_shell",
+     40
+    ],
+    [
+     "beast_core",
+     3
+    ]
+   ]
+  }
  }
 }

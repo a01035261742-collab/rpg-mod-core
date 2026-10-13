@@ -3,13 +3,13 @@
  "category": "misc",
  "gold": 10,
  "pattern": [
-  "R",
+  "P",
   "S",
   "B"
  ],
  "key": {
-  "R": {
-   "item": "rpgcore:rotten_chunk"
+  "P": {
+   "item": "rpgcore:pig_hide"
   },
   "S": {
    "item": "rpgcore:slime_goo"

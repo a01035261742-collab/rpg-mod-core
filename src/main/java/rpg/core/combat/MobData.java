@@ -18,6 +18,14 @@ public class MobData {
     public int level;
     public double hp, maxHp, atk;
     public long exp, gold;
+    public boolean elite;
+
+    // 패턴 (저장 안 함)
+    public transient final long[] skillReady = new long[8];
+    public transient int casting = -1;          // 쓰는 중인 패턴 번호
+    public transient long castEnd;
+    public transient net.minecraft.world.phys.Vec3 castPos, castDir;
+    public transient int hitsLeft;
 
     public boolean isRpg() { return level > 0; }
 
@@ -26,6 +34,7 @@ public class MobData {
         t.putString("key", key); t.putString("name", name); t.putString("zone", zone);
         t.putInt("level", level); t.putDouble("hp", hp); t.putDouble("maxHp", maxHp); t.putDouble("atk", atk);
         t.putLong("exp", exp); t.putLong("gold", gold);
+        t.putBoolean("elite", elite);
         return t;
     }
 
@@ -33,6 +42,7 @@ public class MobData {
         key = t.getString("key"); name = t.getString("name"); zone = t.getString("zone");
         level = t.getInt("level"); hp = t.getDouble("hp"); maxHp = t.getDouble("maxHp"); atk = t.getDouble("atk");
         exp = t.getLong("exp"); gold = t.getLong("gold");
+        elite = t.getBoolean("elite");
     }
 
     public static class Provider implements ICapabilitySerializable<CompoundTag> {

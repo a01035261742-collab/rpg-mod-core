@@ -4,15 +4,15 @@
  "gold": 30,
  "pattern": [
   " C ",
-  "CSC",
+  "CRC",
   " C "
  ],
  "key": {
   "C": {
    "item": "minecraft:copper_ingot"
   },
-  "S": {
-   "item": "rpgcore:slime_goo"
+  "R": {
+   "item": "rpgcore:rat_tail"
   }
  },
  "result": {

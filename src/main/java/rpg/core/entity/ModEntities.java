@@ -1,0 +1,48 @@
+package rpg.core.entity;
+
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.entity.animal.PolarBear;
+import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
+import rpg.core.RpgCore;
+
+/** 새로 만든 몹 7종 */
+@Mod.EventBusSubscriber(modid = RpgCore.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
+public final class ModEntities {
+    private ModEntities() {}
+
+    public static final DeferredRegister<EntityType<?>> TYPES = DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, RpgCore.MODID);
+
+    private static RegistryObject<EntityType<RpgMonster>> monster(String id, float w, float h, int voice) {
+        return TYPES.register(id, () -> EntityType.Builder.<RpgMonster>of((t, l) -> new RpgMonster(t, l, voice), MobCategory.MONSTER)
+                .sized(w, h).clientTrackingRange(10).build(RpgCore.MODID + ":" + id));
+    }
+
+    public static final RegistryObject<EntityType<RpgMonster>> RAT = monster("rat", 0.6f, 0.45f, 0);
+    public static final RegistryObject<EntityType<RpgMonster>> MUSH_KID = monster("mush_kid", 0.6f, 0.7f, 1);
+    public static final RegistryObject<EntityType<RpgMonster>> MUSH_SPIRIT = monster("mush_spirit", 0.6f, 1.75f, 1);
+    public static final RegistryObject<EntityType<RpgMonster>> MUSH_SOLDIER = monster("mush_soldier", 0.7f, 2.15f, 1);
+    public static final RegistryObject<EntityType<RpgMonster>> MUSH_BEAST = monster("mush_beast", 1.9f, 2.2f, 2);
+    public static final RegistryObject<EntityType<FlyingRpgMonster>> MUSH_FAIRY = TYPES.register("mush_fairy",
+            () -> EntityType.Builder.<FlyingRpgMonster>of(FlyingRpgMonster::new, MobCategory.MONSTER)
+                    .sized(0.5f, 0.6f).clientTrackingRange(10).build(RpgCore.MODID + ":mush_fairy"));
+    public static final RegistryObject<EntityType<BrownBear>> BROWN_BEAR = TYPES.register("brown_bear",
+            () -> EntityType.Builder.<BrownBear>of(BrownBear::new, MobCategory.CREATURE)
+                    .sized(1.4f, 1.4f).clientTrackingRange(10).build(RpgCore.MODID + ":brown_bear"));
+
+    @SubscribeEvent
+    public static void attributes(EntityAttributeCreationEvent e) {
+        e.put(RAT.get(), RpgMonster.attrs(0.32).build());
+        e.put(MUSH_KID.get(), RpgMonster.attrs(0.26).build());
+        e.put(MUSH_SPIRIT.get(), RpgMonster.attrs(0.25).build());
+        e.put(MUSH_SOLDIER.get(), RpgMonster.attrs(0.24).build());
+        e.put(MUSH_BEAST.get(), RpgMonster.attrs(0.27).build());
+        e.put(MUSH_FAIRY.get(), FlyingRpgMonster.flyAttrs().build());
+        e.put(BROWN_BEAR.get(), PolarBear.createAttributes().build());
+    }
+}

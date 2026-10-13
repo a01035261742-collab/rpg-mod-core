@@ -4,14 +4,14 @@
  "gold": 30,
  "pattern": [
   "L L",
-  "LWL"
+  "LPL"
  ],
  "key": {
   "L": {
    "item": "minecraft:leather"
   },
-  "W": {
-   "item": "rpgcore:web_bundle"
+  "P": {
+   "item": "rpgcore:pig_hide"
   }
  },
  "result": {

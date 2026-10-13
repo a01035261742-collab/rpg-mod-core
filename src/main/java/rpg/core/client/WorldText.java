@@ -54,6 +54,22 @@ public final class WorldText {
         if (mc.level.getGameTime() % 100 == 0) ClientMobs.MAP.keySet().removeIf(id -> mc.level.getEntity(id) == null);
     }
 
+    // ── 엘리트는 1.3배 크게 보이기 (몸 크기 판정은 그대로) ──
+    @SubscribeEvent
+    public static void elitePre(net.minecraftforge.client.event.RenderLivingEvent.Pre<?, ?> e) {
+        if (isElite(e.getEntity())) { e.getPoseStack().pushPose(); e.getPoseStack().scale(1.3f, 1.3f, 1.3f); }
+    }
+
+    @SubscribeEvent
+    public static void elitePost(net.minecraftforge.client.event.RenderLivingEvent.Post<?, ?> e) {
+        if (isElite(e.getEntity())) e.getPoseStack().popPose();
+    }
+
+    private static boolean isElite(LivingEntity le) {
+        ClientMobs.Info i = ClientMobs.MAP.get(le.getId());
+        return i != null && i.name().startsWith("★");
+    }
+
     @SubscribeEvent
     public static void render(RenderLevelStageEvent e) {
         if (e.getStage() != RenderLevelStageEvent.Stage.AFTER_PARTICLES) return;
@@ -84,7 +100,8 @@ public final class WorldText {
             ps.scale(-0.025f, -0.025f, 0.025f);
             Matrix4f m = ps.last().pose();
             float nw = font.width(name);
-            font.drawInBatch(name, -nw / 2f, -10, 0xFFFFE070, false, m, buf, Font.DisplayMode.NORMAL, 0x60000000, 0xF000F0);
+            boolean elite = info.name().startsWith("★");
+            font.drawInBatch(name, -nw / 2f, -10, elite ? 0xFFFFA000 : 0xFFFFE070, false, m, buf, Font.DisplayMode.NORMAL, 0x60000000, 0xF000F0);
             float bw = font.width(bar + rest);
             font.drawInBatch(bar, -bw / 2f, 0, 0xFFE03030, false, m, buf, Font.DisplayMode.NORMAL, 0x60000000, 0xF000F0);
             font.drawInBatch(rest, -bw / 2f + font.width(bar), 0, 0xFF503030, false, m, buf, Font.DisplayMode.NORMAL, 0, 0xF000F0);

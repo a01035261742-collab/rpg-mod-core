@@ -111,6 +111,16 @@ public final class ZoneCommand {
                                 .executes(c -> spawn(c, 1))
                                 .then(Commands.argument("count", IntegerArgumentType.integer(1, 30))
                                         .executes(c -> spawn(c, IntegerArgumentType.getInteger(c, "count")))))));
+        root.then(Commands.literal("spawnelite").requires(s -> s.hasPermission(2))
+                .then(Commands.argument("mob", StringArgumentType.word()).suggests(MOB_KEYS)
+                        .then(Commands.argument("level", IntegerArgumentType.integer(1, 1000)).executes(c -> {
+                            ServerPlayer p = c.getSource().getPlayerOrException();
+                            String key = StringArgumentType.getString(c, "mob");
+                            if (!Balance.MOBS.containsKey(key)) return fail(c, "mobs.json 에 없는 몹: " + key);
+                            BlockPos at = p.blockPosition().relative(p.getDirection(), 3);
+                            Mobs.spawn(p.serverLevel(), key, IntegerArgumentType.getInteger(c, "level"), at, "", true);
+                            return ok(c, "엘리트 " + key + " 소환");
+                        }))));
 
         root.then(Commands.literal("zone").requires(s -> s.hasPermission(2))
                 .then(Commands.literal("create")
@@ -122,6 +132,10 @@ public final class ZoneCommand {
                                                         .then(Commands.argument("interval", IntegerArgumentType.integer(1, 600))
                                                                 .executes(c -> create(c, IntegerArgumentType.getInteger(c, "interval")))))))))
                 .then(Commands.literal("list").executes(ZoneCommand::list))
+                .then(Commands.literal("ground").then(Commands.argument("no", StringArgumentType.word())
+                        .suggests((c, b) -> SharedSuggestionProvider.suggest(Balance.GROUNDS.keySet(), b))
+                        .executes(c -> ground(c, null))
+                        .then(Commands.argument("name", StringArgumentType.word()).executes(c -> ground(c, StringArgumentType.getString(c, "name"))))))
                 .then(Commands.literal("remove").executes(c -> {
                             Zone z = here(c);
                             if (z == null) return fail(c, "사냥터 안에 서서 쓰거나 이름을 붙여 주세요: /rpg zone remove <이름>");
@@ -169,6 +183,26 @@ public final class ZoneCommand {
                         }))));
     }
 
+    /** 사냥터 프리셋 (mobs.json _grounds): 지팡이로 찍은 구역에 그 번호의 몹·레벨 범위로 */
+    private static int ground(CommandContext<CommandSourceStack> c, String name) throws CommandSyntaxException {
+        ServerPlayer p = c.getSource().getPlayerOrException();
+        BlockPos[] ps = ZoneWand.get(p);
+        if (ps[0] == null || ps[1] == null) return fail(c, "먼저 사냥터 지팡이로 두 점을 찍어 주세요 (/rpg wand)");
+        String no = StringArgumentType.getString(c, "no");
+        Balance.Ground g = Balance.GROUNDS.get(no);
+        if (g == null) return fail(c, "없는 사냥터 번호: " + no + " (" + String.join(", ", Balance.GROUNDS.keySet()) + ")");
+        String zn = name != null ? name : "ground" + no;
+        Zone z = new Zone(zn, String.join("+", g.mobs()), g.min(), 8, 5, ps[0], ps[1]);
+        z.levelMax = g.max();
+        ZoneData d = ZoneData.get(c.getSource().getLevel());
+        d.zones.put(zn, z);
+        d.setDirty();
+        outline(c.getSource().getLevel(), z);
+        java.util.List<String> names = new java.util.ArrayList<>();
+        for (String k : g.mobs()) names.add(Balance.MOBS.containsKey(k) ? Balance.MOBS.get(k).name() : k);
+        return ok(c, String.format("사냥터 %s '%s' 만듦 (%s): %s, Lv.%d~%d, 최대 8마리", no, zn, g.name(), String.join("·", names), g.min(), g.max()));
+    }
+
     /** 플레이어가 서 있는 사냥터 */
     private static Zone here(CommandContext<CommandSourceStack> c) {
         var pos = c.getSource().getPosition();
@@ -181,7 +215,7 @@ public final class ZoneCommand {
         BlockPos[] ps = ZoneWand.get(p);
         if (ps[0] == null || ps[1] == null) return fail(c, "먼저 사냥터 지팡이로 두 점을 찍어 주세요 (/rpg wand)");
         String mob = StringArgumentType.getString(c, "mob");
-        if (!Balance.MOBS.containsKey(mob)) return fail(c, "mobs.json 에 없는 몹: " + mob);
+        for (String k : mob.split("\\+")) if (!Balance.MOBS.containsKey(k)) return fail(c, "mobs.json 에 없는 몹: " + k);
         String name = StringArgumentType.getString(c, "name");
         Zone z = new Zone(name, mob, IntegerArgumentType.getInteger(c, "level"), IntegerArgumentType.getInteger(c, "max"),
                 interval, ps[0], ps[1]);
@@ -196,8 +230,8 @@ public final class ZoneCommand {
         var zones = ZoneData.get(c.getSource().getLevel()).zones.values();
         if (zones.isEmpty()) return ok(c, "이 월드에 사냥터 없음");
         for (Zone z : zones) {
-            c.getSource().sendSuccess(() -> Component.literal(String.format(" · %s: %s Lv.%d ×%d (%d초) [%d,%d,%d ~ %d,%d,%d]",
-                    z.name, z.mob, z.level, z.max, z.interval, z.min.getX(), z.min.getY(), z.min.getZ(),
+            c.getSource().sendSuccess(() -> Component.literal(String.format(" · %s: %s Lv.%s ×%d (%d초) [%d,%d,%d ~ %d,%d,%d]",
+                    z.name, z.mob, z.levelMax > z.level ? z.level + "~" + z.levelMax : String.valueOf(z.level), z.max, z.interval, z.min.getX(), z.min.getY(), z.min.getZ(),
                     z.max2.getX(), z.max2.getY(), z.max2.getZ())).withStyle(ChatFormatting.AQUA), false);
         }
         return 1;

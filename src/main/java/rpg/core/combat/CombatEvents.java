@@ -57,6 +57,24 @@ public final class CombatEvents {
     private static final Map<Integer, Double> SKILL_PCT = new java.util.HashMap<>();
     private static final Map<Integer, Double> FIXED = new java.util.HashMap<>();
 
+    /** 몹 패턴 피해: 몹 공격력 × pct% */
+    private static final Map<Integer, Double> MOB_PCT = new java.util.HashMap<>();
+
+    public static void mobSkillHit(Mob mob, ServerPlayer p, double pct) {
+        MOB_PCT.put(p.getId(), pct);
+        p.hurt(mob.damageSources().mobAttack(mob), 4.0f);
+        MOB_PCT.remove(p.getId());
+    }
+
+    /** 바닐라 독·시듦은 플레이어에게 안 걸림 (RPG 피해만) */
+    @SubscribeEvent
+    public static void noVanillaDot(net.minecraftforge.event.entity.living.MobEffectEvent.Applicable e) {
+        if (!(e.getEntity() instanceof net.minecraft.world.entity.player.Player)) return;
+        var eff = e.getEffectInstance().getEffect();
+        if (eff == net.minecraft.world.effect.MobEffects.POISON || eff == net.minecraft.world.effect.MobEffects.WITHER)
+            e.setResult(net.minecraftforge.eventbus.api.Event.Result.DENY);
+    }
+
     /** 스킬로 몹 때리기: 스공 × pct% */
     public static void skillHit(ServerPlayer p, Mob t, double pct) {
         SKILL_PCT.put(t.getId(), pct);
@@ -160,7 +178,10 @@ public final class CombatEvents {
         if (target instanceof ServerPlayer sp) {
             PlayerData d = RpgData.get(sp);
             double dmg;
-            if (src instanceof Mob m && isRpg(m)) dmg = Combat.mobToPlayer(Combat.mob(m).atk, d);
+            if (src instanceof Mob m && isRpg(m)) {
+                Double pc = MOB_PCT.get(sp.getId());
+                dmg = Combat.mobToPlayer(Combat.mob(m).atk * (pc == null ? 1 : pc / 100.0), d);
+            }
             else if (src instanceof Mob) dmg = Math.max(1, e.getAmount() / 20.0 * d.maxHp - Combat.defCut(d));  // 일반 몹: 비율 - 방어
             else dmg = e.getAmount() / 20.0 * d.maxHp;   // 환경 피해: 바닐라와 같은 비율
             long now = sp.level().getGameTime();

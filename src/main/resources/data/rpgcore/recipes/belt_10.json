@@ -3,14 +3,14 @@
  "category": "equipment",
  "gold": 250,
  "pattern": [
-  "IZI"
+  "IHI"
  ],
  "key": {
   "I": {
    "item": "minecraft:iron_ingot"
   },
-  "Z": {
-   "item": "rpgcore:zombie_heart"
+  "H": {
+   "item": "rpgcore:golden_hoof"
   }
  },
  "result": {

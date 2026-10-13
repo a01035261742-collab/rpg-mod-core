@@ -5,7 +5,7 @@
  "pattern": [
   "I I",
   "GDG",
-  " Z "
+  " J "
  ],
  "key": {
   "I": {
@@ -17,8 +17,8 @@
   "D": {
    "item": "minecraft:diamond"
   },
-  "Z": {
-   "item": "rpgcore:zombie_heart"
+  "J": {
+   "item": "rpgcore:royal_jelly"
   }
  },
  "result": {

@@ -86,12 +86,13 @@ public final class Drops {
         if (gold > 0 && r.nextDouble() * 100 < goldChance) out.add(GoldPouch.of(gold));
 
         MobDrops md = MOBS.get(m.key);
-        if (md != null) for (Entry e : md.items()) if (hit(r, e.chance() * mul)) add(out, e.item());
+        int rolls = m.elite ? 2 : 1;   // 엘리트는 재료 두 번 굴림
+        for (int k = 0; k < rolls; k++) if (md != null) for (Entry e : md.items()) if (hit(r, e.chance() * mul)) add(out, e.item());
 
         double pc = md != null && md.potion() >= 0 ? md.potion() : potionChance;
         if (hit(r, pc * mul)) out.add(new ItemStack(r.nextDouble() * 100 < potionRed ? ModItems.RED_POTION.get() : ModItems.BLUE_POTION.get()));
 
-        double gc = md != null && md.gear() >= 0 ? md.gear() : gearChance;
+        double gc = (md != null && md.gear() >= 0 ? md.gear() : gearChance) * (m.elite ? rpg.core.balance.Balance.eliteGear : 1);
         if (hit(r, gc * mul)) {
             ItemStack g = randomGear(m.level, r);
             if (!g.isEmpty()) out.add(g);

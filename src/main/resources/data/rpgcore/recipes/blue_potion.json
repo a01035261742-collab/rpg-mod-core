@@ -3,13 +3,13 @@
  "category": "misc",
  "gold": 10,
  "pattern": [
-  "W",
+  "D",
   "S",
   "B"
  ],
  "key": {
-  "W": {
-   "item": "rpgcore:web_bundle"
+  "D": {
+   "item": "rpgcore:dog_fur"
   },
   "S": {
    "item": "rpgcore:slime_goo"

@@ -4,7 +4,7 @@
  "gold": 300,
  "pattern": [
   "LDL",
-  "LVL"
+  "LHL"
  ],
  "key": {
   "L": {
@@ -13,8 +13,8 @@
   "D": {
    "item": "minecraft:blue_dye"
   },
-  "V": {
-   "item": "rpgcore:venom_sac"
+  "H": {
+   "item": "rpgcore:cow_horn"
   }
  },
  "result": {

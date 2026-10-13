@@ -4,14 +4,14 @@
  "gold": 300,
  "pattern": [
   " I ",
-  "IKI"
+  "ITI"
  ],
  "key": {
   "I": {
    "item": "minecraft:iron_ingot"
   },
-  "K": {
-   "item": "rpgcore:glowing_skull"
+  "T": {
+   "item": "rpgcore:rat_tooth"
   }
  },
  "result": {

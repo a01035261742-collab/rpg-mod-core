@@ -1,0 +1,19 @@
+{
+ "type": "rpgcore:gold_shaped",
+ "category": "misc",
+ "gold": 23,
+ "pattern": [
+  "XXX",
+  "XXX",
+  "XXX"
+ ],
+ "key": {
+  "X": {
+   "item": "rpgcore:pig_hide"
+  }
+ },
+ "result": {
+  "item": "rpgcore:golden_hoof",
+  "count": 1
+ }
+}

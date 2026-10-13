@@ -58,6 +58,8 @@ public final class Net {
                 .encoder(JobAdvance::encode).decoder(JobAdvance::new).consumerMainThread(JobAdvance::handle).add();
         CH.messageBuilder(Basic.class, id++, NetworkDirection.PLAY_TO_SERVER)
                 .encoder(Basic::encode).decoder(Basic::new).consumerMainThread(Basic::handle).add();
+        CH.messageBuilder(Telegraph.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(Telegraph::encode).decoder(Telegraph::new).consumerMainThread(Telegraph::handle).add();
         CH.messageBuilder(SkillRelease.class, id++, NetworkDirection.PLAY_TO_SERVER)
                 .encoder(SkillRelease::encode).decoder(SkillRelease::new).consumerMainThread(SkillRelease::handle).add();
         CH.messageBuilder(SetSlot.class, id++, NetworkDirection.PLAY_TO_SERVER)
@@ -78,6 +80,28 @@ public final class Net {
 
     public static void itemNote(ServerPlayer p, String text) {
         CH.send(PacketDistributor.PLAYER.with(() -> p), new ItemNote(text));
+    }
+
+    /** 바닥 예고를 근처(48칸) 플레이어에게 */
+    public static void telegraph(net.minecraft.server.level.ServerLevel level, net.minecraft.world.phys.Vec3 pos,
+                                 net.minecraft.world.phys.Vec3 dir, int shape, double a, double b, int ticks) {
+        Telegraph t = new Telegraph(shape, pos.x, pos.y, pos.z, dir.x, dir.z, (float) a, (float) b, ticks);
+        for (ServerPlayer p : level.players()) if (p.distanceToSqr(pos) < 48 * 48) CH.send(PacketDistributor.PLAYER.with(() -> p), t);
+    }
+
+    // ───────── 서버 → 클라: 바닥 예고 (0 원 a=반경 · 1 직선 a=길이 b=폭 · 2 부채꼴 a=반경 b=각도) ─────────
+    public record Telegraph(int shape, double x, double y, double z, double dx, double dz, float a, float b, int ticks) {
+        Telegraph(FriendlyByteBuf f) {
+            this(f.readByte(), f.readDouble(), f.readDouble(), f.readDouble(), f.readDouble(), f.readDouble(), f.readFloat(), f.readFloat(), f.readVarInt());
+        }
+        void encode(FriendlyByteBuf f) {
+            f.writeByte(shape); f.writeDouble(x); f.writeDouble(y); f.writeDouble(z); f.writeDouble(dx); f.writeDouble(dz);
+            f.writeFloat(a); f.writeFloat(b); f.writeVarInt(ticks);
+        }
+        void handle(Supplier<NetworkEvent.Context> ctx) {
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> rpg.core.client.Telegraphs.add(this));
+            ctx.get().setPacketHandled(true);
+        }
     }
 
     // ───────── 클라 → 서버: 차지 스킬 키 뗌 ─────────

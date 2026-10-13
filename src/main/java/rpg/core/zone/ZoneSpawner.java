@@ -39,7 +39,11 @@ public final class ZoneSpawner {
             // 한 번에 최대 3마리씩 채움
             for (int i = 0; i < Math.min(need, 3); i++) {
                 BlockPos pos = findSpot(level, z, level.random);
-                if (pos != null) Mobs.spawn(level, z.mob, z.level, pos, z.name);
+                if (pos == null) continue;
+                String[] ms = z.mobs();
+                String key = ms[level.random.nextInt(ms.length)];
+                int lv = z.level + (z.levelMax > z.level ? level.random.nextInt(z.levelMax - z.level + 1) : 0);
+                Mobs.spawn(level, key, lv, pos, z.name);
             }
             // 구역에서 멀리 벗어난 몹은 정리 (다시 리젠됨)
             level.getEntitiesOfClass(Mob.class, box.inflate(64), m -> {

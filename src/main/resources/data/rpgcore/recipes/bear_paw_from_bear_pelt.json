@@ -1,0 +1,19 @@
+{
+ "type": "rpgcore:gold_shaped",
+ "category": "misc",
+ "gold": 38,
+ "pattern": [
+  "XXX",
+  "XXX",
+  "XXX"
+ ],
+ "key": {
+  "X": {
+   "item": "rpgcore:bear_pelt"
+  }
+ },
+ "result": {
+  "item": "rpgcore:bear_paw",
+  "count": 1
+ }
+}

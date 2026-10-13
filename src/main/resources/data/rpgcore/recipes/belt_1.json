@@ -3,14 +3,14 @@
  "category": "equipment",
  "gold": 25,
  "pattern": [
-  "LBL"
+  "LRL"
  ],
  "key": {
   "L": {
    "item": "minecraft:leather"
   },
-  "B": {
-   "item": "rpgcore:bone_shard"
+  "R": {
+   "item": "rpgcore:rat_tail"
   }
  },
  "result": {

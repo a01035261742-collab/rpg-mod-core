@@ -49,7 +49,24 @@ public final class Balance {
 
     public record MobStats(double hp, double atk, long exp, long gold) {}
 
-    public record MobDef(String key, String entity, String name, java.util.TreeMap<Integer, MobStats> levels) {
+    /**
+     * 몹 패턴 (예고 후 공격). type: slam(내 주변 원) · leap(대상 자리로 점프, 원) · dash(직선 돌진) ·
+     * shot(직선 사격) · zone(대상 자리 장판) · cone(앞 부채꼴). 시간은 초, 피해는 몹 공격력의 %
+     */
+    public record MobSkill(String type, double range, double cd, double delay, double pct, double r, double len,
+                           double w, double angle, int hits, String effect) {}
+
+    /** 몹 모양·행동 옵션: head = 머리에 씌울 아이템, baby = 아기, passive = 먼저 안 때림, chase = 다가오게 만듦 */
+    public record MobLook(String head, boolean baby, boolean passive, boolean chase) {}
+
+    /** 사냥터 프리셋 */
+    public record Ground(String name, java.util.List<String> mobs, int min, int max) {}
+    public static final Map<String, Ground> GROUNDS = new java.util.LinkedHashMap<>();
+    /** 엘리트: 확률 %, 체력·공격·보상 배수, 장비 드롭 배수 */
+    public static double eliteChance = 5, eliteHp = 5, eliteAtk = 1.5, eliteReward = 5, eliteGear = 3;
+
+    public record MobDef(String key, String entity, String name, java.util.TreeMap<Integer, MobStats> levels,
+                         MobLook look, java.util.List<MobSkill> skills) {
         /** 그 레벨 수치 (표에 없으면 바로 아래 레벨, 그것도 없으면 가장 낮은 레벨) */
         public MobStats at(int level) {
             var e = levels.floorEntry(level);
@@ -127,7 +144,21 @@ public final class Balance {
                 RpgCore.LOG.warn("[rpgcore] rpg_balance/mobs.json 없음");
                 return;
             }
-            for (var e : el.getAsJsonObject().entrySet()) {
+            JsonObject root = el.getAsJsonObject();
+            GROUNDS.clear();
+            if (root.has("_grounds")) for (var g : root.getAsJsonObject("_grounds").entrySet()) {
+                if (!g.getValue().isJsonObject()) continue;
+                JsonObject o = g.getValue().getAsJsonObject();
+                java.util.List<String> ms = new java.util.ArrayList<>();
+                o.getAsJsonArray("mobs").forEach(x -> ms.add(x.getAsString()));
+                GROUNDS.put(g.getKey(), new Ground(o.get("name").getAsString(), ms, (int) d(o, "min", 1), (int) d(o, "max", 1)));
+            }
+            if (root.has("_elite")) {
+                JsonObject o = root.getAsJsonObject("_elite");
+                eliteChance = d(o, "chance", 5); eliteHp = d(o, "hp", 5); eliteAtk = d(o, "atk", 1.5);
+                eliteReward = d(o, "reward", 5); eliteGear = d(o, "gear", 3);
+            }
+            for (var e : root.entrySet()) {
                 if (e.getKey().startsWith("_") || !e.getValue().isJsonObject()) continue;
                 JsonObject m = e.getValue().getAsJsonObject();
                 var levels = new java.util.TreeMap<Integer, MobStats>();
@@ -142,7 +173,17 @@ public final class Balance {
                 }
                 String ent = m.has("entity") ? m.get("entity").getAsString() : "minecraft:zombie";
                 String name = m.has("name") ? m.get("name").getAsString() : e.getKey();
-                MOBS.put(e.getKey(), new MobDef(e.getKey(), ent, name, levels));
+                MobLook look = new MobLook(m.has("head") ? m.get("head").getAsString() : "",
+                        m.has("baby") && m.get("baby").getAsBoolean(), m.has("passive") && m.get("passive").getAsBoolean(),
+                        m.has("chase") && m.get("chase").getAsBoolean());
+                java.util.List<MobSkill> skills = new java.util.ArrayList<>();
+                if (m.has("skills")) for (var sk : m.getAsJsonArray("skills")) {
+                    JsonObject o = sk.getAsJsonObject();
+                    skills.add(new MobSkill(o.has("type") ? o.get("type").getAsString() : "slam", d(o, "range", 4), d(o, "cd", 6),
+                            d(o, "delay", 1), d(o, "pct", 100), d(o, "r", 3), d(o, "len", 8), d(o, "w", 1.5), d(o, "angle", 90),
+                            (int) d(o, "hits", 1), o.has("effect") ? o.get("effect").getAsString() : ""));
+                }
+                MOBS.put(e.getKey(), new MobDef(e.getKey(), ent, name, levels, look, skills));
             }
             RpgCore.LOG.info("[rpgcore] 몹 {}종 읽음", MOBS.size());
         }

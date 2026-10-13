@@ -4,14 +4,14 @@
  "gold": 300,
  "pattern": [
   "I I",
-  "IVI"
+  "IFI"
  ],
  "key": {
   "I": {
    "item": "minecraft:iron_ingot"
   },
-  "V": {
-   "item": "rpgcore:venom_sac"
+  "F": {
+   "item": "rpgcore:dog_fang"
   }
  },
  "result": {
