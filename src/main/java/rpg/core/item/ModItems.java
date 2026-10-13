@@ -50,10 +50,10 @@ public final class ModItems {
         for (String[] m : MAT) {
             boolean rare = m[1].equals("r");
             MATERIALS.add(ITEMS.register(m[0], () -> new Material(new Item.Properties().rarity(rare ? Rarity.UNCOMMON : Rarity.COMMON),
-                    rare ? "희귀 몹 재료 · 제작/판매" : "몹 재료 · 제작/판매")));
+                    rare ? "희귀 몹 재료 · 제작/판매" : "몹 재료 · 제작/판매", true)));
         }
-        MATERIALS.add(ITEMS.register("star_fragment", () -> new Material(new Item.Properties().rarity(Rarity.RARE), "강화 재료 (강화 시스템에서 사용 예정)")));
-        MATERIALS.add(ITEMS.register("scroll_fragment", () -> new Material(new Item.Properties().rarity(Rarity.RARE), "주문서 재료 (강화 시스템에서 사용 예정)")));
+        MATERIALS.add(ITEMS.register("star_fragment", () -> new Material(new Item.Properties().rarity(Rarity.RARE), "강화 재료 (강화 시스템에서 사용 예정)", false)));
+        MATERIALS.add(ITEMS.register("scroll_fragment", () -> new Material(new Item.Properties().rarity(Rarity.RARE), "주문서 재료 (강화 시스템에서 사용 예정)", false)));
     }
 
     public static final RegistryObject<Item> ZONE_WAND = ITEMS.register("zone_wand",

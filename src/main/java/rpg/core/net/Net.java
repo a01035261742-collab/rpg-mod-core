@@ -58,6 +58,53 @@ public final class Net {
                 .encoder(JobAdvance::encode).decoder(JobAdvance::new).consumerMainThread(JobAdvance::handle).add();
         CH.messageBuilder(Basic.class, id++, NetworkDirection.PLAY_TO_SERVER)
                 .encoder(Basic::encode).decoder(Basic::new).consumerMainThread(Basic::handle).add();
+        CH.messageBuilder(OpenShop.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(OpenShop::encode).decoder(OpenShop::new).consumerMainThread(OpenShop::handle).add();
+        CH.messageBuilder(ShopAction.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(ShopAction::encode).decoder(ShopAction::new).consumerMainThread(ShopAction::handle).add();
+    }
+
+    public static void openShop(ServerPlayer p, int npcId, rpg.core.shop.Shops.Shop s) {
+        java.util.List<String> items = new java.util.ArrayList<>();
+        java.util.List<Long> prices = new java.util.ArrayList<>();
+        for (var o : s.offers()) { items.add(o.item()); prices.add(o.price()); }
+        CH.send(PacketDistributor.PLAYER.with(() -> p), new OpenShop(npcId, s.name(), items, prices,
+                new java.util.LinkedHashMap<>(rpg.core.shop.Shops.SELL)));
+    }
+
+    // ───────── 서버 → 클라: 상점 창 (사기 목록 + 판매가표) ─────────
+    public record OpenShop(int npc, String name, java.util.List<String> items, java.util.List<Long> prices,
+                           java.util.Map<String, Long> sell) {
+        OpenShop(FriendlyByteBuf b) {
+            this(b.readVarInt(), b.readUtf(), b.readList(FriendlyByteBuf::readUtf), b.readList(FriendlyByteBuf::readVarLong),
+                    b.readMap(FriendlyByteBuf::readUtf, FriendlyByteBuf::readVarLong));
+        }
+        void encode(FriendlyByteBuf b) {
+            b.writeVarInt(npc); b.writeUtf(name);
+            b.writeCollection(items, FriendlyByteBuf::writeUtf);
+            b.writeCollection(prices, FriendlyByteBuf::writeVarLong);
+            b.writeMap(sell, FriendlyByteBuf::writeUtf, FriendlyByteBuf::writeVarLong);
+        }
+        void handle(Supplier<NetworkEvent.Context> ctx) {
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> rpg.core.client.ShopScreen.open(npc, name, items, prices, sell));
+            ctx.get().setPacketHandled(true);
+        }
+    }
+
+    // ───────── 클라 → 서버: 상점 (kind 0 사기 index·count / 1 팔기 slot·all(count=1) / 2 재료 전부 팔기) ─────────
+    public record ShopAction(int npc, int kind, int index, int count) {
+        ShopAction(FriendlyByteBuf b) { this(b.readVarInt(), b.readVarInt(), b.readVarInt(), b.readVarInt()); }
+        void encode(FriendlyByteBuf b) { b.writeVarInt(npc); b.writeVarInt(kind); b.writeVarInt(index); b.writeVarInt(count); }
+        void handle(Supplier<NetworkEvent.Context> ctx) {
+            ServerPlayer p = ctx.get().getSender();
+            if (p != null) switch (kind) {
+                case 0 -> rpg.core.shop.Shops.buy(p, npc, index, count);
+                case 1 -> rpg.core.shop.Shops.sell(p, npc, index, count == 1);
+                case 2 -> rpg.core.shop.Shops.sellMaterials(p, npc);
+                default -> {}
+            }
+            ctx.get().setPacketHandled(true);
+        }
     }
 
     public static void openJob(ServerPlayer p, int family, int state) {

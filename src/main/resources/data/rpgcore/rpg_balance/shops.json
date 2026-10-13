@@ -1,0 +1,31 @@
+{
+ "_설명": "shops = 상점별 사기 목록 [아이템, 가격]. sell = NPC에게 팔 때 가격 (없는 아이템은 못 팖). 상점 장비는 추가 옵션 없음. 숫자는 임시값",
+ "shops": {
+  "general": {
+   "name": "잡화 상인",
+   "items": [["red_potion", 15], ["blue_potion", 20], ["stat_reset_scroll", 3000]]
+  },
+  "gear": {
+   "name": "장비 상인",
+   "items": [
+    ["warrior_sword_1", 80], ["archer_bow_1", 80], ["mage_staff_1", 80], ["thief_dagger_1", 80],
+    ["hat_1", 50], ["top_1", 60], ["bottom_1", 55], ["shoes_1", 45],
+    ["warrior_sword_10", 900], ["archer_bow_10", 900], ["mage_staff_10", 900], ["thief_dagger_10", 900],
+    ["hat_10", 500], ["top_10", 650], ["bottom_10", 600], ["shoes_10", 450]
+   ]
+  }
+ },
+ "sell": {
+  "_재료": "",
+  "rotten_chunk": 2, "bone_shard": 2, "web_bundle": 2, "slime_goo": 2,
+  "zombie_heart": 30, "glowing_skull": 30, "venom_sac": 30, "slime_core": 30,
+  "star_fragment": 50, "scroll_fragment": 80,
+  "red_potion": 4, "blue_potion": 5, "stat_reset_scroll": 500,
+  "warrior_sword_1": 15, "archer_bow_1": 15, "mage_staff_1": 15, "thief_dagger_1": 15,
+  "hat_1": 10, "top_1": 12, "bottom_1": 11, "shoes_1": 9,
+  "gloves_1": 12, "cape_1": 12, "belt_1": 12, "earring_1": 12, "ring_1": 12, "pendant_1": 12, "medal_1": 12,
+  "warrior_sword_10": 150, "archer_bow_10": 150, "mage_staff_10": 150, "thief_dagger_10": 150,
+  "hat_10": 90, "top_10": 120, "bottom_10": 110, "shoes_10": 80,
+  "gloves_10": 120, "cape_10": 120, "belt_10": 120, "earring_10": 120, "ring_10": 120, "pendant_10": 120, "medal_10": 120
+ }
+}

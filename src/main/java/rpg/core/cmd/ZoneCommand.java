@@ -34,6 +34,7 @@ import rpg.core.zone.ZoneWand;
  *  /rpg mobs                                  몹 목록 (mobs.json)
  *  /rpg gear <1|10>                           테스트 장비 한 벌 받기
  *  /rpg npc job <1~4>                         전직 교관 세우기 (1 전사 2 궁수 3 마법사 4 도적)
+ *  /rpg npc shop <general|gear>               상점 NPC 세우기 (shops.json)
  *  /rpg job <0~4>                             직업 바로 바꾸기 (테스트용)
  *  /rpg potions                               물약 받기
  */
@@ -73,6 +74,16 @@ public final class ZoneCommand {
                     int f = IntegerArgumentType.getInteger(c, "family");
                     rpg.core.job.JobEvents.spawn(c.getSource().getPlayerOrException(), f);
                     return ok(c, rpg.core.job.Jobs.name(f) + " 교관을 세웠어요 (1 전사 · 2 궁수 · 3 마법사 · 4 도적)");
+                })))
+                .then(Commands.literal("shop").then(Commands.argument("shop", com.mojang.brigadier.arguments.StringArgumentType.word())
+                        .suggests((c, b) -> SharedSuggestionProvider.suggest(rpg.core.shop.Shops.SHOPS.keySet(), b)).executes(c -> {
+                    String id = com.mojang.brigadier.arguments.StringArgumentType.getString(c, "shop");
+                    if (!rpg.core.shop.Shops.SHOPS.containsKey(id)) {
+                        c.getSource().sendFailure(net.minecraft.network.chat.Component.literal("없는 상점: " + id + " (shops.json)"));
+                        return 0;
+                    }
+                    rpg.core.shop.Shops.spawn(c.getSource().getPlayerOrException(), id);
+                    return ok(c, rpg.core.shop.Shops.SHOPS.get(id).name() + " 을(를) 세웠어요");
                 }))));
         root.then(Commands.literal("job").requires(s -> s.hasPermission(2))
                 .then(Commands.argument("job", IntegerArgumentType.integer(0, 4)).executes(c -> {
