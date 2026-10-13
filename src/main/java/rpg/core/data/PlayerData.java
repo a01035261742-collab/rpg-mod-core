@@ -48,6 +48,9 @@ public class PlayerData {
     public double buffV(String id, long now) { return buff(id, now) ? buffVal.getOrDefault(id, 0.0) : 0; }
     public double buffV2(String id, long now) { return buff(id, now) ? buffVal2.getOrDefault(id, 0.0) : 0; }
 
+    /** 서버 시간 (매 틱 갱신, 버프 계산용) */
+    public long clock;
+
     public long sprintEnd;
     public double sprintPct;
 

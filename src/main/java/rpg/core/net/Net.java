@@ -382,7 +382,7 @@ public final class Net {
 
         SyncData(Player p, PlayerData d) {
             buf = new FriendlyByteBuf(io.netty.buffer.Unpooled.buffer());
-            d.write(buf, Combat.statAttack(p, d), Combat.defReducePct(d), p.level().getGameTime());
+            d.write(buf, Combat.statAttack(p, d), Combat.defense(d), p.level().getGameTime());
         }
 
         SyncData(FriendlyByteBuf in) {

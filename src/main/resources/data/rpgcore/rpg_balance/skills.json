@@ -44,9 +44,9 @@
     "mp": 15,
     "cooldown": 40,
     "duration": 20,
-    "value": 20,
-    "valuePerLevel": 1,
-    "desc": "{d}초 동안 받는 피해 -{v}%"
+    "value": 10,
+    "valuePerLevel": 2.1053,
+    "desc": "{d}초 동안 방어력 +{v}"
   },
   "double_shot": {
     "name": "더블 샷",
@@ -57,8 +57,8 @@
     "mp": 6,
     "cooldown": 1.5,
     "duration": 0,
-    "value": 90,
-    "valuePerLevel": 4,
+    "value": 93,
+    "valuePerLevel": 3,
     "desc": "화살 2발, 각각 스공의 {v}%"
   },
   "retreat_shot": {
@@ -70,8 +70,8 @@
     "mp": 10,
     "cooldown": 8,
     "duration": 3,
-    "value": 160,
-    "valuePerLevel": 8,
+    "value": 124,
+    "valuePerLevel": 4,
     "desc": "뒤로 물러나며 스공의 {v}% 화살, 맞은 몹 {d}초 느려짐"
   },
   "magic_bolt": {
@@ -95,7 +95,7 @@
     "type": "instant",
     "mp": 10,
     "cooldown": 30,
-    "duration": 60,
+    "duration": 120,
     "value": 30,
     "valuePerLevel": 1.5,
     "desc": "{d}초 동안 받는 피해의 {v}%를 MP로 대신 받음"
@@ -108,12 +108,12 @@
     "type": "instant",
     "mp": 12,
     "cooldown": 20,
-    "duration": 8,
-    "value": 100,
-    "valuePerLevel": 8,
-    "value2": 20,
-    "value2PerLevel": 1.5,
-    "desc": "{d}초 은신 (몹이 못 봄). 첫 공격 피해 +{v}% + 5초 출혈 (초당 스공의 {v2}%)"
+    "duration": 4,
+    "value": 50,
+    "valuePerLevel": 2.6316,
+    "value2": 10,
+    "value2PerLevel": 0.5263,
+    "desc": "{d}초 은신 (몹이 못 봄). 첫 공격 피해 +{v}% + 5초 출혈 (1초마다 스공의 {v2}%)"
   },
   "haste": {
     "name": "헤이스트",
@@ -125,9 +125,9 @@
     "cooldown": 60,
     "duration": 40,
     "value": 15,
-    "valuePerLevel": 0.5,
+    "valuePerLevel": 0.7895,
     "value2": 10,
-    "value2PerLevel": 0.5,
-    "desc": "근처 파티원 {d}초 이동속도 +{v}%, 공격 속도 +{v2}%"
+    "value2PerLevel": 0.5263,
+    "desc": "근처 파티원 {d}초 이동속도 +{v}%, 점프력 +{v2}%"
   }
 }

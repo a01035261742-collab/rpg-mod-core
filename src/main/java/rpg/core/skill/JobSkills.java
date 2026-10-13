@@ -32,8 +32,14 @@ import rpg.core.data.PlayerData;
  *  마법사 magic_bolt 매직 볼트 · magic_guard 매직 가드
  *  도적  stealth 은신(첫 공격 추가 피해 + 출혈) · haste 헤이스트
  */
+@net.minecraftforge.fml.common.Mod.EventBusSubscriber(modid = rpg.core.RpgCore.MODID)
 public final class JobSkills {
     private JobSkills() {}
+
+    @net.minecraftforge.eventbus.api.SubscribeEvent
+    public static void jump(net.minecraftforge.event.entity.living.LivingEvent.LivingJumpEvent e) {
+        if (e.getEntity() instanceof ServerPlayer sp) onJump(sp);
+    }
 
     /** 스킬 효과 실행. false = 안 씀 (MP·쿨 안 깎음) */
     public static boolean use(ServerPlayer p, PlayerData d, Defs.SkillDef s, int lv, long now) {
@@ -188,12 +194,22 @@ public final class JobSkills {
             PlayerData td = rpg.core.data.RpgData.get(t);
             td.buffEnd.put("haste", now + Math.round(s.duration() * 20));
             td.buffVal.put("haste", s.value(lv));    // 이동속도 %
-            td.buffVal2.put("haste", s.value2(lv));  // 공격 속도 %
+            td.buffVal2.put("haste", s.value2(lv));  // 점프력 %
             t.serverLevel().sendParticles(ParticleTypes.EFFECT, t.getX(), t.getY() + 1, t.getZ(), 15, 0.4, 0.6, 0.4, 0.05);
             rpg.core.data.RpgData.sync(t);
         }
         p.serverLevel().playSound(null, p.blockPosition(), SoundEvents.BEACON_POWER_SELECT, SoundSource.PLAYERS, 0.6f, 1.6f);
         return true;
+    }
+
+    /** 헤이스트 점프력 */
+    public static void onJump(ServerPlayer p) {
+        PlayerData d = rpg.core.data.RpgData.get(p);
+        double j = d.buffV2("haste", p.level().getGameTime());
+        if (j <= 0) return;
+        Vec3 v = p.getDeltaMovement();
+        p.setDeltaMovement(v.x, v.y * (1 + j / 100.0), v.z);
+        p.hurtMarked = true;
     }
 
     /** 은신 중이면 몹이 못 노림 */

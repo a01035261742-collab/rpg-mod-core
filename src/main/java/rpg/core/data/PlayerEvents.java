@@ -86,6 +86,7 @@ public final class PlayerEvents {
     public static void tick(TickEvent.PlayerTickEvent e) {
         if (e.phase != TickEvent.Phase.END || !(e.player instanceof ServerPlayer sp)) return;
         PlayerData d = RpgData.get(sp);
+        d.clock = sp.level().getGameTime();
         if (d.isNew()) { d.init(); RpgData.sync(sp); }
         // 배고픔 없음
         sp.getFoodData().setFoodLevel(20);

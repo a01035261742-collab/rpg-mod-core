@@ -19,7 +19,7 @@
   "critDamage": 1.5,
   "fistAttack": 5,
   "defPerVit": 1.0,
-  "defConstant": 100,
+  "defFactor": 0.5,
   "_사냥맵": "자연 스폰을 막을 차원 (사냥 맵). 예: [\"minecraft:overworld\"]",
   "huntingDimensions": [],
   "critBase": 5.0,

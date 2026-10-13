@@ -65,7 +65,7 @@ public class StatScreen extends Screen {
             ry = line(g, dx, ry, "스공", String.format("%,.0f ~ %,.0f", ClientData.atkMin, ClientData.atkMax));
             ry = line(g, dx, ry, "최대 HP", String.format("%,.0f", ClientData.maxHp));
             ry = line(g, dx, ry, "최대 MP", String.format("%,.0f", ClientData.maxMp));
-            ry = line(g, dx, ry, "받는 피해 감소", String.format("%.1f%%", ClientData.defPct));
+            ry = line(g, dx, ry, "방어력", String.format("%,.0f", ClientData.defPct));
             ry = line(g, dx, ry, "치명타 확률", String.format("%.1f%%", ClientData.crit));
             ry = line(g, dx, ry, "치명타 피해", String.format("%.0f%%", ClientData.critDmgPct));
             ry = line(g, dx, ry, "회복량 증가", String.format("+%.1f%%", ClientData.healBonus));
