@@ -44,6 +44,46 @@ public final class CombatEvents {
         }
     }
 
+    /** RPG 몹끼리는 안 싸움: 다른 몹을 노리지 않음 */
+    @SubscribeEvent
+    public static void noInfight(net.minecraftforge.event.entity.living.LivingChangeTargetEvent e) {
+        if (e.getEntity() instanceof Mob m && !m.level().isClientSide && isRpg(m)
+                && e.getNewTarget() != null && !(e.getNewTarget() instanceof net.minecraft.world.entity.player.Player)) {
+            e.setCanceled(true);
+        }
+    }
+
+    /** RPG 몹끼리 피해 없음 (스켈레톤 화살 오사 등) */
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public static void noFriendlyFire(net.minecraftforge.event.entity.living.LivingAttackEvent e) {
+        if (e.getEntity() instanceof Mob t && !t.level().isClientSide && e.getSource().getEntity() instanceof Mob a
+                && isRpg(t) && isRpg(a)) e.setCanceled(true);
+    }
+
+    /** 좀비 → 드라운드 같은 변신 없음 */
+    @SubscribeEvent
+    public static void noConvert(net.minecraftforge.event.entity.living.LivingConversionEvent.Pre e) {
+        if (e.getEntity() instanceof Mob m && isRpg(m)) {
+            e.setCanceled(true);
+            e.setConversionTimer(Integer.MAX_VALUE / 2);
+        }
+    }
+
+    // ── 슬라임 분열 막기: RPG 슬라임이 죽은 자리에서 같은 순간 생기는 슬라임은 취소 ──
+    private record Split(net.minecraft.world.level.Level level, net.minecraft.world.phys.Vec3 pos, long time) {}
+    private static final java.util.List<Split> SPLITS = new java.util.ArrayList<>();
+
+    @SubscribeEvent
+    public static void noSplit(net.minecraftforge.event.entity.EntityJoinLevelEvent e) {
+        if (e.getLevel().isClientSide || !(e.getEntity() instanceof net.minecraft.world.entity.monster.Slime s) || SPLITS.isEmpty()) return;
+        long now = e.getLevel().getGameTime();
+        SPLITS.removeIf(sp -> now - sp.time() > 40);   // 분열은 죽는 모션(약 1초) 뒤에 일어남
+        if (Combat.mob(s) != null && Combat.mob(s).isRpg()) return;
+        for (Split sp : SPLITS) {
+            if (sp.level() == e.getLevel() && sp.pos().distanceToSqr(s.position()) < 16) { e.setCanceled(true); return; }
+        }
+    }
+
     /** RPG 몹은 햇빛에 안 탐 */
     @SubscribeEvent
     public static void noBurn(net.minecraftforge.event.entity.living.LivingEvent.LivingTickEvent e) {
@@ -119,6 +159,13 @@ public final class CombatEvents {
         }
         float want = (float) Math.max(0.5, hp / maxHp * t.getMaxHealth());
         e.setAmount(Math.max(0f, cur - want));
+    }
+
+    @SubscribeEvent
+    public static void slimeDied(LivingDeathEvent e) {
+        if (e.getEntity() instanceof net.minecraft.world.entity.monster.Slime s && !s.level().isClientSide && isRpg(s)) {
+            SPLITS.add(new Split(s.level(), s.position(), s.level().getGameTime()));
+        }
     }
 
     /** 몹 처치 보상 */

@@ -34,10 +34,23 @@ public final class Mobs {
         if (mob instanceof net.minecraft.world.entity.monster.Zombie z) z.setBaby(false);   // 아기 좀비 없음
         Entity ride = mob.getVehicle();                                                      // 치킨 조키 등 없음
         if (ride != null) { mob.stopRiding(); ride.discard(); }
+        for (Entity pass : java.util.List.copyOf(mob.getPassengers())) { pass.stopRiding(); pass.discard(); }  // 스파이더 조키 없음
+        tame(mob);
         mob.setPersistenceRequired();
         apply(mob, def, lv, zone);
         level.addFreshEntity(mob);
         return mob;
+    }
+
+    /** 바닐라 행동 끄기: 아이템 줍기, 갑옷, 좀비 지원군 */
+    public static void tame(Mob mob) {
+        mob.setCanPickUpLoot(false);
+        for (var slot : net.minecraft.world.entity.EquipmentSlot.values()) {
+            if (slot.getType() == net.minecraft.world.entity.EquipmentSlot.Type.ARMOR) mob.setItemSlot(slot, net.minecraft.world.item.ItemStack.EMPTY);
+            mob.setDropChance(slot, 0f);
+        }
+        var reinf = mob.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.SPAWN_REINFORCEMENTS_CHANCE);
+        if (reinf != null) reinf.setBaseValue(0);
     }
 
     public static void apply(Mob mob, Balance.MobDef def, int lv, String zone) {
