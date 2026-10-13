@@ -18,6 +18,10 @@ public final class Mobs {
 
     /** mobs.json 의 key 몹을 level 로 pos 에 소환. 실패하면 null */
     public static Mob spawn(ServerLevel level, String key, int lv, BlockPos pos, String zone) {
+        return spawn(level, key, lv, pos, zone, level.random.nextDouble() * 100 < Balance.eliteChance);
+    }
+
+    public static Mob spawn(ServerLevel level, String key, int lv, BlockPos pos, String zone, boolean elite) {
         Balance.MobDef def = Balance.MOBS.get(key);
         if (def == null) return null;
         ResourceLocation id = ResourceLocation.tryParse(def.entity());
@@ -32,12 +36,15 @@ public final class Mobs {
         mob.finalizeSpawn(level, level.getCurrentDifficultyAt(pos), MobSpawnType.SPAWNER, null, null);
         if (mob instanceof Slime slime) slime.setSize(2, true);
         if (mob instanceof net.minecraft.world.entity.monster.Zombie z) z.setBaby(false);   // 아기 좀비 없음
+        if (mob instanceof net.minecraft.world.entity.AgeableMob am) am.setAge(def.look().baby() ? -24000 : 0);
         Entity ride = mob.getVehicle();                                                      // 치킨 조키 등 없음
         if (ride != null) { mob.stopRiding(); ride.discard(); }
         for (Entity pass : java.util.List.copyOf(mob.getPassengers())) { pass.stopRiding(); pass.discard(); }  // 스파이더 조키 없음
         tame(mob);
         mob.setPersistenceRequired();
+        look(mob, def);
         apply(mob, def, lv, zone);
+        if (elite) makeElite(mob);
         level.addFreshEntity(mob);
         return mob;
     }
@@ -51,6 +58,31 @@ public final class Mobs {
         }
         var reinf = mob.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.SPAWN_REINFORCEMENTS_CHANCE);
         if (reinf != null) reinf.setBaseValue(0);
+    }
+
+    /** 모양·행동: 머리 아이템, 호글린 변신 막기, 닭 알 안 낳음, 벡스 수명 없음, AI 설정 */
+    public static void look(Mob mob, Balance.MobDef def) {
+        Balance.MobLook lk = def.look();
+        if (!lk.head().isEmpty()) {
+            var it = net.minecraftforge.registries.ForgeRegistries.ITEMS.getValue(new ResourceLocation(lk.head()));
+            if (it != null) mob.setItemSlot(net.minecraft.world.entity.EquipmentSlot.HEAD, new net.minecraft.world.item.ItemStack(it));
+        }
+        if (mob instanceof net.minecraft.world.entity.monster.hoglin.Hoglin h) h.setImmuneToZombification(true);
+        if (mob instanceof net.minecraft.world.entity.animal.Chicken c) c.eggTime = Integer.MAX_VALUE;
+        MobAI.setup(mob, def);
+    }
+
+    /** 엘리트: 체력·공격·보상 배수, 금색 이름, 빛남 */
+    public static void makeElite(Mob mob) {
+        MobData m = Combat.mob(mob);
+        if (m == null) return;
+        m.elite = true;
+        m.maxHp *= Balance.eliteHp; m.hp = m.maxHp;
+        m.atk *= Balance.eliteAtk;
+        m.exp = Math.round(m.exp * Balance.eliteReward);
+        m.gold = Math.round(m.gold * Balance.eliteReward);
+        m.name = "★" + m.name;
+        mob.setGlowingTag(true);
     }
 
     public static void apply(Mob mob, Balance.MobDef def, int lv, String zone) {
