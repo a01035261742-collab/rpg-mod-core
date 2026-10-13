@@ -76,7 +76,12 @@ public final class ClientEvents {
                     || o == VanillaGuiOverlay.AIR_LEVEL.type()) {
                 e.setCanceled(true);
             }
+            // Epic Fight 무기 고유 스킬 아이콘 (오른쪽 아래, 스킬바와 겹침) 숨김
+            if (o.id().equals(EF_INNATE)) e.setCanceled(true);
         }
+
+        private static final net.minecraft.resources.ResourceLocation EF_INNATE =
+                new net.minecraft.resources.ResourceLocation("epicfight", "weapon_innate");
 
         /** 서바이벌에서 인벤토리를 열면 장비 창(인벤토리 + 장비 칸)으로 바꿔 열기 */
         @SubscribeEvent
