@@ -51,7 +51,7 @@ public class StatScreen extends Screen {
         for (int i = 0; i < 5; i++) {
             int ry = y + 66 + i * 16;
             g.drawString(font, PlayerData.STAT_NAMES[i], x + 10, ry, 0xFFFFFFFF, true);
-            String v = String.valueOf(ClientData.stats[i]);
+            String v = ClientData.stats[i] + (ClientData.statBonus[i] != 0 ? " (+" + ClientData.statBonus[i] + ")" : "");
             g.drawString(font, v, x + W - 32 - font.width(v), ry, 0xFFFFFFFF, true);
         }
         g.drawString(font, "Shift+클릭 = 5씩", x + 8, y + H - 17, 0xFF808080, false);

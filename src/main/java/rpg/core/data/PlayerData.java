@@ -51,6 +51,18 @@ public class PlayerData {
     // 계산값 (저장 안 함)
     public double maxHp = 1, maxMp = 1;
     public final Map<String, Double> bonus = new HashMap<>();   // 패시브 합계 (stat → 값)
+    public final Map<String, Double> equip = new HashMap<>();   // 장비 합계 (str dex int luk vit atk matk hp mp def allPct)
+
+    private static final String[] STAT_KEYS = {"vit", "str", "dex", "int", "luk"};
+
+    public double eq(String k) {
+        return equip.getOrDefault(k, 0.0);
+    }
+
+    /** 최종 스탯 = (찍은 스탯 + 장비) × (1 + 올스탯%) */
+    public double total(int i) {
+        return (stats[i] + eq(STAT_KEYS[i])) * (1 + eq("allPct") / 100.0);
+    }
 
     public boolean isNew() { return level <= 0; }
 
@@ -80,8 +92,8 @@ public class PlayerData {
             if (n == null || n.stat().isEmpty()) continue;
             bonus.merge(n.stat(), n.perRank() * e.getValue(), Double::sum);
         }
-        double mh = (Balance.hpBase + Balance.hpPerLevel * level + Balance.hpPerVit * stats[VIT]) * (1 + bonus("hpPct") / 100.0);
-        double mm = Balance.mpBase + Balance.mpPerLevel * level + Balance.mpPerInt * stats[INT];
+        double mh = (Balance.hpBase + Balance.hpPerLevel * level + Balance.hpPerVit * total(VIT) + eq("hp")) * (1 + bonus("hpPct") / 100.0);
+        double mm = Balance.mpBase + Balance.mpPerLevel * level + Balance.mpPerInt * total(INT) + eq("mp");
         boolean changed = mh != maxHp || mm != maxMp;
         maxHp = Math.max(1, mh); maxMp = Math.max(0, mm);
         if (hp > maxHp) { hp = maxHp; changed = true; }
@@ -102,11 +114,11 @@ public class PlayerData {
     }
 
     // ── 상세 능력치 (공식은 balance 파일) ──
-    public double crit() { return Balance.critBase + Balance.critPerDex * stats[DEX] + bonus("critChance"); }
+    public double crit() { return Balance.critBase + Balance.critPerDex * total(DEX) + bonus("critChance"); }
     public double critDamage() { return Balance.critDamage + bonus("critDmg") / 100.0; }
-    public double healBonus() { return Balance.healPerInt * stats[INT]; }
-    public double dropBonus() { return Balance.dropPerLuk * stats[LUK]; }
-    public double goldBonus() { return Balance.goldPerLuk * stats[LUK]; }
+    public double healBonus() { return Balance.healPerInt * total(INT); }
+    public double dropBonus() { return Balance.dropPerLuk * total(LUK); }
+    public double goldBonus() { return Balance.goldPerLuk * total(LUK); }
 
     // ── 저장 ──
     public CompoundTag save() {
@@ -154,6 +166,7 @@ public class PlayerData {
     public void write(FriendlyByteBuf b, double atkMax, double defPct, long now) {
         b.writeVarInt(level); b.writeLong(exp); b.writeLong(Balance.expNeed(level));
         for (int v : stats) b.writeVarInt(v);
+        for (int i = 0; i < 5; i++) b.writeVarInt((int) Math.round(total(i) - stats[i]));
         b.writeVarInt(statPoints); b.writeVarInt(job); b.writeLong(gold);
         b.writeDouble(hp); b.writeDouble(mp); b.writeDouble(maxHp); b.writeDouble(maxMp);
         b.writeDouble(crit()); b.writeDouble(healBonus()); b.writeDouble(dropBonus()); b.writeDouble(goldBonus());

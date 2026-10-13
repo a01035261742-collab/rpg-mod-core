@@ -19,13 +19,23 @@ public final class ModItems {
     public static final RegistryObject<Item> STAT_RESET_SCROLL = ITEMS.register("stat_reset_scroll",
             () -> new StatResetScroll(new Item.Properties().stacksTo(16).rarity(Rarity.RARE)));
 
-    // 테스트 무기 (장비 시스템 전 임시) — 공격 속도: 검 1.6
-    public static final RegistryObject<Item> TEST_SWORD_10 = ITEMS.register("test_sword_10",
-            () -> new RpgWeapon(new Item.Properties().stacksTo(1), 10, 1.6));
-    public static final RegistryObject<Item> TEST_SWORD_30 = ITEMS.register("test_sword_30",
-            () -> new RpgWeapon(new Item.Properties().stacksTo(1), 30, 1.6));
-    public static final RegistryObject<Item> TEST_SWORD_100 = ITEMS.register("test_sword_100",
-            () -> new RpgWeapon(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC), 100, 1.6));
+    // 장비 (수치는 equipment.json). 장비마다 따로 등록
+    public static final java.util.List<RegistryObject<Item>> GEAR = new java.util.ArrayList<>();
+    private static final String[] BASIC = {
+            "warrior_sword_1", "warrior_sword_10", "archer_bow_1", "archer_bow_10",
+            "mage_staff_1", "mage_staff_10", "thief_dagger_1", "thief_dagger_10",
+            "gloves_1", "gloves_10", "cape_1", "cape_10", "belt_1", "belt_10",
+            "earring_1", "earring_10", "ring_1", "ring_10", "pendant_1", "pendant_10", "medal_1", "medal_10"};
+
+    static {
+        for (String id : BASIC) GEAR.add(ITEMS.register(id, () -> new rpg.core.equip.GearItems.Basic(new Item.Properties(), id)));
+        String[][] armor = {{"hat", "HELMET"}, {"top", "CHESTPLATE"}, {"bottom", "LEGGINGS"}, {"shoes", "BOOTS"}};
+        for (String[] a : armor) {
+            var type = net.minecraft.world.item.ArmorItem.Type.valueOf(a[1]);
+            GEAR.add(ITEMS.register(a[0] + "_1", () -> new rpg.core.equip.GearItems.Armor(rpg.core.equip.GearItems.CHAIN, type, new Item.Properties(), a[0] + "_1")));
+            GEAR.add(ITEMS.register(a[0] + "_10", () -> new rpg.core.equip.GearItems.Armor(rpg.core.equip.GearItems.IRON, type, new Item.Properties(), a[0] + "_10")));
+        }
+    }
 
     public static final RegistryObject<Item> ZONE_WAND = ITEMS.register("zone_wand",
             () -> new rpg.core.zone.ZoneWand(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC)));
@@ -35,9 +45,7 @@ public final class ModItems {
             .icon(() -> STAT_RESET_SCROLL.get().getDefaultInstance())
             .displayItems((params, out) -> {
                 out.accept(STAT_RESET_SCROLL.get());
-                out.accept(TEST_SWORD_10.get());
-                out.accept(TEST_SWORD_30.get());
-                out.accept(TEST_SWORD_100.get());
+                for (var g : GEAR) out.accept(g.get());
                 out.accept(ZONE_WAND.get());
             })
             .build());

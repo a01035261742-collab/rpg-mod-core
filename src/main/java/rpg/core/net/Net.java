@@ -50,6 +50,19 @@ public final class Net {
                 .encoder(PartySync::encode).decoder(PartySync::new).consumerMainThread(PartySync::handle).add();
         CH.messageBuilder(PartyAction.class, id++, NetworkDirection.PLAY_TO_SERVER)
                 .encoder(PartyAction::encode).decoder(PartyAction::new).consumerMainThread(PartyAction::handle).add();
+        CH.messageBuilder(OpenEquip.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(OpenEquip::encode).decoder(OpenEquip::new).consumerMainThread(OpenEquip::handle).add();
+    }
+
+    // ───────── 클라 → 서버: 장비 창 열기 (인벤토리 키) ─────────
+    public record OpenEquip(int dummy) {
+        OpenEquip(FriendlyByteBuf b) { this(b.readVarInt()); }
+        void encode(FriendlyByteBuf b) { b.writeVarInt(dummy); }
+        void handle(Supplier<NetworkEvent.Context> ctx) {
+            ServerPlayer p = ctx.get().getSender();
+            if (p != null && !p.isCreative()) rpg.core.equip.EquipEvents.open(p);
+            ctx.get().setPacketHandled(true);
+        }
     }
 
     // ───────── 서버 → 클라: 파티 정보 ─────────
@@ -110,7 +123,7 @@ public final class Net {
     }
 
     public static void defsTo(ServerPlayer p) {
-        CH.send(PacketDistributor.PLAYER.with(() -> p), new DefsSync(rpg.core.skill.Defs.skillsJson, rpg.core.skill.Defs.passivesJson));
+        CH.send(PacketDistributor.PLAYER.with(() -> p), new DefsSync(rpg.core.skill.Defs.skillsJson, rpg.core.skill.Defs.passivesJson, rpg.core.equip.GearDefs.json));
     }
 
     // ───────── 클라 → 서버: 스킬 키 (0~5 = Q E R F Z X) ─────────
@@ -150,11 +163,14 @@ public final class Net {
     }
 
     // ───────── 서버 → 클라: 스킬·패시브 정의 원문 ─────────
-    public record DefsSync(String skills, String passives) {
-        DefsSync(FriendlyByteBuf b) { this(b.readUtf(262144), b.readUtf(262144)); }
-        void encode(FriendlyByteBuf b) { b.writeUtf(skills, 262144); b.writeUtf(passives, 262144); }
+    public record DefsSync(String skills, String passives, String gear) {
+        DefsSync(FriendlyByteBuf b) { this(b.readUtf(262144), b.readUtf(262144), b.readUtf(262144)); }
+        void encode(FriendlyByteBuf b) { b.writeUtf(skills, 262144); b.writeUtf(passives, 262144); b.writeUtf(gear, 262144); }
         void handle(Supplier<NetworkEvent.Context> ctx) {
-            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> rpg.core.skill.Defs.parse(skills, passives));
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
+                rpg.core.skill.Defs.parse(skills, passives);
+                rpg.core.equip.GearDefs.parse(gear);
+            });
             ctx.get().setPacketHandled(true);
         }
     }

@@ -29,6 +29,7 @@ public class RpgCore {
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
         ModItems.ITEMS.register(modBus);
         ModItems.TABS.register(modBus);
+        rpg.core.equip.EquipMenu.MENUS.register(modBus);
         Net.register();
     }
 

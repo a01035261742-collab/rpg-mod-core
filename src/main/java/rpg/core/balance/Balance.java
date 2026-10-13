@@ -75,6 +75,8 @@ public final class Balance {
             loadMobs(files.get(RpgCore.id("mobs")));
             JsonElement sk = files.get(RpgCore.id("skills")), pa = files.get(RpgCore.id("passives"));
             rpg.core.skill.Defs.parse(sk == null ? "{}" : sk.toString(), pa == null ? "{}" : pa.toString());
+            JsonElement eqj = files.get(RpgCore.id("equipment"));
+            rpg.core.equip.GearDefs.parse(eqj == null ? "{}" : eqj.toString());
             JsonElement el = files.get(RpgCore.id("player"));
             if (el == null || !el.isJsonObject()) {
                 RpgCore.LOG.warn("[rpgcore] rpg_balance/player.json 없음 — 기본값 사용");

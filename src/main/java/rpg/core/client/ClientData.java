@@ -10,6 +10,7 @@ public final class ClientData {
     public static int level;
     public static long exp, need;
     public static final int[] stats = new int[5];
+    public static final int[] statBonus = new int[5];   // 장비로 더해진 스탯
     public static int statPoints, job;
     public static long gold;
     public static double hp, mp, maxHp = 1, maxMp = 1;
@@ -28,6 +29,7 @@ public final class ClientData {
         b.readerIndex(0);
         level = b.readVarInt(); exp = b.readLong(); need = b.readLong();
         for (int i = 0; i < 5; i++) stats[i] = b.readVarInt();
+        for (int i = 0; i < 5; i++) statBonus[i] = b.readVarInt();
         statPoints = b.readVarInt(); job = b.readVarInt(); gold = b.readLong();
         hp = b.readDouble(); mp = b.readDouble(); maxHp = b.readDouble(); maxMp = b.readDouble();
         crit = b.readDouble(); healBonus = b.readDouble(); dropBonus = b.readDouble(); goldBonus = b.readDouble();

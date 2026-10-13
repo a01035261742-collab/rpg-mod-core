@@ -32,7 +32,7 @@ import rpg.core.zone.ZoneWand;
  *  /rpg zone list | remove <이름> | show <이름> | clear <이름>
  *  /rpg spawn <몹> <레벨> [마리]                 바로 앞에 소환 (테스트)
  *  /rpg mobs                                  몹 목록 (mobs.json)
- *  /rpg weapons                               테스트 무기 받기
+ *  /rpg gear <1|10>                           테스트 장비 한 벌 받기
  */
 public final class ZoneCommand {
     private ZoneCommand() {}
@@ -47,13 +47,24 @@ public final class ZoneCommand {
             c.getSource().getPlayerOrException().getInventory().add(ModItems.ZONE_WAND.get().getDefaultInstance());
             return ok(c, "사냥터 지팡이 지급 (좌클릭·우클릭으로 두 점)");
         }));
-        root.then(Commands.literal("weapons").requires(s -> s.hasPermission(2)).executes(c -> {
-            var inv = c.getSource().getPlayerOrException().getInventory();
-            inv.add(ModItems.TEST_SWORD_10.get().getDefaultInstance());
-            inv.add(ModItems.TEST_SWORD_30.get().getDefaultInstance());
-            inv.add(ModItems.TEST_SWORD_100.get().getDefaultInstance());
-            return ok(c, "테스트 무기 지급 (공 10 / 30 / 100)");
-        }));
+        root.then(Commands.literal("gear").requires(s -> s.hasPermission(2))
+                .then(Commands.argument("level", IntegerArgumentType.integer(1, 10)).executes(c -> {
+                    int lv = IntegerArgumentType.getInteger(c, "level");
+                    var p = c.getSource().getPlayerOrException();
+                    int n = 0;
+                    for (var g : ModItems.GEAR) {
+                        String id = ((rpg.core.equip.Gear.GearItem) g.get()).gearId();
+                        if (!id.endsWith("_" + lv)) continue;
+                        int copies = id.startsWith("ring") ? 4 : 1;
+                        for (int k = 0; k < copies; k++) {
+                            var st = g.get().getDefaultInstance();
+                            rpg.core.equip.Gear.roll(st);
+                            if (!p.getInventory().add(st)) p.drop(st, false);
+                            n++;
+                        }
+                    }
+                    return ok(c, "Lv." + lv + " 테스트 장비 " + n + "개 지급 (추가 옵션 무작위)");
+                })));
         root.then(Commands.literal("mobs").requires(s -> s.hasPermission(2)).executes(c -> {
             StringBuilder sb = new StringBuilder("몹 목록: ");
             Balance.MOBS.values().forEach(d -> sb.append(d.key()).append("(").append(d.name()).append(") "));

@@ -53,6 +53,11 @@ public final class ClientEvents {
         }
 
         @SubscribeEvent
+        public static void setup(net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent e) {
+            e.enqueueWork(() -> net.minecraft.client.gui.screens.MenuScreens.register(rpg.core.equip.EquipMenu.TYPE.get(), EquipScreen::new));
+        }
+
+        @SubscribeEvent
         public static void overlays(RegisterGuiOverlaysEvent e) {
             e.registerAbove(VanillaGuiOverlay.HOTBAR.id(), "rpg_hud", RpgHud::render);
         }
@@ -72,6 +77,17 @@ public final class ClientEvents {
                     || o == VanillaGuiOverlay.EXPERIENCE_BAR.type()
                     || o == VanillaGuiOverlay.AIR_LEVEL.type()) {
                 e.setCanceled(true);
+            }
+        }
+
+        /** 서바이벌에서 인벤토리를 열면 장비 창(인벤토리 + 장비 칸)으로 바꿔 열기 */
+        @SubscribeEvent
+        public static void openInventory(net.minecraftforge.client.event.ScreenEvent.Opening e) {
+            Minecraft mc = Minecraft.getInstance();
+            if (e.getNewScreen() instanceof net.minecraft.client.gui.screens.inventory.InventoryScreen
+                    && mc.player != null && !mc.player.isCreative()) {
+                e.setCanceled(true);
+                Net.CH.sendToServer(new Net.OpenEquip(0));
             }
         }
 

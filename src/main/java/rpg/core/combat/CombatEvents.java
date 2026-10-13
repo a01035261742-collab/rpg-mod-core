@@ -12,7 +12,6 @@ import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
-import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
 import net.minecraftforge.event.entity.living.LivingExperienceDropEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -135,11 +134,6 @@ public final class CombatEvents {
         if (e.getEntity() instanceof Mob m && isRpg(m)) e.setCanceled(true);
     }
 
-    /** 무기 바꾸면 스공 다시 보내기 */
-    @SubscribeEvent
-    public static void equip(LivingEquipmentChangeEvent e) {
-        if (e.getEntity() instanceof ServerPlayer sp) RpgData.sync(sp);
-    }
 
     /** 몹이 보이기 시작하면 레벨·체력 보내기 */
     @SubscribeEvent
