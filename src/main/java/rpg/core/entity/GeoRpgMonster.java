@@ -21,6 +21,9 @@ public class GeoRpgMonster extends RpgMonster implements GeoEntity {
     private static final RawAnimation IDLE = RawAnimation.begin().thenLoop("idle");
     private static final RawAnimation ATTACK = RawAnimation.begin().thenPlay("attack");
 
+    /** 패턴 애니메이션 (Blockbench 이름 = 패턴 종류). 없는 몹은 안 부름 */
+    private static final String[] PATTERNS = {"slam", "leap", "dash", "shot", "zone", "cone"};
+
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public GeoRpgMonster(EntityType<? extends Monster> type, Level level, int voice) {
@@ -33,6 +36,22 @@ public class GeoRpgMonster extends RpgMonster implements GeoEntity {
                 s.setAndContinue(s.isMoving() ? WALK : IDLE)));
         c.add(new AnimationController<>(this, "attack", 2, s -> PlayState.STOP)
                 .triggerableAnim("attack", ATTACK));
+        AnimationController<GeoRpgMonster> pat = new AnimationController<>(this, "pattern", 2, s -> PlayState.STOP);
+        for (String n : PATTERNS) pat.triggerableAnim(n, RawAnimation.begin().thenPlay(n));
+        c.add(pat);
+    }
+
+    /** 패턴 애니메이션 재생 (서버) */
+    public void playPattern(String type) {
+        triggerAnim("pattern", type);
+    }
+
+    /** 예고가 끝나기 몇 틱 전에 애니메이션을 시작해야 타격 순간이 맞는지 (애니 안의 착지 시점) */
+    public int patternLead(String type) {
+        return switch (type) {
+            case "slam" -> 11;   // 0.54초에 쿵
+            default -> 0;
+        };
     }
 
     /** 근접 공격 순간(공격 goal 이 swing 호출) → 공격 애니메이션 (서버에서 모든 클라로 동기화) */

@@ -94,6 +94,11 @@ public final class MobAI {
         if (m.casting >= 0) {
             if (m.casting >= def.skills().size()) { m.casting = -1; return; }
             Balance.MobSkill sk = def.skills().get(m.casting);
+            if (!m.castAnim && mob instanceof rpg.core.entity.GeoRpgMonster g
+                    && now >= m.castEnd - g.patternLead(sk.type())) {
+                m.castAnim = true;
+                g.playPattern(sk.type());
+            }
             if (now >= m.castEnd) {
                 m.casting = -1;
                 execute(mob, m, sk);
@@ -154,6 +159,7 @@ public final class MobAI {
         int delay = (int) Math.max(4, Math.round(sk.delay() * 20));
         m.casting = idx;
         m.castEnd = now + delay;
+        m.castAnim = false;
         m.skillReady[idx] = now + delay + Math.round(sk.cd() * 20);
         Vec3 dir = new Vec3(t.getX() - mob.getX(), 0, t.getZ() - mob.getZ());
         m.castDir = dir.lengthSqr() < 1e-4 ? Vec3.directionFromRotation(0, mob.getYRot()) : dir.normalize();

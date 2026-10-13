@@ -24,6 +24,7 @@ public class MobData {
     public transient final long[] skillReady = new long[8];
     public transient int casting = -1;          // 쓰는 중인 패턴 번호
     public transient long castEnd;
+    public transient boolean castAnim;          // 패턴 애니메이션 시작했는지
     public transient net.minecraft.world.phys.Vec3 castPos, castDir;
     public transient int hitsLeft;
 
