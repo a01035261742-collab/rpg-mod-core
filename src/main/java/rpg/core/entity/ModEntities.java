@@ -23,7 +23,13 @@ public final class ModEntities {
                 .sized(w, h).clientTrackingRange(10).build(RpgCore.MODID + ":" + id));
     }
 
-    public static final RegistryObject<EntityType<RpgMonster>> RAT = monster("rat", 0.6f, 0.45f, 0);
+    /** GeckoLib 애니메이션 몹 (Blockbench 모델·애니 그대로) */
+    private static RegistryObject<EntityType<GeoRpgMonster>> geoMonster(String id, float w, float h, int voice) {
+        return TYPES.register(id, () -> EntityType.Builder.<GeoRpgMonster>of((t, l) -> new GeoRpgMonster(t, l, voice), MobCategory.MONSTER)
+                .sized(w, h).clientTrackingRange(10).build(RpgCore.MODID + ":" + id));
+    }
+
+    public static final RegistryObject<EntityType<GeoRpgMonster>> RAT = geoMonster("rat", 0.6f, 0.45f, 0);
     public static final RegistryObject<EntityType<RpgMonster>> MUSH_KID = monster("mush_kid", 0.6f, 0.7f, 1);
     public static final RegistryObject<EntityType<RpgMonster>> MUSH_SPIRIT = monster("mush_spirit", 0.6f, 1.75f, 1);
     public static final RegistryObject<EntityType<RpgMonster>> MUSH_SOLDIER = monster("mush_soldier", 0.7f, 2.15f, 1);

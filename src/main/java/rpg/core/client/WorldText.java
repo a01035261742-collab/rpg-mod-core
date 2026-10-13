@@ -65,7 +65,7 @@ public final class WorldText {
         if (isElite(e.getEntity())) e.getPoseStack().popPose();
     }
 
-    private static boolean isElite(LivingEntity le) {
+    public static boolean isElite(LivingEntity le) {
         ClientMobs.Info i = ClientMobs.MAP.get(le.getId());
         return i != null && i.name().startsWith("★");
     }

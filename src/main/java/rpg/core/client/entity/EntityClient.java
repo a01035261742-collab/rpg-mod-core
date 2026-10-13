@@ -25,12 +25,11 @@ public final class EntityClient {
         return new ModelLayerLocation(RpgCore.id(id), "main");
     }
 
-    private static final ModelLayerLocation RAT = layer("rat"), KID = layer("mush_kid"), SPIRIT = layer("mush_spirit"),
+    private static final ModelLayerLocation KID = layer("mush_kid"), SPIRIT = layer("mush_spirit"),
             SOLDIER = layer("mush_soldier"), FAIRY = layer("mush_fairy"), BEAST = layer("mush_beast");
 
     @SubscribeEvent
     public static void layers(EntityRenderersEvent.RegisterLayerDefinitions e) {
-        e.registerLayerDefinition(RAT, MobModels::rat);
         e.registerLayerDefinition(KID, MobModels::mushKid);
         e.registerLayerDefinition(SPIRIT, MobModels::mushSpirit);
         e.registerLayerDefinition(SOLDIER, MobModels::mushSoldier);
@@ -50,7 +49,7 @@ public final class EntityClient {
 
     @SubscribeEvent
     public static void renderers(EntityRenderersEvent.RegisterRenderers e) {
-        reg(e, ModEntities.RAT.get(), RAT, "rat", 0.3f);
+        e.registerEntityRenderer(ModEntities.RAT.get(), ctx -> new RpgGeoRenderer(ctx, "rat", 0.3f));
         reg(e, ModEntities.MUSH_KID.get(), KID, "mush_kid", 0.35f);
         reg(e, ModEntities.MUSH_SPIRIT.get(), SPIRIT, "mush_spirit", 0.5f);
         reg(e, ModEntities.MUSH_SOLDIER.get(), SOLDIER, "mush_soldier", 0.5f);
