@@ -55,7 +55,7 @@ public final class WorldText {
     }
 
     // ── 엘리트는 1.3배 크게 보이기 (몸 크기 판정은 그대로) ──
-    @SubscribeEvent
+    @SubscribeEvent(priority = net.minecraftforge.eventbus.api.EventPriority.LOWEST)   // 다른 모드가 취소한 뒤에 (Post 짝 맞추기)
     public static void elitePre(net.minecraftforge.client.event.RenderLivingEvent.Pre<?, ?> e) {
         if (isElite(e.getEntity())) { e.getPoseStack().pushPose(); e.getPoseStack().scale(1.3f, 1.3f, 1.3f); }
     }
