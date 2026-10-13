@@ -22,3 +22,10 @@ description='''${mod_description}'''
     versionRange="${minecraft_version_range}"
     ordering="NONE"
     side="BOTH"
+
+[[dependencies.${mod_id}]]
+    modId="epicfight"
+    mandatory=true
+    versionRange="[20,)"
+    ordering="AFTER"
+    side="BOTH"

@@ -41,7 +41,7 @@ public final class Progress {
         PlayerData d = RpgData.get(p);
         d.level = Math.max(1, Math.min(level, Balance.maxLevel));
         d.exp = 0;
-        for (int i = 0; i < 5; i++) d.stats[i] = Balance.startStat;
+        for (int i = 0; i < PlayerData.N; i++) d.stats[i] = PlayerData.start(i);
         d.statPoints = (d.level - 1) * Balance.statPointsPerLevel;
         d.skillPoints = (d.level - 1) * Balance.skillPointsPerLevel;
         d.passivePoints = (d.level - 1) * Balance.passivePointsPerLevel;
@@ -52,7 +52,7 @@ public final class Progress {
     }
 
     public static void allocStat(ServerPlayer p, int stat, int amount) {
-        if (stat < 0 || stat > 4) return;
+        if (stat < 0 || stat >= PlayerData.N) return;
         PlayerData d = RpgData.get(p);
         int n = Math.min(Math.max(0, amount), d.statPoints);
         if (n <= 0) return;

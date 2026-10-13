@@ -1,5 +1,5 @@
 {
-  "_설명": "공용 패시브 트리. 4방향 × 작은 코어 3칸(여러 번 찍기) + 끝에 큰 코어 1칸(1번만, 강한 효과). x,y = 칸 위치(가운데 0,0). requires = 먼저 1 이상 찍어야 하는 칸. stat: atkPct critDmg critChance hpPct def hpRegenPct speedPct mpRegenPct bossDmg reviveTime dodgeCd",
+  "_설명": "공용 패시브 트리. 4방향 × 작은 코어 3칸(여러 번 찍기) + 끝에 큰 코어 1칸(1번만, 강한 효과). x,y = 칸 위치(가운데 0,0). requires = 먼저 1 이상 찍어야 하는 칸. stat: atkPct critDmg critChance hpPct def hpRegenPct speedPct mpRegenPct bossDmg reviveTime stamina",
   "nodes": [
     {"id": "start", "name": "시작", "x": 0, "y": 0, "maxRank": 0, "stat": "", "perRank": 0, "requires": []},
 
@@ -20,7 +20,7 @@
 
     {"id": "speed_1", "name": "가벼운 발", "x": 0, "y": 1, "maxRank": 5, "stat": "speedPct", "perRank": 1, "requires": ["start"]},
     {"id": "mp_regen_1", "name": "명상", "x": 0, "y": 2, "maxRank": 3, "stat": "mpRegenPct", "perRank": 5, "requires": ["speed_1"]},
-    {"id": "dodge_1", "name": "몸놀림", "x": 0, "y": 3, "maxRank": 3, "stat": "dodgeCd", "perRank": 5, "requires": ["mp_regen_1"]},
-    {"id": "nimble", "name": "날렵함", "x": 0, "y": 4, "maxRank": 1, "stat": "dodgeCd", "perRank": 20, "requires": ["dodge_1"], "special": true}
+    {"id": "dodge_1", "name": "지구력", "x": 0, "y": 3, "maxRank": 3, "stat": "stamina", "perRank": 2, "requires": ["mp_regen_1"]},
+    {"id": "nimble", "name": "강철 체력", "x": 0, "y": 4, "maxRank": 1, "stat": "stamina", "perRank": 6, "requires": ["dodge_1"], "special": true}
   ]
 }

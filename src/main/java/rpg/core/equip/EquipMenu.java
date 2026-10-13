@@ -43,7 +43,8 @@ public class EquipMenu extends AbstractContainerMenu {
         int[][] pos = {{0, 0}, {0, 1}, {0, 2}, {0, 3}, {0, 4}, {1, 0}, {1, 1}, {1, 2}, {1, 3}, {0, 5}, {1, 4}};
         for (int i = 0; i < PlayerEquip.SLOT_TYPES.length; i++) {
             final int slot = i;
-            addSlot(new SlotItemHandler(eq.items, i, EQ_X + pos[i][0] * 20, EQ_Y + pos[i][1] * 20) {
+            int sx = i == 0 ? -10000 : EQ_X + pos[i][0] * 20;   // 0번(예전 무기 칸)은 숨김
+            addSlot(new SlotItemHandler(eq.items, i, sx, EQ_Y + pos[i][1] * 20) {
                 @Override
                 public boolean mayPlace(ItemStack s) {
                     return super.mayPlace(s) && Gear.canEquip(player, s);

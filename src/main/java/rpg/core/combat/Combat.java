@@ -33,7 +33,7 @@ public final class Combat {
     /** 무기 칸 무기의 공격력(마법사는 마력) + 장비 옵션 공격력/마력. 무기 없으면 맨손 */
     public static double weaponAtk(Player p, PlayerData d) {
         String key = d.job == 3 ? "matk" : "atk";
-        ItemStack s = PlayerEquip.get(p).weapon();
+        ItemStack s = PlayerEquip.weapon(p);
         GearDefs.GearDef w = Gear.def(s);
         boolean has = w != null && Gear.canEquip(p, s);
         double base = has ? 0 : Balance.fistAttack;

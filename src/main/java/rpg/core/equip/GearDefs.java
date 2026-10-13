@@ -30,6 +30,7 @@ public final class GearDefs {
             case "int" -> "지력";
             case "luk" -> "운";
             case "vit" -> "체력";
+            case "sta" -> "스태미나";
             case "atk" -> "공격력";
             case "matk" -> "마력";
             case "hp" -> "최대 HP";

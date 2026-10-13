@@ -9,12 +9,12 @@ public final class ClientData {
     public static boolean ready;
     public static int level;
     public static long exp, need;
-    public static final int[] stats = new int[5];
-    public static final int[] statBonus = new int[5];   // 장비로 더해진 스탯
+    public static final int[] stats = new int[6];
+    public static final int[] statBonus = new int[6];   // 장비로 더해진 스탯
     public static int statPoints, job;
     public static long gold;
     public static double hp, mp, maxHp = 1, maxMp = 1;
-    public static double crit, healBonus, dropBonus, goldBonus;
+    public static double crit, healBonus, dropBonus, goldBonus, staminaBonus;
     public static double atkMin, atkMax, defPct, critDmgPct;
     public static int skillPoints, passivePoints;
     public static final java.util.Map<String, Integer> skills = new java.util.LinkedHashMap<>();
@@ -28,13 +28,14 @@ public final class ClientData {
     public static void read(FriendlyByteBuf b) {
         b.readerIndex(0);
         level = b.readVarInt(); exp = b.readLong(); need = b.readLong();
-        for (int i = 0; i < 5; i++) stats[i] = b.readVarInt();
-        for (int i = 0; i < 5; i++) statBonus[i] = b.readVarInt();
+        for (int i = 0; i < 6; i++) stats[i] = b.readVarInt();
+        for (int i = 0; i < 6; i++) statBonus[i] = b.readVarInt();
         statPoints = b.readVarInt(); job = b.readVarInt(); gold = b.readLong();
         hp = b.readDouble(); mp = b.readDouble(); maxHp = b.readDouble(); maxMp = b.readDouble();
         crit = b.readDouble(); healBonus = b.readDouble(); dropBonus = b.readDouble(); goldBonus = b.readDouble();
         atkMin = b.readDouble(); atkMax = b.readDouble(); defPct = b.readDouble();
         critDmgPct = b.readDouble();
+        staminaBonus = b.readDouble();
         skillPoints = b.readVarInt(); passivePoints = b.readVarInt();
         skills.clear();
         int n = b.readVarInt();

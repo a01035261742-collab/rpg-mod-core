@@ -23,7 +23,8 @@ public final class Balance {
     private Balance() {}
 
     // 기본값 (파일이 없거나 항목이 빠졌을 때)
-    public static int startStat = 4;
+    public static int startStat = 4, startStamina = 0;
+    public static double staminaPerPoint = 1.0;
     public static int statPointsPerLevel = 5;
     public static int maxLevel = 200;
     public static double hpBase = 50, hpPerLevel = 10, hpPerVit = 5;
@@ -90,6 +91,7 @@ public final class Balance {
             }
             JsonObject o = el.getAsJsonObject();
             startStat = i(o, "startStat", startStat);
+            startStamina = i(o, "startStamina", startStamina); staminaPerPoint = d(o, "staminaPerPoint", staminaPerPoint);
             statPointsPerLevel = i(o, "statPointsPerLevel", statPointsPerLevel);
             maxLevel = i(o, "maxLevel", maxLevel);
             hpBase = d(o, "hpBase", hpBase); hpPerLevel = d(o, "hpPerLevel", hpPerLevel); hpPerVit = d(o, "hpPerVit", hpPerVit);

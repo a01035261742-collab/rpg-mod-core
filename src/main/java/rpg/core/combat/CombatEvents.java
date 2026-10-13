@@ -31,8 +31,11 @@ import rpg.core.net.Net;
 public final class CombatEvents {
     private CombatEvents() {}
 
-    /** 평타 직전의 공격 쿨타임 충전도 (바닐라가 피해 계산 전에 초기화해서 미리 기억) */
-    private static final Map<UUID, Float> STRENGTH = new WeakHashMap<>();
+    /**
+     * 근접 배율: 들어온 바닐라 피해 ÷ 공격력 속성. Epic Fight 모션별 배율(콤보·강공격)과
+     * 바닐라 쿨타임·치명타가 그대로 RPG 피해에 곱해짐. 대상 엔티티 id 별로 기억.
+     */
+    private static final Map<Integer, Double> MELEE_RATIO = new java.util.HashMap<>();
 
     @SubscribeEvent
     public static void attachMob(AttachCapabilitiesEvent<Entity> e) {
@@ -41,9 +44,13 @@ public final class CombatEvents {
         }
     }
 
-    @SubscribeEvent
-    public static void beforeAttack(AttackEntityEvent e) {
-        STRENGTH.put(e.getEntity().getUUID(), e.getEntity().getAttackStrengthScale(0.5f));
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void hurt(net.minecraftforge.event.entity.living.LivingHurtEvent e) {
+        if (e.getEntity().level().isClientSide) return;
+        if (e.getSource().getEntity() instanceof ServerPlayer ap && e.getSource().getDirectEntity() == ap) {
+            double base = Math.max(0.5, ap.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE));
+            MELEE_RATIO.put(e.getEntity().getId(), Math.max(0.2, Math.min(4.0, e.getAmount() / base)));
+        }
     }
 
     @SubscribeEvent(priority = EventPriority.HIGH)
@@ -70,9 +77,13 @@ public final class CombatEvents {
         double dmg;
         boolean crit = false;
         if (src instanceof ServerPlayer ap) {
-            float str = STRENGTH.getOrDefault(ap.getUUID(), 1.0f);
-            STRENGTH.remove(ap.getUUID());
-            double ratio = e.getSource().getDirectEntity() == ap ? Math.max(0.2, str * str) : 1.0;  // 평타 쿨타임 덜 찼으면 약하게
+            Entity direct = e.getSource().getDirectEntity();
+            Double mr = MELEE_RATIO.remove(target.getId());
+            double ratio;
+            if (direct == ap) ratio = mr == null ? 1.0 : mr;                       // 근접 (Epic Fight 모션 배율)
+            else if (direct != null && direct.getPersistentData().contains("rpgPower"))
+                ratio = Math.max(0.1, direct.getPersistentData().getFloat("rpgPower"));  // 활: 당긴 정도
+            else ratio = 1.0;
             Combat.Hit h = Combat.roll(ap, RpgData.get(ap), ratio);
             dmg = h.amount();
             crit = h.crit();

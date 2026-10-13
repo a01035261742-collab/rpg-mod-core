@@ -10,16 +10,16 @@ import rpg.core.skill.Defs;
 
 /**
  * 플레이어 RPG 데이터.
- * 스탯 순서: 0 체력(VIT) · 1 힘(STR) · 2 민첩(DEX) · 3 지력(INT) · 4 운(LUK)
+ * 스탯 순서: 0 체력(VIT) · 1 힘(STR) · 2 민첩(DEX) · 3 지력(INT) · 4 운(LUK) · 5 스태미나(STA)
  */
 public class PlayerData {
-    public static final int VIT = 0, STR = 1, DEX = 2, INT = 3, LUK = 4;
-    public static final String[] STAT_NAMES = {"체력", "힘", "민첩", "지력", "운"};
+    public static final int VIT = 0, STR = 1, DEX = 2, INT = 3, LUK = 4, STA = 5, N = 6;
+    public static final String[] STAT_NAMES = {"체력", "힘", "민첩", "지력", "운", "스태미나"};
     public static final int SLOTS = 6;
 
     public int level;
     public long exp;
-    public final int[] stats = new int[5];
+    public final int[] stats = new int[N];
     public int statPoints;
     public int job;          // 0 초보자 (전직은 6단계에서)
     public long gold;
@@ -53,7 +53,7 @@ public class PlayerData {
     public final Map<String, Double> bonus = new HashMap<>();   // 패시브 합계 (stat → 값)
     public final Map<String, Double> equip = new HashMap<>();   // 장비 합계 (str dex int luk vit atk matk hp mp def allPct)
 
-    private static final String[] STAT_KEYS = {"vit", "str", "dex", "int", "luk"};
+    private static final String[] STAT_KEYS = {"vit", "str", "dex", "int", "luk", "sta"};
 
     public double eq(String k) {
         return equip.getOrDefault(k, 0.0);
@@ -73,7 +73,7 @@ public class PlayerData {
     /** 처음 시작 */
     public void init() {
         level = 1; exp = 0; job = 0; gold = 0; statPoints = 0; skillPoints = 0; passivePoints = 0;
-        for (int i = 0; i < 5; i++) stats[i] = Balance.startStat;
+        for (int i = 0; i < N; i++) stats[i] = start(i);
         skills.clear(); passives.clear(); cdEnd.clear(); cdLen.clear();
         java.util.Arrays.fill(slots, null);
         recalc();
@@ -104,9 +104,9 @@ public class PlayerData {
     /** 찍은 스탯을 전부 돌려받기 (초기화 주문서) */
     public int resetStats() {
         int refund = 0;
-        for (int i = 0; i < 5; i++) {
-            refund += Math.max(0, stats[i] - Balance.startStat);
-            stats[i] = Balance.startStat;
+        for (int i = 0; i < N; i++) {
+            refund += Math.max(0, stats[i] - start(i));
+            stats[i] = start(i);
         }
         statPoints += refund;
         recalc();
@@ -119,6 +119,11 @@ public class PlayerData {
     public double healBonus() { return Balance.healPerInt * total(INT); }
     public double dropBonus() { return Balance.dropPerLuk * total(LUK); }
     public double goldBonus() { return Balance.goldPerLuk * total(LUK); }
+    /** Epic Fight 최대 스태미나에 더해지는 양 (스태미나 스탯 + 패시브) */
+    public double staminaBonus() { return Balance.staminaPerPoint * total(STA) + bonus("stamina"); }
+
+    /** 시작 스탯 (스태미나는 따로) */
+    public static int start(int i) { return i == STA ? Balance.startStamina : Balance.startStat; }
 
     // ── 저장 ──
     public CompoundTag save() {
@@ -142,7 +147,7 @@ public class PlayerData {
     public void load(CompoundTag t) {
         level = t.getInt("level"); exp = t.getLong("exp");
         int[] s = t.getIntArray("stats");
-        for (int i = 0; i < 5 && i < s.length; i++) stats[i] = s[i];
+        for (int i = 0; i < N; i++) stats[i] = i < s.length ? s[i] : start(i);
         statPoints = t.getInt("sp"); job = t.getInt("job"); gold = t.getLong("gold");
         hp = t.getDouble("hp"); mp = t.getDouble("mp");
         skillPoints = t.getInt("skp"); passivePoints = t.getInt("pp");
@@ -166,12 +171,13 @@ public class PlayerData {
     public void write(FriendlyByteBuf b, double atkMax, double defPct, long now) {
         b.writeVarInt(level); b.writeLong(exp); b.writeLong(Balance.expNeed(level));
         for (int v : stats) b.writeVarInt(v);
-        for (int i = 0; i < 5; i++) b.writeVarInt((int) Math.round(total(i) - stats[i]));
+        for (int i = 0; i < N; i++) b.writeVarInt((int) Math.round(total(i) - stats[i]));
         b.writeVarInt(statPoints); b.writeVarInt(job); b.writeLong(gold);
         b.writeDouble(hp); b.writeDouble(mp); b.writeDouble(maxHp); b.writeDouble(maxMp);
         b.writeDouble(crit()); b.writeDouble(healBonus()); b.writeDouble(dropBonus()); b.writeDouble(goldBonus());
         b.writeDouble(atkMax * Balance.mastery); b.writeDouble(atkMax); b.writeDouble(defPct);
         b.writeDouble(critDamage() * 100.0);
+        b.writeDouble(staminaBonus());
         // 스킬
         b.writeVarInt(skillPoints); b.writeVarInt(passivePoints);
         b.writeVarInt(skills.size());

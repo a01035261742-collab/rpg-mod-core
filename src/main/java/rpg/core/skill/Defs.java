@@ -80,6 +80,7 @@ public final class Defs {
             case "bossDmg" -> "보스 피해 +%s%% (보스 단계에서 적용)";
             case "reviveTime" -> "부활 시간 -%s%% (파티 단계에서 적용)";
             case "dodgeCd" -> "구르기 쿨타임 -%s%%";
+            case "stamina" -> "최대 스태미나 +%s";
             default -> "%s";
         };
     }

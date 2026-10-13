@@ -1,5 +1,7 @@
 package rpg.core.equip;
 
+import net.minecraft.world.item.ItemStack;
+
 import java.util.Map;
 import java.util.UUID;
 import net.minecraft.network.chat.Component;
@@ -28,6 +30,7 @@ import rpg.core.data.RpgData;
 public final class EquipEvents {
     private EquipEvents() {}
 
+    private static final java.util.Map<UUID, ItemStack> LAST_HAND = new java.util.HashMap<>();
     private static final UUID SPEED_ID = UUID.fromString("6f1f0d2e-7a51-4c1e-9b0a-52d0c1a1e002");
 
     @SubscribeEvent
@@ -59,6 +62,19 @@ public final class EquipEvents {
     public static void tick(TickEvent.PlayerTickEvent e) {
         if (e.phase != TickEvent.Phase.END || !(e.player instanceof ServerPlayer sp)) return;
         PlayerEquip eq = PlayerEquip.get(sp);
+        // 예전 무기 칸에 남은 무기는 인벤으로
+        ItemStack old = eq.items.getStackInSlot(0);
+        if (!old.isEmpty()) {
+            eq.items.setStackInSlot(0, ItemStack.EMPTY);
+            if (!sp.getInventory().add(old)) sp.drop(old, false);
+        }
+        // 손에 든 무기가 바뀌면 다시 계산
+        ItemStack hand = PlayerEquip.weapon(sp);
+        ItemStack last = LAST_HAND.getOrDefault(sp.getUUID(), ItemStack.EMPTY);
+        if (!ItemStack.isSameItemSameTags(hand, last)) {
+            LAST_HAND.put(sp.getUUID(), hand.copy());
+            eq.dirty = true;
+        }
         if (!eq.dirty && sp.tickCount % 40 != 0) return;
         eq.dirty = false;
         PlayerData d = RpgData.get(sp);
@@ -70,8 +86,8 @@ public final class EquipEvents {
             d.recalc();
             RpgData.sync(sp);
         }
-        // 공격 속도: 무기 칸의 무기 기준 (맨손 4.0)
-        GearDefs.GearDef w = Gear.canEquip(sp, eq.weapon()) ? Gear.def(eq.weapon()) : null;
+        // 공격 속도: 손에 든 무기 기준 (맨손 4.0)
+        GearDefs.GearDef w = Gear.canEquip(sp, hand) ? Gear.def(hand) : null;
         double speed = w != null && w.speed() > 0 ? w.speed() : 4.0;
         AttributeInstance inst = sp.getAttribute(Attributes.ATTACK_SPEED);
         if (inst != null) {

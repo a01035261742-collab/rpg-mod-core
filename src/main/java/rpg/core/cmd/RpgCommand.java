@@ -102,9 +102,9 @@ public final class RpgCommand {
         ServerPlayer p = c.getSource().getPlayerOrException();
         PlayerData d = RpgData.get(p);
         c.getSource().sendSuccess(() -> Component.literal(String.format(
-                "Lv.%d | EXP %,d/%,d | HP %.0f/%.0f MP %.0f/%.0f | 체%d 힘%d 민%d 지%d 운%d (남은 %d) | 골드 %,d",
+                "Lv.%d | EXP %,d/%,d | HP %.0f/%.0f MP %.0f/%.0f | 체%d 힘%d 민%d 지%d 운%d 스%d (남은 %d) | 골드 %,d",
                 d.level, d.exp, Balance.expNeed(d.level), d.hp, d.maxHp, d.mp, d.maxMp,
-                d.stats[0], d.stats[1], d.stats[2], d.stats[3], d.stats[4], d.statPoints, d.gold))
+                d.stats[0], d.stats[1], d.stats[2], d.stats[3], d.stats[4], d.stats[5], d.statPoints, d.gold))
                 .withStyle(ChatFormatting.AQUA), false);
         return 1;
     }

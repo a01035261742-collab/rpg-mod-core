@@ -31,7 +31,9 @@ public final class ModItems {
             "earring_1", "earring_10", "ring_1", "ring_10", "pendant_1", "pendant_10", "medal_1", "medal_10"};
 
     static {
-        for (String id : BASIC) GEAR.add(ITEMS.register(id, () -> new rpg.core.equip.GearItems.Basic(new Item.Properties(), id)));
+        for (String id : BASIC) GEAR.add(ITEMS.register(id, () -> id.startsWith("archer_bow")
+                ? new rpg.core.equip.GearItems.Bow(new Item.Properties(), id)
+                : new rpg.core.equip.GearItems.Basic(new Item.Properties(), id)));
         String[][] armor = {{"hat", "HELMET"}, {"top", "CHESTPLATE"}, {"bottom", "LEGGINGS"}, {"shoes", "BOOTS"}};
         for (String[] a : armor) {
             var type = net.minecraft.world.item.ArmorItem.Type.valueOf(a[1]);

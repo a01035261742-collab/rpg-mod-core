@@ -29,7 +29,6 @@ public final class ClientEvents {
     public static final KeyMapping SKILL_WINDOW_KEY = new KeyMapping("key.rpgcore.skills", InputConstants.KEY_L, CATEGORY);
     public static final KeyMapping PASSIVE_KEY = new KeyMapping("key.rpgcore.passives", InputConstants.KEY_N, CATEGORY);
     public static final KeyMapping PARTY_KEY = new KeyMapping("key.rpgcore.party", InputConstants.KEY_P, CATEGORY);
-    public static final KeyMapping DODGE_KEY = new KeyMapping("key.rpgcore.dodge", InputConstants.KEY_LALT, CATEGORY);
     public static final String[] SLOT_LABELS = {"Q", "E", "R", "F", "Z", "X"};
     public static final KeyMapping[] SKILL_KEYS = {
             new KeyMapping("key.rpgcore.skill1", InputConstants.KEY_Q, CATEGORY),
@@ -47,7 +46,6 @@ public final class ClientEvents {
             e.register(STAT_KEY);
             e.register(SKILL_WINDOW_KEY);
             e.register(PASSIVE_KEY);
-            e.register(DODGE_KEY);
             e.register(PARTY_KEY);
             for (KeyMapping k : SKILL_KEYS) e.register(k);
         }
@@ -80,19 +78,6 @@ public final class ClientEvents {
             }
         }
 
-        /** 궁수·마법사: 좌클릭(맨손 또는 장비 아이템을 들고 있을 때) = 원거리 평타 */
-        @SubscribeEvent
-        public static void attackKey(net.minecraftforge.client.event.InputEvent.InteractionKeyMappingTriggered e) {
-            if (!e.isAttack()) return;
-            Minecraft mc = Minecraft.getInstance();
-            if (mc.player == null || (ClientData.job != 2 && ClientData.job != 3)) return;
-            var held = mc.player.getMainHandItem();
-            if (!held.isEmpty() && !(held.getItem() instanceof rpg.core.equip.Gear.GearItem)) return;
-            e.setCanceled(true);
-            e.setSwingHand(false);
-            Net.CH.sendToServer(new Net.Basic(0));
-        }
-
         /** 서바이벌에서 인벤토리를 열면 장비 창(인벤토리 + 장비 칸)으로 바꿔 열기 */
         @SubscribeEvent
         public static void openInventory(net.minecraftforge.client.event.ScreenEvent.Opening e) {
@@ -123,15 +108,6 @@ public final class ClientEvents {
                     Net.CH.sendToServer(new Net.UseSkill(i));
                 }
             }
-            boolean dodge = false;
-            while (DODGE_KEY.consumeClick()) dodge = true;
-            if (dodge && free) {
-                float strafe = mc.player.input.leftImpulse, fwd = mc.player.input.forwardImpulse;
-                double yaw = Math.toRadians(mc.player.getYRot());
-                float dx = (float) (strafe * Math.cos(yaw) - fwd * Math.sin(yaw));
-                float dz = (float) (fwd * Math.cos(yaw) + strafe * Math.sin(yaw));
-                Net.CH.sendToServer(new Net.Dodge(dx, dz));
-            }
         }
 
         /**
@@ -140,6 +116,17 @@ public final class ClientEvents {
          */
         private static void moveVanillaKeys(Minecraft mc) {
             Options o = mc.options;
+            // v3: Epic Fight 키 — 전투/채광 모드 R→V (스킬 키 R), 스킬 편집 창 K→없음 (스탯 창 K)
+            Path flag3 = FMLPaths.CONFIGDIR.get().resolve("rpgcore-keys-v3");
+            if (!Files.exists(flag3)) {
+                for (KeyMapping k : o.keyMappings) {
+                    if (k.getName().equals("key.epicfight.switch_mode")) move(k, "key.keyboard.r", "key.keyboard.v");
+                    if (k.getName().equals("key.epicfight.skill_gui")) move(k, "key.keyboard.k", null);
+                }
+                KeyMapping.resetMapping();
+                o.save();
+                try { Files.writeString(flag3, "done"); } catch (IOException ignored) {}
+            }
             // v2: 소셜 상호작용(P)을 파티 창에 양보
             Path flag2 = FMLPaths.CONFIGDIR.get().resolve("rpgcore-keys-v2");
             if (!Files.exists(flag2)) {

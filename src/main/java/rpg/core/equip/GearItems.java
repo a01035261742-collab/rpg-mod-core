@@ -40,6 +40,54 @@ public final class GearItems {
         }
     }
 
+    /** 궁수 활: 당겨서 쏘기 (Epic Fight 활 모션), 화살 소모 없음. 피해는 RPG 공식 × 당긴 정도 */
+    public static class Bow extends net.minecraft.world.item.BowItem implements Gear.GearItem {
+        private final String id;
+
+        public Bow(Properties p, String id) {
+            super(p.stacksTo(1));
+            this.id = id;
+        }
+
+        @Override public String gearId() { return id; }
+
+        @Override
+        public net.minecraft.world.InteractionResultHolder<ItemStack> use(Level level, net.minecraft.world.entity.player.Player p,
+                                                                          net.minecraft.world.InteractionHand hand) {
+            p.startUsingItem(hand);
+            return net.minecraft.world.InteractionResultHolder.consume(p.getItemInHand(hand));
+        }
+
+        @Override
+        public void releaseUsing(ItemStack s, Level level, net.minecraft.world.entity.LivingEntity e, int timeLeft) {
+            if (!(e instanceof net.minecraft.world.entity.player.Player p)) return;
+            float power = getPowerForTime(getUseDuration(s) - timeLeft);
+            if (power < 0.1f || level.isClientSide) return;
+            var a = new net.minecraft.world.entity.projectile.Arrow(level, p);
+            a.shootFromRotation(p, p.getXRot(), p.getYRot(), 0, power * 3.0f, 1.0f);
+            if (power >= 1.0f) a.setCritArrow(true);
+            a.setBaseDamage(0.5);
+            a.pickup = net.minecraft.world.entity.projectile.AbstractArrow.Pickup.DISALLOWED;
+            a.getPersistentData().putBoolean("rpgArrow", true);
+            a.getPersistentData().putFloat("rpgPower", power);
+            level.addFreshEntity(a);
+            level.playSound(null, p.getX(), p.getY(), p.getZ(), SoundEvents.ARROW_SHOOT, net.minecraft.sounds.SoundSource.PLAYERS,
+                    1.0f, 1.0f / (level.getRandom().nextFloat() * 0.4f + 1.2f) + power * 0.5f);
+        }
+
+        @Override
+        public void inventoryTick(ItemStack s, Level level, Entity e, int slot, boolean selected) {
+            if (!level.isClientSide) Gear.roll(s);
+        }
+
+        @Override
+        public void appendHoverText(ItemStack s, @Nullable Level level, List<Component> tip, TooltipFlag flag) {
+            Gear.tooltip(s, tip);
+        }
+
+        @Override public boolean isEnchantable(ItemStack s) { return false; }
+    }
+
     /** 모자·상의·하의·신발 (바닐라 갑옷 칸, 바닐라 방어력 0 — RPG 방어만 씀) */
     public static class Armor extends ArmorItem implements Gear.GearItem {
         private final String id;

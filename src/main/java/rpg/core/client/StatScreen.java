@@ -9,7 +9,7 @@ import rpg.core.net.Net;
 
 /** 스탯 창 (K): 메이플식 작은 창 + "상세" 버튼으로 오른쪽에 상세 능력치 펼치기 */
 public class StatScreen extends Screen {
-    private static final int W = 150, H = 182, DW = 150;
+    private static final int W = 150, H = 198, DW = 150;
     private static boolean detail = false;   // 펼침 상태 기억
     private int x, y;
 
@@ -22,7 +22,7 @@ public class StatScreen extends Screen {
         int total = W + (detail ? DW + 4 : 0);
         x = width / 2 - total / 2;
         y = height / 2 - H / 2;
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 6; i++) {
             final int stat = i;
             int ry = y + 66 + i * 16;
             addRenderableWidget(Button.builder(Component.literal("+"), b -> send(stat, hasShiftDown() ? 5 : 1))
@@ -48,7 +48,7 @@ public class StatScreen extends Screen {
         g.drawString(font, "HP " + (long) ClientData.maxHp + "   MP " + (long) ClientData.maxMp, x + 8, y + 34, 0xFFE0A0A0, true);
         g.drawString(font, "남은 포인트: " + ClientData.statPoints, x + 8, y + 48,
                 ClientData.statPoints > 0 ? 0xFF80FF80 : 0xFFA0A0A0, true);
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 6; i++) {
             int ry = y + 66 + i * 16;
             g.drawString(font, PlayerData.STAT_NAMES[i], x + 10, ry, 0xFFFFFFFF, true);
             String v = ClientData.stats[i] + (ClientData.statBonus[i] != 0 ? " (+" + ClientData.statBonus[i] + ")" : "");
@@ -71,6 +71,7 @@ public class StatScreen extends Screen {
             ry = line(g, dx, ry, "회복량 증가", String.format("+%.1f%%", ClientData.healBonus));
             ry = line(g, dx, ry, "드롭률 증가", String.format("+%.1f%%", ClientData.dropBonus));
             ry = line(g, dx, ry, "골드 획득 증가", String.format("+%.1f%%", ClientData.goldBonus));
+            ry = line(g, dx, ry, "최대 스태미나", String.format("15 + %.0f", ClientData.staminaBonus));
             ry += 6;
             ry = line(g, dx, ry, "골드", String.format("%,d", ClientData.gold));
         }

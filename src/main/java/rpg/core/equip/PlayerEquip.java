@@ -18,10 +18,10 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * 장비 칸 (모자·상의·하의·신발은 바닐라 갑옷 칸을 그대로 씀)
- * 0 무기 · 1 장갑 · 2 망토 · 3 벨트 · 4 귀걸이 · 5~8 반지 · 9 펜던트 · 10 훈장
+ * 0 (예전 무기 칸, 안 씀 — 무기는 손에 듦) · 1 장갑 · 2 망토 · 3 벨트 · 4 귀걸이 · 5~8 반지 · 9 펜던트 · 10 훈장
  */
 public class PlayerEquip {
-    public static final String[] SLOT_TYPES = {"weapon", "gloves", "cape", "belt", "earring", "ring", "ring", "ring", "ring", "pendant", "medal"};
+    public static final String[] SLOT_TYPES = {"_unused", "gloves", "cape", "belt", "earring", "ring", "ring", "ring", "ring", "pendant", "medal"};
     public final ItemStackHandler items = new ItemStackHandler(SLOT_TYPES.length) {
         @Override
         public boolean isItemValid(int slot, @NotNull ItemStack stack) {
@@ -44,14 +44,17 @@ public class PlayerEquip {
         return p.getCapability(Provider.CAP).orElseGet(PlayerEquip::new);
     }
 
-    public ItemStack weapon() {
-        return items.getStackInSlot(0);
+    /** 무기 = 주로 쓰는 손에 든 무기 (Epic Fight 모션도 손 기준) */
+    public static ItemStack weapon(Player p) {
+        ItemStack s = p.getMainHandItem();
+        return "weapon".equals(Gear.slotOf(s)) ? s : ItemStack.EMPTY;
     }
 
     /** 착용 중인 장비의 스탯 합계 (착용 조건을 못 맞춘 장비는 빼고) */
     public Map<String, Double> sum(Player p) {
         Map<String, Double> m = new HashMap<>();
-        for (int i = 0; i < items.getSlots(); i++) add(p, items.getStackInSlot(i), m);
+        for (int i = 1; i < items.getSlots(); i++) add(p, items.getStackInSlot(i), m);
+        add(p, weapon(p), m);
         for (EquipmentSlot es : new EquipmentSlot[]{EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET}) {
             add(p, p.getItemBySlot(es), m);
         }

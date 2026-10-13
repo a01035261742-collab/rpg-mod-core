@@ -88,17 +88,7 @@ public final class RpgHud {
             }
             g.drawString(font, rpg.core.client.ClientEvents.SLOT_LABELS[i], x + 1, y + size - 8, 0xFFC8C8C8, true);
         }
-        // 구르기 (왼쪽 작은 칸)
-        int dx = x0 - 18, dy = y0 + size + gap + 4;
-        g.fill(dx, dy, dx + 14, dy + 14, 0xB0101018);
-        int left = ClientData.left(ClientData.dodgeLeft);
-        if (left > 0 && ClientData.dodgeLen > 0) {
-            int fh = (int) Math.ceil(14.0 * left / ClientData.dodgeLen);
-            g.fill(dx, dy + 14 - fh, dx + 14, dy + 14, 0xA0FF6060);
-        } else {
-            g.fill(dx + 2, dy + 2, dx + 12, dy + 12, 0xFF60C0FF);
-        }
-        g.drawString(font, "Alt", dx - 1, dy - 9, 0xFFC8C8C8, true);
+        // 구르기는 Epic Fight (Left Alt) — 자체 표시 사용
         // 질주 버프 남은 시간
         int sl = ClientData.left(ClientData.sprintLeft);
         if (sl > 0) {

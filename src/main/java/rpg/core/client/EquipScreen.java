@@ -39,6 +39,7 @@ public class EquipScreen extends AbstractContainerScreen<EquipMenu> {
         // 장비 칸 이름 (빈 칸일 때)
         for (int i = 0; i < PlayerEquip.SLOT_TYPES.length; i++) {
             var s = menu.slots.get(i);
+            if (i == 0) continue;
             if (!s.hasItem()) g.drawString(font, LABELS[i].substring(0, 1), x + s.x + 5, y + s.y + 4, 0xFF707080, false);
         }
     }
