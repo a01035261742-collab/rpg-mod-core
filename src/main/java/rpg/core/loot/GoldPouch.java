@@ -33,6 +33,18 @@ public class GoldPouch extends Item {
         return Component.literal("골드 주머니 (" + String.format("%,d", amount(s)) + " G)").withStyle(ChatFormatting.GOLD);
     }
 
+    /** 인벤에 들어오면 바로 골드로 */
+    @Override
+    public void inventoryTick(ItemStack s, Level level, net.minecraft.world.entity.Entity e, int slot, boolean selected) {
+        if (level.isClientSide || !(e instanceof ServerPlayer sp) || s.isEmpty()) return;
+        long g = amount(s) * s.getCount();
+        PlayerData d = RpgData.get(sp);
+        d.gold += g;
+        RpgData.sync(sp);
+        Net.reward(sp, 0, g);
+        s.setCount(0);
+    }
+
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack s = player.getItemInHand(hand);

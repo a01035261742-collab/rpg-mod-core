@@ -37,16 +37,20 @@ public final class Skills {
         if (lv >= s.maxLevel() || d.skillPoints <= 0) return;
         d.skillPoints--;
         d.skills.put(id, lv + 1);
-        if (lv == 0) autoSlot(d, id);
         RpgData.sync(p);
     }
 
-    /** 처음 배운 스킬은 빈 키(Q E R F Z X 순)에 자동으로 */
-    private static void autoSlot(PlayerData d, String id) {
-        for (String s : d.slots) if (id.equals(s)) return;
-        for (int i = 0; i < PlayerData.SLOTS; i++) {
-            if (d.slots[i] == null) { d.slots[i] = id; return; }
-        }
+    /** 스킬 창에서 스킬을 키 칸에 넣기. 이미 그 칸에 있으면 빼기, 다른 칸에 있으면 옮기기 */
+    public static void setSlot(ServerPlayer p, int slot, String id) {
+        PlayerData d = RpgData.get(p);
+        if (slot < 0 || slot >= PlayerData.SLOTS) return;
+        if (id.isEmpty()) { d.slots[slot] = null; RpgData.sync(p); return; }
+        Defs.SkillDef s = Defs.SKILLS.get(id);
+        if (s == null || !available(d, s) || d.skills.getOrDefault(id, 0) <= 0) return;
+        if (id.equals(d.slots[slot])) { d.slots[slot] = null; RpgData.sync(p); return; }
+        for (int i = 0; i < PlayerData.SLOTS; i++) if (id.equals(d.slots[i])) d.slots[i] = null;
+        d.slots[slot] = id;
+        RpgData.sync(p);
     }
 
     // ───────── 패시브 찍기 ─────────
@@ -109,7 +113,7 @@ public final class Skills {
             p.displayClientMessage(Component.literal("HP가 가득 차 있어요").withStyle(ChatFormatting.GRAY), true);
             return false;
         }
-        double heal = d.maxHp * s.value(lv) / 100.0 * (1 + d.healBonus() / 100.0);
+        double heal = d.maxHp * s.value(lv) / 100.0 * (1 + d.healBonus() / 100.0) * (1 + d.bonus("healPct") / 100.0);
         d.hp = Math.min(d.maxHp, d.hp + heal);
         ServerLevel lv2 = p.serverLevel();
         lv2.sendParticles(ParticleTypes.HEART, p.getX(), p.getY() + 1.2, p.getZ(), 6, 0.4, 0.4, 0.4, 0);

@@ -58,6 +58,8 @@ public class SkillScreen extends Screen {
             g.fill(x + 6, ry, x + W - 6, ry + ROW - 2, 0x40FFFFFF);
             SkillIcons.draw(g, s.id(), x + 9, ry + 3);
             g.drawString(font, s.name() + "  " + lv + "/" + s.maxLevel(), x + 30, ry + 2, lv > 0 ? 0xFFFFFFFF : 0xFF909090, true);
+            String key = keyOf(s.id());
+            if (key != null) g.drawString(font, "[" + key + "]", x + W - 30 - font.width("[" + key + "]") - 4, ry + 2, 0xFF80E0FF, true);
             g.drawString(font, s.describe(Math.max(1, lv)), x + 30, ry + 13, 0xFFB0B0B0, false);
             if (mx >= x + 6 && mx < x + W - 30 && my >= ry && my < ry + ROW - 2) {
                 List<Component> tip = new ArrayList<>();
@@ -65,6 +67,9 @@ public class SkillScreen extends Screen {
                 tip.add(Component.literal("현재: " + (lv > 0 ? s.describe(lv) : "안 배움")));
                 if (lv < s.maxLevel()) tip.add(Component.literal("다음: " + s.describe(lv + 1)));
                 tip.add(Component.literal("MP " + Defs.fmt(s.mp()) + " · 쿨타임 " + Defs.fmt(s.cooldown()) + "초"));
+                String key = keyOf(s.id());
+                tip.add(Component.literal(lv > 0 ? (key == null ? "마우스 올리고 Q E R F Z X 를 누르면 그 칸에 넣어요" : "현재 " + key + " 칸 · 같은 키 = 빼기")
+                        : "배워야 칸에 넣을 수 있어요").withStyle(net.minecraft.ChatFormatting.DARK_GRAY));
                 g.renderComponentTooltip(font, tip, mx, my);
             }
         }
@@ -76,8 +81,34 @@ public class SkillScreen extends Screen {
         return false;
     }
 
+    private static String keyOf(String id) {
+        for (int i = 0; i < 6; i++) if (id.equals(ClientData.slots[i])) return ClientEvents.SLOT_LABELS[i];
+        return null;
+    }
+
+    private int mx, my;
+
+    @Override
+    public void mouseMoved(double mx, double my) {
+        this.mx = (int) mx;
+        this.my = (int) my;
+    }
+
     @Override
     public boolean keyPressed(int key, int scan, int mods) {
+        // 마우스 올린 스킬 + 스킬 키 = 그 칸에 넣기
+        for (int k = 0; k < 6; k++) {
+            if (!ClientEvents.SKILL_KEYS[k].matches(key, scan)) continue;
+            for (int i = 0; i < list.size(); i++) {
+                int ry = y + 30 + i * ROW;
+                if (mx >= x + 6 && mx < x + W - 30 && my >= ry && my < ry + ROW - 2) {
+                    String id = list.get(i).id();
+                    if (ClientData.skills.getOrDefault(id, 0) > 0) Net.CH.sendToServer(new Net.SetSlot(k, id));
+                    return true;
+                }
+            }
+            return true;
+        }
         if (ClientEvents.SKILL_WINDOW_KEY.matches(key, scan)) { onClose(); return true; }
         return super.keyPressed(key, scan, mods);
     }

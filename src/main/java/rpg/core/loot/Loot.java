@@ -67,6 +67,15 @@ public final class Loot {
         }
     }
 
+    /** 주운 아이템 알림 (오른쪽 아래) */
+    @SubscribeEvent
+    public static void picked(net.minecraftforge.event.entity.player.PlayerEvent.ItemPickupEvent e) {
+        if (!(e.getEntity() instanceof ServerPlayer sp)) return;
+        var s = e.getStack();
+        if (s.isEmpty() || s.getItem() instanceof GoldPouch) return;
+        Net.itemNote(sp, s.getHoverName().getString() + (s.getCount() > 1 ? " ×" + s.getCount() : "") + " 획득");
+    }
+
     /** 주인 시간 끝나면 이름표 떼기 */
     @SubscribeEvent
     public static void tick(TickEvent.ServerTickEvent e) {

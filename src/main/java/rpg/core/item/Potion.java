@@ -37,8 +37,9 @@ public class Potion extends Item {
             sp.displayClientMessage(Component.literal(hp ? "HP가 가득 차 있어요" : "MP가 가득 차 있어요").withStyle(ChatFormatting.GRAY), true);
             return InteractionResultHolder.fail(stack);
         }
-        if (hp) d.hp = Math.min(d.maxHp, d.hp + Balance.redPotionHp);
-        else d.mp = Math.min(d.maxMp, d.mp + Balance.bluePotionMp);
+        double mul = 1 + d.bonus("healPct") / 100.0;
+        if (hp) d.hp = Math.min(d.maxHp, d.hp + Balance.redPotionHp * mul);
+        else d.mp = Math.min(d.maxMp, d.mp + Balance.bluePotionMp * mul);
         if (!sp.getAbilities().instabuild) stack.shrink(1);
         sp.getCooldowns().addCooldown(this, (int) Math.round(Balance.potionCooldown * 20));
         level.playSound(null, sp.blockPosition(), SoundEvents.GENERIC_DRINK, SoundSource.PLAYERS, 0.6f, 1.2f);

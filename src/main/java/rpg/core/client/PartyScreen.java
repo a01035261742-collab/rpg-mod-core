@@ -11,7 +11,7 @@ import rpg.core.net.Net;
 
 /** 파티 창 (P): 파티원 목록, 초대, 수락/거절, 나가기, 추방 */
 public class PartyScreen extends Screen {
-    private static final int W = 220, H = 200;
+    private static final int W = 220, H = 200, SW = 110;
     private int x, y;
     private EditBox nameBox;
 
@@ -31,8 +31,16 @@ public class PartyScreen extends Screen {
 
     @Override
     protected void init() {
-        x = width / 2 - W / 2;
+        x = width / 2 - (W + 4 + SW) / 2;
         y = height / 2 - H / 2;
+        // 오른쪽: 접속 중인 사람 → 바로 초대
+        int i0 = 0;
+        for (String name : onlineToInvite()) {
+            if (i0 >= 8) break;
+            addRenderableWidget(Button.builder(Component.literal("초대"), b -> send(0, name))
+                    .bounds(x + W + 4 + SW - 36, y + 24 + i0 * 20, 30, 16).build());
+            i0++;
+        }
         nameBox = new EditBox(font, x + 8, y + H - 44, 120, 14, Component.literal("이름"));
         nameBox.setMaxLength(16);
         nameBox.setHint(Component.literal("초대할 이름"));
@@ -58,6 +66,23 @@ public class PartyScreen extends Screen {
         }
     }
 
+    /** 서버에 접속 중이고 아직 내 파티가 아닌 사람 */
+    private static java.util.List<String> onlineToInvite() {
+        Minecraft mc = Minecraft.getInstance();
+        java.util.List<String> out = new java.util.ArrayList<>();
+        if (mc.getConnection() == null) return out;
+        String me = mc.getUser().getName();
+        for (PlayerInfo info : mc.getConnection().getOnlinePlayers()) {
+            String n = info.getProfile().getName();
+            if (n.equals(me)) continue;
+            boolean member = false;
+            for (Net.Member m : ClientParty.MEMBERS) if (m.name().equals(n)) member = true;
+            if (!member) out.add(n);
+        }
+        out.sort(String::compareToIgnoreCase);
+        return out;
+    }
+
     /** 가장 가까운 다른 플레이어 이름 채우기 */
     private void fillNearest() {
         Minecraft mc = Minecraft.getInstance();
@@ -67,13 +92,15 @@ public class PartyScreen extends Screen {
                 .ifPresent(p -> nameBox.setValue(p.getGameProfile().getName()));
     }
 
-    private int lastSize = -1;
+    private int lastSize = -1, lastOnline = -1;
     private String lastInviter = "";
 
     @Override
     public void tick() {
         nameBox.tick();
-        if (lastSize != ClientParty.MEMBERS.size() || !lastInviter.equals(ClientParty.inviter)) {
+        int online = onlineToInvite().size();
+        if (lastSize != ClientParty.MEMBERS.size() || !lastInviter.equals(ClientParty.inviter) || online != lastOnline) {
+            lastOnline = online;
             lastSize = ClientParty.MEMBERS.size();
             lastInviter = ClientParty.inviter;
             String v = nameBox.getValue();
@@ -106,6 +133,18 @@ public class PartyScreen extends Screen {
         }
         if (!ClientParty.inviter.isEmpty()) {
             g.drawString(font, ClientParty.inviter + "님의 초대", x + W - 160, y + H - 18, 0xFF80FF80, false);
+        }
+        // 접속 중 목록
+        int sx = x + W + 4;
+        g.fill(sx, y, sx + SW, y + H, 0xF0141420);
+        g.fill(sx, y, sx + SW, y + 1, 0xFF80E0FF);
+        g.drawString(font, "접속 중", sx + 8, y + 6, 0xFF80E0FF, true);
+        var online = onlineToInvite();
+        if (online.isEmpty()) g.drawString(font, "초대할 사람 없음", sx + 8, y + 28, 0xFF808080, false);
+        for (int i = 0; i < Math.min(8, online.size()); i++) {
+            String n = online.get(i);
+            if (font.width(n) > SW - 46) n = font.plainSubstrByWidth(n, SW - 50) + "…";
+            g.drawString(font, n, sx + 8, y + 28 + i * 20, 0xFFFFFFFF, false);
         }
         super.render(g, mx, my, pt);
     }

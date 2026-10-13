@@ -1,5 +1,5 @@
 {
-  "_설명": "공용 패시브 트리. 4방향 × 작은 코어 3칸(여러 번 찍기) + 끝에 큰 코어 1칸(1번만, 강한 효과). x,y = 칸 위치(가운데 0,0). requires = 먼저 1 이상 찍어야 하는 칸. stat: atkPct critDmg critChance hpPct def hpRegenPct speedPct mpRegenPct bossDmg reviveTime stamina",
+  "_설명": "공용 패시브 트리. 4방향 × 작은 코어 3칸(여러 번 찍기) + 끝에 큰 코어 1칸(1번만, 강한 효과). x,y = 칸 위치(가운데 0,0). requires = 먼저 1 이상 찍어야 하는 칸. stat: atkPct critDmg critChance hpPct def hpRegenPct speedPct mpRegenPct bossDmg reviveTime stamina healPct",
   "nodes": [
     {"id": "start", "name": "시작", "x": 0, "y": 0, "maxRank": 0, "stat": "", "perRank": 0, "requires": []},
 
@@ -15,7 +15,7 @@
 
     {"id": "hp_1", "name": "강인한 몸", "x": 1, "y": 0, "maxRank": 5, "stat": "hpPct", "perRank": 2, "requires": ["start"]},
     {"id": "def_1", "name": "단단한 피부", "x": 2, "y": 0, "maxRank": 3, "stat": "def", "perRank": 5, "requires": ["hp_1"]},
-    {"id": "regen_1", "name": "회복력", "x": 3, "y": 0, "maxRank": 3, "stat": "hpRegenPct", "perRank": 10, "requires": ["def_1"]},
+    {"id": "regen_1", "name": "회복력", "x": 3, "y": 0, "maxRank": 3, "stat": "healPct", "perRank": 10, "requires": ["def_1"]},
     {"id": "second_wind", "name": "재기", "x": 4, "y": 0, "maxRank": 1, "stat": "reviveTime", "perRank": 30, "requires": ["regen_1"], "special": true},
 
     {"id": "speed_1", "name": "가벼운 발", "x": 0, "y": 1, "maxRank": 5, "stat": "speedPct", "perRank": 1, "requires": ["start"]},

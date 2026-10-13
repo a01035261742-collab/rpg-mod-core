@@ -122,6 +122,14 @@ public final class ClientEvents {
          */
         private static void moveVanillaKeys(Minecraft mc) {
             Options o = mc.options;
+            // v4: 도전과제(L) 해제 — 스킬 창 L
+            Path flag4 = FMLPaths.CONFIGDIR.get().resolve("rpgcore-keys-v4");
+            if (!Files.exists(flag4)) {
+                move(o.keyAdvancements, "key.keyboard.l", null);
+                KeyMapping.resetMapping();
+                o.save();
+                try { Files.writeString(flag4, "done"); } catch (IOException ignored) {}
+            }
             // v3: Epic Fight 키 — 전투/채광 모드 R→V (스킬 키 R), 스킬 편집 창 K→없음 (스탯 창 K)
             Path flag3 = FMLPaths.CONFIGDIR.get().resolve("rpgcore-keys-v3");
             if (!Files.exists(flag3)) {

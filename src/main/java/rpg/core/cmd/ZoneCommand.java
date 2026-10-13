@@ -122,7 +122,15 @@ public final class ZoneCommand {
                                                         .then(Commands.argument("interval", IntegerArgumentType.integer(1, 600))
                                                                 .executes(c -> create(c, IntegerArgumentType.getInteger(c, "interval")))))))))
                 .then(Commands.literal("list").executes(ZoneCommand::list))
-                .then(Commands.literal("remove").then(Commands.argument("name", StringArgumentType.word()).suggests(ZONE_NAMES)
+                .then(Commands.literal("remove").executes(c -> {
+                            Zone z = here(c);
+                            if (z == null) return fail(c, "사냥터 안에 서서 쓰거나 이름을 붙여 주세요: /rpg zone remove <이름>");
+                            ZoneData d = ZoneData.get(c.getSource().getLevel());
+                            d.zones.remove(z.name);
+                            d.setDirty();
+                            clearMobs(c.getSource().getLevel(), z.name);
+                            return ok(c, "사냥터 삭제: " + z.name);
+                        }).then(Commands.argument("name", StringArgumentType.word()).suggests(ZONE_NAMES)
                         .executes(c -> {
                             ServerLevel lv = c.getSource().getLevel();
                             String n = StringArgumentType.getString(c, "name");
@@ -132,12 +140,26 @@ public final class ZoneCommand {
                             clearMobs(lv, n);
                             return ok(c, "사냥터 삭제: " + n);
                         })))
-                .then(Commands.literal("clear").then(Commands.argument("name", StringArgumentType.word()).suggests(ZONE_NAMES)
+                .then(Commands.literal("clear").executes(c -> {
+                            Zone z = here(c);
+                            if (z == null) {   // 사냥터 밖: 모든 사냥터 몹 정리
+                                int n = 0;
+                                for (String name : ZoneData.get(c.getSource().getLevel()).zones.keySet()) n += clearMobs(c.getSource().getLevel(), name);
+                                return ok(c, "모든 사냥터 몹 " + n + "마리 정리 (다시 리젠됨)");
+                            }
+                            return ok(c, z.name + " 몹 " + clearMobs(c.getSource().getLevel(), z.name) + "마리 정리 (다시 리젠됨)");
+                        }).then(Commands.argument("name", StringArgumentType.word()).suggests(ZONE_NAMES)
                         .executes(c -> {
                             int n = clearMobs(c.getSource().getLevel(), StringArgumentType.getString(c, "name"));
                             return ok(c, "몹 " + n + "마리 정리 (다시 리젠됨)");
                         })))
-                .then(Commands.literal("show").then(Commands.argument("name", StringArgumentType.word()).suggests(ZONE_NAMES)
+                .then(Commands.literal("show").executes(c -> {
+                            ServerLevel lv = c.getSource().getLevel();
+                            var zs = ZoneData.get(lv).zones.values();
+                            if (zs.isEmpty()) return fail(c, "이 월드에 사냥터 없음");
+                            for (Zone z : zs) outline(lv, z);
+                            return ok(c, "사냥터 " + zs.size() + "개 테두리 표시");
+                        }).then(Commands.argument("name", StringArgumentType.word()).suggests(ZONE_NAMES)
                         .executes(c -> {
                             ServerLevel lv = c.getSource().getLevel();
                             Zone z = ZoneData.get(lv).zones.get(StringArgumentType.getString(c, "name"));
@@ -145,6 +167,13 @@ public final class ZoneCommand {
                             outline(lv, z);
                             return ok(c, "사냥터 테두리 표시");
                         }))));
+    }
+
+    /** 플레이어가 서 있는 사냥터 */
+    private static Zone here(CommandContext<CommandSourceStack> c) {
+        var pos = c.getSource().getPosition();
+        for (Zone z : ZoneData.get(c.getSource().getLevel()).zones.values()) if (z.box().inflate(0.5).contains(pos)) return z;
+        return null;
     }
 
     private static int create(CommandContext<CommandSourceStack> c, int interval) throws CommandSyntaxException {

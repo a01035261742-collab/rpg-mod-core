@@ -40,7 +40,8 @@ public class EquipMenu extends AbstractContainerMenu {
         this.player = inv.player;
         PlayerEquip eq = PlayerEquip.get(player);
         // 장비 11칸: 2열 (무기·장갑·망토·벨트·귀걸이·펜던트 / 반지 4·훈장)
-        int[][] pos = {{0, 0}, {0, 1}, {0, 2}, {0, 3}, {0, 4}, {1, 0}, {1, 1}, {1, 2}, {1, 3}, {0, 5}, {1, 4}};
+        // 0(숨김) · 장갑 망토 벨트 귀걸이 / 반지 4 / 펜던트 / 훈장 — 2열 × 5줄
+        int[][] pos = {{0, 0}, {0, 0}, {0, 1}, {0, 2}, {0, 3}, {1, 0}, {1, 1}, {1, 2}, {1, 3}, {0, 4}, {1, 4}};
         for (int i = 0; i < PlayerEquip.SLOT_TYPES.length; i++) {
             final int slot = i;
             int sx = i == 0 ? -10000 : EQ_X + pos[i][0] * 20;   // 0번(예전 무기 칸)은 숨김

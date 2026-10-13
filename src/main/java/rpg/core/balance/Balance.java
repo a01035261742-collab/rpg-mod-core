@@ -29,7 +29,7 @@ public final class Balance {
     public static int maxLevel = 200;
     public static double hpBase = 50, hpPerLevel = 10, hpPerVit = 5;
     public static double mpBase = 30, mpPerLevel = 4, mpPerInt = 2;
-    public static double hpRegenPct = 1.0, mpRegenPct = 2.0;
+    public static double hpRegenPct = 0.0, mpRegenPct = 3.0, regenInterval = 5.0;
     public static double critBase = 5.0, critPerDex = 0.1, healPerInt = 0.5, dropPerLuk = 0.2, goldPerLuk = 0.3;
     public static double expBase = 15, expPower = 2.0, expLinear = 30;
     public static int skillPointsPerLevel = 2, passivePointsPerLevel = 1;
@@ -96,7 +96,8 @@ public final class Balance {
             maxLevel = i(o, "maxLevel", maxLevel);
             hpBase = d(o, "hpBase", hpBase); hpPerLevel = d(o, "hpPerLevel", hpPerLevel); hpPerVit = d(o, "hpPerVit", hpPerVit);
             mpBase = d(o, "mpBase", mpBase); mpPerLevel = d(o, "mpPerLevel", mpPerLevel); mpPerInt = d(o, "mpPerInt", mpPerInt);
-            hpRegenPct = d(o, "hpRegenPercentPerSec", hpRegenPct); mpRegenPct = d(o, "mpRegenPercentPerSec", mpRegenPct);
+            hpRegenPct = d(o, "hpRegenPercent", hpRegenPct); mpRegenPct = d(o, "mpRegenPercent", mpRegenPct);
+            regenInterval = d(o, "regenIntervalSec", regenInterval);
             critBase = d(o, "critBase", critBase); critPerDex = d(o, "critPerDex", critPerDex);
             healPerInt = d(o, "healPerInt", healPerInt); dropPerLuk = d(o, "dropPerLuk", dropPerLuk); goldPerLuk = d(o, "goldPerLuk", goldPerLuk);
             expBase = d(o, "expBase", expBase); expPower = d(o, "expPower", expPower); expLinear = d(o, "expLinear", expLinear);

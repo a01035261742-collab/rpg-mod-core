@@ -92,8 +92,10 @@ public final class PlayerEvents {
         sp.getFoodData().setSaturation(5f);
 
         boolean changed = false;
-        if (sp.tickCount % 20 == 0) {
-            changed |= d.recalc();
+        if (sp.tickCount % 20 == 0) changed |= d.recalc();
+        // 자연 회복: regenIntervalSec 마다 한 번 (기본 HP 0% · MP 3%)
+        int every = (int) Math.max(20, Math.round(Balance.regenInterval * 20));
+        if (sp.tickCount % every == 0) {
             if (sp.isAlive() && d.hp > 0 && !d.isDown()) {
                 double hp0 = d.hp, mp0 = d.mp;
                 d.hp = Math.min(d.maxHp, d.hp + d.maxHp * Balance.hpRegenPct / 100.0 * (1 + d.bonus("hpRegenPct") / 100.0));

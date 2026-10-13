@@ -31,6 +31,9 @@ public final class Mobs {
         mob.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, level.random.nextFloat() * 360f, 0);
         mob.finalizeSpawn(level, level.getCurrentDifficultyAt(pos), MobSpawnType.SPAWNER, null, null);
         if (mob instanceof Slime slime) slime.setSize(2, true);
+        if (mob instanceof net.minecraft.world.entity.monster.Zombie z) z.setBaby(false);   // 아기 좀비 없음
+        Entity ride = mob.getVehicle();                                                      // 치킨 조키 등 없음
+        if (ride != null) { mob.stopRiding(); ride.discard(); }
         mob.setPersistenceRequired();
         apply(mob, def, lv, zone);
         level.addFreshEntity(mob);

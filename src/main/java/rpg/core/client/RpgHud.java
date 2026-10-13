@@ -9,14 +9,70 @@ import net.minecraftforge.client.gui.overlay.ForgeGui;
 public final class RpgHud {
     private RpgHud() {}
 
-    private record Note(String text, long time) {}
+    private record Note(String text, int color, long time) {}
     private static final java.util.List<Note> NOTES = new java.util.ArrayList<>();
+    /** 스킬바 크기·위치 (GUI 크기 2 기준, Epic Fight 스태미나 바 왼쪽) */
+    static final int SIZE = 24, GAP = 2, EF_RIGHT = 128;
 
     public static void addReward(long exp, long gold) {
-        String t = exp > 0 ? "+" + String.format("%,d", exp) + " EXP" + (gold > 0 ? "   +" + String.format("%,d", gold) + " G" : "")
-                : "+" + String.format("%,d", gold) + " G";
-        NOTES.add(new Note(t, System.currentTimeMillis()));
-        if (NOTES.size() > 5) NOTES.remove(0);
+        if (exp > 0) addNote("+" + String.format("%,d", exp) + " EXP", 0xFFB0FF80);
+        if (gold > 0) addNote("+" + String.format("%,d", gold) + " G", 0xFFFFD24A);
+    }
+
+    public static void addNote(String text, int color) {
+        NOTES.add(new Note(text, color, System.currentTimeMillis()));
+        while (NOTES.size() > 7) NOTES.remove(0);
+    }
+
+    // ───────── 레벨업 연출 (화면 위쪽 가운데) ─────────
+    private static int lvUpLevel;
+    private static long lvUpTime;
+
+    public static void levelUp(int level) {
+        lvUpLevel = level;
+        lvUpTime = System.currentTimeMillis();
+        Minecraft mc = Minecraft.getInstance();
+        mc.getSoundManager().play(net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(
+                net.minecraft.sounds.SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, 1.0f, 0.8f));
+    }
+
+    private static void levelUpBanner(GuiGraphics g, Font font, int w) {
+        if (lvUpTime == 0) return;
+        long age = System.currentTimeMillis() - lvUpTime;
+        if (age > 3500) return;
+        float a = age < 250 ? age / 250f : age > 2800 ? 1f - (age - 2800) / 700f : 1f;
+        int alpha = Math.max(8, (int) (255 * a)) << 24;
+        float pop = age < 250 ? 1.4f - 0.4f * (age / 250f) : 1f;   // 처음에 크게 → 제자리
+        var pose = g.pose();
+        String t1 = "LEVEL UP!";
+        pose.pushPose();
+        pose.translate(w / 2f, 34, 0);
+        pose.scale(3f * pop, 3f * pop, 1);
+        g.drawString(font, t1, -font.width(t1) / 2, -4, alpha | 0xFFD24A, true);
+        pose.popPose();
+        String t2 = "Lv." + lvUpLevel;
+        pose.pushPose();
+        pose.translate(w / 2f, 58, 0);
+        pose.scale(1.6f, 1.6f, 1);
+        g.drawString(font, t2, -font.width(t2) / 2, -4, alpha | 0xFFFFFF, true);
+        pose.popPose();
+        String t3 = "스탯·스킬·패시브 포인트를 받았어요  (K · L · N)";
+        g.drawString(font, t3, w / 2 - font.width(t3) / 2, 72, alpha | 0xA0E0A0, true);
+    }
+
+    /** 획득 알림: 스킬바 위, 오른쪽 정렬, 3초 */
+    private static void notes(GuiGraphics g, Font font, int w, int h) {
+        long now = System.currentTimeMillis();
+        NOTES.removeIf(n -> now - n.time() > 3000);
+        int right = w - EF_RIGHT;
+        int ny = h - 2 * (SIZE + GAP) - 4 - 12;
+        for (int i = NOTES.size() - 1; i >= 0; i--) {
+            Note n = NOTES.get(i);
+            long age = now - n.time();
+            int alpha = age < 2000 ? 255 : (int) (255 * (1 - (age - 2000) / 1000.0));
+            if (alpha > 8) g.drawString(font, n.text(), right - font.width(n.text()), ny, (alpha << 24) | (n.color() & 0xFFFFFF), true);
+            ny -= 10;
+        }
     }
 
     public static void render(ForgeGui gui, GuiGraphics g, float partialTick, int w, int h) {
@@ -25,6 +81,8 @@ public final class RpgHud {
         skillBar(g, mc.font, w, h);
         partyHud(g, mc.font, w, h);
         downHud(g, mc.font, w, h);
+        notes(g, mc.font, w, h);
+        levelUpBanner(g, mc.font, w);
         if (mc.player.isCreative()) return;
         Font font = mc.font;
         int cx = w / 2;
@@ -47,17 +105,6 @@ public final class RpgHud {
         // 레벨 (왼쪽)
         String lv = "Lv." + ClientData.level;
         g.drawString(font, lv, left - font.width(lv) - 5, by + 1, 0xFFFFD24A, true);
-        // 보상 알림 (오른쪽 아래, 3초)
-        long now = System.currentTimeMillis();
-        NOTES.removeIf(n -> now - n.time() > 3000);
-        int ny = h - 50;
-        for (int i = NOTES.size() - 1; i >= 0; i--) {
-            Note n = NOTES.get(i);
-            long age = now - n.time();
-            int alpha = age < 2000 ? 255 : (int) (255 * (1 - (age - 2000) / 1000.0));
-            if (alpha > 8) g.drawString(font, n.text(), w - font.width(n.text()) - 6, ny, (alpha << 24) | 0xB0FF80, true);
-            ny -= 10;
-        }
 
         if (ClientData.statPoints > 0) {
             String sp = "+" + ClientData.statPoints;
@@ -67,23 +114,23 @@ public final class RpgHud {
 
     /** 스킬바: 화면 오른쪽 아래 3칸 × 2줄 (Q E R / F Z X) + 구르기 */
     private static void skillBar(GuiGraphics g, Font font, int w, int h) {
-        int size = 20, gap = 2;
-        int x0 = w - 3 * (size + gap) - 6;
-        int y0 = h - 2 * (size + gap) - 14;
+        int size = SIZE, gap = GAP;
+        int x0 = w - EF_RIGHT - 3 * (size + gap);
+        int y0 = h - 2 * (size + gap) - 4;
         for (int i = 0; i < 6; i++) {
             int x = x0 + (i % 3) * (size + gap), y = y0 + (i / 3) * (size + gap);
             g.fill(x, y, x + size, y + size, 0xB0101018);
             g.fill(x, y, x + size, y + 1, 0xFF505068);
             String id = ClientData.slots[i];
             if (id != null) {
-                SkillIcons.draw(g, id, x + 2, y + 2);
+                SkillIcons.draw(g, id, x + 4, y + 4);
                 int left = ClientData.left(ClientData.cdLeft[i]);
                 int len = ClientData.cdLen[i];
                 if (left > 0 && len > 0) {
                     int fh = (int) Math.ceil(size * (double) left / len);
                     g.fill(x, y + size - fh, x + size, y + size, 0xA0000000);
                     String sec = String.valueOf((left + 19) / 20);
-                    g.drawString(font, sec, x + size / 2 - font.width(sec) / 2, y + 6, 0xFFFF7070, true);
+                    g.drawString(font, sec, x + size / 2 - font.width(sec) / 2, y + 8, 0xFFFF7070, true);
                 }
             }
             g.drawString(font, rpg.core.client.ClientEvents.SLOT_LABELS[i], x + 1, y + size - 8, 0xFFC8C8C8, true);
@@ -93,7 +140,7 @@ public final class RpgHud {
         int sl = ClientData.left(ClientData.sprintLeft);
         if (sl > 0) {
             String t = "질주 " + (sl + 19) / 20 + "s";
-            g.drawString(font, t, x0, y0 - 10, 0xFF80E0FF, true);
+            g.drawString(font, t, x0 - font.width(t) - 4, y0 + 2, 0xFF80E0FF, true);
         }
     }
 

@@ -44,6 +44,13 @@ public final class CombatEvents {
         }
     }
 
+    /** RPG 몹은 햇빛에 안 탐 */
+    @SubscribeEvent
+    public static void noBurn(net.minecraftforge.event.entity.living.LivingEvent.LivingTickEvent e) {
+        if (e.getEntity() instanceof Mob m && !m.level().isClientSide && m.getRemainingFireTicks() > 0 && !m.isInLava()
+                && m.level().canSeeSky(m.blockPosition()) && isRpg(m)) m.clearFire();
+    }
+
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void hurt(net.minecraftforge.event.entity.living.LivingHurtEvent e) {
         if (e.getEntity().level().isClientSide) return;
@@ -64,6 +71,7 @@ public final class CombatEvents {
             PlayerData d = RpgData.get(sp);
             double dmg;
             if (src instanceof Mob m && isRpg(m)) dmg = Combat.mobToPlayer(Combat.mob(m).atk, d);
+            else if (src instanceof Mob) dmg = e.getAmount() / 20.0 * d.maxHp * (1 - Combat.defReducePct(d) / 100.0);  // 일반 몹: 비율 + 방어
             else dmg = e.getAmount() / 20.0 * d.maxHp;   // 환경 피해: 바닐라와 같은 비율
             d.hp = Math.max(0, d.hp - dmg);
             mirror(e, sp, d.hp, d.maxHp);

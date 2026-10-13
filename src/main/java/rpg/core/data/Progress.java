@@ -66,6 +66,7 @@ public final class Progress {
         ServerLevel lv = p.serverLevel();
         lv.playSound(null, p.getX(), p.getY(), p.getZ(), SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS, 1.0f, 1.0f);
         lv.sendParticles(ParticleTypes.TOTEM_OF_UNDYING, p.getX(), p.getY() + 1.0, p.getZ(), 40, 0.4, 0.8, 0.4, 0.3);
+        rpg.core.net.Net.levelUp(p, level);
         p.sendSystemMessage(Component.literal("LEVEL UP! ").withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD)
                 .append(Component.literal("Lv." + level + "  (스탯 +" + Balance.statPointsPerLevel + " K · 스킬 +" + Balance.skillPointsPerLevel + " L · 패시브 +" + Balance.passivePointsPerLevel + " N)")
                         .withStyle(ChatFormatting.YELLOW)));

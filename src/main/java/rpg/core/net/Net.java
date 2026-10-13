@@ -58,10 +58,55 @@ public final class Net {
                 .encoder(JobAdvance::encode).decoder(JobAdvance::new).consumerMainThread(JobAdvance::handle).add();
         CH.messageBuilder(Basic.class, id++, NetworkDirection.PLAY_TO_SERVER)
                 .encoder(Basic::encode).decoder(Basic::new).consumerMainThread(Basic::handle).add();
+        CH.messageBuilder(SetSlot.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(SetSlot::encode).decoder(SetSlot::new).consumerMainThread(SetSlot::handle).add();
+        CH.messageBuilder(LevelUp.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(LevelUp::encode).decoder(LevelUp::new).consumerMainThread(LevelUp::handle).add();
+        CH.messageBuilder(ItemNote.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(ItemNote::encode).decoder(ItemNote::new).consumerMainThread(ItemNote::handle).add();
         CH.messageBuilder(OpenShop.class, id++, NetworkDirection.PLAY_TO_CLIENT)
                 .encoder(OpenShop::encode).decoder(OpenShop::new).consumerMainThread(OpenShop::handle).add();
         CH.messageBuilder(ShopAction.class, id++, NetworkDirection.PLAY_TO_SERVER)
                 .encoder(ShopAction::encode).decoder(ShopAction::new).consumerMainThread(ShopAction::handle).add();
+    }
+
+    public static void levelUp(ServerPlayer p, int level) {
+        CH.send(PacketDistributor.PLAYER.with(() -> p), new LevelUp(level));
+    }
+
+    public static void itemNote(ServerPlayer p, String text) {
+        CH.send(PacketDistributor.PLAYER.with(() -> p), new ItemNote(text));
+    }
+
+    // ───────── 클라 → 서버: 스킬을 키 칸에 넣기 (id 빈칸 = 빼기) ─────────
+    public record SetSlot(int slot, String id) {
+        SetSlot(FriendlyByteBuf b) { this(b.readVarInt(), b.readUtf()); }
+        void encode(FriendlyByteBuf b) { b.writeVarInt(slot); b.writeUtf(id); }
+        void handle(Supplier<NetworkEvent.Context> ctx) {
+            ServerPlayer p = ctx.get().getSender();
+            if (p != null) rpg.core.skill.Skills.setSlot(p, slot, id);
+            ctx.get().setPacketHandled(true);
+        }
+    }
+
+    // ───────── 서버 → 클라: 레벨업 연출 ─────────
+    public record LevelUp(int level) {
+        LevelUp(FriendlyByteBuf b) { this(b.readVarInt()); }
+        void encode(FriendlyByteBuf b) { b.writeVarInt(level); }
+        void handle(Supplier<NetworkEvent.Context> ctx) {
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> rpg.core.client.RpgHud.levelUp(level));
+            ctx.get().setPacketHandled(true);
+        }
+    }
+
+    // ───────── 서버 → 클라: 아이템 획득 알림 ─────────
+    public record ItemNote(String text) {
+        ItemNote(FriendlyByteBuf b) { this(b.readUtf()); }
+        void encode(FriendlyByteBuf b) { b.writeUtf(text); }
+        void handle(Supplier<NetworkEvent.Context> ctx) {
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> rpg.core.client.RpgHud.addNote(text, 0xFFFFFFFF));
+            ctx.get().setPacketHandled(true);
+        }
     }
 
     public static void openShop(ServerPlayer p, int npcId, rpg.core.shop.Shops.Shop s) {
