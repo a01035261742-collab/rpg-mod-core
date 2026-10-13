@@ -52,7 +52,19 @@ public final class PlayerEvents {
         PlayerData d = RpgData.get(sp);
         if (d.isNew()) d.init();
         d.recalc();
+        rpg.core.net.Net.defsTo(sp);
         RpgData.sync(sp);
+    }
+
+    /** /reload 하면 스킬·패시브 정의 다시 보내기 */
+    @SubscribeEvent
+    public static void datapackSync(net.minecraftforge.event.OnDatapackSyncEvent e) {
+        if (e.getPlayer() != null) { rpg.core.net.Net.defsTo(e.getPlayer()); return; }
+        for (ServerPlayer sp : e.getPlayerList().getPlayers()) {
+            rpg.core.net.Net.defsTo(sp);
+            RpgData.get(sp).recalc();
+            RpgData.sync(sp);
+        }
     }
 
     @SubscribeEvent
@@ -84,8 +96,8 @@ public final class PlayerEvents {
             changed |= d.recalc();
             if (sp.isAlive() && d.hp > 0) {
                 double hp0 = d.hp, mp0 = d.mp;
-                d.hp = Math.min(d.maxHp, d.hp + d.maxHp * Balance.hpRegenPct / 100.0);
-                d.mp = Math.min(d.maxMp, d.mp + d.maxMp * Balance.mpRegenPct / 100.0);
+                d.hp = Math.min(d.maxHp, d.hp + d.maxHp * Balance.hpRegenPct / 100.0 * (1 + d.bonus("hpRegenPct") / 100.0));
+                d.mp = Math.min(d.maxMp, d.mp + d.maxMp * Balance.mpRegenPct / 100.0 * (1 + d.bonus("mpRegenPct") / 100.0));
                 changed |= hp0 != d.hp || mp0 != d.mp;
             }
         }
@@ -94,7 +106,8 @@ public final class PlayerEvents {
             float want = (float) Math.max(0.5, d.hp / d.maxHp * sp.getMaxHealth());
             if (Math.abs(sp.getHealth() - want) > 0.01f) sp.setHealth(want);
         }
-        if (changed) RpgData.sync(sp);
+        rpg.core.skill.Skills.tick(sp, d);
+        if (changed || sp.tickCount % 10 == 0 && rpg.core.skill.Skills.anyCooldown(sp, d)) RpgData.sync(sp);
     }
 
     /** 바닐라 회복(음식·재생 효과)은 막고 RPG 회복만 */

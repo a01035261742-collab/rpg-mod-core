@@ -20,8 +20,9 @@ public final class RpgHud {
 
     public static void render(ForgeGui gui, GuiGraphics g, float partialTick, int w, int h) {
         Minecraft mc = Minecraft.getInstance();
-        if (mc.player == null || mc.options.hideGui || !ClientData.ready) return;
-        if (mc.player.isCreative() || mc.player.isSpectator()) return;
+        if (mc.player == null || mc.options.hideGui || !ClientData.ready || mc.player.isSpectator()) return;
+        skillBar(g, mc.font, w, h);
+        if (mc.player.isCreative()) return;
         Font font = mc.font;
         int cx = w / 2;
         int left = cx - 91;
@@ -58,6 +59,48 @@ public final class RpgHud {
         if (ClientData.statPoints > 0) {
             String sp = "+" + ClientData.statPoints;
             g.drawString(font, sp, left - font.width(sp) - 5, by + 11, 0xFF80FF80, true);
+        }
+    }
+
+    /** 스킬바: 화면 오른쪽 아래 3칸 × 2줄 (Q E R / F Z X) + 구르기 */
+    private static void skillBar(GuiGraphics g, Font font, int w, int h) {
+        int size = 20, gap = 2;
+        int x0 = w - 3 * (size + gap) - 6;
+        int y0 = h - 2 * (size + gap) - 14;
+        for (int i = 0; i < 6; i++) {
+            int x = x0 + (i % 3) * (size + gap), y = y0 + (i / 3) * (size + gap);
+            g.fill(x, y, x + size, y + size, 0xB0101018);
+            g.fill(x, y, x + size, y + 1, 0xFF505068);
+            String id = ClientData.slots[i];
+            if (id != null) {
+                SkillIcons.draw(g, id, x + 2, y + 2);
+                int left = ClientData.left(ClientData.cdLeft[i]);
+                int len = ClientData.cdLen[i];
+                if (left > 0 && len > 0) {
+                    int fh = (int) Math.ceil(size * (double) left / len);
+                    g.fill(x, y + size - fh, x + size, y + size, 0xA0000000);
+                    String sec = String.valueOf((left + 19) / 20);
+                    g.drawString(font, sec, x + size / 2 - font.width(sec) / 2, y + 6, 0xFFFF7070, true);
+                }
+            }
+            g.drawString(font, rpg.core.client.ClientEvents.SLOT_LABELS[i], x + 1, y + size - 8, 0xFFC8C8C8, true);
+        }
+        // 구르기 (왼쪽 작은 칸)
+        int dx = x0 - 18, dy = y0 + size + gap + 4;
+        g.fill(dx, dy, dx + 14, dy + 14, 0xB0101018);
+        int left = ClientData.left(ClientData.dodgeLeft);
+        if (left > 0 && ClientData.dodgeLen > 0) {
+            int fh = (int) Math.ceil(14.0 * left / ClientData.dodgeLen);
+            g.fill(dx, dy + 14 - fh, dx + 14, dy + 14, 0xA0FF6060);
+        } else {
+            g.fill(dx + 2, dy + 2, dx + 12, dy + 12, 0xFF60C0FF);
+        }
+        g.drawString(font, "Alt", dx - 1, dy - 9, 0xFFC8C8C8, true);
+        // 질주 버프 남은 시간
+        int sl = ClientData.left(ClientData.sprintLeft);
+        if (sl > 0) {
+            String t = "질주 " + (sl + 19) / 20 + "s";
+            g.drawString(font, t, x0, y0 - 10, 0xFF80E0FF, true);
         }
     }
 

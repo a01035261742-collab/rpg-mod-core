@@ -54,7 +54,7 @@ public final class Combat {
     }
 
     public static double statAttack(Player p, PlayerData d) {
-        return (mainStat(d) * 4.0 + subStat(d)) * weaponAtk(p) / 100.0;
+        return (mainStat(d) * 4.0 + subStat(d)) * weaponAtk(p) / 100.0 * (1 + d.bonus("atkPct") / 100.0);
     }
 
     public static Hit roll(Player p, PlayerData d, double mult) {
@@ -63,12 +63,12 @@ public final class Combat {
         double min = max * Balance.mastery;
         double dmg = (min + r.nextDouble() * (max - min)) * mult;
         boolean crit = r.nextDouble() * 100.0 < d.crit();
-        if (crit) dmg *= Balance.critDamage;
+        if (crit) dmg *= d.critDamage();
         return new Hit(Math.max(1, Math.round(dmg)), crit);
     }
 
     public static double defense(PlayerData d) {
-        return d.stats[PlayerData.VIT] * Balance.defPerVit;
+        return d.stats[PlayerData.VIT] * Balance.defPerVit + d.bonus("def");
     }
 
     /** 몹 → 플레이어 피해 */

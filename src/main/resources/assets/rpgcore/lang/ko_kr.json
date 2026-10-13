@@ -6,5 +6,14 @@
   "item.rpgcore.test_sword_10": "테스트 검 (공 10)",
   "item.rpgcore.test_sword_30": "테스트 검 (공 30)",
   "item.rpgcore.test_sword_100": "테스트 검 (공 100)",
-  "item.rpgcore.zone_wand": "사냥터 지팡이"
+  "item.rpgcore.zone_wand": "사냥터 지팡이",
+  "key.rpgcore.skills": "스킬 창",
+  "key.rpgcore.passives": "패시브 트리",
+  "key.rpgcore.dodge": "구르기",
+  "key.rpgcore.skill1": "스킬 1 (Q)",
+  "key.rpgcore.skill2": "스킬 2 (E)",
+  "key.rpgcore.skill3": "스킬 3 (R)",
+  "key.rpgcore.skill4": "스킬 4 (F)",
+  "key.rpgcore.skill5": "스킬 5 (Z)",
+  "key.rpgcore.skill6": "스킬 6 (X)"
 }

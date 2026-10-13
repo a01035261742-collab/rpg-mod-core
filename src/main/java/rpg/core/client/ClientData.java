@@ -14,7 +14,14 @@ public final class ClientData {
     public static long gold;
     public static double hp, mp, maxHp = 1, maxMp = 1;
     public static double crit, healBonus, dropBonus, goldBonus;
-    public static double atkMin, atkMax, defPct;
+    public static double atkMin, atkMax, defPct, critDmgPct;
+    public static int skillPoints, passivePoints;
+    public static final java.util.Map<String, Integer> skills = new java.util.LinkedHashMap<>();
+    public static final String[] slots = new String[6];
+    public static final java.util.Map<String, Integer> passives = new java.util.HashMap<>();
+    public static final int[] cdLeft = new int[6], cdLen = new int[6];
+    public static int dodgeLeft, dodgeLen, sprintLeft;
+    public static long receivedAt;
 
     public static void read(FriendlyByteBuf b) {
         b.readerIndex(0);
@@ -24,7 +31,29 @@ public final class ClientData {
         hp = b.readDouble(); mp = b.readDouble(); maxHp = b.readDouble(); maxMp = b.readDouble();
         crit = b.readDouble(); healBonus = b.readDouble(); dropBonus = b.readDouble(); goldBonus = b.readDouble();
         atkMin = b.readDouble(); atkMax = b.readDouble(); defPct = b.readDouble();
+        critDmgPct = b.readDouble();
+        skillPoints = b.readVarInt(); passivePoints = b.readVarInt();
+        skills.clear();
+        int n = b.readVarInt();
+        for (int i = 0; i < n; i++) skills.put(b.readUtf(), b.readVarInt());
+        for (int i = 0; i < 6; i++) { String s = b.readUtf(); slots[i] = s.isEmpty() ? null : s; }
+        passives.clear();
+        n = b.readVarInt();
+        for (int i = 0; i < n; i++) passives.put(b.readUtf(), b.readVarInt());
+        for (int i = 0; i < 6; i++) { cdLeft[i] = b.readVarInt(); cdLen[i] = b.readVarInt(); }
+        dodgeLeft = b.readVarInt(); dodgeLen = b.readVarInt(); sprintLeft = b.readVarInt();
+        receivedAt = System.currentTimeMillis();
         ready = true;
+    }
+
+    /** 받은 뒤 흐른 시간을 빼서 남은 쿨타임(틱) */
+    public static int left(int ticksAtReceive) {
+        long passed = (System.currentTimeMillis() - receivedAt) / 50;
+        return (int) Math.max(0, ticksAtReceive - passed);
+    }
+
+    public static int jobTier() {
+        return job == 0 ? 0 : 1;
     }
 
     public static String jobName() {
@@ -37,3 +66,4 @@ public final class ClientData {
         };
     }
 }
+

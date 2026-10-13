@@ -32,6 +32,14 @@
   "dropPerLuk": 0.2,
   "goldPerLuk": 0.3,
 
+  "skillPointsPerLevel": 2,
+  "passivePointsPerLevel": 1,
+
+  "_구르기": "왼쪽 Alt. 쿨타임(초), 힘(속도), 무적(틱)",
+  "dodgeCooldown": 3.0,
+  "dodgePower": 1.1,
+  "dodgeIframes": 8,
+
   "_경험치": "필요 경험치 = expBase × 레벨^expPower + expLinear × 레벨",
   "expBase": 15,
   "expPower": 2.0,

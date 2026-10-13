@@ -1,0 +1,15 @@
+{
+  "_설명": "스킬 수치. tier 0 = 초보자 (2차 전직 전까지 사용). value = 1레벨 효과, valuePerLevel = 레벨당 증가. 시간은 초",
+  "sprint": {
+    "name": "질주", "tier": 0, "maxLevel": 5,
+    "mp": 8, "cooldown": 45, "duration": 15,
+    "value": 30, "valuePerLevel": 1.5,
+    "desc": "이동속도 +{v}% ({d}초)"
+  },
+  "first_aid": {
+    "name": "응급치료", "tier": 0, "maxLevel": 5,
+    "mp": 10, "cooldown": 60, "duration": 0,
+    "value": 25, "valuePerLevel": 1.5,
+    "desc": "최대 HP의 {v}% 회복 (지력 회복량 증가 적용)"
+  }
+}

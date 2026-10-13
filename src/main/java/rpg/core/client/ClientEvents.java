@@ -1,8 +1,12 @@
 package rpg.core.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.Options;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
@@ -12,7 +16,9 @@ import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.loading.FMLPaths;
 import rpg.core.RpgCore;
+import rpg.core.net.Net;
 
 /** 클라이언트: 키, HUD 등록, 바닐라 하트·배고픔·경험치 숨기기 */
 public final class ClientEvents {
@@ -20,12 +26,28 @@ public final class ClientEvents {
 
     public static final String CATEGORY = "key.categories.rpgcore";
     public static final KeyMapping STAT_KEY = new KeyMapping("key.rpgcore.stats", InputConstants.KEY_K, CATEGORY);
+    public static final KeyMapping SKILL_WINDOW_KEY = new KeyMapping("key.rpgcore.skills", InputConstants.KEY_L, CATEGORY);
+    public static final KeyMapping PASSIVE_KEY = new KeyMapping("key.rpgcore.passives", InputConstants.KEY_N, CATEGORY);
+    public static final KeyMapping DODGE_KEY = new KeyMapping("key.rpgcore.dodge", InputConstants.KEY_LALT, CATEGORY);
+    public static final String[] SLOT_LABELS = {"Q", "E", "R", "F", "Z", "X"};
+    public static final KeyMapping[] SKILL_KEYS = {
+            new KeyMapping("key.rpgcore.skill1", InputConstants.KEY_Q, CATEGORY),
+            new KeyMapping("key.rpgcore.skill2", InputConstants.KEY_E, CATEGORY),
+            new KeyMapping("key.rpgcore.skill3", InputConstants.KEY_R, CATEGORY),
+            new KeyMapping("key.rpgcore.skill4", InputConstants.KEY_F, CATEGORY),
+            new KeyMapping("key.rpgcore.skill5", InputConstants.KEY_Z, CATEGORY),
+            new KeyMapping("key.rpgcore.skill6", InputConstants.KEY_X, CATEGORY),
+    };
 
     @Mod.EventBusSubscriber(modid = RpgCore.MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
     public static final class ModBus {
         @SubscribeEvent
         public static void keys(RegisterKeyMappingsEvent e) {
             e.register(STAT_KEY);
+            e.register(SKILL_WINDOW_KEY);
+            e.register(PASSIVE_KEY);
+            e.register(DODGE_KEY);
+            for (KeyMapping k : SKILL_KEYS) e.register(k);
         }
 
         @SubscribeEvent
@@ -36,6 +58,9 @@ public final class ClientEvents {
 
     @Mod.EventBusSubscriber(modid = RpgCore.MODID, value = Dist.CLIENT)
     public static final class GameBus {
+        private static boolean keysMoved;
+        private static final int[] wait = new int[6];
+
         @SubscribeEvent
         public static void hideVanilla(RenderGuiOverlayEvent.Pre e) {
             NamedGuiOverlay o = e.getOverlay();
@@ -52,9 +77,53 @@ public final class ClientEvents {
         public static void tick(TickEvent.ClientTickEvent e) {
             if (e.phase != TickEvent.Phase.END) return;
             Minecraft mc = Minecraft.getInstance();
-            while (STAT_KEY.consumeClick()) {
-                if (mc.player != null && mc.screen == null) mc.setScreen(new StatScreen());
+            if (!keysMoved) { keysMoved = true; moveVanillaKeys(mc); }
+            boolean free = mc.player != null && mc.screen == null;
+            while (STAT_KEY.consumeClick()) if (free) mc.setScreen(new StatScreen());
+            while (SKILL_WINDOW_KEY.consumeClick()) if (free) mc.setScreen(new SkillScreen());
+            while (PASSIVE_KEY.consumeClick()) if (free) mc.setScreen(new PassiveScreen());
+            for (int i = 0; i < 6; i++) {
+                if (wait[i] > 0) wait[i]--;
+                boolean pressed = false;
+                while (SKILL_KEYS[i].consumeClick()) pressed = true;
+                if (pressed && free && wait[i] == 0) {
+                    wait[i] = 4;
+                    Net.CH.sendToServer(new Net.UseSkill(i));
+                }
             }
+            boolean dodge = false;
+            while (DODGE_KEY.consumeClick()) dodge = true;
+            if (dodge && free) {
+                float strafe = mc.player.input.leftImpulse, fwd = mc.player.input.forwardImpulse;
+                double yaw = Math.toRadians(mc.player.getYRot());
+                float dx = (float) (strafe * Math.cos(yaw) - fwd * Math.sin(yaw));
+                float dz = (float) (fwd * Math.cos(yaw) + strafe * Math.sin(yaw));
+                Net.CH.sendToServer(new Net.Dodge(dx, dz));
+            }
+        }
+
+        /**
+         * 처음 한 번: 스킬 키와 겹치는 바닐라 키 옮기기
+         * 인벤토리 E→Tab, 플레이어 목록 Tab→`, 버리기 Q→Backspace, 손 바꾸기 F→없음
+         */
+        private static void moveVanillaKeys(Minecraft mc) {
+            Path flag = FMLPaths.CONFIGDIR.get().resolve("rpgcore-keys-v1");
+            if (Files.exists(flag)) return;
+            Options o = mc.options;
+            move(o.keyInventory, "key.keyboard.e", "key.keyboard.tab");
+            move(o.keyPlayerList, "key.keyboard.tab", "key.keyboard.grave.accent");
+            move(o.keyDrop, "key.keyboard.q", "key.keyboard.backspace");
+            move(o.keySwapOffhand, "key.keyboard.f", null);
+            KeyMapping.resetMapping();
+            o.save();
+            try { Files.writeString(flag, "done"); } catch (IOException ignored) {}
+        }
+
+        private static void move(KeyMapping m, String from, String to) {
+            try {
+                if (!from.equals(m.saveString())) return;
+                m.setKey(to == null ? InputConstants.UNKNOWN : InputConstants.getKey(to));
+            } catch (RuntimeException ignored) {}
         }
     }
 }

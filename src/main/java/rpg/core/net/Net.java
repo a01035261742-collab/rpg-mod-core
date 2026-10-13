@@ -38,6 +38,64 @@ public final class Net {
                 .encoder(DamageText::encode).decoder(DamageText::new).consumerMainThread(DamageText::handle).add();
         CH.messageBuilder(Reward.class, id++, NetworkDirection.PLAY_TO_CLIENT)
                 .encoder(Reward::encode).decoder(Reward::new).consumerMainThread(Reward::handle).add();
+        CH.messageBuilder(UseSkill.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(UseSkill::encode).decoder(UseSkill::new).consumerMainThread(UseSkill::handle).add();
+        CH.messageBuilder(Dodge.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(Dodge::encode).decoder(Dodge::new).consumerMainThread(Dodge::handle).add();
+        CH.messageBuilder(Learn.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(Learn::encode).decoder(Learn::new).consumerMainThread(Learn::handle).add();
+        CH.messageBuilder(DefsSync.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(DefsSync::encode).decoder(DefsSync::new).consumerMainThread(DefsSync::handle).add();
+    }
+
+    public static void defsTo(ServerPlayer p) {
+        CH.send(PacketDistributor.PLAYER.with(() -> p), new DefsSync(rpg.core.skill.Defs.skillsJson, rpg.core.skill.Defs.passivesJson));
+    }
+
+    // ───────── 클라 → 서버: 스킬 키 (0~5 = Q E R F Z X) ─────────
+    public record UseSkill(int slot) {
+        UseSkill(FriendlyByteBuf b) { this(b.readVarInt()); }
+        void encode(FriendlyByteBuf b) { b.writeVarInt(slot); }
+        void handle(Supplier<NetworkEvent.Context> ctx) {
+            ServerPlayer p = ctx.get().getSender();
+            if (p != null) rpg.core.skill.Skills.use(p, slot);
+            ctx.get().setPacketHandled(true);
+        }
+    }
+
+    // ───────── 클라 → 서버: 구르기 (이동 방향) ─────────
+    public record Dodge(float dx, float dz) {
+        Dodge(FriendlyByteBuf b) { this(b.readFloat(), b.readFloat()); }
+        void encode(FriendlyByteBuf b) { b.writeFloat(dx); b.writeFloat(dz); }
+        void handle(Supplier<NetworkEvent.Context> ctx) {
+            ServerPlayer p = ctx.get().getSender();
+            if (p != null) rpg.core.skill.Skills.dodge(p, dx, dz);
+            ctx.get().setPacketHandled(true);
+        }
+    }
+
+    // ───────── 클라 → 서버: 스킬 레벨업(kind 0) / 패시브 찍기(kind 1) ─────────
+    public record Learn(int kind, String id) {
+        Learn(FriendlyByteBuf b) { this(b.readVarInt(), b.readUtf(64)); }
+        void encode(FriendlyByteBuf b) { b.writeVarInt(kind); b.writeUtf(id, 64); }
+        void handle(Supplier<NetworkEvent.Context> ctx) {
+            ServerPlayer p = ctx.get().getSender();
+            if (p != null) {
+                if (kind == 0) rpg.core.skill.Skills.learn(p, id);
+                else rpg.core.skill.Skills.passiveUp(p, id);
+            }
+            ctx.get().setPacketHandled(true);
+        }
+    }
+
+    // ───────── 서버 → 클라: 스킬·패시브 정의 원문 ─────────
+    public record DefsSync(String skills, String passives) {
+        DefsSync(FriendlyByteBuf b) { this(b.readUtf(262144), b.readUtf(262144)); }
+        void encode(FriendlyByteBuf b) { b.writeUtf(skills, 262144); b.writeUtf(passives, 262144); }
+        void handle(Supplier<NetworkEvent.Context> ctx) {
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> rpg.core.skill.Defs.parse(skills, passives));
+            ctx.get().setPacketHandled(true);
+        }
     }
 
     public static void syncTo(ServerPlayer p, PlayerData d) {
@@ -96,7 +154,7 @@ public final class Net {
 
         SyncData(Player p, PlayerData d) {
             buf = new FriendlyByteBuf(io.netty.buffer.Unpooled.buffer());
-            d.write(buf, Combat.statAttack(p, d), Combat.defReducePct(d));
+            d.write(buf, Combat.statAttack(p, d), Combat.defReducePct(d), p.level().getGameTime());
         }
 
         SyncData(FriendlyByteBuf in) {

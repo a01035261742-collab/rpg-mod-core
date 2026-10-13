@@ -22,6 +22,8 @@ public final class Progress {
             d.exp -= Balance.expNeed(d.level);
             d.level++;
             d.statPoints += Balance.statPointsPerLevel;
+            d.skillPoints += Balance.skillPointsPerLevel;
+            d.passivePoints += Balance.passivePointsPerLevel;
             ups++;
         }
         if (d.level >= Balance.maxLevel) d.exp = 0;
@@ -41,6 +43,9 @@ public final class Progress {
         d.exp = 0;
         for (int i = 0; i < 5; i++) d.stats[i] = Balance.startStat;
         d.statPoints = (d.level - 1) * Balance.statPointsPerLevel;
+        d.skillPoints = (d.level - 1) * Balance.skillPointsPerLevel;
+        d.passivePoints = (d.level - 1) * Balance.passivePointsPerLevel;
+        d.skills.clear(); d.passives.clear(); java.util.Arrays.fill(d.slots, null);
         d.recalc();
         d.hp = d.maxHp; d.mp = d.maxMp;
         RpgData.sync(p);
@@ -62,7 +67,7 @@ public final class Progress {
         lv.playSound(null, p.getX(), p.getY(), p.getZ(), SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS, 1.0f, 1.0f);
         lv.sendParticles(ParticleTypes.TOTEM_OF_UNDYING, p.getX(), p.getY() + 1.0, p.getZ(), 40, 0.4, 0.8, 0.4, 0.3);
         p.sendSystemMessage(Component.literal("LEVEL UP! ").withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD)
-                .append(Component.literal("Lv." + level + "  (스탯 포인트 +" + Balance.statPointsPerLevel + " · K키로 분배)")
+                .append(Component.literal("Lv." + level + "  (스탯 +" + Balance.statPointsPerLevel + " K · 스킬 +" + Balance.skillPointsPerLevel + " L · 패시브 +" + Balance.passivePointsPerLevel + " N)")
                         .withStyle(ChatFormatting.YELLOW)));
     }
 }

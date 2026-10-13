@@ -9,7 +9,7 @@ import rpg.core.net.Net;
 
 /** 스탯 창 (K): 메이플식 작은 창 + "상세" 버튼으로 오른쪽에 상세 능력치 펼치기 */
 public class StatScreen extends Screen {
-    private static final int W = 150, H = 170, DW = 150;
+    private static final int W = 150, H = 182, DW = 150;
     private static boolean detail = false;   // 펼침 상태 기억
     private int x, y;
 
@@ -67,6 +67,7 @@ public class StatScreen extends Screen {
             ry = line(g, dx, ry, "최대 MP", String.format("%,.0f", ClientData.maxMp));
             ry = line(g, dx, ry, "받는 피해 감소", String.format("%.1f%%", ClientData.defPct));
             ry = line(g, dx, ry, "치명타 확률", String.format("%.1f%%", ClientData.crit));
+            ry = line(g, dx, ry, "치명타 피해", String.format("%.0f%%", ClientData.critDmgPct));
             ry = line(g, dx, ry, "회복량 증가", String.format("+%.1f%%", ClientData.healBonus));
             ry = line(g, dx, ry, "드롭률 증가", String.format("+%.1f%%", ClientData.dropBonus));
             ry = line(g, dx, ry, "골드 획득 증가", String.format("+%.1f%%", ClientData.goldBonus));

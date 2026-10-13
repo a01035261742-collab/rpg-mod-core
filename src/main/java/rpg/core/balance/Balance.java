@@ -31,6 +31,9 @@ public final class Balance {
     public static double hpRegenPct = 1.0, mpRegenPct = 2.0;
     public static double critBase = 5.0, critPerDex = 0.1, healPerInt = 0.5, dropPerLuk = 0.2, goldPerLuk = 0.3;
     public static double expBase = 15, expPower = 2.0, expLinear = 30;
+    public static int skillPointsPerLevel = 2, passivePointsPerLevel = 1;
+    public static double dodgeCooldown = 3.0, dodgePower = 1.1;
+    public static int dodgeIframes = 8;
     public static double mastery = 0.8, critDamage = 1.5, fistAttack = 5, defPerVit = 1.0, defConstant = 100;
     public static java.util.Set<String> huntingDimensions = new java.util.HashSet<>();
 
@@ -66,6 +69,8 @@ public final class Balance {
         @Override
         protected void apply(Map<ResourceLocation, JsonElement> files, ResourceManager rm, ProfilerFiller profiler) {
             loadMobs(files.get(RpgCore.id("mobs")));
+            JsonElement sk = files.get(RpgCore.id("skills")), pa = files.get(RpgCore.id("passives"));
+            rpg.core.skill.Defs.parse(sk == null ? "{}" : sk.toString(), pa == null ? "{}" : pa.toString());
             JsonElement el = files.get(RpgCore.id("player"));
             if (el == null || !el.isJsonObject()) {
                 RpgCore.LOG.warn("[rpgcore] rpg_balance/player.json 없음 — 기본값 사용");
@@ -82,6 +87,10 @@ public final class Balance {
             healPerInt = d(o, "healPerInt", healPerInt); dropPerLuk = d(o, "dropPerLuk", dropPerLuk); goldPerLuk = d(o, "goldPerLuk", goldPerLuk);
             expBase = d(o, "expBase", expBase); expPower = d(o, "expPower", expPower); expLinear = d(o, "expLinear", expLinear);
             mastery = d(o, "mastery", mastery); critDamage = d(o, "critDamage", critDamage); fistAttack = d(o, "fistAttack", fistAttack);
+            skillPointsPerLevel = i(o, "skillPointsPerLevel", skillPointsPerLevel);
+            passivePointsPerLevel = i(o, "passivePointsPerLevel", passivePointsPerLevel);
+            dodgeCooldown = d(o, "dodgeCooldown", dodgeCooldown); dodgePower = d(o, "dodgePower", dodgePower);
+            dodgeIframes = i(o, "dodgeIframes", dodgeIframes);
             defPerVit = d(o, "defPerVit", defPerVit); defConstant = d(o, "defConstant", defConstant);
             huntingDimensions = new java.util.HashSet<>();
             if (o.has("huntingDimensions")) o.getAsJsonArray("huntingDimensions").forEach(x -> huntingDimensions.add(x.getAsString()));
