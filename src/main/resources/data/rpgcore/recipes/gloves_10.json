@@ -1,0 +1,21 @@
+{
+ "type": "rpgcore:gold_shaped",
+ "category": "equipment",
+ "gold": 300,
+ "pattern": [
+  "I I",
+  "IVI"
+ ],
+ "key": {
+  "I": {
+   "item": "minecraft:iron_ingot"
+  },
+  "V": {
+   "item": "rpgcore:venom_sac"
+  }
+ },
+ "result": {
+  "item": "rpgcore:gloves_10",
+  "count": 1
+ }
+}

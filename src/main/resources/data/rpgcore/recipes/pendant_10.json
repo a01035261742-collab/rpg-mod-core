@@ -1,0 +1,28 @@
+{
+ "type": "rpgcore:gold_shaped",
+ "category": "equipment",
+ "gold": 400,
+ "pattern": [
+  "I I",
+  "GDG",
+  " Z "
+ ],
+ "key": {
+  "I": {
+   "item": "minecraft:iron_ingot"
+  },
+  "G": {
+   "item": "minecraft:gold_ingot"
+  },
+  "D": {
+   "item": "minecraft:diamond"
+  },
+  "Z": {
+   "item": "rpgcore:zombie_heart"
+  }
+ },
+ "result": {
+  "item": "rpgcore:pendant_10",
+  "count": 1
+ }
+}

@@ -1,0 +1,21 @@
+{
+ "type": "rpgcore:gold_shaped",
+ "category": "equipment",
+ "gold": 300,
+ "pattern": [
+  " I ",
+  "IKI"
+ ],
+ "key": {
+  "I": {
+   "item": "minecraft:iron_ingot"
+  },
+  "K": {
+   "item": "rpgcore:glowing_skull"
+  }
+ },
+ "result": {
+  "item": "rpgcore:earring_10",
+  "count": 1
+ }
+}

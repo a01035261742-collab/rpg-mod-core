@@ -1,0 +1,22 @@
+{
+ "type": "rpgcore:gold_shaped",
+ "category": "equipment",
+ "gold": 300,
+ "pattern": [
+  " I ",
+  "ICI",
+  " I "
+ ],
+ "key": {
+  "I": {
+   "item": "minecraft:iron_ingot"
+  },
+  "C": {
+   "item": "rpgcore:slime_core"
+  }
+ },
+ "result": {
+  "item": "rpgcore:ring_10",
+  "count": 1
+ }
+}

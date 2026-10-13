@@ -1,0 +1,21 @@
+{
+ "type": "rpgcore:gold_shaped",
+ "category": "equipment",
+ "gold": 30,
+ "pattern": [
+  "L L",
+  "LWL"
+ ],
+ "key": {
+  "L": {
+   "item": "minecraft:leather"
+  },
+  "W": {
+   "item": "rpgcore:web_bundle"
+  }
+ },
+ "result": {
+  "item": "rpgcore:gloves_1",
+  "count": 1
+ }
+}

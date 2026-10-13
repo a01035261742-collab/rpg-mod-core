@@ -1,0 +1,21 @@
+{
+ "type": "rpgcore:gold_shaped",
+ "category": "equipment",
+ "gold": 30,
+ "pattern": [
+  " C ",
+  "CBC"
+ ],
+ "key": {
+  "C": {
+   "item": "minecraft:copper_ingot"
+  },
+  "B": {
+   "item": "rpgcore:bone_shard"
+  }
+ },
+ "result": {
+  "item": "rpgcore:earring_1",
+  "count": 1
+ }
+}

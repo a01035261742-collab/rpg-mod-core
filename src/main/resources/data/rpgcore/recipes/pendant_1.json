@@ -1,0 +1,21 @@
+{
+ "type": "rpgcore:gold_shaped",
+ "category": "equipment",
+ "gold": 30,
+ "pattern": [
+  "C C",
+  " R "
+ ],
+ "key": {
+  "C": {
+   "item": "minecraft:copper_ingot"
+  },
+  "R": {
+   "item": "rpgcore:rotten_chunk"
+  }
+ },
+ "result": {
+  "item": "rpgcore:pendant_1",
+  "count": 1
+ }
+}

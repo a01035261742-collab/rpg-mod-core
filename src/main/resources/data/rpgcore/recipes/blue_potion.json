@@ -1,0 +1,25 @@
+{
+ "type": "rpgcore:gold_shaped",
+ "category": "misc",
+ "gold": 10,
+ "pattern": [
+  "W",
+  "S",
+  "B"
+ ],
+ "key": {
+  "W": {
+   "item": "rpgcore:web_bundle"
+  },
+  "S": {
+   "item": "rpgcore:slime_goo"
+  },
+  "B": {
+   "item": "minecraft:glass_bottle"
+  }
+ },
+ "result": {
+  "item": "rpgcore:blue_potion",
+  "count": 3
+ }
+}

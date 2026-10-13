@@ -1,0 +1,20 @@
+{
+ "type": "rpgcore:gold_shaped",
+ "category": "equipment",
+ "gold": 250,
+ "pattern": [
+  "IZI"
+ ],
+ "key": {
+  "I": {
+   "item": "minecraft:iron_ingot"
+  },
+  "Z": {
+   "item": "rpgcore:zombie_heart"
+  }
+ },
+ "result": {
+  "item": "rpgcore:belt_10",
+  "count": 1
+ }
+}

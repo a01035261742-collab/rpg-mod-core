@@ -1,0 +1,25 @@
+{
+ "type": "rpgcore:gold_shaped",
+ "category": "misc",
+ "gold": 10,
+ "pattern": [
+  "R",
+  "S",
+  "B"
+ ],
+ "key": {
+  "R": {
+   "item": "rpgcore:rotten_chunk"
+  },
+  "S": {
+   "item": "rpgcore:slime_goo"
+  },
+  "B": {
+   "item": "minecraft:glass_bottle"
+  }
+ },
+ "result": {
+  "item": "rpgcore:red_potion",
+  "count": 3
+ }
+}

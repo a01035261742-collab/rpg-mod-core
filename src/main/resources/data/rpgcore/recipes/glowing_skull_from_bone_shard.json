@@ -1,0 +1,19 @@
+{
+ "type": "rpgcore:gold_shaped",
+ "category": "misc",
+ "gold": 20,
+ "pattern": [
+  "XXX",
+  "XXX",
+  "XXX"
+ ],
+ "key": {
+  "X": {
+   "item": "rpgcore:bone_shard"
+  }
+ },
+ "result": {
+  "item": "rpgcore:glowing_skull",
+  "count": 1
+ }
+}

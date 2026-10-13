@@ -30,6 +30,7 @@ public class RpgCore {
         ModItems.ITEMS.register(modBus);
         ModItems.TABS.register(modBus);
         rpg.core.equip.EquipMenu.MENUS.register(modBus);
+        rpg.core.craft.GoldShapedRecipe.SERIALIZERS.register(modBus);
         Net.register();
     }
 

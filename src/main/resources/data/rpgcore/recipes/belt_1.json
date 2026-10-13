@@ -1,0 +1,20 @@
+{
+ "type": "rpgcore:gold_shaped",
+ "category": "equipment",
+ "gold": 25,
+ "pattern": [
+  "LBL"
+ ],
+ "key": {
+  "L": {
+   "item": "minecraft:leather"
+  },
+  "B": {
+   "item": "rpgcore:bone_shard"
+  }
+ },
+ "result": {
+  "item": "rpgcore:belt_1",
+  "count": 1
+ }
+}

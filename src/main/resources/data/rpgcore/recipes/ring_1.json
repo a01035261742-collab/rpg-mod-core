@@ -1,0 +1,22 @@
+{
+ "type": "rpgcore:gold_shaped",
+ "category": "equipment",
+ "gold": 30,
+ "pattern": [
+  " C ",
+  "CSC",
+  " C "
+ ],
+ "key": {
+  "C": {
+   "item": "minecraft:copper_ingot"
+  },
+  "S": {
+   "item": "rpgcore:slime_goo"
+  }
+ },
+ "result": {
+  "item": "rpgcore:ring_1",
+  "count": 1
+ }
+}

@@ -1,0 +1,21 @@
+{
+ "type": "rpgcore:gold_shaped",
+ "category": "equipment",
+ "gold": 30,
+ "pattern": [
+  "LWL",
+  "LLL"
+ ],
+ "key": {
+  "L": {
+   "item": "minecraft:leather"
+  },
+  "W": {
+   "item": "rpgcore:web_bundle"
+  }
+ },
+ "result": {
+  "item": "rpgcore:cape_1",
+  "count": 1
+ }
+}
