@@ -92,6 +92,9 @@ public final class Mobs {
         m.key = def.key(); m.name = def.name(); m.zone = zone == null ? "" : zone;
         m.level = lv; m.maxHp = Math.max(1, s.hp()); m.hp = m.maxHp; m.atk = s.atk(); m.exp = s.exp(); m.gold = s.gold();
         mob.setHealth(mob.getMaxHealth());
+        // 넉백 90% 줄임 (Epic Fight 콤보가 안 끊기게)
+        var kb = mob.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.KNOCKBACK_RESISTANCE);
+        if (kb != null) kb.setBaseValue(Math.max(kb.getBaseValue(), 0.9));
     }
 
     /** 근처 플레이어들에게 이 몹의 레벨·체력 알리기 */

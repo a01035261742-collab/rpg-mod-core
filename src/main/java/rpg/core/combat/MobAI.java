@@ -38,6 +38,16 @@ public final class MobAI {
     // ───────── 스폰할 때 ─────────
     public static void setup(Mob mob, Balance.MobDef def) {
         GoalSelector goals = selector(mob, 0), targets = selector(mob, 1);
+        // 근접 공격 거리 통일: 기존 근접 공격(거미·곰·늑대 등 포함)을 RPG 근접 공격으로 바꿈
+        if (goals != null && mob instanceof PathfinderMob pm) {
+            java.util.List<net.minecraft.world.entity.ai.goal.WrappedGoal> melee = new java.util.ArrayList<>();
+            for (var g : goals.getAvailableGoals())
+                if (g.getGoal() instanceof net.minecraft.world.entity.ai.goal.MeleeAttackGoal && !(g.getGoal() instanceof RpgMeleeGoal)) melee.add(g);
+            for (var g : melee) {
+                goals.removeGoal(g.getGoal());
+                goals.addGoal(g.getPriority(), new RpgMeleeGoal(pm, 1.15));
+            }
+        }
         if (goals != null) {
             // 좀벌레: 블록에 숨기·친구 부르기 없음
             goals.getAvailableGoals().removeIf(g -> {
@@ -105,6 +115,9 @@ public final class MobAI {
         if (t == null && (def.look().chase() || def.look().passive())) t = nearest(mob, 16);
         if (t == null) return;
         if (def.look().chase() && mob.tickCount % 10 == 0) mob.getNavigation().moveTo(t, 1.2);
+        // 브레인 AI 몹(호글린 등)은 멀리서 멈추지 않고 1.2칸까지 붙게
+        if (mob instanceof net.minecraft.world.entity.monster.hoglin.Hoglin && mob.tickCount % 10 == 0
+                && edge(mob, t) > RpgMeleeGoal.REACH * 0.8) mob.getNavigation().moveTo(t, 1.1);
 
         double dist = mob.distanceTo(t);
         for (int i = 0; i < def.skills().size() && i < m.skillReady.length; i++) {
@@ -113,6 +126,12 @@ public final class MobAI {
             start(mob, m, sk, i, t, now);
             return;
         }
+    }
+
+    /** 몸 바깥끼리 거리 */
+    public static double edge(net.minecraft.world.entity.Entity a, net.minecraft.world.entity.Entity b) {
+        double dx = a.getX() - b.getX(), dz = a.getZ() - b.getZ();
+        return Math.sqrt(dx * dx + dz * dz) - a.getBbWidth() / 2 - b.getBbWidth() / 2;
     }
 
     private static boolean valid(Player p) {

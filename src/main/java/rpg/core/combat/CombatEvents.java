@@ -66,6 +66,14 @@ public final class CombatEvents {
         MOB_PCT.remove(p.getId());
     }
 
+    /** RPG 몹 근접 공격은 몸 바깥 1.2칸(+여유) 안에서만 맞음 (멀리서 휘두르는 몹 막기) */
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public static void meleeReach(net.minecraftforge.event.entity.living.LivingAttackEvent e) {
+        if (!(e.getEntity() instanceof ServerPlayer p) || !(e.getSource().getEntity() instanceof Mob m)) return;
+        if (e.getSource().getDirectEntity() != m || !isRpg(m) || MOB_PCT.containsKey(p.getId())) return;   // 패턴·투사체는 제외
+        if (MobAI.edge(m, p) > RpgMeleeGoal.REACH + 0.6) e.setCanceled(true);
+    }
+
     /** 바닐라 독·시듦은 플레이어에게 안 걸림 (RPG 피해만) */
     @SubscribeEvent
     public static void noVanillaDot(net.minecraftforge.event.entity.living.MobEffectEvent.Applicable e) {
