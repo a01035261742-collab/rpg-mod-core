@@ -99,8 +99,9 @@ public final class RpgHud {
 
         // HP / MP 바 (그 위)
         int by = ey - 12;
-        bar(g, font, left, by, 90, 10, ClientData.hp, ClientData.maxHp, 0xFFD02828, 0xFF4A1414, "HP");
-        bar(g, font, left + 92, by, 90, 10, ClientData.mp, ClientData.maxMp, 0xFF2A68E0, 0xFF142448, "MP");
+        // 검은 테두리(1칸) 포함 바깥 끝이 핫바(182칸) 양 끝과 딱 맞게
+        bar(g, font, left + 1, by, 88, 10, ClientData.hp, ClientData.maxHp, 0xFFD02828, 0xFF4A1414, "HP");
+        bar(g, font, left + 93, by, 88, 10, ClientData.mp, ClientData.maxMp, 0xFF2A68E0, 0xFF142448, "MP");
 
         // 레벨 (왼쪽)
         String lv = "Lv." + ClientData.level;
