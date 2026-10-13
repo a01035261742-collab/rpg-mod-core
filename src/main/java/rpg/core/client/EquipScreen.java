@@ -29,7 +29,7 @@ public class EquipScreen extends AbstractContainerScreen<EquipMenu> {
         g.fill(x + 175, y, x + 176, y + imageHeight, 0xFF555555);
         g.fill(x, y + imageHeight - 1, x + 176, y + imageHeight, 0xFF555555);
         // 장비 패널
-        g.fill(x + 176, y, x + imageWidth, y + 130, 0xFF2A2A3A);
+        g.fill(x + 176, y, x + imageWidth, y + 142, 0xFF2A2A3A);
         g.fill(x + 176, y, x + imageWidth, y + 1, 0xFFFFD24A);
         // 캐릭터 상자
         g.fill(x + 25, y + 7, x + 76, y + 78, 0xFF000000);
@@ -51,7 +51,7 @@ public class EquipScreen extends AbstractContainerScreen<EquipMenu> {
 
     @Override
     protected void renderLabels(GuiGraphics g, int mx, int my) {
-        g.drawString(font, "장비", 186, -10 + 10 + 118, 0xFFFFD24A, false);
+        g.drawString(font, "장비", 192, 130, 0xFFFFD24A, false);
         g.drawString(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, 0xFF404040, false);
     }
 
