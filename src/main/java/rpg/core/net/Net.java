@@ -58,6 +58,8 @@ public final class Net {
                 .encoder(JobAdvance::encode).decoder(JobAdvance::new).consumerMainThread(JobAdvance::handle).add();
         CH.messageBuilder(Basic.class, id++, NetworkDirection.PLAY_TO_SERVER)
                 .encoder(Basic::encode).decoder(Basic::new).consumerMainThread(Basic::handle).add();
+        CH.messageBuilder(SkillRelease.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(SkillRelease::encode).decoder(SkillRelease::new).consumerMainThread(SkillRelease::handle).add();
         CH.messageBuilder(SetSlot.class, id++, NetworkDirection.PLAY_TO_SERVER)
                 .encoder(SetSlot::encode).decoder(SetSlot::new).consumerMainThread(SetSlot::handle).add();
         CH.messageBuilder(LevelUp.class, id++, NetworkDirection.PLAY_TO_CLIENT)
@@ -76,6 +78,17 @@ public final class Net {
 
     public static void itemNote(ServerPlayer p, String text) {
         CH.send(PacketDistributor.PLAYER.with(() -> p), new ItemNote(text));
+    }
+
+    // ───────── 클라 → 서버: 차지 스킬 키 뗌 ─────────
+    public record SkillRelease(int slot) {
+        SkillRelease(FriendlyByteBuf b) { this(b.readVarInt()); }
+        void encode(FriendlyByteBuf b) { b.writeVarInt(slot); }
+        void handle(Supplier<NetworkEvent.Context> ctx) {
+            ServerPlayer p = ctx.get().getSender();
+            if (p != null) rpg.core.skill.Skills.release(p);
+            ctx.get().setPacketHandled(true);
+        }
     }
 
     // ───────── 클라 → 서버: 스킬을 키 칸에 넣기 (id 빈칸 = 빼기) ─────────

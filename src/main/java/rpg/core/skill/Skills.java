@@ -24,6 +24,7 @@ public final class Skills {
 
     /** 이 플레이어가 지금 쓸 수 있는 스킬인가 (초보자 스킬은 2차 전직 전까지) */
     public static boolean available(PlayerData d, Defs.SkillDef s) {
+        if (s.job() != 0 && s.job() != d.job) return false;
         if (s.tier() == 0) return d.jobTier() < 2;
         return s.tier() <= d.jobTier();
     }
@@ -86,16 +87,42 @@ public final class Skills {
             p.displayClientMessage(Component.literal("MP가 부족해요").withStyle(ChatFormatting.BLUE), true);
             return;
         }
+        if (s.charge()) {   // 누르고 있는 동안 모으기, 떼면 발동
+            if (d.chargeSkill != null) return;
+            d.chargeSkill = id; d.chargeStart = now; d.chargeSlot = slot;
+            RpgData.sync(p);
+            return;
+        }
         boolean ok = switch (id) {
             case "sprint" -> sprint(p, d, s, lv, now);
             case "first_aid" -> firstAid(p, d, s, lv);
-            default -> false;
+            default -> JobSkills.use(p, d, s, lv, now);
         };
         if (!ok) return;
+        spend(d, s, now);
+        RpgData.sync(p);
+    }
+
+    private static void spend(PlayerData d, Defs.SkillDef s, long now) {
         d.mp -= s.mp();
         int cd = (int) Math.round(s.cooldown() * 20);
-        d.cdEnd.put(id, now + cd);
-        d.cdLen.put(id, cd);
+        d.cdEnd.put(s.id(), now + cd);
+        d.cdLen.put(s.id(), cd);
+    }
+
+    /** 차지 스킬 키를 뗐을 때 (또는 최대 시간이 지나면 자동) */
+    public static void release(ServerPlayer p) {
+        PlayerData d = RpgData.get(p);
+        if (d.chargeSkill == null) return;
+        String id = d.chargeSkill;
+        long now = p.level().getGameTime();
+        long held = now - d.chargeStart;
+        d.chargeSkill = null; d.chargeSlot = -1;
+        Defs.SkillDef s = Defs.SKILLS.get(id);
+        int lv = d.skills.getOrDefault(id, 0);
+        if (s == null || lv <= 0 || d.isDown() || !p.isAlive() || d.mp < s.mp()) { RpgData.sync(p); return; }
+        if ("power_strike".equals(id)) JobSkills.releaseCharge(p, d, s, lv, held);
+        spend(d, s, now);
         RpgData.sync(p);
     }
 
@@ -142,10 +169,29 @@ public final class Skills {
         RpgData.sync(p);
     }
 
-    // ───────── 매 틱: 이동속도 (패시브 + 질주) ─────────
+    private static final UUID ATK_SPEED_ID = UUID.fromString("6f1f0d2e-7a51-4c1e-9b0a-52d0c1a1e004");
+
+    // ───────── 매 틱: 이동속도 (패시브 + 질주 + 헤이스트 - 차지), 공격 속도 (헤이스트), 차지 ─────────
     public static void tick(ServerPlayer p, PlayerData d) {
         long now = p.level().getGameTime();
-        double pct = d.bonus("speedPct") + (now < d.sprintEnd ? d.sprintPct : 0);
+        if (d.chargeSkill != null) {
+            long held = now - d.chargeStart;
+            JobSkills.chargeTick(p, held);
+            if (held >= 40) release(p);   // 2초 넘게 누르면 자동 발동
+        }
+        // 은신: 끝나면 투명 해제
+        if (!d.buff("stealth", now) && d.buffEnd.containsKey("stealth")) JobSkills.breakStealth(p, d);
+        AttributeInstance as = p.getAttribute(Attributes.ATTACK_SPEED);
+        if (as != null) {
+            double wantA = d.buffV2("haste", now) / 100.0;
+            AttributeModifier ca = as.getModifier(ATK_SPEED_ID);
+            if (ca == null || Math.abs(ca.getAmount() - wantA) > 1e-6) {
+                if (ca != null) as.removeModifier(ATK_SPEED_ID);
+                if (wantA != 0) as.addTransientModifier(new AttributeModifier(ATK_SPEED_ID, "rpg haste", wantA, AttributeModifier.Operation.MULTIPLY_TOTAL));
+            }
+        }
+        double pct = d.bonus("speedPct") + (now < d.sprintEnd ? d.sprintPct : 0) + d.buffV("haste", now)
+                - (d.chargeSkill != null ? 50 : 0);
         AttributeInstance inst = p.getAttribute(Attributes.MOVEMENT_SPEED);
         if (inst == null) return;
         AttributeModifier cur = inst.getModifier(SPEED_ID);
@@ -158,7 +204,8 @@ public final class Skills {
     /** 쿨타임 도는 중인 게 있으면 (화면 갱신용) */
     public static boolean anyCooldown(ServerPlayer p, PlayerData d) {
         long now = p.level().getGameTime();
-        if (now < d.dodgeEnd + 20 || now < d.sprintEnd + 20) return true;
+        if (now < d.dodgeEnd + 20 || now < d.sprintEnd + 20 || d.chargeSkill != null) return true;
+        for (long end : d.buffEnd.values()) if (now < end + 20) return true;
         for (long end : d.cdEnd.values()) if (now < end + 20) return true;
         return false;
     }

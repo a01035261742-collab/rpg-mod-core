@@ -24,6 +24,10 @@ public final class ClientData {
     public static int dodgeLeft, dodgeLen, sprintLeft;
     public static int downLeft = -1, reviveProgress = -1;
     public static long receivedAt;
+    public record Buff(String name, int left) {}
+    public static final java.util.List<Buff> BUFFS = new java.util.ArrayList<>();
+    public static boolean charging;
+    public static int chargeTicks;
 
     public static void read(FriendlyByteBuf b) {
         b.readerIndex(0);
@@ -47,6 +51,11 @@ public final class ClientData {
         for (int i = 0; i < 6; i++) { cdLeft[i] = b.readVarInt(); cdLen[i] = b.readVarInt(); }
         dodgeLeft = b.readVarInt(); dodgeLen = b.readVarInt(); sprintLeft = b.readVarInt();
         downLeft = b.readVarInt(); reviveProgress = b.readVarInt();
+        BUFFS.clear();
+        int nb = b.readVarInt();
+        for (int i = 0; i < nb; i++) BUFFS.add(new Buff(b.readUtf(), b.readVarInt()));
+        charging = b.readBoolean();
+        chargeTicks = b.readVarInt();
         receivedAt = System.currentTimeMillis();
         ready = true;
     }

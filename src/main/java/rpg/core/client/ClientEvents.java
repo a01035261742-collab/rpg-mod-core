@@ -65,6 +65,7 @@ public final class ClientEvents {
     public static final class GameBus {
         private static boolean keysMoved;
         private static final int[] wait = new int[6];
+        private static final boolean[] charging = new boolean[6];
 
         @SubscribeEvent
         public static void hideVanilla(RenderGuiOverlayEvent.Pre e) {
@@ -112,6 +113,13 @@ public final class ClientEvents {
                 if (pressed && free && wait[i] == 0) {
                     wait[i] = 4;
                     Net.CH.sendToServer(new Net.UseSkill(i));
+                    var def = ClientData.slots[i] == null ? null : rpg.core.skill.Defs.SKILLS.get(ClientData.slots[i]);
+                    if (def != null && def.charge()) charging[i] = true;
+                }
+                // 차지 스킬: 키를 떼면 발동
+                if (charging[i] && !SKILL_KEYS[i].isDown()) {
+                    charging[i] = false;
+                    Net.CH.sendToServer(new Net.SkillRelease(i));
                 }
             }
         }

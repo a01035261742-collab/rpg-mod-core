@@ -36,6 +36,18 @@ public class PlayerData {
     public final Map<String, Integer> cdLen = new HashMap<>();
     public long dodgeEnd;
     public int dodgeLen;
+    /** 버프: 스킬 id → 끝나는 틱, 값 */
+    public final Map<String, Long> buffEnd = new HashMap<>();
+    public final Map<String, Double> buffVal = new HashMap<>(), buffVal2 = new HashMap<>();
+    /** 차지 중인 스킬 (강타 차지) */
+    public String chargeSkill;
+    public long chargeStart;
+    public int chargeSlot = -1;
+
+    public boolean buff(String id, long now) { return now < buffEnd.getOrDefault(id, 0L); }
+    public double buffV(String id, long now) { return buff(id, now) ? buffVal.getOrDefault(id, 0.0) : 0; }
+    public double buffV2(String id, long now) { return buff(id, now) ? buffVal2.getOrDefault(id, 0.0) : 0; }
+
     public long sprintEnd;
     public double sprintPct;
 
@@ -197,5 +209,20 @@ public class PlayerData {
         b.writeVarInt((int) Math.max(0, sprintEnd - now));
         b.writeVarInt(isDown() ? (int) Math.max(0, downEnd - now) : -1);
         b.writeVarInt(reviver != null && reviveNeed > 0 ? (int) Math.min(100, (now - reviveStart) * 100 / reviveNeed) : -1);
+        // 버프 표시 (이름, 남은 틱)
+        java.util.List<String> names = new java.util.ArrayList<>();
+        java.util.List<Integer> lefts = new java.util.ArrayList<>();
+        if (now < sprintEnd) { names.add("질주"); lefts.add((int) (sprintEnd - now)); }
+        buffEnd.forEach((id, end) -> {
+            if (now < end) {
+                var def = Defs.SKILLS.get(id);
+                names.add(def == null ? id : def.name());
+                lefts.add((int) (end - now));
+            }
+        });
+        b.writeVarInt(names.size());
+        for (int i = 0; i < names.size(); i++) { b.writeUtf(names.get(i)); b.writeVarInt(lefts.get(i)); }
+        b.writeBoolean(chargeSkill != null);
+        b.writeVarInt(chargeSkill != null ? (int) (now - chargeStart) : 0);
     }
 }

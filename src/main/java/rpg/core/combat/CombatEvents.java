@@ -44,12 +44,62 @@ public final class CombatEvents {
         }
     }
 
-    /** RPG 몹끼리는 안 싸움: 다른 몹을 노리지 않음 */
+    /** RPG 몹끼리는 안 싸움: 다른 몹을 노리지 않음. 은신한 플레이어도 못 노림 */
     @SubscribeEvent
     public static void noInfight(net.minecraftforge.event.entity.living.LivingChangeTargetEvent e) {
-        if (e.getEntity() instanceof Mob m && !m.level().isClientSide && isRpg(m)
-                && e.getNewTarget() != null && !(e.getNewTarget() instanceof net.minecraft.world.entity.player.Player)) {
-            e.setCanceled(true);
+        if (!(e.getEntity() instanceof Mob m) || m.level().isClientSide || e.getNewTarget() == null) return;
+        if (rpg.core.skill.JobSkills.hidden(e.getNewTarget())) { e.setCanceled(true); return; }
+        if (isRpg(m) && !(e.getNewTarget() instanceof net.minecraft.world.entity.player.Player)) e.setCanceled(true);
+    }
+
+    // ───────── 스킬 피해 ─────────
+    /** 다음 피해를 스킬 배율(%)로 / 고정 피해로 */
+    private static final Map<Integer, Double> SKILL_PCT = new java.util.HashMap<>();
+    private static final Map<Integer, Double> FIXED = new java.util.HashMap<>();
+
+    /** 스킬로 몹 때리기: 스공 × pct% */
+    public static void skillHit(ServerPlayer p, Mob t, double pct) {
+        SKILL_PCT.put(t.getId(), pct);
+        t.invulnerableTime = 0;
+        t.hurt(p.damageSources().playerAttack(p), 1.0f);
+        SKILL_PCT.remove(t.getId());
+    }
+
+    /** 고정 피해 (출혈 등) */
+    public static void fixedHit(ServerPlayer p, Mob t, double amount) {
+        FIXED.put(t.getId(), amount);
+        t.invulnerableTime = 0;
+        t.hurt(p.damageSources().playerAttack(p), 1.0f);
+        FIXED.remove(t.getId());
+    }
+
+    /** 스킬 화살은 연속으로 맞아도 다 들어가게 */
+    @SubscribeEvent
+    public static void skillArrowIframes(net.minecraftforge.event.entity.living.LivingAttackEvent e) {
+        Entity direct = e.getSource().getDirectEntity();
+        if (direct != null && direct.getPersistentData().contains("rpgSkillPct")) e.getEntity().invulnerableTime = 0;
+    }
+
+    // ── 출혈: 몹 id → (주인, 초당 피해, 끝나는 틱) ──
+    private record Bleed(ServerPlayer owner, double dmg, long end) {}
+    private static final Map<Integer, Bleed> BLEED = new java.util.HashMap<>();
+
+    @SubscribeEvent
+    public static void bleedTick(net.minecraftforge.event.TickEvent.ServerTickEvent e) {
+        if (e.phase != net.minecraftforge.event.TickEvent.Phase.END || BLEED.isEmpty()) return;
+        var it = BLEED.entrySet().iterator();
+        while (it.hasNext()) {
+            var en = it.next();
+            Bleed b = en.getValue();
+            if (!b.owner().isAlive()) { it.remove(); continue; }
+            Entity ent = b.owner().serverLevel().getEntity(en.getKey());
+            long now = b.owner().level().getGameTime();
+            if (!(ent instanceof Mob m) || !m.isAlive() || now > b.end()) { it.remove(); continue; }
+            if (now % 20 == 0) {
+                fixedHit(b.owner(), m, b.dmg());
+                b.owner().serverLevel().sendParticles(new net.minecraft.core.particles.DustParticleOptions(new org.joml.Vector3f(0.7f, 0f, 0f), 1.2f),
+                        m.getX(), m.getY() + m.getBbHeight() * 0.6, m.getZ(), 6, 0.2, 0.3, 0.2, 0);
+            }
         }
     }
 
@@ -113,6 +163,14 @@ public final class CombatEvents {
             if (src instanceof Mob m && isRpg(m)) dmg = Combat.mobToPlayer(Combat.mob(m).atk, d);
             else if (src instanceof Mob) dmg = e.getAmount() / 20.0 * d.maxHp * (1 - Combat.defReducePct(d) / 100.0);  // 일반 몹: 비율 + 방어
             else dmg = e.getAmount() / 20.0 * d.maxHp;   // 환경 피해: 바닐라와 같은 비율
+            long now = sp.level().getGameTime();
+            dmg *= 1 - Math.min(90, d.buffV("iron_body", now)) / 100.0;           // 아이언 바디: 받는 피해 감소
+            double guard = d.buffV("magic_guard", now);                            // 매직 가드: 일부를 MP로
+            if (guard > 0 && src != null) {
+                double toMp = Math.min(d.mp, dmg * Math.min(90, guard) / 100.0);
+                d.mp -= toMp;
+                dmg -= toMp;
+            }
             d.hp = Math.max(0, d.hp - dmg);
             mirror(e, sp, d.hp, d.maxHp);
             RpgData.sync(sp);
@@ -127,14 +185,37 @@ public final class CombatEvents {
         if (src instanceof ServerPlayer ap) {
             Entity direct = e.getSource().getDirectEntity();
             Double mr = MELEE_RATIO.remove(target.getId());
-            double ratio;
-            if (direct == ap) ratio = mr == null ? 1.0 : mr;                       // 근접 (Epic Fight 모션 배율)
-            else if (direct != null && direct.getPersistentData().contains("rpgPower"))
-                ratio = Math.max(0.1, direct.getPersistentData().getFloat("rpgPower"));  // 활: 당긴 정도
-            else ratio = 1.0;
-            Combat.Hit h = Combat.roll(ap, RpgData.get(ap), ratio);
-            dmg = h.amount();
-            crit = h.crit();
+            Double fixed = FIXED.get(target.getId()), sk = SKILL_PCT.get(target.getId());
+            PlayerData ad = RpgData.get(ap);
+            long now = ap.level().getGameTime();
+            if (fixed != null) {
+                dmg = Math.max(1, Math.round(fixed));
+            } else {
+                double ratio;
+                if (sk != null) ratio = sk / 100.0;                                    // 스킬
+                else if (direct != null && direct.getPersistentData().contains("rpgSkillPct"))
+                    ratio = direct.getPersistentData().getDouble("rpgSkillPct") / 100.0;   // 스킬 화살
+                else if (direct == ap) ratio = mr == null ? 1.0 : mr;                  // 근접 (Epic Fight 모션 배율)
+                else if (direct != null && direct.getPersistentData().contains("rpgPower"))
+                    ratio = Math.max(0.1, direct.getPersistentData().getFloat("rpgPower"));  // 활: 당긴 정도
+                else ratio = 1.0;
+                // 은신 중 첫 공격: 추가 피해 + 출혈, 은신 풀림
+                if (ad.buff("stealth", now)) {
+                    ratio *= 1 + ad.buffV("stealth", now) / 100.0;
+                    double per = Combat.statAttack(ap, ad) * ad.buffV2("stealth", now) / 100.0;
+                    BLEED.put(target.getId(), new Bleed(ap, per, now + 100));
+                    rpg.core.skill.JobSkills.breakStealth(ap, ad);
+                    ap.serverLevel().playSound(null, target.blockPosition(), net.minecraft.sounds.SoundEvents.PLAYER_ATTACK_CRIT,
+                            net.minecraft.sounds.SoundSource.PLAYERS, 1f, 0.7f);
+                }
+                Combat.Hit h = Combat.roll(ap, ad, ratio);
+                dmg = h.amount();
+                crit = h.crit();
+            }
+            if (direct != null && direct.getPersistentData().contains("rpgSlow")) {
+                mob.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.MOVEMENT_SLOWDOWN,
+                        direct.getPersistentData().getInt("rpgSlow"), 1));
+            }
         } else if (src instanceof Mob other && isRpg(other)) {
             dmg = Combat.mob(other).atk;
         } else {

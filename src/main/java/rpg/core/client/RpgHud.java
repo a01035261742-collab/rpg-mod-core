@@ -137,10 +137,23 @@ public final class RpgHud {
         }
         // 구르기는 Epic Fight (Left Alt) — 자체 표시 사용
         // 질주 버프 남은 시간
-        int sl = ClientData.left(ClientData.sprintLeft);
-        if (sl > 0) {
-            String t = "질주 " + (sl + 19) / 20 + "s";
-            g.drawString(font, t, x0 - font.width(t) - 4, y0 + 2, 0xFF80E0FF, true);
+        // 버프 남은 시간 (스킬바 왼쪽, 위에서부터)
+        int by = y0;
+        for (ClientData.Buff b : ClientData.BUFFS) {
+            int bl = ClientData.left(b.left());
+            if (bl <= 0) continue;
+            String t = b.name() + " " + (bl + 19) / 20 + "s";
+            g.drawString(font, t, x0 - font.width(t) - 4, by, 0xFF80E0FF, true);
+            by += 10;
+        }
+        // 차지 게이지 (화면 가운데 아래)
+        if (ClientData.charging) {
+            int ticks = ClientData.chargeTicks + (int) ((System.currentTimeMillis() - ClientData.receivedAt) / 50);
+            double r = Math.max(0, Math.min(1, (ticks - 6) / 24.0));
+            int cx = w / 2, cy = h / 2 + 18;
+            g.fill(cx - 31, cy - 1, cx + 31, cy + 5, 0xC0000000);
+            g.fill(cx - 30, cy, cx - 30 + (int) (60 * r), cy + 4, r >= 1 ? 0xFFFF8030 : 0xFFFFD24A);
+            if (r >= 1) g.drawString(font, "MAX", cx - font.width("MAX") / 2, cy + 7, 0xFFFF8030, true);
         }
     }
 

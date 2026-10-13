@@ -20,6 +20,7 @@ public class SkillScreen extends Screen {
     }
 
     private static boolean available(Defs.SkillDef s) {
+        if (s.job() != 0 && s.job() != ClientData.job) return false;
         int tier = ClientData.jobTier();
         if (s.tier() == 0) return tier < 2;
         return s.tier() <= tier;
