@@ -6,10 +6,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingHealEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import rpg.core.RpgCore;
@@ -97,22 +95,6 @@ public final class PlayerEvents {
             if (Math.abs(sp.getHealth() - want) > 0.01f) sp.setHealth(want);
         }
         if (changed) RpgData.sync(sp);
-    }
-
-    /**
-     * 플레이어가 받는 피해 (1단계 임시): 바닐라 피해를 같은 비율로 RPG 체력에 적용.
-     * 몹 공격력 공식은 2단계(전투)에서 따로 만든다.
-     */
-    @SubscribeEvent(priority = EventPriority.LOWEST)
-    public static void damage(LivingDamageEvent e) {
-        if (!(e.getEntity() instanceof ServerPlayer sp)) return;
-        PlayerData d = RpgData.get(sp);
-        double rpg = e.getAmount() / 20.0 * d.maxHp;
-        d.hp = Math.max(0, d.hp - rpg);
-        float cur = sp.getHealth();
-        if (d.hp <= 0) e.setAmount(cur + 1000f);
-        else e.setAmount(Math.max(0f, cur - (float) Math.max(0.5, d.hp / d.maxHp * sp.getMaxHealth())));
-        RpgData.sync(sp);
     }
 
     /** 바닐라 회복(음식·재생 효과)은 막고 RPG 회복만 */

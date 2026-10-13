@@ -14,6 +14,7 @@ public final class ClientData {
     public static long gold;
     public static double hp, mp, maxHp = 1, maxMp = 1;
     public static double crit, healBonus, dropBonus, goldBonus;
+    public static double atkMin, atkMax, defPct;
 
     public static void read(FriendlyByteBuf b) {
         b.readerIndex(0);
@@ -22,6 +23,7 @@ public final class ClientData {
         statPoints = b.readVarInt(); job = b.readVarInt(); gold = b.readLong();
         hp = b.readDouble(); mp = b.readDouble(); maxHp = b.readDouble(); maxMp = b.readDouble();
         crit = b.readDouble(); healBonus = b.readDouble(); dropBonus = b.readDouble(); goldBonus = b.readDouble();
+        atkMin = b.readDouble(); atkMax = b.readDouble(); defPct = b.readDouble();
         ready = true;
     }
 

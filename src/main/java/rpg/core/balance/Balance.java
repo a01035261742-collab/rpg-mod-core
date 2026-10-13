@@ -31,6 +31,22 @@ public final class Balance {
     public static double hpRegenPct = 1.0, mpRegenPct = 2.0;
     public static double critBase = 5.0, critPerDex = 0.1, healPerInt = 0.5, dropPerLuk = 0.2, goldPerLuk = 0.3;
     public static double expBase = 15, expPower = 2.0, expLinear = 30;
+    public static double mastery = 0.8, critDamage = 1.5, fistAttack = 5, defPerVit = 1.0, defConstant = 100;
+    public static java.util.Set<String> huntingDimensions = new java.util.HashSet<>();
+
+    /** 몹 표: 키 → 몹 정의 */
+    public static final Map<String, MobDef> MOBS = new java.util.LinkedHashMap<>();
+
+    public record MobStats(double hp, double atk, long exp, long gold) {}
+
+    public record MobDef(String key, String entity, String name, java.util.TreeMap<Integer, MobStats> levels) {
+        /** 그 레벨 수치 (표에 없으면 바로 아래 레벨, 그것도 없으면 가장 낮은 레벨) */
+        public MobStats at(int level) {
+            var e = levels.floorEntry(level);
+            if (e == null) e = levels.firstEntry();
+            return e == null ? new MobStats(10, 1, 1, 1) : e.getValue();
+        }
+    }
 
     public static long expNeed(int level) {
         if (level >= maxLevel) return Long.MAX_VALUE;
@@ -49,6 +65,7 @@ public final class Balance {
 
         @Override
         protected void apply(Map<ResourceLocation, JsonElement> files, ResourceManager rm, ProfilerFiller profiler) {
+            loadMobs(files.get(RpgCore.id("mobs")));
             JsonElement el = files.get(RpgCore.id("player"));
             if (el == null || !el.isJsonObject()) {
                 RpgCore.LOG.warn("[rpgcore] rpg_balance/player.json 없음 — 기본값 사용");
@@ -64,7 +81,37 @@ public final class Balance {
             critBase = d(o, "critBase", critBase); critPerDex = d(o, "critPerDex", critPerDex);
             healPerInt = d(o, "healPerInt", healPerInt); dropPerLuk = d(o, "dropPerLuk", dropPerLuk); goldPerLuk = d(o, "goldPerLuk", goldPerLuk);
             expBase = d(o, "expBase", expBase); expPower = d(o, "expPower", expPower); expLinear = d(o, "expLinear", expLinear);
+            mastery = d(o, "mastery", mastery); critDamage = d(o, "critDamage", critDamage); fistAttack = d(o, "fistAttack", fistAttack);
+            defPerVit = d(o, "defPerVit", defPerVit); defConstant = d(o, "defConstant", defConstant);
+            huntingDimensions = new java.util.HashSet<>();
+            if (o.has("huntingDimensions")) o.getAsJsonArray("huntingDimensions").forEach(x -> huntingDimensions.add(x.getAsString()));
             RpgCore.LOG.info("[rpgcore] 밸런스 수치 읽음");
+        }
+
+        private static void loadMobs(JsonElement el) {
+            MOBS.clear();
+            if (el == null || !el.isJsonObject()) {
+                RpgCore.LOG.warn("[rpgcore] rpg_balance/mobs.json 없음");
+                return;
+            }
+            for (var e : el.getAsJsonObject().entrySet()) {
+                if (e.getKey().startsWith("_") || !e.getValue().isJsonObject()) continue;
+                JsonObject m = e.getValue().getAsJsonObject();
+                var levels = new java.util.TreeMap<Integer, MobStats>();
+                if (m.has("levels")) {
+                    for (var lv : m.getAsJsonObject("levels").entrySet()) {
+                        JsonObject r = lv.getValue().getAsJsonObject();
+                        try {
+                            levels.put(Integer.parseInt(lv.getKey()), new MobStats(d(r, "hp", 10), d(r, "atk", 1),
+                                    (long) d(r, "exp", 1), (long) d(r, "gold", 0)));
+                        } catch (NumberFormatException ignored) {}
+                    }
+                }
+                String ent = m.has("entity") ? m.get("entity").getAsString() : "minecraft:zombie";
+                String name = m.has("name") ? m.get("name").getAsString() : e.getKey();
+                MOBS.put(e.getKey(), new MobDef(e.getKey(), ent, name, levels));
+            }
+            RpgCore.LOG.info("[rpgcore] 몹 {}종 읽음", MOBS.size());
         }
 
         private static int i(JsonObject o, String k, int def) { return o.has(k) ? o.get(k).getAsInt() : def; }

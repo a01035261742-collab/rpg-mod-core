@@ -16,6 +16,16 @@
   "hpRegenPercentPerSec": 1.0,
   "mpRegenPercentPerSec": 2.0,
 
+  "_전투": "스공 = (주스탯×4 + 부스탯) × 무기공격력 / 100. 데미지 = 스공 × (숙련도~100% 랜덤)",
+  "mastery": 0.8,
+  "critDamage": 1.5,
+  "fistAttack": 5,
+  "defPerVit": 1.0,
+  "defConstant": 100,
+
+  "_사냥맵": "자연 스폰을 막을 차원 (사냥 맵). 예: [\"minecraft:overworld\"]",
+  "huntingDimensions": [],
+
   "critBase": 5.0,
   "critPerDex": 0.1,
   "healPerInt": 0.5,

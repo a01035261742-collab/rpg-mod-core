@@ -30,6 +30,7 @@ import rpg.core.item.ModItems;
  * /rpg damage <%>         — 최대 HP의 % 만큼 피해 (HUD 테스트)          [관리자]
  * /rpg resetscroll        — 스탯 초기화 주문서 받기                     [관리자]
  * /rpg reset              — 캐릭터 처음으로 (Lv.1)                    [관리자]
+ * 사냥터·몹 명령어는 ZoneCommand
  */
 @Mod.EventBusSubscriber(modid = RpgCore.MODID)
 public final class RpgCommand {
@@ -38,7 +39,9 @@ public final class RpgCommand {
     @SubscribeEvent
     public static void register(RegisterCommandsEvent e) {
         CommandDispatcher<CommandSourceStack> d = e.getDispatcher();
-        d.register(Commands.literal("rpg")
+        var root = Commands.literal("rpg");
+        ZoneCommand.addTo(root);
+        d.register(root
                 .then(Commands.literal("info").executes(RpgCommand::info))
                 .then(Commands.literal("level").requires(s -> s.hasPermission(2))
                         .then(Commands.argument("lv", IntegerArgumentType.integer(1, 10000)).executes(c -> {

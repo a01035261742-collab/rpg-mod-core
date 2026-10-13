@@ -85,11 +85,12 @@ public class PlayerData {
     }
 
     // ── 동기화 (서버 → 본인) : 필요 경험치·상세 능력치까지 같이 보냄 ──
-    public void write(FriendlyByteBuf b) {
+    public void write(FriendlyByteBuf b, double atkMax, double defPct) {
         b.writeVarInt(level); b.writeLong(exp); b.writeLong(Balance.expNeed(level));
         for (int v : stats) b.writeVarInt(v);
         b.writeVarInt(statPoints); b.writeVarInt(job); b.writeLong(gold);
         b.writeDouble(hp); b.writeDouble(mp); b.writeDouble(maxHp); b.writeDouble(maxMp);
         b.writeDouble(crit()); b.writeDouble(healBonus()); b.writeDouble(dropBonus()); b.writeDouble(goldBonus());
+        b.writeDouble(atkMax * Balance.mastery); b.writeDouble(atkMax); b.writeDouble(defPct);
     }
 }

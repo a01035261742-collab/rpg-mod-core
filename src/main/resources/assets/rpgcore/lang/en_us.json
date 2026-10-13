@@ -2,5 +2,9 @@
   "itemGroup.rpgcore": "RPG",
   "item.rpgcore.stat_reset_scroll": "Stat Reset Scroll",
   "key.categories.rpgcore": "RPG",
-  "key.rpgcore.stats": "Stats"
+  "key.rpgcore.stats": "Stats",
+  "item.rpgcore.test_sword_10": "Test Sword (10)",
+  "item.rpgcore.test_sword_30": "Test Sword (30)",
+  "item.rpgcore.test_sword_100": "Test Sword (100)",
+  "item.rpgcore.zone_wand": "Zone Wand"
 }

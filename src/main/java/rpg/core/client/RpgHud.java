@@ -5,9 +5,18 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraftforge.client.gui.overlay.ForgeGui;
 
-/** HP·MP·EXP 바 (핫바 바로 위) */
+/** HP·MP·EXP 바 (핫바 바로 위) + 사냥 보상 알림 */
 public final class RpgHud {
     private RpgHud() {}
+
+    private record Note(String text, long time) {}
+    private static final java.util.List<Note> NOTES = new java.util.ArrayList<>();
+
+    public static void addReward(long exp, long gold) {
+        String t = "+" + String.format("%,d", exp) + " EXP" + (gold > 0 ? "   +" + String.format("%,d", gold) + " G" : "");
+        NOTES.add(new Note(t, System.currentTimeMillis()));
+        if (NOTES.size() > 5) NOTES.remove(0);
+    }
 
     public static void render(ForgeGui gui, GuiGraphics g, float partialTick, int w, int h) {
         Minecraft mc = Minecraft.getInstance();
@@ -34,6 +43,18 @@ public final class RpgHud {
         // 레벨 (왼쪽)
         String lv = "Lv." + ClientData.level;
         g.drawString(font, lv, left - font.width(lv) - 5, by + 1, 0xFFFFD24A, true);
+        // 보상 알림 (오른쪽 아래, 3초)
+        long now = System.currentTimeMillis();
+        NOTES.removeIf(n -> now - n.time() > 3000);
+        int ny = h - 50;
+        for (int i = NOTES.size() - 1; i >= 0; i--) {
+            Note n = NOTES.get(i);
+            long age = now - n.time();
+            int alpha = age < 2000 ? 255 : (int) (255 * (1 - (age - 2000) / 1000.0));
+            if (alpha > 8) g.drawString(font, n.text(), w - font.width(n.text()) - 6, ny, (alpha << 24) | 0xB0FF80, true);
+            ny -= 10;
+        }
+
         if (ClientData.statPoints > 0) {
             String sp = "+" + ClientData.statPoints;
             g.drawString(font, sp, left - font.width(sp) - 5, by + 11, 0xFF80FF80, true);
