@@ -33,6 +33,9 @@ import rpg.core.zone.ZoneWand;
  *  /rpg spawn <몹> <레벨> [마리]                 바로 앞에 소환 (테스트)
  *  /rpg mobs                                  몹 목록 (mobs.json)
  *  /rpg gear <1|10>                           테스트 장비 한 벌 받기
+ *  /rpg npc job <1~4>                         전직 교관 세우기 (1 전사 2 궁수 3 마법사 4 도적)
+ *  /rpg job <0~4>                             직업 바로 바꾸기 (테스트용)
+ *  /rpg potions                               물약 받기
  */
 public final class ZoneCommand {
     private ZoneCommand() {}
@@ -65,6 +68,27 @@ public final class ZoneCommand {
                     }
                     return ok(c, "Lv." + lv + " 테스트 장비 " + n + "개 지급 (추가 옵션 무작위)");
                 })));
+        root.then(Commands.literal("npc").requires(s -> s.hasPermission(2))
+                .then(Commands.literal("job").then(Commands.argument("family", IntegerArgumentType.integer(1, 4)).executes(c -> {
+                    int f = IntegerArgumentType.getInteger(c, "family");
+                    rpg.core.job.JobEvents.spawn(c.getSource().getPlayerOrException(), f);
+                    return ok(c, rpg.core.job.Jobs.name(f) + " 교관을 세웠어요 (1 전사 · 2 궁수 · 3 마법사 · 4 도적)");
+                }))));
+        root.then(Commands.literal("job").requires(s -> s.hasPermission(2))
+                .then(Commands.argument("job", IntegerArgumentType.integer(0, 4)).executes(c -> {
+                    var p = c.getSource().getPlayerOrException();
+                    var d = rpg.core.data.RpgData.get(p);
+                    d.job = IntegerArgumentType.getInteger(c, "job");
+                    d.recalc();
+                    rpg.core.data.RpgData.sync(p);
+                    return ok(c, "직업을 " + rpg.core.job.Jobs.name(d.job) + "(으)로 바꿨어요 (테스트용, 보상 없음)");
+                })));
+        root.then(Commands.literal("potions").requires(s -> s.hasPermission(2)).executes(c -> {
+            var p = c.getSource().getPlayerOrException();
+            p.getInventory().add(new net.minecraft.world.item.ItemStack(ModItems.RED_POTION.get(), 30));
+            p.getInventory().add(new net.minecraft.world.item.ItemStack(ModItems.BLUE_POTION.get(), 30));
+            return ok(c, "물약 지급");
+        }));
         root.then(Commands.literal("mobs").requires(s -> s.hasPermission(2)).executes(c -> {
             StringBuilder sb = new StringBuilder("몹 목록: ");
             Balance.MOBS.values().forEach(d -> sb.append(d.key()).append("(").append(d.name()).append(") "));

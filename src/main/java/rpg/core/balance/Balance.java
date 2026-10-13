@@ -32,6 +32,8 @@ public final class Balance {
     public static double critBase = 5.0, critPerDex = 0.1, healPerInt = 0.5, dropPerLuk = 0.2, goldPerLuk = 0.3;
     public static double expBase = 15, expPower = 2.0, expLinear = 30;
     public static int skillPointsPerLevel = 2, passivePointsPerLevel = 1;
+    public static int jobLevel1 = 10, jobRewardPotions = 10;
+    public static double redPotionHp = 60, bluePotionMp = 40, potionCooldown = 1.0, rangedRange = 20;
     public static int partyMax = 6;
     public static double partyRange = 40, partyBonusPerMember = 10, deathExpLossPct = 30;
     public static boolean downEverywhere = true;
@@ -97,6 +99,9 @@ public final class Balance {
             passivePointsPerLevel = i(o, "passivePointsPerLevel", passivePointsPerLevel);
             dodgeCooldown = d(o, "dodgeCooldown", dodgeCooldown); dodgePower = d(o, "dodgePower", dodgePower);
             dodgeIframes = i(o, "dodgeIframes", dodgeIframes);
+            jobLevel1 = i(o, "jobLevel1", jobLevel1); jobRewardPotions = i(o, "jobRewardPotions", jobRewardPotions);
+            redPotionHp = d(o, "redPotionHp", redPotionHp); bluePotionMp = d(o, "bluePotionMp", bluePotionMp);
+            potionCooldown = d(o, "potionCooldown", potionCooldown); rangedRange = d(o, "rangedRange", rangedRange);
             partyMax = i(o, "partyMax", partyMax); partyRange = d(o, "partyRange", partyRange);
             partyBonusPerMember = d(o, "partyBonusPerMember", partyBonusPerMember);
             deathExpLossPct = d(o, "deathExpLossPct", deathExpLossPct);

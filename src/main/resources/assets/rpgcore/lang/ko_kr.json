@@ -44,5 +44,7 @@
   "item.rpgcore.pendant_10": "은 펜던트",
   "item.rpgcore.medal_1": "초보 모험가 훈장",
   "item.rpgcore.medal_10": "숙련 모험가 훈장",
-  "container.rpgcore.equip": "장비"
+  "container.rpgcore.equip": "장비",
+  "item.rpgcore.red_potion": "빨간 물약",
+  "item.rpgcore.blue_potion": "파란 물약"
 }

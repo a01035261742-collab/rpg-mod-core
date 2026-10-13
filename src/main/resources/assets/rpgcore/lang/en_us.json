@@ -44,5 +44,7 @@
   "item.rpgcore.pendant_10": "Pendant 10",
   "item.rpgcore.medal_1": "Medal 1",
   "item.rpgcore.medal_10": "Medal 10",
-  "container.rpgcore.equip": "Equipment"
+  "container.rpgcore.equip": "Equipment",
+  "item.rpgcore.red_potion": "Red Potion",
+  "item.rpgcore.blue_potion": "Blue Potion"
 }

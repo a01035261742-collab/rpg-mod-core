@@ -80,6 +80,19 @@ public final class ClientEvents {
             }
         }
 
+        /** 궁수·마법사: 좌클릭(맨손 또는 장비 아이템을 들고 있을 때) = 원거리 평타 */
+        @SubscribeEvent
+        public static void attackKey(net.minecraftforge.client.event.InputEvent.InteractionKeyMappingTriggered e) {
+            if (!e.isAttack()) return;
+            Minecraft mc = Minecraft.getInstance();
+            if (mc.player == null || (ClientData.job != 2 && ClientData.job != 3)) return;
+            var held = mc.player.getMainHandItem();
+            if (!held.isEmpty() && !(held.getItem() instanceof rpg.core.equip.Gear.GearItem)) return;
+            e.setCanceled(true);
+            e.setSwingHand(false);
+            Net.CH.sendToServer(new Net.Basic(0));
+        }
+
         /** 서바이벌에서 인벤토리를 열면 장비 창(인벤토리 + 장비 칸)으로 바꿔 열기 */
         @SubscribeEvent
         public static void openInventory(net.minecraftforge.client.event.ScreenEvent.Opening e) {

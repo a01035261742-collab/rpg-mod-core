@@ -52,6 +52,52 @@ public final class Net {
                 .encoder(PartyAction::encode).decoder(PartyAction::new).consumerMainThread(PartyAction::handle).add();
         CH.messageBuilder(OpenEquip.class, id++, NetworkDirection.PLAY_TO_SERVER)
                 .encoder(OpenEquip::encode).decoder(OpenEquip::new).consumerMainThread(OpenEquip::handle).add();
+        CH.messageBuilder(OpenJob.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(OpenJob::encode).decoder(OpenJob::new).consumerMainThread(OpenJob::handle).add();
+        CH.messageBuilder(JobAdvance.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(JobAdvance::encode).decoder(JobAdvance::new).consumerMainThread(JobAdvance::handle).add();
+        CH.messageBuilder(Basic.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(Basic::encode).decoder(Basic::new).consumerMainThread(Basic::handle).add();
+    }
+
+    public static void openJob(ServerPlayer p, int family, int state) {
+        CH.send(PacketDistributor.PLAYER.with(() -> p), new OpenJob(family, state));
+    }
+
+    // ───────── 서버 → 클라: 전직 창 (state 0 가능 1 레벨 부족 2 이미 이 직업 3 다른 직업) ─────────
+    public record OpenJob(int family, int state) {
+        OpenJob(FriendlyByteBuf b) { this(b.readVarInt(), b.readVarInt()); }
+        void encode(FriendlyByteBuf b) { b.writeVarInt(family); b.writeVarInt(state); }
+        void handle(Supplier<NetworkEvent.Context> ctx) {
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> rpg.core.client.JobScreen.open(family, state));
+            ctx.get().setPacketHandled(true);
+        }
+    }
+
+    // ───────── 클라 → 서버: 전직하기 ─────────
+    public record JobAdvance(int family) {
+        JobAdvance(FriendlyByteBuf b) { this(b.readVarInt()); }
+        void encode(FriendlyByteBuf b) { b.writeVarInt(family); }
+        void handle(Supplier<NetworkEvent.Context> ctx) {
+            ServerPlayer p = ctx.get().getSender();
+            if (p != null) {
+                String err = rpg.core.job.Jobs.advance(p, family);
+                if (err != null) p.sendSystemMessage(net.minecraft.network.chat.Component.literal("[전직] " + err)
+                        .withStyle(net.minecraft.ChatFormatting.RED));
+            }
+            ctx.get().setPacketHandled(true);
+        }
+    }
+
+    // ───────── 클라 → 서버: 원거리 평타 (궁수·마법사) ─────────
+    public record Basic(int dummy) {
+        Basic(FriendlyByteBuf b) { this(b.readVarInt()); }
+        void encode(FriendlyByteBuf b) { b.writeVarInt(dummy); }
+        void handle(Supplier<NetworkEvent.Context> ctx) {
+            ServerPlayer p = ctx.get().getSender();
+            if (p != null) rpg.core.job.BasicAttack.fire(p);
+            ctx.get().setPacketHandled(true);
+        }
     }
 
     // ───────── 클라 → 서버: 장비 창 열기 (인벤토리 키) ─────────

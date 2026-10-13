@@ -19,6 +19,9 @@ public final class ModItems {
     public static final RegistryObject<Item> STAT_RESET_SCROLL = ITEMS.register("stat_reset_scroll",
             () -> new StatResetScroll(new Item.Properties().stacksTo(16).rarity(Rarity.RARE)));
 
+    public static final RegistryObject<Item> RED_POTION = ITEMS.register("red_potion", () -> new Potion(new Item.Properties(), true));
+    public static final RegistryObject<Item> BLUE_POTION = ITEMS.register("blue_potion", () -> new Potion(new Item.Properties(), false));
+
     // 장비 (수치는 equipment.json). 장비마다 따로 등록
     public static final java.util.List<RegistryObject<Item>> GEAR = new java.util.ArrayList<>();
     private static final String[] BASIC = {
@@ -45,6 +48,8 @@ public final class ModItems {
             .icon(() -> STAT_RESET_SCROLL.get().getDefaultInstance())
             .displayItems((params, out) -> {
                 out.accept(STAT_RESET_SCROLL.get());
+                out.accept(RED_POTION.get());
+                out.accept(BLUE_POTION.get());
                 for (var g : GEAR) out.accept(g.get());
                 out.accept(ZONE_WAND.get());
             })

@@ -50,6 +50,15 @@
   "reviveSeconds": 3,
   "reviveHpPct": 30,
 
+  "_전직·물약": "전직 레벨, 전직 보상 물약 개수, 물약 회복량(고정), 물약 쿨타임(초)",
+  "jobLevel1": 10,
+  "jobRewardPotions": 10,
+  "redPotionHp": 60,
+  "bluePotionMp": 40,
+  "potionCooldown": 1.0,
+  "_원거리": "궁수 화살·마법사 마법탄 사거리(칸)",
+  "rangedRange": 20,
+
   "_경험치": "필요 경험치 = expBase × 레벨^expPower + expLinear × 레벨",
   "expBase": 15,
   "expPower": 2.0,
