@@ -8,31 +8,19 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-java@v5
-        with: { distribution: temurin, java-version: '25' }
+        with: { distribution: temurin, java-version: '17' }
       - name: Build
         run: |
           chmod +x gradlew
           set -o pipefail
-          ./gradlew build --no-daemon --stacktrace 2>&1 | tee build.log
+          ./gradlew build --stacktrace 2>&1 | tee build.log
       - name: Report errors
         if: failure()
         run: |
-          grep -A4 -E "\.java:[0-9]+: error" build.log | head -80 > err.txt || true
+          grep -A4 -E "\.java:[0-9]+: error" build.log | head -150 > err.txt || true
+          [ -s err.txt ] || grep -B2 -A25 "What went wrong" build.log | head -80 > err.txt
           msg=$(sed ':a;N;$!ba;s/%/%25/g;s/\r//g;s/\n/%0A/g' err.txt)
           echo "::error title=build::$msg"
-      - name: Inspect API
-        if: failure()
-        run: |
-          J=$(find ~/.gradle/caches -name "minecraft-*client*.jar" -o -name "minecraft-merged*.jar" -o -name "minecraft-clientOnly*.jar" | grep -v sources | head -1)
-          echo "JAR=$J"
-          [ -z "$J" ] && J=$(find ~/.gradle/caches ~/.gradle -path "*fabric-loom*" -name "*.jar" | grep -i minecraft | grep -v sources | head -1)
-          echo "JAR=$J" > api.txt
-          javap -cp "$J" net.minecraft.client.Minecraft | grep -iE "screen|getConnection|player|gui" >> api.txt 2>&1 || true
-          javap -cp "$J" net.minecraft.client.gui.Gui | grep -iE "screen" >> api.txt 2>&1 || true; javap -cp "$J" net.minecraft.client.MouseHandler | grep -iE "grab" >> api.txt 2>&1 || true
-          grep -vE "KEY_[A-Z0-9_]+;$" api.txt | head -150 > api2.txt
-          grep -E "KEY_(Q|E|R|F|I|Z|X);" api.txt >> api2.txt || true
-          msg=$(sed ':a;N;$!ba;s/%/%25/g;s/\r//g;s/\n/%0A/g' api2.txt)
-          echo "::error title=api::$msg"
       - name: Publish jar to build branch
         if: success()
         run: |

@@ -1,0 +1,29 @@
+{
+  "_설명": "플레이어 기본 수치 (임시값). 고친 뒤 /reload 하면 바로 반영",
+
+  "startStat": 4,
+  "statPointsPerLevel": 5,
+  "maxLevel": 200,
+
+  "hpBase": 50,
+  "hpPerLevel": 10,
+  "hpPerVit": 5,
+
+  "mpBase": 30,
+  "mpPerLevel": 4,
+  "mpPerInt": 2,
+
+  "hpRegenPercentPerSec": 1.0,
+  "mpRegenPercentPerSec": 2.0,
+
+  "critBase": 5.0,
+  "critPerDex": 0.1,
+  "healPerInt": 0.5,
+  "dropPerLuk": 0.2,
+  "goldPerLuk": 0.3,
+
+  "_경험치": "필요 경험치 = expBase × 레벨^expPower + expLinear × 레벨",
+  "expBase": 15,
+  "expPower": 2.0,
+  "expLinear": 30
+}
