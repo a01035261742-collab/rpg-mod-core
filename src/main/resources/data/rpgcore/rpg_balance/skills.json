@@ -31,9 +31,9 @@
     "mp": 12,
     "cooldown": 6,
     "duration": 0,
-    "value": 180,
-    "valuePerLevel": 8,
-    "desc": "꾹 눌러 모았다 떼면 앞쪽 범위 공격, 스공의 {v}% (1.5초 모으면 2.5배)"
+    "value": 124,
+    "valuePerLevel": 4,
+    "desc": "꾹 눌러 모았다 떼면 앞쪽 3칸 범위 공격, 스공의 {v}% (1.5초 모으면 1.5배)"
   },
   "iron_body": {
     "name": "아이언 바디",
@@ -59,7 +59,7 @@
     "duration": 0,
     "value": 93,
     "valuePerLevel": 3,
-    "desc": "화살 2발, 각각 스공의 {v}%"
+    "desc": "화살 2발을 연속으로, 각각 스공의 {v}%"
   },
   "retreat_shot": {
     "name": "후퇴 샷",
@@ -83,9 +83,9 @@
     "mp": 5,
     "cooldown": 0.8,
     "duration": 0,
-    "value": 130,
-    "valuePerLevel": 6,
-    "desc": "바라보는 몹에 마법탄, 스공의 {v}%"
+    "value": 92,
+    "valuePerLevel": 2,
+    "desc": "날아가는 마법탄, 맞으면 스공의 {v}%"
   },
   "magic_guard": {
     "name": "매직 가드",
@@ -94,7 +94,7 @@
     "maxLevel": 20,
     "type": "instant",
     "mp": 10,
-    "cooldown": 30,
+    "cooldown": 0,
     "duration": 120,
     "value": 30,
     "valuePerLevel": 1.5,
@@ -122,7 +122,7 @@
     "maxLevel": 20,
     "type": "instant",
     "mp": 15,
-    "cooldown": 60,
+    "cooldown": 0,
     "duration": 40,
     "value": 15,
     "valuePerLevel": 0.7895,

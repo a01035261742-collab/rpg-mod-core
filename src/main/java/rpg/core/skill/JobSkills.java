@@ -71,10 +71,10 @@ public final class JobSkills {
     public static void releaseCharge(ServerPlayer p, PlayerData d, Defs.SkillDef s, int lv, long held) {
         double minT = 6, maxT = 30;   // 0.3초 ~ 1.5초
         double ratio = Math.max(0, Math.min(1, (held - minT) / (maxT - minT)));
-        double pct = s.value(lv) * (1 + 1.5 * ratio);   // 최소 value%, 가득 차면 2.5배
+        double pct = s.value(lv) * (1 + 0.5 * ratio);   // 최소 value%, 가득 차면 1.5배
         ServerLevel l = p.serverLevel();
         Vec3 look = Vec3.directionFromRotation(0, p.getYRot());
-        double range = 3.5 + ratio;
+        double range = 3.0;
         int hits = 0;
         for (Mob m : l.getEntitiesOfClass(Mob.class, p.getBoundingBox().inflate(range))) {
             if (!m.isAlive() || !Combat.isRpgMob(m)) continue;
@@ -118,10 +118,13 @@ public final class JobSkills {
 
     private static boolean doubleShot(ServerPlayer p, Defs.SkillDef s, int lv) {
         double pct = s.value(lv);
-        arrow(p, pct, -1.5f);
-        arrow(p, pct, 1.5f);
+        arrow(p, pct, 0);
         p.serverLevel().playSound(null, p.blockPosition(), SoundEvents.ARROW_SHOOT, SoundSource.PLAYERS, 1.0f, 1.3f);
         p.swing(net.minecraft.world.InteractionHand.MAIN_HAND, true);
+        later(p, 5, () -> {   // 0.25초 뒤 두 번째 화살 (그때 바라보는 방향)
+            arrow(p, pct, 0);
+            p.serverLevel().playSound(null, p.blockPosition(), SoundEvents.ARROW_SHOOT, SoundSource.PLAYERS, 1.0f, 1.5f);
+        });
         return true;
     }
 
@@ -140,6 +143,74 @@ public final class JobSkills {
 
     // ───────── 마법사: 매직 볼트 (바라보는 몹에 즉시 명중) ─────────
     private static boolean magicBolt(ServerPlayer p, Defs.SkillDef s, int lv) {
+        Vec3 eye = p.getEyePosition().add(0, -0.15, 0);
+        BOLTS.add(new Bolt(p, eye, p.getLookAngle(), s.value(lv), 0));
+        p.serverLevel().playSound(null, p.blockPosition(), SoundEvents.ILLUSIONER_CAST_SPELL, SoundSource.PLAYERS, 0.6f, 1.6f);
+        p.swing(net.minecraft.world.InteractionHand.MAIN_HAND, true);
+        return true;
+    }
+
+    // ───────── 지연 실행·마법탄 (매 틱) ─────────
+    private record Later(ServerPlayer p, long at, Runnable r) {}
+    private static final List<Later> LATER = new java.util.ArrayList<>();
+
+    private static void later(ServerPlayer p, int ticks, Runnable r) {
+        LATER.add(new Later(p, p.level().getGameTime() + ticks, r));
+    }
+
+    /** 마법탄: 눈에 보이는 투사체 (입자), 1틱에 1.2칸, 최대 24칸 */
+    private static final class Bolt {
+        final ServerPlayer owner; Vec3 pos; final Vec3 dir; final double pct; double travelled;
+        Bolt(ServerPlayer o, Vec3 pos, Vec3 dir, double pct, double t) { owner = o; this.pos = pos; this.dir = dir.normalize(); this.pct = pct; travelled = t; }
+    }
+    private static final List<Bolt> BOLTS = new java.util.ArrayList<>();
+    private static final double BOLT_SPEED = 1.2, BOLT_RANGE = 24;
+
+    @net.minecraftforge.eventbus.api.SubscribeEvent
+    public static void serverTick(net.minecraftforge.event.TickEvent.ServerTickEvent e) {
+        if (e.phase != net.minecraftforge.event.TickEvent.Phase.END) return;
+        if (!LATER.isEmpty()) {
+            List<Later> run = new java.util.ArrayList<>();
+            LATER.removeIf(x -> {
+                if (!x.p().isAlive()) return true;
+                if (x.p().level().getGameTime() >= x.at()) { run.add(x); return true; }
+                return false;
+            });
+            run.forEach(x -> x.r().run());
+        }
+        BOLTS.removeIf(JobSkills::stepBolt);
+    }
+
+    /** true = 끝 (맞았거나 막혔거나 너무 멀리 감) */
+    private static boolean stepBolt(Bolt b) {
+        if (!b.owner.isAlive()) return true;
+        ServerLevel l = b.owner.serverLevel();
+        Vec3 next = b.pos.add(b.dir.scale(BOLT_SPEED));
+        var bh = l.clip(new ClipContext(b.pos, next, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, b.owner));
+        Vec3 end = bh.getType() != HitResult.Type.MISS ? bh.getLocation() : next;
+        EntityHitResult hit = ProjectileUtil.getEntityHitResult(l, b.owner, b.pos, end, new AABB(b.pos, end).inflate(0.6),
+                x -> x instanceof Mob && x.isAlive() && !x.isSpectator());
+        for (int i = 0; i < 3; i++) {
+            Vec3 q = b.pos.add(end.subtract(b.pos).scale(i / 3.0));
+            l.sendParticles(ParticleTypes.WITCH, q.x, q.y, q.z, 1, 0.02, 0.02, 0.02, 0);
+            l.sendParticles(ParticleTypes.ENCHANTED_HIT, q.x, q.y, q.z, 1, 0, 0, 0, 0);
+        }
+        if (hit != null && hit.getEntity() instanceof Mob t) {
+            CombatEvents.skillHit(b.owner, t, b.pct);
+            l.sendParticles(ParticleTypes.WITCH, t.getX(), t.getY() + t.getBbHeight() * 0.6, t.getZ(), 12, 0.25, 0.25, 0.25, 0);
+            l.playSound(null, t.blockPosition(), SoundEvents.AMETHYST_BLOCK_HIT, SoundSource.PLAYERS, 0.8f, 1.4f);
+            return true;
+        }
+        if (bh.getType() != HitResult.Type.MISS) {
+            l.sendParticles(ParticleTypes.ENCHANT, end.x, end.y, end.z, 8, 0.1, 0.1, 0.1, 0.3);
+            return true;
+        }
+        b.pos = next;
+        b.travelled += BOLT_SPEED;
+        return b.travelled >= BOLT_RANGE;
+    }
+
+    private static boolean oldBoltUnused(ServerPlayer p, Defs.SkillDef s, int lv) {
         ServerLevel l = p.serverLevel();
         Vec3 eye = p.getEyePosition();
         Vec3 end = eye.add(p.getLookAngle().scale(Balance.rangedRange));
