@@ -94,7 +94,7 @@ public class ShopScreen extends Screen {
             if (hover && !s.isEmpty()) {
                 tip = new ArrayList<>(Screen.getTooltipFromItem(Minecraft.getInstance(), s));
                 tip.add(Component.literal("가격: " + String.format("%,d", prices.get(i)) + " G").withStyle(ChatFormatting.GOLD));
-                tip.add(Component.literal(s.getMaxStackSize() > 1 ? "클릭 1개 · Shift+클릭 10개" : "클릭: 구매 (추가 옵션 없음)").withStyle(ChatFormatting.DARK_GRAY));
+                tip.add(Component.literal(s.getMaxStackSize() > 1 ? "클릭 1개 · Shift+클릭 10개" : "클릭: 구매 (추가 옵션 무작위)").withStyle(ChatFormatting.DARK_GRAY));
             }
         }
         if (offers.size() > ROWS) g.drawString(font, "휠로 스크롤 (" + (scroll + 1) + "-" + Math.min(offers.size(), scroll + ROWS) + "/" + offers.size() + ")",
