@@ -19,7 +19,9 @@ name = os.path.basename(jar)
 files = [{'path': f'mods/{name}', 'url': f'https://github.com/{REPO}/releases/download/v{ver}/{name}',
           'sha256': sha256(data), 'size': len(data), 'optional': False}]
 
-extra = json.load(open('pack/mods.json'))['mods'] if os.path.exists('pack/mods.json') else []
+pack = json.load(open('pack/mods.json')) if os.path.exists('pack/mods.json') else {}
+extra = pack.get('mods', [])
+forge = pack.get('forge') or forge
 for m in extra:
     slug = m['modrinth']
     try:
