@@ -38,7 +38,14 @@ public class RpgGeoRenderer extends GeoEntityRenderer<GeoRpgMonster> {
 
     /** 애니메이션 위에 머리 시선(좌우·상하)을 더함 — 기본 모델은 덮어써서 물기 동작이 사라짐 */
     static class Model extends DefaultedEntityGeoModel<GeoRpgMonster> {
-        Model(String id) { super(RpgCore.id(id), false); }
+        /** 갓이 큰 몹은 고개를 덜 돌림 (갓이 휘청거려 보이지 않게): 좌우·상하 배율, 최대 각도 */
+        private final float yawMul, pitchMul, yawMax, pitchMax;
+        Model(String id) {
+            super(RpgCore.id(id), false);
+            boolean bigCap = id.equals("mush_soldier");
+            yawMul = bigCap ? 0.5f : 1f; pitchMul = bigCap ? 0.35f : 1f;
+            yawMax = bigCap ? 30f : 75f; pitchMax = bigCap ? 12f : 45f;
+        }
 
         @Override
         public void setCustomAnimations(GeoRpgMonster e, long instanceId, AnimationState<GeoRpgMonster> st) {
@@ -46,8 +53,10 @@ public class RpgGeoRenderer extends GeoEntityRenderer<GeoRpgMonster> {
             CoreGeoBone head = getAnimationProcessor().getBone("head");
             EntityModelData d = st.getData(DataTickets.ENTITY_MODEL_DATA);
             if (head != null && d != null) {
-                head.setRotX(head.getRotX() + d.headPitch() * Mth.DEG_TO_RAD);
-                head.setRotY(head.getRotY() + d.netHeadYaw() * Mth.DEG_TO_RAD);
+                float pitch = Mth.clamp(d.headPitch() * pitchMul, -pitchMax, pitchMax);
+                float yaw = Mth.clamp(d.netHeadYaw() * yawMul, -yawMax, yawMax);
+                head.setRotX(head.getRotX() + pitch * Mth.DEG_TO_RAD);
+                head.setRotY(head.getRotY() + yaw * Mth.DEG_TO_RAD);
             }
         }
     }

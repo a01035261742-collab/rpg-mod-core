@@ -74,8 +74,11 @@ public final class PlayerEvents {
         d.recalc();
         d.hp = d.maxHp;
         d.mp = d.maxMp;
+        FULL_AFTER_RESPAWN.put(sp.getUUID(), sp.tickCount + 40);   // 장비·패시브가 늦게 붙어도 2초 동안 가득 채움
         RpgData.sync(sp);
     }
+
+    private static final java.util.Map<java.util.UUID, Integer> FULL_AFTER_RESPAWN = new java.util.HashMap<>();
 
     @SubscribeEvent
     public static void changedDimension(PlayerEvent.PlayerChangedDimensionEvent e) {
@@ -94,6 +97,14 @@ public final class PlayerEvents {
 
         boolean changed = false;
         if (sp.tickCount % 20 == 0) changed |= d.recalc();
+        Integer until = FULL_AFTER_RESPAWN.get(sp.getUUID());
+        if (until != null) {
+            if (sp.tickCount > until) FULL_AFTER_RESPAWN.remove(sp.getUUID());
+            else if (sp.isAlive() && !d.isDown()) {
+                d.recalc();
+                if (d.hp < d.maxHp || d.mp < d.maxMp) { d.hp = d.maxHp; d.mp = d.maxMp; changed = true; }
+            }
+        }
         // 자연 회복: regenIntervalSec 마다 한 번 (기본 HP 0% · MP 3%)
         int every = (int) Math.max(20, Math.round(Balance.regenInterval * 20));
         if (sp.tickCount % every == 0) {

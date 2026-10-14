@@ -66,6 +66,40 @@ public final class EpicFightCompat {
         }
     }
 
+    // ───────── 전투 모드에서는 블록을 못 캠 (EF 클래스는 이름으로 찾아 부름) ─────────
+    private static java.lang.reflect.Method getPatch, isBattle;
+    private static Class<?> playerPatchClass;
+    private static boolean efLookedUp;
+
+    /** EF 전투 모드인가 (EF 없거나 실패하면 false) */
+    public static boolean battleMode(net.minecraft.world.entity.player.Player p) {
+        try {
+            if (!efLookedUp) {
+                efLookedUp = true;
+                Class<?> caps = Class.forName("yesman.epicfight.world.capabilities.EpicFightCapabilities");
+                playerPatchClass = Class.forName("yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch");
+                getPatch = caps.getMethod("getEntityPatch", net.minecraft.world.entity.Entity.class, Class.class);
+                isBattle = playerPatchClass.getMethod("isBattleMode");
+            }
+            if (getPatch == null) return false;
+            Object patch = getPatch.invoke(null, p, playerPatchClass);
+            return patch != null && (boolean) isBattle.invoke(patch);
+        } catch (Throwable ex) {
+            getPatch = null;
+            return false;
+        }
+    }
+
+    @SubscribeEvent
+    public static void noBreakInBattle(PlayerEvent.BreakSpeed e) {
+        if (!e.getEntity().isCreative() && battleMode(e.getEntity())) e.setCanceled(true);
+    }
+
+    @SubscribeEvent
+    public static void noBreakInBattle2(net.minecraftforge.event.level.BlockEvent.BreakEvent e) {
+        if (!e.getPlayer().isCreative() && battleMode(e.getPlayer())) e.setCanceled(true);
+    }
+
     /** 스태미나 스탯·패시브 → EF 최대 스태미나 */
     @SubscribeEvent
     public static void tick(TickEvent.PlayerTickEvent e) {

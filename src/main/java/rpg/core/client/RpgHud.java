@@ -164,34 +164,37 @@ public final class RpgHud {
         if (Minecraft.getInstance().screen != null) return;
         var list = ClientQuests.active();
         if (list.isEmpty()) return;
-        int right = w - 6, y = 60;
+        // 줄 모으기 (글자, 색, 제목 여부) → 배경 판 크기 계산 → 그리기
+        java.util.List<Object[]> lines = new java.util.ArrayList<>();
         int shown = 0;
         for (var q : list) {
             if (shown >= 3) break;
             boolean done = ClientQuests.complete(q);
-            String t = (done ? "§a✔ " : "§e") + q.name();
-            g.drawString(font, t, right - font.width(t), y, 0xFFFFFFFF, true);
-            y += 10;
+            if (shown > 0) lines.add(new Object[]{"", 0, false});
+            lines.add(new Object[]{(done ? "✔ " : "") + q.name(), done ? 0xFF80E080 : 0xFFFFD24A, true});
             if (done) {
-                String s = "→ " + rpg.core.quest.Quests.finishName(q) + (q.toPoint() ? "에 두고 오기" : "");
-                g.drawString(font, s, right - font.width(s), y, 0xFFFFC040, true);
-                y += 10;
+                lines.add(new Object[]{"→ " + rpg.core.quest.Quests.finishName(q) + (q.toPoint() ? "에 두고 오기" : "에게 가기"), 0xFFFFC040, false});
             } else if (q.goals().isEmpty()) {
-                String s = rpg.core.quest.Quests.npcName(q.turnIn()) + "에게 말 걸기";
-                g.drawString(font, s, right - font.width(s), y, 0xFFD0D0D0, true);
-                y += 10;
+                lines.add(new Object[]{rpg.core.quest.Quests.npcName(q.turnIn()) + "에게 말 걸기", 0xFFE0E0E0, false});
             } else for (int i = 0; i < q.goals().size(); i++) {
                 boolean ok = ClientQuests.current(q, i) >= q.goals().get(i).count();
-                String s = ClientQuests.goalText(q, i);
-                g.drawString(font, s, right - font.width(s), y, ok ? 0xFF80E080 : 0xFFD0D0D0, true);
-                y += 10;
+                lines.add(new Object[]{ClientQuests.goalText(q, i), ok ? 0xFF80E080 : 0xFFE0E0E0, false});
             }
-            y += 4;
             shown++;
         }
-        if (list.size() > 3) {
-            String s = "+" + (list.size() - 3) + "개 더 (J)";
-            g.drawString(font, s, right - font.width(s), y, 0xFF808080, true);
+        if (list.size() > 3) lines.add(new Object[]{"+" + (list.size() - 3) + "개 더 (J)", 0xFF909090, false});
+        int width = font.width("퀘스트");
+        for (Object[] l : lines) width = Math.max(width, font.width((String) l[0]));
+        int pad = 5, right = w - 6, x0 = right - width - pad * 2, y = 58;
+        int height = 13 + lines.size() * 10 + pad;
+        g.fill(x0, y, right, y + height, 0x90101018);
+        g.fill(x0, y, right, y + 1, 0xC0FFD24A);
+        g.drawString(font, "퀘스트", x0 + pad, y + 4, 0xFFFFD24A, true);
+        int ty = y + 16;
+        for (Object[] l : lines) {
+            String s = (String) l[0];
+            if (!s.isEmpty()) g.drawString(font, s, (boolean) l[2] ? x0 + pad : x0 + pad + 6, ty, (int) l[1], true);
+            ty += 10;
         }
     }
 
