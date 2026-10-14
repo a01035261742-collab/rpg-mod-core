@@ -1,0 +1,7 @@
+{
+  "_설명": "우리 모드 말고 같이 깔아야 하는 모드 목록. CI가 Modrinth에서 주소·해시를 자동으로 채워 manifest.json 에 넣는다. version 을 비우면 1.20.1 Forge 최신판.",
+  "mods": [
+    {"modrinth": "geckolib", "version": "4.7.4", "optional": false},
+    {"modrinth": "epic-fight", "version": "", "optional": false}
+  ]
+}

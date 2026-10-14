@@ -21,6 +21,20 @@ jobs:
           [ -s err.txt ] || grep -B2 -A25 "What went wrong" build.log | head -80 > err.txt
           msg=$(sed ':a;N;$!ba;s/%/%25/g;s/\r//g;s/\n/%0A/g' err.txt)
           echo "::error title=build::$msg"
+      - name: Release + manifest (launcher auto-update)
+        if: success() && github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VER=$(grep '^mod_version=' gradle.properties | cut -d= -f2)
+          JAR=$(ls build/libs/*.jar | grep -v -e sources -e slim | head -1)
+          python3 ci/make_manifest.py "$JAR" > /tmp/manifest.json
+          cat /tmp/manifest.json
+          if gh release view "v$VER" >/dev/null 2>&1; then
+            gh release upload "v$VER" "$JAR" /tmp/manifest.json --clobber
+          else
+            gh release create "v$VER" "$JAR" /tmp/manifest.json --title "v$VER" --notes "자동 빌드 ${GITHUB_SHA}" --target "$GITHUB_SHA" --latest
+          fi
       - name: Publish jar to build branch
         if: success()
         run: |
