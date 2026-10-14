@@ -90,7 +90,8 @@ public final class JobSkills {
         if (ratio >= 1) l.sendParticles(ParticleTypes.EXPLOSION, c.x, p.getY() + 0.5, c.z, 1, 0, 0, 0, 0);
         l.playSound(null, p.blockPosition(), ratio >= 1 ? SoundEvents.PLAYER_ATTACK_CRIT : SoundEvents.PLAYER_ATTACK_SWEEP,
                 SoundSource.PLAYERS, 1.0f, 0.8f + (float) ratio * 0.3f);
-        p.swing(net.minecraft.world.InteractionHand.MAIN_HAND, true);
+        if (!rpg.core.compat.EpicFightCompat.playAnim(p, "GREATSWORD_AUTO1"))   // 대검 내려찍기
+            p.swing(net.minecraft.world.InteractionHand.MAIN_HAND, true);
         if (hits == 0) p.displayClientMessage(Component.literal("빗나감").withStyle(ChatFormatting.GRAY), true);
     }
 

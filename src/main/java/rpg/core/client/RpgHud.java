@@ -184,8 +184,8 @@ public final class RpgHud {
         }
         if (list.size() > 3) lines.add(new Object[]{"+" + (list.size() - 3) + "개 더 (J)", 0xFF909090, false});
         int width = font.width("퀘스트");
-        for (Object[] l : lines) width = Math.max(width, font.width((String) l[0]));
-        int pad = 5, right = w - 6, x0 = right - width - pad * 2, y = 58;
+        for (Object[] l : lines) width = Math.max(width, font.width((String) l[0]) + ((boolean) l[2] ? 0 : 6));
+        int pad = 6, right = w - 4, x0 = right - width - pad * 2, y = 58;
         int height = 13 + lines.size() * 10 + pad;
         g.fill(x0, y, right, y + height, 0x90101018);
         g.fill(x0, y, right, y + 1, 0xC0FFD24A);

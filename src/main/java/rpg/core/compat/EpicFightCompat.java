@@ -79,7 +79,7 @@ public final class EpicFightCompat {
                 Class<?> caps = Class.forName("yesman.epicfight.world.capabilities.EpicFightCapabilities");
                 playerPatchClass = Class.forName("yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch");
                 getPatch = caps.getMethod("getEntityPatch", net.minecraft.world.entity.Entity.class, Class.class);
-                isBattle = playerPatchClass.getMethod("isBattleMode");
+                isBattle = playerPatchClass.getMethod("isEpicFightMode");
             }
             if (getPatch == null) return false;
             Object patch = getPatch.invoke(null, p, playerPatchClass);
@@ -90,14 +90,54 @@ public final class EpicFightCompat {
         }
     }
 
+    /** 우리 무기 (검·활·지팡이·단검) 들고 있나 */
+    public static boolean holdingRpgWeapon(net.minecraft.world.entity.player.Player p) {
+        ResourceLocation id = ForgeRegistries.ITEMS.getKey(p.getMainHandItem().getItem());
+        if (id == null || !RpgCore.MODID.equals(id.getNamespace())) return false;
+        String n = id.getPath();
+        return n.startsWith("warrior_sword") || n.startsWith("archer_bow") || n.startsWith("mage_staff") || n.startsWith("thief_dagger");
+    }
+
+    private static boolean noBreak(net.minecraft.world.entity.player.Player p) {
+        return !p.isCreative() && (holdingRpgWeapon(p) || battleMode(p));
+    }
+
     @SubscribeEvent
     public static void noBreakInBattle(PlayerEvent.BreakSpeed e) {
-        if (!e.getEntity().isCreative() && battleMode(e.getEntity())) e.setCanceled(true);
+        if (noBreak(e.getEntity())) e.setCanceled(true);
     }
 
     @SubscribeEvent
     public static void noBreakInBattle2(net.minecraftforge.event.level.BlockEvent.BreakEvent e) {
-        if (!e.getPlayer().isCreative() && battleMode(e.getPlayer())) e.setCanceled(true);
+        if (noBreak(e.getPlayer())) e.setCanceled(true);
+    }
+
+    // ───────── EF 모션 재생 (보이기만, 피해는 우리 스킬이 줌) ─────────
+    private static java.lang.reflect.Method playClient;
+    private static Class<?> livingPatchClass;
+    private static boolean animLookedUp;
+
+    /** Animations.<field> 모션을 나와 주변 사람 화면에 재생. 실패하면 false */
+    public static boolean playAnim(ServerPlayer p, String field) {
+        try {
+            if (!animLookedUp) {
+                animLookedUp = true;
+                Class<?> caps = Class.forName("yesman.epicfight.world.capabilities.EpicFightCapabilities");
+                livingPatchClass = Class.forName("yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch");
+                if (getPatch == null) getPatch = caps.getMethod("getEntityPatch", net.minecraft.world.entity.Entity.class, Class.class);
+                for (var m : livingPatchClass.getMethods())
+                    if (m.getName().equals("playAnimationInClientSide") && m.getParameterCount() == 2) playClient = m;
+            }
+            if (playClient == null || getPatch == null) return false;
+            Object anim = Class.forName("yesman.epicfight.gameasset.Animations").getField(field).get(null);
+            Object patch = getPatch.invoke(null, p, livingPatchClass);
+            if (anim == null || patch == null) return false;
+            playClient.invoke(patch, anim, 0f);
+            return true;
+        } catch (Throwable ex) {
+            RpgCore.LOG.debug("[rpgcore] EF 모션 실패 {}: {}", field, ex.toString());
+            return false;
+        }
     }
 
     /** 스태미나 스탯·패시브 → EF 최대 스태미나 */
