@@ -35,6 +35,8 @@ import rpg.core.zone.ZoneWand;
  *  /rpg gear <1|10>                           테스트 장비 한 벌 받기
  *  /rpg npc job <1~4>                         전직 교관 세우기 (1 전사 2 궁수 3 마법사 4 도적)
  *  /rpg npc shop <general|gear>               상점 NPC 세우기 (shops.json)
+ *  /rpg npc quest <npc>                       퀘스트 NPC 세우기 (quests.json)
+ *  /rpg quest reset                           내 퀘스트 전부 초기화 (테스트용)
  *  /rpg job <0~4>                             직업 바로 바꾸기 (테스트용)
  *  /rpg potions                               물약 받기
  */
@@ -85,7 +87,25 @@ public final class ZoneCommand {
                     }
                     rpg.core.shop.Shops.spawn(c.getSource().getPlayerOrException(), id);
                     return ok(c, rpg.core.shop.Shops.SHOPS.get(id).name() + " 을(를) 세웠어요");
+                })))
+                .then(Commands.literal("quest").then(Commands.argument("npc", com.mojang.brigadier.arguments.StringArgumentType.word())
+                        .suggests((c, b) -> SharedSuggestionProvider.suggest(rpg.core.quest.Quests.NPCS.keySet(), b)).executes(c -> {
+                    String id = com.mojang.brigadier.arguments.StringArgumentType.getString(c, "npc");
+                    if (!rpg.core.quest.Quests.NPCS.containsKey(id)) {
+                        c.getSource().sendFailure(net.minecraft.network.chat.Component.literal("없는 퀘스트 NPC: " + id + " (quests.json)"));
+                        return 0;
+                    }
+                    rpg.core.quest.QuestEvents.spawn(c.getSource().getPlayerOrException(), id);
+                    return ok(c, rpg.core.quest.Quests.npcName(id) + " 을(를) 세웠어요");
                 }))));
+        root.then(Commands.literal("quest").requires(s -> s.hasPermission(2))
+                .then(Commands.literal("reset").executes(c -> {
+                    var p = c.getSource().getPlayerOrException();
+                    var d = rpg.core.data.RpgData.get(p);
+                    d.questActive.clear(); d.questDone.clear();
+                    rpg.core.net.Net.questSync(p);
+                    return ok(c, "퀘스트를 전부 초기화했어요");
+                })));
         root.then(Commands.literal("job").requires(s -> s.hasPermission(2))
                 .then(Commands.argument("job", IntegerArgumentType.integer(0, 4)).executes(c -> {
                     var p = c.getSource().getPlayerOrException();

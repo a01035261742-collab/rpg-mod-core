@@ -31,6 +31,10 @@ public class PlayerData {
     public final String[] slots = new String[SLOTS];                    // Q E R F Z X 에 들어간 스킬 id
     public final Map<String, Integer> passives = new HashMap<>();       // 노드 id → 랭크
 
+    // 퀘스트: 진행 중 (id → 목표별 처치 수) · 완료한 것
+    public final Map<String, int[]> questActive = new LinkedHashMap<>();
+    public final java.util.Set<String> questDone = new java.util.LinkedHashSet<>();
+
     // 쿨타임·버프 (저장 안 함, 게임 시간 틱)
     public final Map<String, Long> cdEnd = new HashMap<>();
     public final Map<String, Integer> cdLen = new HashMap<>();
@@ -90,6 +94,7 @@ public class PlayerData {
         level = 1; exp = 0; job = 0; gold = 0; statPoints = 0; skillPoints = 0; passivePoints = 0;
         for (int i = 0; i < N; i++) stats[i] = start(i);
         skills.clear(); passives.clear(); cdEnd.clear(); cdLen.clear();
+        questActive.clear(); questDone.clear();
         java.util.Arrays.fill(slots, null);
         recalc();
         hp = maxHp; mp = maxMp;
@@ -156,6 +161,12 @@ public class PlayerData {
         CompoundTag pa = new CompoundTag();
         passives.forEach(pa::putInt);
         t.put("passives", pa);
+        CompoundTag qa = new CompoundTag();
+        questActive.forEach((k, v) -> qa.putIntArray(k, v.clone()));
+        t.put("questActive", qa);
+        net.minecraft.nbt.ListTag qd = new net.minecraft.nbt.ListTag();
+        for (String k : questDone) qd.add(net.minecraft.nbt.StringTag.valueOf(k));
+        t.put("questDone", qd);
         return t;
     }
 
@@ -175,6 +186,12 @@ public class PlayerData {
         passives.clear();
         CompoundTag pa = t.getCompound("passives");
         for (String k : pa.getAllKeys()) passives.put(k, pa.getInt(k));
+        questActive.clear();
+        CompoundTag qa = t.getCompound("questActive");
+        for (String k : qa.getAllKeys()) questActive.put(k, qa.getIntArray(k));
+        questDone.clear();
+        net.minecraft.nbt.ListTag qd = t.getList("questDone", net.minecraft.nbt.Tag.TAG_STRING);
+        for (int i = 0; i < qd.size(); i++) questDone.add(qd.getString(i));
     }
 
     public void copyFrom(PlayerData o) {

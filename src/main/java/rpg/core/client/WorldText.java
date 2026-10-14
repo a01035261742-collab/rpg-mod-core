@@ -108,6 +108,29 @@ public final class WorldText {
             ps.popPose();
         }
 
+        // 퀘스트 NPC 머리 위: ! (받기) · ? (완료) · 회색 ? (진행 중)
+        if (!rpg.core.quest.Quests.NPCS.isEmpty()) {
+            for (Entity ent : mc.level.entitiesForRendering()) {
+                if (!(ent instanceof net.minecraft.world.entity.npc.Villager) || !ent.hasCustomName()) continue;
+                if (ent.distanceToSqr(c) > 32 * 32) continue;
+                String npc = rpg.core.quest.Quests.npcByName(ent.getCustomName().getString());
+                if (npc == null) continue;
+                int mark = ClientQuests.npcMark(npc);
+                if (mark == 0) continue;
+                String t = mark == 1 ? "!" : "?";
+                int col = mark == 3 ? 0xFFA0A0A0 : 0xFFFFD020;
+                double bob = Math.sin((mc.level.getGameTime() + pt) * 0.12) * 0.06;
+                Vec3 p = ent.getPosition(pt).add(0, ent.getBbHeight() + 0.95 + bob, 0);
+                ps.pushPose();
+                ps.translate(p.x - c.x, p.y - c.y, p.z - c.z);
+                ps.mulPose(cam.rotation());
+                ps.scale(-0.06f, -0.06f, 0.06f);
+                Matrix4f m = ps.last().pose();
+                font.drawInBatch(t, -font.width(t) / 2f, 0, col, true, m, buf, Font.DisplayMode.NORMAL, 0, 0xF000F0);
+                ps.popPose();
+            }
+        }
+
         // 데미지 숫자
         for (Pop pop : POPS) {
             float t = (pop.age + pt) / LIFE;

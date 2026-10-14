@@ -82,6 +82,7 @@ public final class RpgHud {
         partyHud(g, mc.font, w, h);
         downHud(g, mc.font, w, h);
         notes(g, mc.font, w, h);
+        questTracker(g, mc.font, w, h);
         levelUpBanner(g, mc.font, w);
         if (mc.player.isCreative()) return;
         Font font = mc.font;
@@ -155,6 +156,42 @@ public final class RpgHud {
             g.fill(cx - 31, cy - 1, cx + 31, cy + 5, 0xC0000000);
             g.fill(cx - 30, cy, cx - 30 + (int) (60 * r), cy + 4, r >= 1 ? 0xFFFF8030 : 0xFFFFD24A);
             if (r >= 1) g.drawString(font, "MAX", cx - font.width("MAX") / 2, cy + 7, 0xFFFF8030, true);
+        }
+    }
+
+    /** 오른쪽: 진행 중 퀘스트 목표 (최대 3개) */
+    private static void questTracker(GuiGraphics g, Font font, int w, int h) {
+        if (Minecraft.getInstance().screen != null) return;
+        var list = ClientQuests.active();
+        if (list.isEmpty()) return;
+        int right = w - 6, y = 60;
+        int shown = 0;
+        for (var q : list) {
+            if (shown >= 3) break;
+            boolean done = ClientQuests.complete(q);
+            String t = (done ? "§a✔ " : "§e") + q.name();
+            g.drawString(font, t, right - font.width(t), y, 0xFFFFFFFF, true);
+            y += 10;
+            if (done) {
+                String s = "→ " + rpg.core.quest.Quests.npcName(q.turnIn());
+                g.drawString(font, s, right - font.width(s), y, 0xFFFFC040, true);
+                y += 10;
+            } else if (q.goals().isEmpty()) {
+                String s = rpg.core.quest.Quests.npcName(q.turnIn()) + "에게 말 걸기";
+                g.drawString(font, s, right - font.width(s), y, 0xFFD0D0D0, true);
+                y += 10;
+            } else for (int i = 0; i < q.goals().size(); i++) {
+                boolean ok = ClientQuests.current(q, i) >= q.goals().get(i).count();
+                String s = ClientQuests.goalText(q, i);
+                g.drawString(font, s, right - font.width(s), y, ok ? 0xFF80E080 : 0xFFD0D0D0, true);
+                y += 10;
+            }
+            y += 4;
+            shown++;
+        }
+        if (list.size() > 3) {
+            String s = "+" + (list.size() - 3) + "개 더 (J)";
+            g.drawString(font, s, right - font.width(s), y, 0xFF808080, true);
         }
     }
 

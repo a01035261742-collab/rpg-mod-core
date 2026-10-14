@@ -72,6 +72,73 @@ public final class Net {
                 .encoder(OpenShop::encode).decoder(OpenShop::new).consumerMainThread(OpenShop::handle).add();
         CH.messageBuilder(ShopAction.class, id++, NetworkDirection.PLAY_TO_SERVER)
                 .encoder(ShopAction::encode).decoder(ShopAction::new).consumerMainThread(ShopAction::handle).add();
+        CH.messageBuilder(QuestDefs.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(QuestDefs::encode).decoder(QuestDefs::new).consumerMainThread(QuestDefs::handle).add();
+        CH.messageBuilder(QuestSync.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(QuestSync::encode).decoder(QuestSync::new).consumerMainThread(QuestSync::handle).add();
+        CH.messageBuilder(QuestTalk.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(QuestTalk::encode).decoder(QuestTalk::new).consumerMainThread(QuestTalk::handle).add();
+        CH.messageBuilder(QuestAction.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(QuestAction::encode).decoder(QuestAction::new).consumerMainThread(QuestAction::handle).add();
+    }
+
+    // ───────── 퀘스트 ─────────
+    public static void questSync(ServerPlayer p) {
+        PlayerData d = rpg.core.data.RpgData.get(p);
+        CH.send(PacketDistributor.PLAYER.with(() -> p), new QuestSync(new java.util.LinkedHashMap<>(d.questActive), new java.util.ArrayList<>(d.questDone)));
+    }
+
+    public static void questTalk(ServerPlayer p, int entity, String npc) {
+        CH.send(PacketDistributor.PLAYER.with(() -> p), new QuestTalk(entity, npc));
+    }
+
+    /** 서버 → 클라: quests.json 원문 */
+    public record QuestDefs(String json) {
+        QuestDefs(FriendlyByteBuf b) { this(b.readUtf(1048576)); }
+        void encode(FriendlyByteBuf b) { b.writeUtf(json, 1048576); }
+        void handle(Supplier<NetworkEvent.Context> ctx) {
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> rpg.core.quest.Quests.parse(json));
+            ctx.get().setPacketHandled(true);
+        }
+    }
+
+    /** 서버 → 클라: 내 퀘스트 (진행 중 + 처치 수, 완료 목록) */
+    public record QuestSync(java.util.Map<String, int[]> active, java.util.List<String> done) {
+        QuestSync(FriendlyByteBuf b) { this(b.readMap(java.util.LinkedHashMap::new, FriendlyByteBuf::readUtf, FriendlyByteBuf::readVarIntArray), b.readList(FriendlyByteBuf::readUtf)); }
+        void encode(FriendlyByteBuf b) {
+            b.writeMap(active, FriendlyByteBuf::writeUtf, FriendlyByteBuf::writeVarIntArray);
+            b.writeCollection(done, FriendlyByteBuf::writeUtf);
+        }
+        void handle(Supplier<NetworkEvent.Context> ctx) {
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> rpg.core.client.ClientQuests.set(active, done));
+            ctx.get().setPacketHandled(true);
+        }
+    }
+
+    /** 서버 → 클라: NPC 대화 창 열기 */
+    public record QuestTalk(int entity, String npc) {
+        QuestTalk(FriendlyByteBuf b) { this(b.readVarInt(), b.readUtf()); }
+        void encode(FriendlyByteBuf b) { b.writeVarInt(entity); b.writeUtf(npc); }
+        void handle(Supplier<NetworkEvent.Context> ctx) {
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> rpg.core.client.QuestTalkScreen.open(entity, npc));
+            ctx.get().setPacketHandled(true);
+        }
+    }
+
+    /** 클라 → 서버: 퀘스트 (kind 0 수락 · 1 완료 · 2 포기) */
+    public record QuestAction(int kind, String quest, int entity) {
+        public QuestAction(FriendlyByteBuf b) { this(b.readVarInt(), b.readUtf(), b.readVarInt()); }
+        void encode(FriendlyByteBuf b) { b.writeVarInt(kind); b.writeUtf(quest); b.writeVarInt(entity); }
+        void handle(Supplier<NetworkEvent.Context> ctx) {
+            ServerPlayer p = ctx.get().getSender();
+            if (p != null) switch (kind) {
+                case 0 -> rpg.core.quest.QuestEvents.accept(p, entity, quest);
+                case 1 -> rpg.core.quest.QuestEvents.complete(p, entity, quest);
+                case 2 -> rpg.core.quest.QuestEvents.abandon(p, quest);
+                default -> {}
+            }
+            ctx.get().setPacketHandled(true);
+        }
     }
 
     public static void levelUp(ServerPlayer p, int level) {
@@ -299,6 +366,8 @@ public final class Net {
 
     public static void defsTo(ServerPlayer p) {
         CH.send(PacketDistributor.PLAYER.with(() -> p), new DefsSync(rpg.core.skill.Defs.skillsJson, rpg.core.skill.Defs.passivesJson, rpg.core.equip.GearDefs.json));
+        CH.send(PacketDistributor.PLAYER.with(() -> p), new QuestDefs(rpg.core.quest.Quests.json));
+        questSync(p);
     }
 
     // ───────── 클라 → 서버: 스킬 키 (0~5 = Q E R F Z X) ─────────

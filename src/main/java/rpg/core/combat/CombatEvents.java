@@ -295,6 +295,7 @@ public final class CombatEvents {
             Net.reward(mem, each, 0);
             Progress.giveExp(mem, each);
         }
+        rpg.core.quest.QuestEvents.onKill(members, m);   // 퀘스트 처치 진행도 (근처 파티원 모두)
     }
 
     /** RPG 몹은 바닐라 드롭·경험치 구슬 없음 (RPG 드롭은 loot.Drops) */
