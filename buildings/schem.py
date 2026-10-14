@@ -150,3 +150,97 @@ def view(s, rot=0, ymax=None):
         for _ in range(rot % 4): x, z = -z, x
         t.b[(x, y, z)] = st
     return t
+
+# ── 미리보기 v2: 계단·울타리·다락문·문·랜턴 모양까지 그림 ──
+_ROT1 = {'east': 'south', 'south': 'west', 'west': 'north', 'north': 'east'}
+def _rotf(st, n):
+    import re
+    def f(m):
+        d = m.group(2)
+        for _ in range(n % 4): d = _ROT1[d]
+        return m.group(1) + d
+    st = re.sub(r'(facing=)(north|south|east|west)', f, st)
+    # 울타리 연결 속성 회전
+    if '[' in st and any(k in st for k in ('_fence[', 'pane[', 'bars[', '_wall[')):
+        base, props = st.split('[', 1); props = props.rstrip(']').split(',')
+        out = []
+        for p in props:
+            k, v = p.split('=')
+            if k in _ROT1:
+                for _ in range(n % 4): k = _ROT1[k]
+            out.append(k + '=' + v)
+        st = base + '[' + ','.join(out) + ']'
+    if 'axis=x' in st and n % 2: st = st.replace('axis=x', 'axis=z')
+    elif 'axis=z' in st and n % 2: st = st.replace('axis=z', 'axis=x')
+    return st
+
+def view2(s, rot=0, ymax=None):
+    t = S(s.name)
+    for (x, y, z), st in s.b.items():
+        if ymax is not None and y > ymax: continue
+        for _ in range(rot % 4): x, z = -z, x
+        t.b[(x, y, z)] = _rotf(st, rot)
+    return t
+
+def _boxes(st):
+    """블록 → 작은 상자 목록 (x0,x1,y0,y1,z0,z1) 0~1"""
+    full = [(0, 1, 0, 1, 0, 1)]
+    def side(f, a, b):   # facing 쪽 절반
+        return {'north': (0, 1, a, b, 0, .5), 'south': (0, 1, a, b, .5, 1), 'east': (.5, 1, a, b, 0, 1), 'west': (0, .5, a, b, 0, 1)}[f]
+    def plate(f, t=.19):  # f 쪽 면에 붙은 얇은 판
+        return {'north': (0, 1, 0, 1, 0, t), 'south': (0, 1, 0, 1, 1 - t, 1), 'east': (1 - t, 1, 0, 1, 0, 1), 'west': (0, t, 0, 1, 0, 1)}[f]
+    opp = {'north': 'south', 'south': 'north', 'east': 'west', 'west': 'east'}
+    fm = __import__('re').search(r'facing=(\w+)', st); f = fm.group(1) if fm else 'north'
+    if '_stairs' in st:
+        if 'half=top' in st: return [(0, 1, .5, 1, 0, 1), side(f, 0, .5)]
+        return [(0, 1, 0, .5, 0, 1), side(f, .5, 1)]
+    if '_slab' in st:
+        return [(0, 1, .5, 1, 0, 1)] if 'type=top' in st else [(0, 1, 0, .5, 0, 1)] if 'type=bottom' in st else full
+    if 'trapdoor' in st:
+        if 'open=true' in st: return [plate(opp[f] if f in opp else 'north')]
+        return [(0, 1, .81, 1, 0, 1)] if 'half=top' in st else [(0, 1, 0, .19, 0, 1)]
+    if '_door' in st: return [plate(opp[f], .19)]
+    if 'carpet' in st or 'pressure_plate' in st: return [(0, 1, 0, .07, 0, 1)]
+    if any(k in st for k in ('_fence', 'pane', 'iron_bars', '_wall[')):
+        w = .19 if '_wall' in st else .12 if 'fence' in st else .06
+        b = [(.5 - w, .5 + w, 0, 1, .5 - w, .5 + w)]
+        arms = {'north': (.5 - w * .7, .5 + w * .7, .45, .9, 0, .5), 'south': (.5 - w * .7, .5 + w * .7, .45, .9, .5, 1),
+                'east': (.5, 1, .45, .9, .5 - w * .7, .5 + w * .7), 'west': (0, .5, .45, .9, .5 - w * .7, .5 + w * .7)}
+        if 'pane' in st or 'bars' in st: arms = {k: (v[0], v[1], 0, 1, v[4], v[5]) for k, v in arms.items()}
+        for k, v in arms.items():
+            if f'{k}=true' in st or f'{k}=low' in st: b.append(v)
+        return b
+    if 'lantern' in st: return [(.31, .69, 0.05 if 'hanging=false' in st else .25, .55 if 'hanging=false' in st else .75, .31, .69)]
+    if 'chain' in st: return [(.44, .56, 0, 1, .44, .56)]
+    if 'torch' in st: return [(.44, .56, 0, .65, .44, .56)]
+    if 'campfire' in st: return [(0, 1, 0, .45, 0, 1)]
+    if 'button' in st: return [(.35, .65, .35, .65, .35, .65)]
+    return full
+
+def render2(s, path, scale=10, bg=(34, 36, 44)):
+    if not s.b: return
+    x0, y0, z0, x1, y1, z1 = s.bounds()
+    cw, ch = scale, scale // 2
+    def proj(x, y, z):
+        return ((x - x0) - (z - z0)) * cw, ((x - x0) + (z - z0)) * ch - (y - y0) * scale
+    pts = [proj(x, y, z) for x in (x0, x1 + 1) for y in (y0, y1 + 1) for z in (z0, z1 + 1)]
+    minx = min(p[0] for p in pts) - 10; miny = min(p[1] for p in pts) - 10
+    maxx = max(p[0] for p in pts) + 10; maxy = max(p[1] for p in pts) + 10
+    im = Image.new('RGB', (int(maxx - minx), int(maxy - miny)), bg); d = ImageDraw.Draw(im)
+    items = []
+    for (x, y, z), st in s.b.items():
+        if st == 'minecraft:air': continue
+        for bx in _boxes(st):
+            items.append(((x + (bx[0] + bx[1]) / 2) + (z + (bx[4] + bx[5]) / 2), y + (bx[2] + bx[3]) / 2, x + bx[0], (x, y, z), bx, st))
+    items.sort(key=lambda t: (t[0], t[1], t[2]))
+    for _, _, _, (x, y, z), (ax, bx_, ay, by, az, bz), st in items:
+        c = col(st)
+        X0, X1, Y0, Y1, Z0, Z1 = x + ax, x + bx_, y + ay, y + by, z + az, z + bz
+        top = [proj(X0, Y1, Z0), proj(X1, Y1, Z0), proj(X1, Y1, Z1), proj(X0, Y1, Z1)]
+        south = [proj(X0, Y0, Z1), proj(X1, Y0, Z1), proj(X1, Y1, Z1), proj(X0, Y1, Z1)]
+        east = [proj(X1, Y0, Z0), proj(X1, Y0, Z1), proj(X1, Y1, Z1), proj(X1, Y1, Z0)]
+        sh = lambda k: tuple(max(0, min(255, int(v * k))) for v in c)
+        for poly, k in ((south, 0.70), (east, 0.85), (top, 1.0)):
+            d.polygon([(px - minx, py - miny) for px, py in poly], fill=sh(k), outline=sh(k * 0.78))
+    im.save(path)
+    return im
