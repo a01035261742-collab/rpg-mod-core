@@ -1,7 +1,7 @@
 """manifest.json 생성 (런처 자동 업데이트용). 사용: python3 ci/make_manifest.py <jar 경로>
 출력 형식 (schema 1):
   pack, version, minecraft, loader{type,version}, java,
-  files[]: path(게임 폴더 기준, mods/ 등), url, sha256, size, optional"""
+  files[]: path(게임 폴더 기준, mods/ 등), url, sha256, size, optional, side(both|client|server)"""
 import hashlib, json, os, sys, urllib.request, urllib.parse
 
 REPO = os.environ.get('GITHUB_REPOSITORY', 'a01035261742-collab/rpg-mod-core')
@@ -17,7 +17,7 @@ def get(url):
 data = open(jar, 'rb').read()
 name = os.path.basename(jar)
 files = [{'path': f'mods/{name}', 'url': f'https://github.com/{REPO}/releases/download/v{ver}/{name}',
-          'sha256': sha256(data), 'size': len(data), 'optional': False}]
+          'sha256': sha256(data), 'size': len(data), 'optional': False, 'side': 'both'}]
 
 pack = json.load(open('pack/mods.json')) if os.path.exists('pack/mods.json') else {}
 extra = pack.get('mods', [])
@@ -32,7 +32,7 @@ for m in extra:
         f = next((x for x in pick['files'] if x.get('primary')), pick['files'][0])
         blob = get(f['url'])
         files.append({'path': f'mods/{f["filename"]}', 'url': f['url'], 'sha256': sha256(blob),
-                      'size': len(blob), 'optional': bool(m.get('optional'))})
+                      'size': len(blob), 'optional': bool(m.get('optional')), 'side': m.get('side', 'both')})
         print(f'[manifest] {slug} → {f["filename"]}', file=sys.stderr)
     except Exception as e:
         print(f'::warning title=manifest::{slug} 건너뜀 ({e})', file=sys.stderr)
