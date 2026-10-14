@@ -41,21 +41,17 @@ def build():
     s.set(3, 4, 12, 'lantern[hanging=true]') if False else None
     for x in (2, 6): s.set(x, 4, 12, 'lantern[hanging=true]')
     for x in (3, 5): s.set(x, 4, 11, 'red_wall_banner[facing=south]') if False else None
-    # ── 탑: x-7~-3, z1~5 ──
+    # ── 반목조 탑: 돌 1층(x-7~-3, z1~5) → 2층 돌출(x-8~-2, z0~6) → 3층 한 번 더 돌출(서·남·북) → 가파른 사각뿔 ──
     tx0, tx1, tz0, tz1 = -7, -3, 1, 5
-    stone_box(s, r, tx0, tz0, 5, 5, 1, 12)
-    for y in (5, 9):
-        for x in range(tx0 + 1, tx1):
-            for z in range(tz0 + 1, tz1): s.set(x, y, z, 'spruce_planks')
-        for x in range(tx0 - 1, tx1 + 2):
-            s.set(x, y, tz0 - 1, 'stone_brick_stairs[facing=south,half=top,shape=straight]'); s.set(x, y, tz1 + 1, 'stone_brick_stairs[facing=north,half=top,shape=straight]')
-        for z in range(tz0, tz1 + 1):
-            s.set(tx0 - 1, y, z, 'stone_brick_stairs[facing=east,half=top,shape=straight]'); s.set(tx1 + 1, y, z, 'stone_brick_stairs[facing=west,half=top,shape=straight]')
-    for y in (2, 6, 10):
-        deep_window(s, tx0, y, 3, 'west'); deep_window(s, -5, y, tz1, 'south'); deep_window(s, -5, y, tz0, 'north')
-    # 탑 꼭대기 흉벽 느낌 + 지붕
-    pyramid(s, tx0, tx1, tz0, tz1, 13, mat='deepslate_tile', over=1)
-    for y in range(1, 13): s.set(-4, y, 2, 'ladder[facing=south]')
+    stone_box(s, r, tx0, tz0, 5, 5, 1, 4)
+    deep_window(s, tx0, 2, 3, 'west'); deep_window(s, -5, 2, tz1, 'south'); deep_window(s, -5, 2, tz0, 'north')
+    jetty_floor(s, -8, 0, -2, 6, 5)
+    _, _, xs, zs = box(s, r, -8, 0, 7, 7, 6, 4, infill=INF, found=False, post_step=3, win_sides=('w', 's', 'n'))
+    jetty_floor(s, -9, -1, -2, 7, 10, sides=('n', 's', 'w'))
+    _, _, xs, zs = box(s, r, -9, -1, 8, 9, 11, 4, infill=INF, found=False, post_step=4, win_sides=('w', 's', 'n'))
+    for i in range(len(zs) - 1): diag_brace(s, zs[i], zs[i + 1], 11, 14, -8, axis='z')
+    steep_pyramid(s, r, -9, -2, -1, 7, 15, over=1)
+    for y in range(1, 11): s.set(-6, y, 3, 'ladder[facing=east]')
     for x in (-2, -1):                                         # 연결 복도
         s.set(x, 0, 3, 'stone_bricks')
         for y in (1, 2, 3):
@@ -89,8 +85,8 @@ def build():
     for x in range(2, 7):
         for z in range(4, 8): s.set(x, 6, z, 'brown_carpet')
     chandelier(s, 4, 9, 5, length=1)
-    s.set(-6, 6, 4, 'lectern[facing=east,has_book=true,powered=false]'); s.set(-6, 6, 2, 'bookshelf'); s.set(-6, 10, 4, 'chest[facing=east,type=single]')
-    s.set(-5, 8, 3, 'lantern[hanging=true]'); s.set(-5, 12, 3, 'lantern[hanging=true]')
+    s.set(-4, 6, 4, 'lectern[facing=west,has_book=true,powered=false]'); s.set(-6, 6, 2, 'bookshelf'); s.set(-7, 11, 4, 'chest[facing=east,type=single]'); s.set(-7, 11, 1, 'barrel[facing=up,open=false]')
+    s.set(-5, 9, 3, 'lantern[hanging=true]'); s.set(-5, 14, 3, 'lantern[hanging=true]')
     # ── 바깥 ──
     path(s, r, 3, 5, 12, 18)
     well(s, r, 11, 15)

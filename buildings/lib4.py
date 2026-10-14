@@ -116,3 +116,42 @@ def steep_roof(s, r, x0, x1, z0, z1, y, axis='x', full='deepslate_tiles', stair=
             else:
                 put(q, t, yyy, r.choice(gable))
     return yy
+
+def steep_pyramid(s, r, x0, x1, z0, z1, y, full='deepslate_tiles', stair='deepslate_tile', eave='dark_oak', over=1, moss=0.06):
+    """가파른 사각뿔 지붕 + 처마 끝 들림(첫 단은 나무 계단, 그 위로 2:1)"""
+    xa, xb, za, zb, yy, first = x0 - over, x1 + over, z0 - over, z1 + over, y, True
+    def m(base):
+        return 'mossy_cobblestone' if r.random() < moss else base
+    while xb - xa >= 1 and zb - za >= 1:
+        ring = [(x, za, 'south') for x in range(xa, xb + 1)] + [(x, zb, 'north') for x in range(xa, xb + 1)] + \
+               [(xa, z, 'east') for z in range(za + 1, zb)] + [(xb, z, 'west') for z in range(za + 1, zb)]
+        for x, z, f in ring:
+            if first:
+                s.set(x, yy, z, f'{eave}_stairs[facing={f},half=bottom,shape=straight]')
+                opp = {'south': 'north', 'north': 'south', 'east': 'west', 'west': 'east'}[f]
+                if s.get(x, yy - 1, z) is None: s.set(x, yy - 1, z, f'{eave}_stairs[facing={opp},half=top,shape=straight]')
+            else:
+                s.set(x, yy, z, m(full)); s.set(x, yy + 1, z, f'{m(stair)}_stairs[facing={f},half=bottom,shape=straight]')
+        yy += 1 if first else 2
+        xa += 1; xb -= 1; za += 1; zb -= 1; first = False
+    cx, cz = (x0 + x1) // 2, (z0 + z1) // 2
+    top = yy
+    for x in range(xa, xb + 1):
+        for z in range(za, zb + 1): s.set(x, yy - 1, z, full); s.set(x, yy, z, f'{stair}_slab[type=bottom]')
+    s.set(cx, top, cz, 'dark_oak_fence'); s.set(cx, top + 1, cz, 'dark_oak_fence'); s.set(cx, top + 2, cz, 'lightning_rod[facing=up,powered=false,waterlogged=false]')
+    return top
+
+def jetty_floor(s, x0, z0, x1, z1, y, frame='dark_oak', sides=('n', 's', 'e', 'w')):
+    """층 사이 들보 테두리 + 바닥 + 까치발 (x0..x1, z0..z1 = 위층 바깥선)"""
+    for x in range(x0, x1 + 1):
+        for z in range(z0, z1 + 1): s.set(x, y, z, 'spruce_planks')
+    for x in range(x0, x1 + 1): s.set(x, y, z0, f'{frame}_log[axis=x]'); s.set(x, y, z1, f'{frame}_log[axis=x]')
+    for z in range(z0, z1 + 1): s.set(x0, y, z, f'{frame}_log[axis=z]'); s.set(x1, y, z, f'{frame}_log[axis=z]')
+    if 'n' in sides:
+        for x in range(x0, x1 + 1, 2): s.set(x, y - 1, z0, f'{frame}_stairs[facing=south,half=top,shape=straight]') if s.get(x, y - 1, z0) is None else None
+    if 's' in sides:
+        for x in range(x0, x1 + 1, 2): s.set(x, y - 1, z1, f'{frame}_stairs[facing=north,half=top,shape=straight]') if s.get(x, y - 1, z1) is None else None
+    if 'w' in sides:
+        for z in range(z0, z1 + 1, 2): s.set(x0, y - 1, z, f'{frame}_stairs[facing=east,half=top,shape=straight]') if s.get(x0, y - 1, z) is None else None
+    if 'e' in sides:
+        for z in range(z0, z1 + 1, 2): s.set(x1, y - 1, z, f'{frame}_stairs[facing=west,half=top,shape=straight]') if s.get(x1, y - 1, z) is None else None
