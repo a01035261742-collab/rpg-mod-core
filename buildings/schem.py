@@ -65,7 +65,7 @@ class S:
         return W, H, L, len(s.b)
 
 # ── 미리보기 (아이소메트릭) ──
-COL = [('flowering_azalea', (120, 140, 70)), ('oxeye', (235, 235, 210)), ('fern', (80, 140, 60)), ('peony', (220, 150, 200)), ('rose_bush', (200, 40, 50)), ('lectern', (160, 120, 70)), ('chain', (60, 60, 70)), ('allium', (170, 100, 200)), ('cartography', (150, 120, 90)), ('lightning_rod', (200, 120, 80)), ('brick_slab', (150, 75, 60)), ('cornflower', (80, 110, 210)), ('lily_of', (240, 240, 240)), ('deepslate_tile', (55, 55, 62)), ('cobbled_deepslate', (80, 80, 85)), ('trapdoor', (125, 95, 60)), ('terracotta', (150, 100, 80)), ('vine', (60, 110, 40)), ('bee_nest', (200, 160, 70)), ('azalea', (95, 135, 55)), ('lily', (50, 120, 40)), ('pumpkin', (210, 130, 40)), ('melon', (110, 150, 50)), ('diorite', (200, 200, 200)), ('gravel', (130, 125, 120)), ('packed_mud', (140, 105, 80)), ('chiseled', (125, 125, 125)), ('polished_andesite', (140, 140, 140)), ('water', (60, 110, 200)), ('lantern', (250, 200, 90)), ('glass', (170, 210, 230)), ('calcite', (225, 225, 218)),
+COL = [('deepslate_tiles', (55, 55, 62)), ('tuff', (110, 112, 100)), ('lilac', (190, 150, 200)), ('flowering_azalea', (120, 140, 70)), ('oxeye', (235, 235, 210)), ('fern', (80, 140, 60)), ('peony', (220, 150, 200)), ('rose_bush', (200, 40, 50)), ('lectern', (160, 120, 70)), ('chain', (60, 60, 70)), ('allium', (170, 100, 200)), ('cartography', (150, 120, 90)), ('lightning_rod', (200, 120, 80)), ('brick_slab', (150, 75, 60)), ('cornflower', (80, 110, 210)), ('lily_of', (240, 240, 240)), ('deepslate_tile', (55, 55, 62)), ('cobbled_deepslate', (80, 80, 85)), ('trapdoor', (125, 95, 60)), ('terracotta', (150, 100, 80)), ('vine', (60, 110, 40)), ('bee_nest', (200, 160, 70)), ('azalea', (95, 135, 55)), ('lily', (50, 120, 40)), ('pumpkin', (210, 130, 40)), ('melon', (110, 150, 50)), ('diorite', (200, 200, 200)), ('gravel', (130, 125, 120)), ('packed_mud', (140, 105, 80)), ('chiseled', (125, 125, 125)), ('polished_andesite', (140, 140, 140)), ('water', (60, 110, 200)), ('lantern', (250, 200, 90)), ('glass', (170, 210, 230)), ('calcite', (225, 225, 218)),
        ('white_terracotta', (210, 190, 175)), ('dark_oak', (70, 48, 30)), ('spruce', (115, 85, 55)), ('oak', (165, 130, 80)),
        ('birch', (210, 200, 150)), ('cobble', (120, 120, 120)), ('mossy', (95, 115, 85)), ('stone_brick', (130, 130, 130)),
        ('stone', (128, 128, 128)), ('andesite', (135, 135, 135)), ('deepslate', (75, 75, 80)), ('red_wool', (170, 40, 40)),
@@ -86,7 +86,7 @@ def col(st):
         if k in n: return c
     return (180, 120, 200)
 
-THIN = ('minecraft:grass', 'fern', 'peony', 'rose_bush', 'oxeye', 'allium', 'cornflower', 'lily_of', 'chain', 'lightning_rod', 'torch', 'lantern', 'flower', 'poppy', 'dandelion', 'carpet', 'pressure', 'button', 'wheat', 'carrot', 'potato', 'grass[', 'mushroom[', 'sign', 'banner', 'rail', 'cobweb', 'short_grass', 'fern')
+THIN = ('minecraft:grass', 'lilac', 'vine',  'fern', 'peony', 'rose_bush', 'oxeye', 'allium', 'cornflower', 'lily_of', 'chain', 'lightning_rod', 'torch', 'lantern', 'flower', 'poppy', 'dandelion', 'carpet', 'pressure', 'button', 'wheat', 'carrot', 'potato', 'grass[', 'mushroom[', 'sign', 'banner', 'rail', 'cobweb', 'short_grass', 'fern')
 def render(s, path, scale=10):
     if not s.b: return
     x0, y0, z0, x1, y1, z1 = s.bounds()
