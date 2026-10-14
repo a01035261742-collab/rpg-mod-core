@@ -150,24 +150,25 @@ def gate3():
     for cx in (-7, 6): put(s, cx, 2, 'lightning_rod[facing=up,powered=false,waterlogged=false]', roof=True)
     autoconnect(s); return s
 
-items = []
-os.makedirs('v2d3', exist_ok=True)
-for s, label in ((lab3(), 'A. 버섯 연구소 (모리스)'), (alchemy3(), 'B. 연금술 공방 (네라)'),
-                 (shop3('shop_red', 'red_mushroom_block', 5, ('mushroom_stem', 7), False), 'C1. 상점 (빨강 갓)'),
-                 (shop3('shop_brown', 'brown_mushroom_block', 6, ('shroomlight', 4), True), 'C2. 상점 (갈색 갓 + 창고)'),
-                 (gate3(), 'D. 경비 초소 입구 (카엘)')):
-    p = 'v2d3/' + s.name.split('/')[1]
-    s.save(p + '.schem')
-    x0, y0, z0, x1, y1, z1 = s.bounds(); dim = f' {x1 - x0 + 1}×{z1 - z0 + 1}×{y1 - y0 + 1}'
-    render2(view2(s, 0), p + '.png', scale=18); render2(view2(s, 2), p + '_back.png', scale=18)
-    items.append((p + '.png', label + dim)); items.append((p + '_back.png', label + ' (뒤)'))
-    if 'lab' in p:
-        from schem import S as _S
-        c = _S('c'); c.b = {k: v for k, v in s.b.items() if k[1] >= 14}
-        render2(view2(c, 1), 'v2d3/lab_cap_side.png', scale=22)
-        u = _S('u'); u.b = {(x, -y, z): v for (x, y, z), v in s.b.items() if y >= 16}
-        render2(view2(u, 0), 'v2d3/lab_cap_under.png', scale=18)
-    print(s.name, dim)
-print(sheet(items[:4], 'village2_draft3_big.png', cols=2))
-print(sheet([('v2d3/lab_cap_side.png', 'A 갓 확대 (옆)'), ('v2d3/lab_cap_under.png', 'A 갓 아랫면 (밑에서 본 모습)')], 'village2_lab_cap.png', cols=2))
-print(sheet(items[4:], 'village2_draft3_small.png', cols=3))
+if __name__ == '__main__':
+    items = []
+    os.makedirs('v2d3', exist_ok=True)
+    for s, label in ((lab3(), 'A. 버섯 연구소 (모리스)'), (alchemy3(), 'B. 연금술 공방 (네라)'),
+                     (shop3('shop_red', 'red_mushroom_block', 5, ('mushroom_stem', 7), False), 'C1. 상점 (빨강 갓)'),
+                     (shop3('shop_brown', 'brown_mushroom_block', 6, ('shroomlight', 4), True), 'C2. 상점 (갈색 갓 + 창고)'),
+                     (gate3(), 'D. 경비 초소 입구 (카엘)')):
+        p = 'v2d3/' + s.name.split('/')[1]
+        s.save(p + '.schem')
+        x0, y0, z0, x1, y1, z1 = s.bounds(); dim = f' {x1 - x0 + 1}×{z1 - z0 + 1}×{y1 - y0 + 1}'
+        render2(view2(s, 0), p + '.png', scale=18); render2(view2(s, 2), p + '_back.png', scale=18)
+        items.append((p + '.png', label + dim)); items.append((p + '_back.png', label + ' (뒤)'))
+        if 'lab' in p:
+            from schem import S as _S
+            c = _S('c'); c.b = {k: v for k, v in s.b.items() if k[1] >= 14}
+            render2(view2(c, 1), 'v2d3/lab_cap_side.png', scale=22)
+            u = _S('u'); u.b = {(x, -y, z): v for (x, y, z), v in s.b.items() if y >= 16}
+            render2(view2(u, 0), 'v2d3/lab_cap_under.png', scale=18)
+        print(s.name, dim)
+    print(sheet(items[:4], 'village2_draft3_big.png', cols=2))
+    print(sheet([('v2d3/lab_cap_side.png', 'A 갓 확대 (옆)'), ('v2d3/lab_cap_under.png', 'A 갓 아랫면 (밑에서 본 모습)')], 'village2_lab_cap.png', cols=2))
+    print(sheet(items[4:], 'village2_draft3_small.png', cols=3))
