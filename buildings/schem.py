@@ -214,6 +214,13 @@ def _boxes(st):
     if 'chain' in st: return [(.44, .56, 0, 1, .44, .56)]
     if 'torch' in st: return [(.44, .56, 0, .65, .44, .56)]
     if 'campfire' in st: return [(0, 1, 0, .45, 0, 1)]
+    if 'hanging_sign' in st: return [(.06, .94, 0, .62, .44, .56)] if 'rotation=0' in st or 'rotation=8' in st else [(.44, .56, 0, .62, .06, .94)]
+    if 'brewing_stand' in st: return [(.44, .56, 0, .9, .44, .56), (.15, .85, 0, .12, .15, .85)]
+    if 'lectern' in st: return [(.25, .75, 0, .8, .25, .75), (0, 1, .8, 1, 0, 1)]
+    if 'ladder' in st: return [plate(opp[f], .08)]
+    if 'lightning_rod' in st: return [(.44, .56, 0, 1, .44, .56)]
+    if 'cake' in st: return [(.1, .9, 0, .5, .1, .9)]
+    if 'end_rod' in st: return [(.44, .56, 0, 1, .44, .56)]
     if 'button' in st: return [(.35, .65, .35, .65, .35, .65)]
     return full
 
