@@ -36,6 +36,8 @@ public final class ModItems {
             for (int lv : new int[]{20, 30, 40}) all.add(b + "_" + lv);   // 테스트 장비 Lv20·30·40
         for (String id : all) GEAR.add(ITEMS.register(id, () -> id.startsWith("archer_bow")
                 ? new rpg.core.equip.GearItems.Bow(new Item.Properties(), id)
+                : (id.startsWith("warrior_sword") || id.startsWith("mage_staff") || id.startsWith("thief_dagger"))
+                ? new rpg.core.equip.GearItems.Weapon(new Item.Properties(), id)
                 : new rpg.core.equip.GearItems.Basic(new Item.Properties(), id)));
         String[][] armor = {{"hat", "HELMET"}, {"top", "CHESTPLATE"}, {"bottom", "LEGGINGS"}, {"shoes", "BOOTS"}};
         for (String[] a : armor) {

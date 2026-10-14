@@ -40,6 +40,50 @@ public final class GearItems {
         }
     }
 
+    /** 근접 무기 (검·지팡이·단검): 마크 검 종류라 Epic Fight가 전투 무기로 인식 (블록 조준 안 함).
+     *  내구도·바닐라 공격력 없음 → 피해는 RPG 공식만 */
+    public static final net.minecraft.world.item.Tier NO_TIER = new net.minecraft.world.item.Tier() {
+        @Override public int getUses() { return 0; }
+        @Override public float getSpeed() { return 1f; }
+        @Override public float getAttackDamageBonus() { return 0f; }
+        @Override public int getLevel() { return 0; }
+        @Override public int getEnchantmentValue() { return 0; }
+        @Override public Ingredient getRepairIngredient() { return Ingredient.EMPTY; }
+    };
+
+    public static class Weapon extends net.minecraft.world.item.SwordItem implements Gear.GearItem {
+        private final String id;
+
+        public Weapon(Properties p, String id) {
+            super(NO_TIER, 0, 0f, p.stacksTo(1));
+            this.id = id;
+        }
+
+        @Override public String gearId() { return id; }
+
+        @Override
+        public com.google.common.collect.Multimap<net.minecraft.world.entity.ai.attributes.Attribute, net.minecraft.world.entity.ai.attributes.AttributeModifier>
+                getDefaultAttributeModifiers(net.minecraft.world.entity.EquipmentSlot slot) {
+            return com.google.common.collect.ImmutableMultimap.of();
+        }
+
+        @Override public boolean isCorrectToolForDrops(net.minecraft.world.level.block.state.BlockState b) { return false; }
+        @Override public boolean isEnchantable(ItemStack s) { return false; }
+        @Override public boolean canPerformAction(ItemStack s, net.minecraftforge.common.ToolAction a) { return false; }   // 바닐라 휩쓸기 없음
+        @Override public boolean hurtEnemy(ItemStack s, net.minecraft.world.entity.LivingEntity t, net.minecraft.world.entity.LivingEntity a) { return true; }
+        @Override public boolean mineBlock(ItemStack s, Level l, net.minecraft.world.level.block.state.BlockState b, net.minecraft.core.BlockPos pos, net.minecraft.world.entity.LivingEntity e) { return true; }
+
+        @Override
+        public void inventoryTick(ItemStack s, Level level, Entity e, int slot, boolean selected) {
+            if (!level.isClientSide) Gear.roll(s);
+        }
+
+        @Override
+        public void appendHoverText(ItemStack s, @Nullable Level level, List<Component> tip, TooltipFlag flag) {
+            Gear.tooltip(s, tip);
+        }
+    }
+
     /** 궁수 활: 당겨서 쏘기 (Epic Fight 활 모션), 화살 소모 없음. 피해는 RPG 공식 × 당긴 정도 */
     public static class Bow extends net.minecraft.world.item.BowItem implements Gear.GearItem {
         private final String id;

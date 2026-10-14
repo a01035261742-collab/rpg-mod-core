@@ -92,7 +92,6 @@ public final class JobSkills {
                 SoundSource.PLAYERS, 1.0f, 0.8f + (float) ratio * 0.3f);
         if (!rpg.core.compat.EpicFightCompat.playAnim(p, "GREATSWORD_AUTO1"))   // 대검 내려찍기
             p.swing(net.minecraft.world.InteractionHand.MAIN_HAND, true);
-        if (hits == 0) p.displayClientMessage(Component.literal("빗나감").withStyle(ChatFormatting.GRAY), true);
     }
 
     /** 차지 중 표시 */
