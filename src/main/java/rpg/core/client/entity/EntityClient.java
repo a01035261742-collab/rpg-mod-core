@@ -25,11 +25,10 @@ public final class EntityClient {
         return new ModelLayerLocation(RpgCore.id(id), "main");
     }
 
-    private static final ModelLayerLocation SOLDIER = layer("mush_soldier"), FAIRY = layer("mush_fairy"), BEAST = layer("mush_beast");
+    private static final ModelLayerLocation FAIRY = layer("mush_fairy"), BEAST = layer("mush_beast");
 
     @SubscribeEvent
     public static void layers(EntityRenderersEvent.RegisterLayerDefinitions e) {
-        e.registerLayerDefinition(SOLDIER, MobModels::mushSoldier);
         e.registerLayerDefinition(FAIRY, MobModels::mushFairy);
         e.registerLayerDefinition(BEAST, MobModels::mushBeast);
     }
@@ -49,7 +48,7 @@ public final class EntityClient {
         e.registerEntityRenderer(ModEntities.RAT.get(), ctx -> new RpgGeoRenderer(ctx, "rat", 0.3f));
         e.registerEntityRenderer(ModEntities.MUSH_KID.get(), ctx -> new RpgGeoRenderer(ctx, "mush_kid", 0.35f));
         e.registerEntityRenderer(ModEntities.MUSH_SPIRIT.get(), ctx -> new RpgGeoRenderer(ctx, "mush_spirit", 0.5f, true));
-        reg(e, ModEntities.MUSH_SOLDIER.get(), SOLDIER, "mush_soldier", 0.5f);
+        e.registerEntityRenderer(ModEntities.MUSH_SOLDIER.get(), ctx -> new RpgGeoRenderer(ctx, "mush_soldier", 0.5f, true));
         reg(e, ModEntities.MUSH_FAIRY.get(), FAIRY, "mush_fairy", 0.25f);
         reg(e, ModEntities.MUSH_BEAST.get(), BEAST, "mush_beast", 1.2f);
         ResourceLocation bear = RpgCore.id("textures/entity/brown_bear.png");

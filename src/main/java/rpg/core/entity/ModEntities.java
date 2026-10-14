@@ -32,7 +32,7 @@ public final class ModEntities {
     public static final RegistryObject<EntityType<GeoRpgMonster>> RAT = geoMonster("rat", 0.6f, 0.45f, 0);
     public static final RegistryObject<EntityType<GeoRpgMonster>> MUSH_KID = geoMonster("mush_kid", 0.6f, 0.9f, 1);
     public static final RegistryObject<EntityType<GeoRpgMonster>> MUSH_SPIRIT = geoMonster("mush_spirit", 0.6f, 1.75f, 1);
-    public static final RegistryObject<EntityType<RpgMonster>> MUSH_SOLDIER = monster("mush_soldier", 0.7f, 2.15f, 1);
+    public static final RegistryObject<EntityType<GeoRpgMonster>> MUSH_SOLDIER = geoMonster("mush_soldier", 0.7f, 2.15f, 1);
     public static final RegistryObject<EntityType<RpgMonster>> MUSH_BEAST = monster("mush_beast", 1.9f, 2.2f, 2);
     public static final RegistryObject<EntityType<FlyingRpgMonster>> MUSH_FAIRY = TYPES.register("mush_fairy",
             () -> EntityType.Builder.<FlyingRpgMonster>of(FlyingRpgMonster::new, MobCategory.MONSTER)

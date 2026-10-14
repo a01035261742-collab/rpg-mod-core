@@ -23,7 +23,7 @@ public class GeoRpgMonster extends RpgMonster implements GeoEntity {
     private static final RawAnimation ATTACK2 = RawAnimation.begin().thenPlay("attack2");
 
     /** 양손 번갈아 공격 애니메이션(attack ↔ attack2)이 있는 몹 */
-    private static final java.util.Set<String> ALT_ATTACK = java.util.Set.of("mush_spirit");
+    private static final java.util.Set<String> ALT_ATTACK = java.util.Set.of("mush_spirit", "mush_soldier");
 
     /** 패턴 애니메이션 (Blockbench 이름 = 패턴 종류). 없는 몹은 안 부름 */
     private static final String[] PATTERNS = {"slam", "leap", "dash", "shot", "zone", "cone"};
