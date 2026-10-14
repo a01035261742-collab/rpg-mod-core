@@ -155,3 +155,42 @@ def jetty_floor(s, x0, z0, x1, z1, y, frame='dark_oak', sides=('n', 's', 'e', 'w
         for z in range(z0, z1 + 1, 2): s.set(x0, y - 1, z, f'{frame}_stairs[facing=east,half=top,shape=straight]') if s.get(x0, y - 1, z) is None else None
     if 'e' in sides:
         for z in range(z0, z1 + 1, 2): s.set(x1, y - 1, z, f'{frame}_stairs[facing=west,half=top,shape=straight]') if s.get(x1, y - 1, z) is None else None
+
+INF4 = ('calcite',) * 8 + ('white_terracotta', 'diorite')
+
+def townhouse(s, r, x0, z0, w, d, ground=4, upper=4, jetty=1, axis='z', full='deepslate_tiles', stair='deepslate_tile',
+              eave='dark_oak', infill=INF4, gable=None, door_x=None, upper_sides=('s', 'n'), post_step=4, frame='dark_oak',
+              ground_windows=True, roof_over=1, timber_gable='dark_oak', upper_floor=True):
+    """돌 1층 + 돌출 목조 2층 + 가파른 지붕. 정면 = 남쪽. 반환 dict"""
+    x1, z1 = x0 + w - 1, z0 + d - 1
+    stone_box(s, r, x0, z0, w, d, 1, ground)
+    dx = door_x if door_x is not None else (x0 + x1) // 2
+    if ground_windows:
+        for x in range(x0 + 2, x1 - 1, 3):
+            if abs(x - dx) >= 2: deep_window(s, x, 2, z1, 'south')
+        for z in range(z0 + 2, z1 - 1, 3): deep_window(s, x0, 2, z, 'west'); deep_window(s, x1, 2, z, 'east')
+    door(s, dx, 1, z1)
+    s.set(dx - 1, 3, z1 + 1, 'stone_brick_stairs[facing=east,half=top,shape=straight]'); s.set(dx + 1, 3, z1 + 1, 'stone_brick_stairs[facing=west,half=top,shape=straight]')
+    s.set(dx, 0, z1 + 1, 'stone_brick_stairs[facing=north,half=bottom,shape=straight]')
+    info = dict(x0=x0, x1=x1, z0=z0, z1=z1, door=dx)
+    if not upper_floor:
+        g = gable or infill
+        top = steep_roof(s, r, x0, x1, z0, z1, ground + 1, axis=axis, full=full, stair=stair, eave=eave, gable=g, timber_gable=timber_gable, over=roof_over)
+        info['top'] = top; return info
+    j = jetty
+    ux0, ux1, uz0, uz1 = x0 - j, x1 + j, z0 - j, z1 + j
+    jetty_floor(s, ux0, uz0, ux1, uz1, ground + 1, frame=frame)
+    box(s, r, ux0, uz0, ux1 - ux0 + 1, uz1 - uz0 + 1, ground + 2, upper, frame=frame, infill=infill, found=False, post_step=post_step, win_sides=upper_sides)
+    g = gable or infill
+    top = steep_roof(s, r, ux0, ux1, uz0, uz1, ground + 2 + upper, axis=axis, full=full, stair=stair, eave=eave, gable=g, timber_gable=timber_gable, over=roof_over)
+    info.update(ux0=ux0, ux1=ux1, uz0=uz0, uz1=uz1, top=top, uy=ground + 2)
+    return info
+
+def stall(s, x, z, color='red', w=3):
+    """시장 가판대: 기둥 + 천막 + 진열"""
+    for xx in (x, x + w - 1):
+        for y in (1, 2): s.set(xx, y, z, 'spruce_fence'); s.set(xx, y, z + 2, 'spruce_fence')
+    for xx in range(x, x + w):
+        for zz in range(z, z + 3): s.set(xx, 3, zz, f'{color}_wool' if (xx + zz) % 2 == 0 else 'white_wool')
+        s.set(xx, 1, z + 2, 'spruce_slab[type=top]') if xx not in (x, x + w - 1) else None
+    s.set(x + 1, 2, z + 2, 'melon') if w >= 3 else None
