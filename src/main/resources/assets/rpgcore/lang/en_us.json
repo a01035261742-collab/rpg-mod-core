@@ -134,5 +134,15 @@
   "item.rpgcore.pendant_40": "Lv40 Test Pendant",
   "item.rpgcore.medal_20": "Lv20 Test Medal",
   "item.rpgcore.medal_30": "Lv30 Test Medal",
-  "item.rpgcore.medal_40": "Lv40 Test Medal"
+  "item.rpgcore.medal_40": "Lv40 Test Medal",
+  "item.rpgcore.quest_letter": "Sealed Letter",
+  "item.rpgcore.quest_parcel": "Delivery Parcel",
+  "item.rpgcore.quest_medicine": "Medicine Box",
+  "item.rpgcore.quest_notes": "Research Notes",
+  "item.rpgcore.quest_patrol_log": "Patrol Log",
+  "item.rpgcore.quest_old_bow": "Old Hunting Bow",
+  "item.rpgcore.quest_spore_tome": "Spore Tome",
+  "item.rpgcore.quest_battle_map": "Battle Map",
+  "item.rpgcore.quest_witch_scroll": "Witch's Scroll",
+  "item.rpgcore.quest_patrol_journal": "Patrolman's Journal"
 }

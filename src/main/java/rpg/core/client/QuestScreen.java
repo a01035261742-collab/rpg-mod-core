@@ -107,7 +107,8 @@ public class QuestScreen extends Screen {
         g.drawString(font, q.name(), dx, dy, 0xFFFFE070, true);
         dy += 13;
         String from = "받는 곳: " + Quests.npcName(q.npc());
-        if (!q.turnIn().equals(q.npc())) from += "  →  완료: " + Quests.npcName(q.turnIn());
+        if (q.toPoint()) from += "  →  " + Quests.pointName(q.point()) + "에 두고 오기";
+        else if (!q.turnIn().equals(q.npc())) from += "  →  완료: " + Quests.npcName(q.turnIn());
         g.drawString(font, from, dx, dy, 0xFF80C0FF, false);
         dy += 13;
         if (!q.summary().isEmpty()) {
@@ -120,7 +121,7 @@ public class QuestScreen extends Screen {
         g.drawString(font, "목표", dx, dy, 0xFFA0A0A0, false);
         dy += 11;
         if (q.goals().isEmpty()) {
-            g.drawString(font, " · " + Quests.npcName(q.turnIn()) + "에게 말 걸기", dx, dy, 0xFFFFFFFF, false);
+            g.drawString(font, " · " + Quests.finishName(q) + (q.toPoint() ? "에 가기" : "에게 말 걸기"), dx, dy, 0xFFFFFFFF, false);
             dy += 11;
         }
         boolean active = ClientQuests.ACTIVE.containsKey(q.id()), done = ClientQuests.DONE.contains(q.id());
@@ -130,7 +131,7 @@ public class QuestScreen extends Screen {
             dy += 11;
         }
         if (active && ClientQuests.complete(q)) {
-            g.drawString(font, "§6→ " + Quests.npcName(q.turnIn()) + "에게 돌아가세요", dx, dy, 0xFFFFFFFF, false);
+            g.drawString(font, "§6→ " + Quests.finishName(q) + (q.toPoint() ? "에 두고 오세요" : "에게 가세요"), dx, dy, 0xFFFFFFFF, false);
             dy += 11;
         }
         dy += 4;

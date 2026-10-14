@@ -48,6 +48,13 @@ public final class ModItems {
         }
     }
 
+    // 퀘스트 물건 (배달·가져오기)
+    public static final java.util.List<RegistryObject<Item>> QUEST_ITEMS = new java.util.ArrayList<>();
+    static {
+        for (String id : new String[]{"quest_letter", "quest_parcel", "quest_medicine", "quest_notes", "quest_patrol_log", "quest_old_bow", "quest_spore_tome", "quest_battle_map", "quest_witch_scroll", "quest_patrol_journal"})
+            QUEST_ITEMS.add(ITEMS.register(id, QuestItem::new));
+    }
+
     // 드롭: 골드 주머니 · 몹 재료 (일반/희귀) · 강화 재료 (강화 단계에서 쓸 자리)
     public static final RegistryObject<Item> GOLD_POUCH = ITEMS.register("gold_pouch", () -> new rpg.core.loot.GoldPouch(new Item.Properties()));
     public static final java.util.List<RegistryObject<Item>> MATERIALS = new java.util.ArrayList<>();
@@ -80,6 +87,7 @@ public final class ModItems {
                 out.accept(BLUE_POTION.get());
                 for (var g : GEAR) out.accept(g.get());
                 for (var m : MATERIALS) out.accept(m.get());
+                for (var q : QUEST_ITEMS) out.accept(q.get());
                 out.accept(ZONE_WAND.get());
             })
             .build());

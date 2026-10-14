@@ -658,7 +658,7 @@
  },
  "bear": {
   "entity": "rpgcore:brown_bear",
-  "name": "산곰",
+  "name": "곰",
   "area": "Lv16~20",
   "skills": [
    {

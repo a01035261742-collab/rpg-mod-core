@@ -84,7 +84,7 @@
   "item.rpgcore.beast_shell": "짐승의 버섯 껍질",
   "item.rpgcore.beast_core": "거대 버섯 심",
   "entity.rpgcore.rat": "들쥐",
-  "entity.rpgcore.brown_bear": "산곰",
+  "entity.rpgcore.brown_bear": "곰",
   "entity.rpgcore.mush_kid": "꼬마 버섯",
   "entity.rpgcore.mush_spirit": "버섯 정령",
   "entity.rpgcore.mush_soldier": "독버섯 병정",
@@ -134,5 +134,15 @@
   "item.rpgcore.pendant_40": "Lv40 테스트 펜던트",
   "item.rpgcore.medal_20": "Lv20 테스트 훈장",
   "item.rpgcore.medal_30": "Lv30 테스트 훈장",
-  "item.rpgcore.medal_40": "Lv40 테스트 훈장"
+  "item.rpgcore.medal_40": "Lv40 테스트 훈장",
+  "item.rpgcore.quest_letter": "봉인된 편지",
+  "item.rpgcore.quest_parcel": "배달 꾸러미",
+  "item.rpgcore.quest_medicine": "약 상자",
+  "item.rpgcore.quest_notes": "연구 노트",
+  "item.rpgcore.quest_patrol_log": "순찰 일지",
+  "item.rpgcore.quest_old_bow": "낡은 사냥 활",
+  "item.rpgcore.quest_spore_tome": "포자의 고서",
+  "item.rpgcore.quest_battle_map": "작전 지도",
+  "item.rpgcore.quest_witch_scroll": "마녀의 주문서",
+  "item.rpgcore.quest_patrol_journal": "순찰병의 일지"
 }

@@ -19,6 +19,27 @@ public final class ClientQuests {
 
     public static final Map<String, int[]> ACTIVE = new LinkedHashMap<>();
     public static final Set<String> DONE = new LinkedHashSet<>();
+    /** 지점 id → 위치 (차원, 블록) */
+    public record Pt(String dim, net.minecraft.core.BlockPos pos) {}
+    public static final Map<String, Pt> POINTS = new LinkedHashMap<>();
+
+    public static void setPoints(Map<String, String> raw) {
+        POINTS.clear();
+        raw.forEach((k, v) -> {
+            String[] a = v.split("\\|");
+            if (a.length == 4) POINTS.put(k, new Pt(a[0], new net.minecraft.core.BlockPos(Integer.parseInt(a[1]), Integer.parseInt(a[2]), Integer.parseInt(a[3]))));
+        });
+    }
+
+    /** 지점 표시: 2 두고 오기 가능(노란 ?) · 1 가져오기(노란 !) · 0 없음 */
+    public static int pointMark(String point) {
+        int mark = 0;
+        for (Quests.Quest q : active()) {
+            if (q.toPoint() && q.point().equals(point) && complete(q)) return 2;
+            if (q.fetch() && q.fetchPoint().equals(point) && count(q.fetchItem()) == 0) mark = 1;
+        }
+        return mark;
+    }
 
     public static void set(Map<String, int[]> active, List<String> done) {
         ACTIVE.clear();

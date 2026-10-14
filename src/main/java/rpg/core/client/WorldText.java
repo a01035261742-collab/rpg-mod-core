@@ -131,6 +131,30 @@ public final class WorldText {
             }
         }
 
+        // 퀘스트 지점 위: ! (가져오기) · ? (두고 오기)
+        String dim = mc.level.dimension().location().toString();
+        for (var en : ClientQuests.POINTS.entrySet()) {
+            var qp = en.getValue();
+            if (!qp.dim().equals(dim)) continue;
+            Vec3 base = Vec3.atBottomCenterOf(qp.pos());
+            if (base.distanceToSqr(c) > 48 * 48) continue;
+            int mark = ClientQuests.pointMark(en.getKey());
+            if (mark == 0) continue;
+            String t = mark == 1 ? "!" : "?";
+            double bob = Math.sin((mc.level.getGameTime() + qp.pos().getX() + pt) * 0.12) * 0.06;
+            String label = rpg.core.quest.Quests.pointName(en.getKey());
+            ps.pushPose();
+            ps.translate(base.x - c.x, base.y + 2.0 + bob - c.y, base.z - c.z);
+            ps.mulPose(cam.rotation());
+            ps.scale(-0.06f, -0.06f, 0.06f);
+            Matrix4f m = ps.last().pose();
+            font.drawInBatch(t, -font.width(t) / 2f, 0, 0xFFFFD020, true, m, buf, Font.DisplayMode.SEE_THROUGH, 0, 0xF000F0);
+            ps.scale(0.4f, 0.4f, 0.4f);
+            m = ps.last().pose();
+            font.drawInBatch(label, -font.width(label) / 2f, 26, 0xFFFFFFFF, false, m, buf, Font.DisplayMode.SEE_THROUGH, 0x60000000, 0xF000F0);
+            ps.popPose();
+        }
+
         // 데미지 숫자
         for (Pop pop : POPS) {
             float t = (pop.age + pt) / LIFE;

@@ -173,7 +173,7 @@ public final class RpgHud {
             g.drawString(font, t, right - font.width(t), y, 0xFFFFFFFF, true);
             y += 10;
             if (done) {
-                String s = "→ " + rpg.core.quest.Quests.npcName(q.turnIn());
+                String s = "→ " + rpg.core.quest.Quests.finishName(q) + (q.toPoint() ? "에 두고 오기" : "");
                 g.drawString(font, s, right - font.width(s), y, 0xFFFFC040, true);
                 y += 10;
             } else if (q.goals().isEmpty()) {

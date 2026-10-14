@@ -80,12 +80,35 @@ public final class Net {
                 .encoder(QuestTalk::encode).decoder(QuestTalk::new).consumerMainThread(QuestTalk::handle).add();
         CH.messageBuilder(QuestAction.class, id++, NetworkDirection.PLAY_TO_SERVER)
                 .encoder(QuestAction::encode).decoder(QuestAction::new).consumerMainThread(QuestAction::handle).add();
+        CH.messageBuilder(QuestPoints.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(QuestPoints::encode).decoder(QuestPoints::new).consumerMainThread(QuestPoints::handle).add();
     }
 
     // ───────── 퀘스트 ─────────
     public static void questSync(ServerPlayer p) {
         PlayerData d = rpg.core.data.RpgData.get(p);
         CH.send(PacketDistributor.PLAYER.with(() -> p), new QuestSync(new java.util.LinkedHashMap<>(d.questActive), new java.util.ArrayList<>(d.questDone)));
+    }
+
+    /** 퀘스트 지점 위치 (id → "차원|x|y|z") */
+    public static QuestPoints questPoints(net.minecraft.server.MinecraftServer server) {
+        java.util.Map<String, String> m = new java.util.LinkedHashMap<>();
+        rpg.core.quest.QuestPlaces.get(server).points.forEach((k, v) ->
+                m.put(k, v.dim() + "|" + v.pos().getX() + "|" + v.pos().getY() + "|" + v.pos().getZ()));
+        return new QuestPoints(m);
+    }
+
+    public static void questPointsAll(net.minecraft.server.MinecraftServer server) {
+        CH.send(PacketDistributor.ALL.noArg(), questPoints(server));
+    }
+
+    public record QuestPoints(java.util.Map<String, String> points) {
+        QuestPoints(FriendlyByteBuf b) { this(b.readMap(FriendlyByteBuf::readUtf, FriendlyByteBuf::readUtf)); }
+        void encode(FriendlyByteBuf b) { b.writeMap(points, FriendlyByteBuf::writeUtf, FriendlyByteBuf::writeUtf); }
+        void handle(Supplier<NetworkEvent.Context> ctx) {
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> rpg.core.client.ClientQuests.setPoints(points));
+            ctx.get().setPacketHandled(true);
+        }
     }
 
     public static void questTalk(ServerPlayer p, int entity, String npc) {
@@ -367,6 +390,7 @@ public final class Net {
     public static void defsTo(ServerPlayer p) {
         CH.send(PacketDistributor.PLAYER.with(() -> p), new DefsSync(rpg.core.skill.Defs.skillsJson, rpg.core.skill.Defs.passivesJson, rpg.core.equip.GearDefs.json));
         CH.send(PacketDistributor.PLAYER.with(() -> p), new QuestDefs(rpg.core.quest.Quests.json));
+        CH.send(PacketDistributor.PLAYER.with(() -> p), questPoints(p.server));
         questSync(p);
     }
 
