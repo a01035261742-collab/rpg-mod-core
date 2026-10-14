@@ -65,11 +65,11 @@ class S:
         return W, H, L, len(s.b)
 
 # ── 미리보기 (아이소메트릭) ──
-COL = [('water', (60, 110, 200)), ('lantern', (250, 200, 90)), ('glass', (170, 210, 230)), ('calcite', (225, 225, 218)),
+COL = [('deepslate_tile', (55, 55, 62)), ('cobbled_deepslate', (80, 80, 85)), ('trapdoor', (125, 95, 60)), ('terracotta', (150, 100, 80)), ('vine', (60, 110, 40)), ('bee_nest', (200, 160, 70)), ('azalea', (95, 135, 55)), ('lily', (50, 120, 40)), ('pumpkin', (210, 130, 40)), ('melon', (110, 150, 50)), ('diorite', (200, 200, 200)), ('gravel', (130, 125, 120)), ('packed_mud', (140, 105, 80)), ('chiseled', (125, 125, 125)), ('polished_andesite', (140, 140, 140)), ('water', (60, 110, 200)), ('lantern', (250, 200, 90)), ('glass', (170, 210, 230)), ('calcite', (225, 225, 218)),
        ('white_terracotta', (210, 190, 175)), ('dark_oak', (70, 48, 30)), ('spruce', (115, 85, 55)), ('oak', (165, 130, 80)),
        ('birch', (210, 200, 150)), ('cobble', (120, 120, 120)), ('mossy', (95, 115, 85)), ('stone_brick', (130, 130, 130)),
        ('stone', (128, 128, 128)), ('andesite', (135, 135, 135)), ('deepslate', (75, 75, 80)), ('red_wool', (170, 40, 40)),
-       ('white_wool', (230, 230, 230)), ('blue', (60, 80, 170)), ('green', (70, 120, 50)), ('purple', (110, 60, 140)), ('red', (160, 50, 45)),
+       ('white_wool', (230, 230, 230)), ('blue', (60, 80, 170)), ('green', (70, 120, 50)), ('purple', (110, 60, 140)), ('red_terracotta', (145, 60, 45)), ('green_terracotta', (75, 85, 45)), ('blue_terracotta', (75, 60, 90)), ('purple_terracotta', (120, 70, 90)), ('red', (160, 50, 45)),
        ('hay', (200, 170, 50)), ('farmland', (100, 70, 45)), ('wheat', (190, 170, 70)), ('carrot', (220, 130, 40)), ('beetroot', (150, 40, 60)), ('bed', (180, 50, 50)), ('composter', (110, 80, 50)), ('ladder', (150, 115, 70)), ('target', (220, 210, 200)), ('fletching', (180, 160, 110)), ('enchanting', (60, 30, 80)), ('lava', (230, 110, 30)), ('potato', (170, 150, 80)),
        ('leaves', (60, 120, 50)), ('grass', (90, 150, 60)), ('dirt', (120, 85, 55)), ('path', (150, 125, 80)), ('flower', (220, 90, 120)),
        ('poppy', (200, 40, 40)), ('dandelion', (230, 210, 60)), ('mushroom_stem', (215, 210, 195)), ('brown_mushroom', (150, 110, 80)),
@@ -91,7 +91,7 @@ def render(s, path, scale=10):
     if not s.b: return
     x0, y0, z0, x1, y1, z1 = s.bounds()
     cw, ch = scale, scale // 2
-    def proj(x, y, z):  # 화면 좌표 (오른쪽 = +x, 앞쪽 = -z 가 아래)
+    def proj(x, y, z):
         return ((x - x0) - (z - z0)) * cw, ((x - x0) + (z - z0)) * ch - (y - y0) * scale
     pts = [proj(x, y, z) for x in (x0, x1 + 1) for y in (y0, y1 + 1) for z in (z0, z1 + 1)]
     minx = min(p[0] for p in pts) - 10; miny = min(p[1] for p in pts) - 10
@@ -102,16 +102,23 @@ def render(s, path, scale=10):
     for (x, y, z), st in order:
         if st == 'minecraft:air': continue
         c = col(st); thin = any(t in st for t in THIN)
-        def P(a, b, cc): return (a - minx, b - miny)
-        top = [proj(x, y + 1, z), proj(x + 1, y + 1, z), proj(x + 1, y + 1, z + 1), proj(x, y + 1, z + 1)]
-        south = [proj(x, y, z + 1), proj(x + 1, y, z + 1), proj(x + 1, y + 1, z + 1), proj(x, y + 1, z + 1)]
-        east = [proj(x + 1, y, z), proj(x + 1, y, z + 1), proj(x + 1, y + 1, z + 1), proj(x + 1, y + 1, z)]
+        y0f, y1f = 0.0, 1.0
+        if '_slab' in st: y0f, y1f = (0.5, 1.0) if 'type=top' in st else (0.0, 0.5) if 'type=bottom' in st else (0, 1)
+        if 'carpet' in st: y1f = 0.08; thin = False
+        if 'trapdoor' in st:
+            if 'open=true' in st: thin = True
+            else: y0f, y1f = (0.8, 1.0) if 'half=top' in st else (0.0, 0.2)
+        if 'pressure_plate' in st: y1f = 0.08; thin = False
+        a, b = y + y0f, y + y1f
+        top = [proj(x, b, z), proj(x + 1, b, z), proj(x + 1, b, z + 1), proj(x, b, z + 1)]
+        south = [proj(x, a, z + 1), proj(x + 1, a, z + 1), proj(x + 1, b, z + 1), proj(x, b, z + 1)]
+        east = [proj(x + 1, a, z), proj(x + 1, a, z + 1), proj(x + 1, b, z + 1), proj(x + 1, b, z)]
         sh = lambda k: tuple(max(0, min(255, int(v * k))) for v in c)
         for poly, k in ((south, 0.72), (east, 0.86), (top, 1.0)):
-            pp = [(a - minx, b - miny) for a, b in poly]
+            pp = [(px - minx, py - miny) for px, py in poly]
             if thin:
                 cx = sum(p[0] for p in pp) / 4; cy = sum(p[1] for p in pp) / 4
-                pp = [(cx + (a - cx) * 0.45, cy + (b - cy) * 0.45) for a, b in pp]
+                pp = [(cx + (px - cx) * 0.45, cy + (py - cy) * 0.45) for px, py in pp]
             d.polygon(pp, fill=sh(k), outline=sh(k * 0.8))
     im.save(path)
     return im
