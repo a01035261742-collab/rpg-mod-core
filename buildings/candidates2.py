@@ -17,7 +17,7 @@ def crow_gable(s, r, x0, x1, z, ybase, ytop):
         if (y - ybase) % 2 == 1:
             s.set(a, y + 1, z, 'stone_brick_slab[type=bottom]'); s.set(b, y + 1, z, 'stone_brick_slab[type=bottom]')
 
-def steep_dormer(s, r, cx, z_front, y):
+def steep_dormer(s, r, cx, z_front, y, full=full, stair='deepslate_tile'):
     """가파른 지붕용 지붕창 (폭 3, 앞으로 튀어나옴)"""
     for dy in range(3):
         for z in range(z_front - 3, z_front + 1):
@@ -25,9 +25,9 @@ def steep_dormer(s, r, cx, z_front, y):
             s.set(cx, y + dy, z, 'air')
         s.set(cx, y + dy, z_front, 'glass_pane' if dy < 2 else 'stripped_dark_oak_log[axis=x]')
     for z in range(z_front - 3, z_front + 2):
-        s.set(cx - 2, y + 3, z, 'deepslate_tile_stairs[facing=east,half=bottom,shape=straight]'); s.set(cx + 2, y + 3, z, 'deepslate_tile_stairs[facing=west,half=bottom,shape=straight]')
-        s.set(cx - 1, y + 3, z, 'deepslate_tiles'); s.set(cx + 1, y + 3, z, 'deepslate_tiles'); s.set(cx, y + 3, z, 'deepslate_tiles')
-        s.set(cx - 1, y + 4, z, 'deepslate_tile_stairs[facing=east,half=bottom,shape=straight]'); s.set(cx + 1, y + 4, z, 'deepslate_tile_stairs[facing=west,half=bottom,shape=straight]'); s.set(cx, y + 4, z, 'deepslate_tile_slab[type=bottom]')
+        s.set(cx - 2, y + 3, z, f'{stair}_stairs[facing=east,half=bottom,shape=straight]'); s.set(cx + 2, y + 3, z, f'{stair}_stairs[facing=west,half=bottom,shape=straight]')
+        s.set(cx - 1, y + 3, z, full); s.set(cx + 1, y + 3, z, full); s.set(cx, y + 3, z, full)
+        s.set(cx - 1, y + 4, z, f'{stair}_stairs[facing=east,half=bottom,shape=straight]'); s.set(cx + 1, y + 4, z, f'{stair}_stairs[facing=west,half=bottom,shape=straight]'); s.set(cx, y + 4, z, f'{stair}_slab[type=bottom]')
 
 # 9. 계단식 돌 박공 (플랑드르풍)
 s, r, (a, b, c, d), y = base(9); top = steep_roof(s, r, a, b, c, d, y, axis='z', gable=INF4, timber_gable='dark_oak', over=0)
