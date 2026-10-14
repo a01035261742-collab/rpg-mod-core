@@ -39,15 +39,13 @@ def build(s, seed=4):
     for (x, y, z), (d, a, is_top, is_bot) in cells.items():
         if is_bot and d > 4.6 and d < OUTER[22] - 0.6:
             # 오목한 아랫면 주름 (방사형 줄무늬)
-            st = 'tuff' if int((a + 3.1416) * 26 / 6.2832) % 2 else r.choice(['light_gray_terracotta', 'polished_andesite'])
+            st = 'tuff' if int((a + 3.1416) * 26 / 6.2832) % 2 else 'light_gray_terracotta'
         elif y >= 29 or (is_top and d < 8.6):
-            st = r.choices(['orange_terracotta', 'smooth_red_sandstone', 'terracotta', 'red_mushroom_block'], [70, 16, 6, 8])[0]
+            st = 'orange_terracotta' if r.random() > 0.04 else 'smooth_red_sandstone'
         elif y >= 27 or (is_top and d < 10.2):
-            st = r.choice(['orange_terracotta', 'red_mushroom_block', 'red_mushroom_block', 'smooth_red_sandstone'])
+            st = 'red_mushroom_block' if (d > 9.4 or y < 28) else 'orange_terracotta'
         else:
-            dark = 0.12 if y <= 23 else 0.03
-            q = r.random()
-            st = 'red_nether_bricks' if q < dark else 'red_terracotta' if q < dark + 0.12 else 'red_mushroom_block'
+            st = 'red_mushroom_block'
         s.set(x, y, z, st)
     # 흰 점 (빨간 띠에, 2~3칸 덩어리)
     band = [p for p, v in cells.items() if 24 <= p[1] <= 26 and not v[3] and v[0] > OUTER[p[1]] - 1.2]
@@ -66,7 +64,7 @@ def build(s, seed=4):
         L = r.choices([0, 1, 2, 3, 4, 5], [10, 30, 28, 18, 9, 5])[0]
         for k in range(1, L + 1):
             if s.get(x, 22 - k, z) is not None: break
-            s.set(x, 22 - k, z, 'red_nether_bricks' if k == L and L > 1 else 'red_mushroom_block' if r.random() > 0.2 else 'red_terracotta')
+            s.set(x, 22 - k, z, 'red_mushroom_block')
     # 주름 사이 빛 + 사슬 랜턴
     gills = [p for p, v in cells.items() if v[3] and 5.5 < v[0] < 10.5]
     r.shuffle(gills)

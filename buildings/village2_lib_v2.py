@@ -122,7 +122,7 @@ def lab():
         s.set(x, 6, z, 'spruce_fence'); s.set(x, 7, z, 'lantern[hanging=false]')
     s.set(0, 6, 11, None); s.set(0, 7, 11, None)
     # 3층 지붕: 녹색 언덕 테라스 (식물 대신 초록·연두 테라코타) + 이끼 조약돌 계단 가장자리
-    G = lambda: 'green_terracotta' if r.random() > 0.2 else 'lime_terracotta'
+    G = lambda: 'green_terracotta'
     for y, sh in ((10, 0), (11, 2), (12, 4)):
         xa, xb, za, zb = -10 + sh, 10 - sh, -4 + sh, 10 - sh
         for x in range(xa, xb + 1):
@@ -149,7 +149,7 @@ def lab():
     s.set(0, 18, 5, 'spruce_trapdoor[facing=south,half=top,open=false]')
     # 동쪽 날개 + 벽돌 굴뚝
     box(s, r, 11, 0, 6, 8, 1, 4, frame='spruce', infill=('calcite',), post_step=5, win_sides=('e', 's'))
-    roof(s, r, 11, 16, 0, 7, 5, mats=('red_sandstone', 'red_sandstone', 'granite'), eave='dark_oak', gable_fill=('calcite', 'stripped_spruce_log[axis=y]'), axis='z')
+    roof(s, r, 11, 16, 0, 7, 5, mats=('red_sandstone',), eave='dark_oak', gable_fill=('calcite', 'stripped_spruce_log[axis=y]'), axis='z')
     for y in range(1, 12): s.set(17, y, 3, r.choice(['bricks', 'bricks', 'stone_bricks']))
     s.set(17, 12, 3, 'campfire[lit=true,facing=north,signal_fire=false,waterlogged=false]')
     # 바깥 계단 (서쪽, 땅 → 2층 발코니), 받침 기둥 + 난간
@@ -207,7 +207,7 @@ def alchemy():
         rad = 2.7 - 1.0 * (y / 21)
         c = cx_at(y)
         low = y < 8
-        ring_fill(s, c, 0, y, rad, lambda x, z, d: ('smooth_sandstone' if low and r.random() < 0.35 else 'mushroom_stem' if r.random() > 0.18 else 'calcite'), r_in=rad - 1.2)
+        ring_fill(s, c, 0, y, rad, lambda x, z, d: ('smooth_sandstone' if low and r.random() < 0.15 else 'mushroom_stem' if r.random() > 0.18 else 'calcite'), r_in=rad - 1.2)
     # 줄기 혹 (울퉁불퉁)
     for (y, a) in ((6, 0.5), (11, 2.6), (15, 4.4), (18, 1.2)):
         c = cx_at(y); rad = 2.7 - y / 21 + 0.8

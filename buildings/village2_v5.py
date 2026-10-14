@@ -38,13 +38,9 @@ def dcap(s, cx, cz, y0, R, kind, seed, H=None, drip=(1, 3), spots=8, glow=0, gil
     def body(y, d, is_top):
         k = y - y0; t = k / (H - 1)
         if kind == 'red':
-            if is_top and t > 0.75: return r.choices(['red_mushroom_block', 'red_terracotta', 'orange_terracotta'], [80, 12, 8])[0]
-            q = r.random(); dark = 0.14 if k <= 1 else 0.03
-            return 'red_nether_bricks' if q < dark else 'red_terracotta' if q < dark + 0.12 else 'red_mushroom_block'
+            return 'red_mushroom_block'
         if kind == 'brown':
-            if is_top and t > 0.6: return r.choices(['brown_mushroom_block', 'terracotta', 'stripped_spruce_wood' if False else 'packed_mud'], [70, 18, 12])[0]
-            q = r.random(); dark = 0.18 if k <= 1 else 0.06
-            return 'brown_terracotta' if q < dark else 'packed_mud' if q < dark + 0.1 else 'brown_mushroom_block'
+            return 'brown_mushroom_block'
     for (x, y, z), (d, a, is_top, is_bot) in cells.items():
         if is_bot and d < 0.86 * R and d > 1.2:
             st = gill[0] if int((a + 3.1416) * max(10, int(R * 2.2)) / 6.2832) % 2 else gill[1]
@@ -71,8 +67,8 @@ def dcap(s, cx, cz, y0, R, kind, seed, H=None, drip=(1, 3), spots=8, glow=0, gil
         for k in range(1, L + 1):
             if s.get(x, y0 - k, z) is not None: break
             tip = k == L and L > 1
-            if kind == 'red': s.set(x, y0 - k, z, 'red_nether_bricks' if tip else 'red_mushroom_block')
-            else: s.set(x, y0 - k, z, 'brown_terracotta' if tip else 'brown_mushroom_block')
+            if kind == 'red': s.set(x, y0 - k, z, 'red_mushroom_block')
+            else: s.set(x, y0 - k, z, 'brown_mushroom_block')
     # 아랫면 빛
     gl = [p for p, v in cells.items() if v[3] and 0.35 * R < v[0] < 0.75 * R]; r.shuffle(gl)
     for p in gl[:max(2, int(R / 2))]: s.set(*p, 'shroomlight')
@@ -121,7 +117,7 @@ def shop_red():
     s = S('v2/shop_red'); r = random.Random(501)
     plinth(s, r, 0, 1, 5.2)
     prof = lambda y: {1: 3.4, 2: 3.0, 3: 2.75}.get(y, 2.6 if y < 9 else 3.0)
-    stem(s, r, 1, 10, prof, (['mushroom_stem', 'calcite', 'birch_wood', 'smooth_quartz'], [70, 14, 8, 8]))
+    stem(s, r, 1, 10, prof, (['mushroom_stem', 'calcite'], [90, 10]))
     root_flare(s, r, 0, 0, 3.2, 5, 'mushroom_stem', 'smooth_quartz_stairs')
     # 정문 (남) + 아치
     for y in (1, 2, 3):
@@ -183,7 +179,7 @@ def shop_brown():
     s = S('v2/shop_brown'); r = random.Random(602)
     plinth(s, r, 0, 1, 5.5)
     prof = lambda y: {1: 3.6, 2: 3.2, 3: 2.9}.get(y, 2.8 if y < 10 else 3.2)
-    stem(s, r, 1, 11, prof, (['mushroom_stem', 'calcite', 'birch_wood', 'smooth_quartz'], [66, 16, 10, 8]))
+    stem(s, r, 1, 11, prof, (['mushroom_stem', 'calcite'], [90, 10]))
     root_flare(s, r, 0, 0, 3.3, 6, 'mushroom_stem', 'smooth_quartz_stairs')
     for y in (1, 2, 3):
         for z in (1, 2, 3): s.set(0, y, z, None)
