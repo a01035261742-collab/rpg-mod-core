@@ -6,3 +6,7 @@ out/
 .idea/
 buildings/out/
 buildings/__pycache__/
+buildings/cand/
+buildings/out2/
+buildings/out4/
+buildings/pack/
