@@ -17,7 +17,7 @@ import rpg.core.net.Net;
 
 /** 상점 창: 왼쪽 사기 목록 (클릭 1개 / Shift 10개), 오른쪽 내 인벤 (클릭 1개 팔기 / Shift 한 묶음) */
 public class ShopScreen extends Screen {
-    private static final int W = 330, H = 200, ROW = 20, ROWS = 8, CELL = 18;
+    private static final int W = 330, H = 212, ROW = 20, ROWS = 8, CELL = 18;
     private final int npc;
     private final String name;
     private final List<ItemStack> offers = new ArrayList<>();
@@ -98,7 +98,7 @@ public class ShopScreen extends Screen {
             }
         }
         if (offers.size() > ROWS) g.drawString(font, "휠로 스크롤 (" + (scroll + 1) + "-" + Math.min(offers.size(), scroll + ROWS) + "/" + offers.size() + ")",
-                x + 8, y + H - 20, 0xFF808080, false);
+                x + 8, y + 34 + ROWS * ROW + 2, 0xFF808080, false);   // 목록 바로 아래 (겹치지 않게)
 
         // 팔기
         g.drawString(font, "팔기 (내 인벤)", x + 168, y + 22, 0xFFA0A0A0, false);
