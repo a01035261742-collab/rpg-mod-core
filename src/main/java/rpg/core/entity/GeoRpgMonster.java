@@ -54,6 +54,11 @@ public class GeoRpgMonster extends RpgMonster implements GeoEntity {
         triggerAnim("attack", anim);
     }
 
+    /** 경직으로 공격이 끊기면 공격 애니메이션도 멈춤 (서버 → 모든 클라) */
+    public void stopAttack() {
+        stopTriggeredAnimation("attack", null);
+    }
+
     /** 패턴 애니메이션 재생 (서버) */
     public void playPattern(String type) {
         triggerAnim("pattern", type);

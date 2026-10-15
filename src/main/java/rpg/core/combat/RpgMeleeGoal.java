@@ -76,7 +76,10 @@ public class RpgMeleeGoal extends MeleeAttackGoal {
         long now = mob.level().getGameTime();
         if (m.stunCancel) {
             m.stunCancel = false;
-            if (cur != null && t < cur.start()) cur = null;   // 준비 중이면 공격 취소
+            if (cur != null && t < cur.start()) {             // 준비 중이면 공격 취소 + 애니메이션 끊기
+                cur = null;
+                if (mob instanceof GeoRpgMonster g) g.stopAttack();
+            }
         }
         return now < m.stunUntil;
     }
