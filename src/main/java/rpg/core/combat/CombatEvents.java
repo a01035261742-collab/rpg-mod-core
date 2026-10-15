@@ -74,6 +74,16 @@ public final class CombatEvents {
         if (MobAI.edge(m, p) > RpgMeleeGoal.REACH + 0.6) e.setCanceled(true);
     }
 
+    /** 다른 직업(또는 레벨 부족) 무기로는 근접 공격이 안 들어감 */
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public static void wrongWeapon(net.minecraftforge.event.entity.living.LivingAttackEvent e) {
+        if (!(e.getSource().getEntity() instanceof ServerPlayer p) || e.getSource().getDirectEntity() != p) return;
+        String why = rpg.core.equip.Gear.weaponBlock(p, p.getMainHandItem());
+        if (why == null) return;
+        e.setCanceled(true);
+        p.displayClientMessage(net.minecraft.network.chat.Component.literal(why).withStyle(net.minecraft.ChatFormatting.RED), true);
+    }
+
     /** 바닐라 독·시듦은 플레이어에게 안 걸림 (RPG 피해만) */
     @SubscribeEvent
     public static void noVanillaDot(net.minecraftforge.event.entity.living.MobEffectEvent.Applicable e) {

@@ -88,6 +88,16 @@ public final class Gear {
         return job == 0 && d.level() < 10;   // 초보자는 Lv10 미만 직업 무기 사용 가능
     }
 
+    /** 손에 든 장비 무기를 못 쓰는 이유 (쓸 수 있으면 null) */
+    public static String weaponBlock(Player p, ItemStack s) {
+        GearDefs.GearDef d = def(s);
+        if (d == null || !"weapon".equals(d.slot()) || canEquip(p, s)) return null;
+        int level = p.level().isClientSide ? ClientData.level : RpgData.get(p).level;
+        if (level < d.level()) return "Lv." + d.level() + "부터 쓸 수 있는 무기예요";
+        String job = switch (d.job()) { case 1 -> "전사"; case 2 -> "궁수"; case 3 -> "마법사"; case 4 -> "도적"; default -> ""; };
+        return job + " 전용 무기라 쓸 수 없어요";
+    }
+
     // ───────── 툴팁 ─────────
     public static void tooltip(ItemStack s, List<Component> tip) {
         GearDefs.GearDef d = def(s);

@@ -82,8 +82,7 @@
    "job": 0,
    "level": 1,
    "stats": {
-    "def": 3,
-    "hp": 10
+    "def": 3
    }
   },
   "hat_10": {
@@ -91,8 +90,7 @@
    "job": 0,
    "level": 10,
    "stats": {
-    "def": 8,
-    "hp": 30
+    "def": 8
    }
   },
   "top_1": {
@@ -100,8 +98,7 @@
    "job": 0,
    "level": 1,
    "stats": {
-    "def": 5,
-    "hp": 15
+    "def": 5
    }
   },
   "top_10": {
@@ -109,8 +106,7 @@
    "job": 0,
    "level": 10,
    "stats": {
-    "def": 12,
-    "hp": 45
+    "def": 12
    }
   },
   "bottom_1": {
@@ -118,8 +114,7 @@
    "job": 0,
    "level": 1,
    "stats": {
-    "def": 4,
-    "hp": 10
+    "def": 4
    }
   },
   "bottom_10": {
@@ -127,8 +122,7 @@
    "job": 0,
    "level": 10,
    "stats": {
-    "def": 10,
-    "hp": 35
+    "def": 10
    }
   },
   "shoes_1": {
@@ -136,8 +130,7 @@
    "job": 0,
    "level": 1,
    "stats": {
-    "def": 2,
-    "hp": 5
+    "def": 2
    }
   },
   "shoes_10": {
@@ -145,8 +138,7 @@
    "job": 0,
    "level": 10,
    "stats": {
-    "def": 6,
-    "hp": 20
+    "def": 6
    }
   },
   "gloves_1": {
@@ -414,8 +406,7 @@
    "job": 0,
    "level": 20,
    "stats": {
-    "def": 13,
-    "hp": 50
+    "def": 13
    }
   },
   "hat_30": {
@@ -423,8 +414,7 @@
    "job": 0,
    "level": 30,
    "stats": {
-    "def": 18,
-    "hp": 70
+    "def": 18
    }
   },
   "hat_40": {
@@ -432,8 +422,7 @@
    "job": 0,
    "level": 40,
    "stats": {
-    "def": 23,
-    "hp": 90
+    "def": 23
    }
   },
   "top_20": {
@@ -441,8 +430,7 @@
    "job": 0,
    "level": 20,
    "stats": {
-    "def": 19,
-    "hp": 75
+    "def": 19
    }
   },
   "top_30": {
@@ -450,8 +438,7 @@
    "job": 0,
    "level": 30,
    "stats": {
-    "def": 26,
-    "hp": 105
+    "def": 26
    }
   },
   "top_40": {
@@ -459,8 +446,7 @@
    "job": 0,
    "level": 40,
    "stats": {
-    "def": 33,
-    "hp": 135
+    "def": 33
    }
   },
   "bottom_20": {
@@ -468,8 +454,7 @@
    "job": 0,
    "level": 20,
    "stats": {
-    "def": 16,
-    "hp": 60
+    "def": 16
    }
   },
   "bottom_30": {
@@ -477,8 +462,7 @@
    "job": 0,
    "level": 30,
    "stats": {
-    "def": 22,
-    "hp": 85
+    "def": 22
    }
   },
   "bottom_40": {
@@ -486,8 +470,7 @@
    "job": 0,
    "level": 40,
    "stats": {
-    "def": 28,
-    "hp": 110
+    "def": 28
    }
   },
   "shoes_20": {
@@ -495,8 +478,7 @@
    "job": 0,
    "level": 20,
    "stats": {
-    "def": 10,
-    "hp": 35
+    "def": 10
    }
   },
   "shoes_30": {
@@ -504,8 +486,7 @@
    "job": 0,
    "level": 30,
    "stats": {
-    "def": 14,
-    "hp": 50
+    "def": 14
    }
   },
   "shoes_40": {
@@ -513,8 +494,7 @@
    "job": 0,
    "level": 40,
    "stats": {
-    "def": 18,
-    "hp": 65
+    "def": 18
    }
   },
   "gloves_20": {

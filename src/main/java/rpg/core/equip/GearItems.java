@@ -98,6 +98,11 @@ public final class GearItems {
         @Override
         public net.minecraft.world.InteractionResultHolder<ItemStack> use(Level level, net.minecraft.world.entity.player.Player p,
                                                                           net.minecraft.world.InteractionHand hand) {
+            String why = Gear.weaponBlock(p, p.getItemInHand(hand));
+            if (why != null) {   // 다른 직업 활은 못 당김
+                if (!level.isClientSide) p.displayClientMessage(Component.literal(why).withStyle(net.minecraft.ChatFormatting.RED), true);
+                return net.minecraft.world.InteractionResultHolder.fail(p.getItemInHand(hand));
+            }
             p.startUsingItem(hand);
             return net.minecraft.world.InteractionResultHolder.consume(p.getItemInHand(hand));
         }

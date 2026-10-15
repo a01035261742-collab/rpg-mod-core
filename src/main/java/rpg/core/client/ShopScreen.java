@@ -17,13 +17,33 @@ import rpg.core.net.Net;
 
 /** 상점 창: 왼쪽 사기 목록 (클릭 1개 / Shift 10개), 오른쪽 내 인벤 (클릭 1개 팔기 / Shift 한 묶음) */
 public class ShopScreen extends Screen {
-    private static final int W = 330, H = 212, ROW = 20, ROWS = 8, CELL = 18;
+    private static final int W = 330, H = 228, ROW = 20, ROWS = 8, CELL = 18;
     private final int npc;
     private final String name;
     private final List<ItemStack> offers = new ArrayList<>();
     private final List<Long> prices;
     private final Map<String, Long> sell;
-    private int x, y, scroll;
+    private int x, y, scroll, tab;
+    /** 탭: 무기 · 방어구 · 장신구 부위별 · 기타 (물건이 있는 탭만) */
+    private final List<String> tabs = new ArrayList<>();
+    private final List<Integer> shown = new ArrayList<>();   // 지금 탭의 offers 번호
+
+    private static final String[][] CATS = {{"weapon", "무기"}, {"armor", "방어구"}, {"gloves", "장갑"}, {"cape", "망토"}, {"belt", "벨트"},
+            {"earring", "귀걸이"}, {"ring", "반지"}, {"pendant", "펜던트"}, {"medal", "훈장"}, {"etc", "소모품·기타"}};
+
+    private static String cat(ItemStack s) {
+        String slot = rpg.core.equip.Gear.slotOf(s);
+        if (slot.isEmpty()) return "etc";
+        if (slot.equals("hat") || slot.equals("top") || slot.equals("bottom") || slot.equals("shoes")) return "armor";
+        return slot;
+    }
+
+    private void filter() {
+        shown.clear();
+        String c = tabs.isEmpty() ? "" : tabs.get(tab);
+        for (int i = 0; i < offers.size(); i++) if (c.isEmpty() || cat(offers.get(i)).equals(c)) shown.add(i);
+        scroll = 0;
+    }
 
     public ShopScreen(int npc, String name, List<String> items, List<Long> prices, Map<String, Long> sell) {
         super(Component.literal(name));
@@ -45,6 +65,20 @@ public class ShopScreen extends Screen {
     protected void init() {
         x = width / 2 - W / 2;
         y = height / 2 - H / 2;
+        tabs.clear();
+        int tx = x + 8;
+        for (String[] c : CATS) {
+            boolean any = false;
+            for (ItemStack o : offers) if (cat(o).equals(c[0])) { any = true; break; }
+            if (!any) continue;
+            final int k = tabs.size();
+            tabs.add(c[0]);
+            int w = font.width(c[1]) + 10;
+            addRenderableWidget(Button.builder(Component.literal(c[1]), b -> { tab = k; filter(); }).bounds(tx, y + 19, w, 14).build());
+            tx += w + 2;
+        }
+        tab = Math.min(tab, Math.max(0, tabs.size() - 1));
+        filter();
         addRenderableWidget(Button.builder(Component.literal("재료 전부 팔기"), b ->
                 Net.CH.sendToServer(new Net.ShopAction(npc, 2, 0, 0))).bounds(x + 168, y + H - 26, 100, 18).build());
         addRenderableWidget(Button.builder(Component.literal("닫기"), b -> onClose()).bounds(x + W - 56, y + H - 26, 48, 18).build());
@@ -63,7 +97,7 @@ public class ShopScreen extends Screen {
 
     /** 인벤 칸 i 의 화면 위치: 위 3줄 = 9~35, 아래 1줄 = 핫바 0~8 */
     private int cellX(int i) { return x + 168 + (i % 9) * CELL; }
-    private int cellY(int i) { return i < 9 ? y + 34 + 3 * CELL + 6 : y + 34 + (i / 9 - 1) * CELL; }
+    private int cellY(int i) { return i < 9 ? y + 50 + 3 * CELL + 6 : y + 50 + (i / 9 - 1) * CELL; }
 
     @Override
     public void render(GuiGraphics g, int mx, int my, float pt) {
@@ -75,12 +109,12 @@ public class ShopScreen extends Screen {
         g.drawString(font, gold, x + W - 8 - font.width(gold), y + 7, 0xFFFFD24A, true);
 
         // 사기
-        g.drawString(font, "사기", x + 8, y + 22, 0xFFA0A0A0, false);
+        g.drawString(font, "사기", x + 8, y + 38, 0xFFA0A0A0, false);
         List<Component> tip = null;
         for (int r = 0; r < ROWS; r++) {
-            int i = r + scroll;
-            if (i >= offers.size()) break;
-            int ry = y + 34 + r * ROW;
+            if (r + scroll >= shown.size()) break;
+            int i = shown.get(r + scroll);
+            int ry = y + 50 + r * ROW;
             boolean hover = mx >= x + 6 && mx < x + 160 && my >= ry && my < ry + ROW - 2;
             g.fill(x + 6, ry, x + 160, ry + ROW - 2, hover ? 0x60FFFFFF : 0x30FFFFFF);
             ItemStack s = offers.get(i);
@@ -97,11 +131,11 @@ public class ShopScreen extends Screen {
                 tip.add(Component.literal(s.getMaxStackSize() > 1 ? "클릭 1개 · Shift+클릭 10개" : "클릭: 구매 (추가 옵션 무작위)").withStyle(ChatFormatting.DARK_GRAY));
             }
         }
-        if (offers.size() > ROWS) g.drawString(font, "휠로 스크롤 (" + (scroll + 1) + "-" + Math.min(offers.size(), scroll + ROWS) + "/" + offers.size() + ")",
-                x + 8, y + 34 + ROWS * ROW + 2, 0xFF808080, false);   // 목록 바로 아래 (겹치지 않게)
+        if (shown.size() > ROWS) g.drawString(font, "휠로 스크롤 (" + (scroll + 1) + "-" + Math.min(shown.size(), scroll + ROWS) + "/" + shown.size() + ")",
+                x + 8, y + 50 + ROWS * ROW + 2, 0xFF808080, false);   // 목록 바로 아래 (겹치지 않게)
 
         // 팔기
-        g.drawString(font, "팔기 (내 인벤)", x + 168, y + 22, 0xFFA0A0A0, false);
+        g.drawString(font, "팔기 (내 인벤)", x + 168, y + 38, 0xFFA0A0A0, false);
         for (int i = 0; i < 36; i++) {
             int cx = cellX(i), cy = cellY(i);
             ItemStack s = inv(i);
@@ -120,7 +154,7 @@ public class ShopScreen extends Screen {
                 }
             }
         }
-        g.drawString(font, "초록 = 팔 수 있음", x + 168, y + 34 + 4 * CELL + 10, 0xFF60A060, false);
+        g.drawString(font, "초록 = 팔 수 있음", x + 168, y + 50 + 4 * CELL + 10, 0xFF60A060, false);
         super.render(g, mx, my, pt);
         if (tip != null) g.renderComponentTooltip(font, tip, mx, my);
     }
@@ -130,9 +164,9 @@ public class ShopScreen extends Screen {
         if (super.mouseClicked(mx, my, button)) return true;
         boolean shift = hasShiftDown();
         for (int r = 0; r < ROWS; r++) {
-            int i = r + scroll;
-            if (i >= offers.size()) break;
-            int ry = y + 34 + r * ROW;
+            if (r + scroll >= shown.size()) break;
+            int i = shown.get(r + scroll);
+            int ry = y + 50 + r * ROW;
             if (mx >= x + 6 && mx < x + 160 && my >= ry && my < ry + ROW - 2) {
                 Net.CH.sendToServer(new Net.ShopAction(npc, 0, i, shift ? 10 : 1));
                 return true;
@@ -150,7 +184,7 @@ public class ShopScreen extends Screen {
 
     @Override
     public boolean mouseScrolled(double mx, double my, double delta) {
-        scroll = Math.max(0, Math.min(Math.max(0, offers.size() - ROWS), scroll - (int) Math.signum(delta)));
+        scroll = Math.max(0, Math.min(Math.max(0, shown.size() - ROWS), scroll - (int) Math.signum(delta)));
         return true;
     }
 
