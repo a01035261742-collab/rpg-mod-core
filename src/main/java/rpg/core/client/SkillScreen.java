@@ -67,7 +67,8 @@ public class SkillScreen extends Screen {
                 tip.add(Component.literal(s.name()));
                 tip.add(Component.literal("현재: " + (lv > 0 ? s.describe(lv) : "안 배움")));
                 if (lv < s.maxLevel()) tip.add(Component.literal("다음: " + s.describe(lv + 1)));
-                tip.add(Component.literal("MP " + Defs.fmt(s.mp()) + " · 쿨타임 " + Defs.fmt(s.cooldown()) + "초"));
+                tip.add(Component.literal("MP " + Defs.fmt(s.mp(Math.max(1, lv))) + (lv > 0 && lv < s.maxLevel() ? " (다음 " + Defs.fmt(s.mp(lv + 1)) + ")" : "")
+                        + " · 쿨타임 " + Defs.fmt(s.cooldown()) + "초"));
                 tip.add(Component.literal(lv > 0 ? (key == null ? "마우스 올리고 Q E R F Z X 를 누르면 그 칸에 넣어요" : "현재 " + key + " 칸 · 같은 키 = 빼기")
                         : "배워야 칸에 넣을 수 있어요").withStyle(net.minecraft.ChatFormatting.DARK_GRAY));
                 g.renderComponentTooltip(font, tip, mx, my);

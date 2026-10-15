@@ -1,10 +1,11 @@
 {
-  "_설명": "스킬 수치. tier 0 = 초보자 (2차 전직 전까지), tier 1 = 1차. job: 1 전사 2 궁수 3 마법사 4 도적. type charge = 누르고 있다가 떼기. value/value2 = 1레벨 효과, PerLevel = 레벨당 증가. 시간은 초. {v} {v2} {d} = 설명에 숫자 넣기",
+  "_설명": "스킬 수치. tier 0 = 초보자 (2차 전직 전까지), tier 1 = 1차. job: 1 전사 2 궁수 3 마법사 4 도적. type charge = 누르고 있다가 떼기. value/value2 = 1레벨 효과, PerLevel = 레벨당 증가. 시간은 초. {v} {v2} {d} = 설명에 숫자 넣기 mpPerLevel = 레벨당 MP 증가 (찍을수록 더 씀, 20레벨이면 1레벨의 2배, 5레벨 스킬은 1.5배). hits = 타수 (도감 표시용)",
   "sprint": {
     "name": "질주",
     "tier": 0,
     "maxLevel": 5,
     "mp": 8,
+    "mpPerLevel": 1.0,
     "cooldown": 45,
     "duration": 15,
     "value": 30,
@@ -16,6 +17,7 @@
     "tier": 0,
     "maxLevel": 5,
     "mp": 10,
+    "mpPerLevel": 1.25,
     "cooldown": 60,
     "duration": 0,
     "value": 25,
@@ -29,11 +31,13 @@
     "maxLevel": 20,
     "type": "charge",
     "mp": 12,
+    "mpPerLevel": 0.6316,
     "cooldown": 6,
     "duration": 0,
     "value": 124,
     "valuePerLevel": 4,
-    "desc": "꾹 눌러 모았다 떼면 앞쪽 3칸 범위 공격, 스공의 {v}% (1.5초 모으면 1.5배)"
+    "desc": "꾹 눌러 모았다 떼면 앞쪽 3칸 범위 공격, 스공의 {v}% (1.5초 모으면 1.5배)",
+    "hits": 1
   },
   "iron_body": {
     "name": "아이언 바디",
@@ -42,6 +46,7 @@
     "maxLevel": 20,
     "type": "instant",
     "mp": 15,
+    "mpPerLevel": 0.7895,
     "cooldown": 40,
     "duration": 20,
     "value": 10,
@@ -55,11 +60,13 @@
     "maxLevel": 20,
     "type": "instant",
     "mp": 6,
+    "mpPerLevel": 0.3158,
     "cooldown": 1.5,
     "duration": 0,
     "value": 93,
     "valuePerLevel": 3,
-    "desc": "화살 2발을 연속으로, 각각 스공의 {v}%"
+    "desc": "화살 2발을 연속으로, 각각 스공의 {v}%",
+    "hits": 2
   },
   "retreat_shot": {
     "name": "후퇴 샷",
@@ -68,11 +75,13 @@
     "maxLevel": 20,
     "type": "instant",
     "mp": 10,
+    "mpPerLevel": 0.5263,
     "cooldown": 8,
     "duration": 3,
     "value": 124,
     "valuePerLevel": 4,
-    "desc": "뒤로 물러나며 스공의 {v}% 화살, 맞은 몹 {d}초 느려짐"
+    "desc": "뒤로 물러나며 스공의 {v}% 화살, 맞은 몹 {d}초 느려짐",
+    "hits": 1
   },
   "magic_bolt": {
     "name": "매직 볼트",
@@ -81,11 +90,13 @@
     "maxLevel": 20,
     "type": "instant",
     "mp": 5,
+    "mpPerLevel": 0.2632,
     "cooldown": 0.8,
     "duration": 0,
     "value": 92,
     "valuePerLevel": 2,
-    "desc": "날아가는 마법탄, 맞으면 스공의 {v}%"
+    "desc": "날아가는 마법탄, 맞으면 스공의 {v}%",
+    "hits": 1
   },
   "magic_guard": {
     "name": "매직 가드",
@@ -94,6 +105,7 @@
     "maxLevel": 20,
     "type": "instant",
     "mp": 10,
+    "mpPerLevel": 0.5263,
     "cooldown": 0,
     "duration": 120,
     "value": 30,
@@ -107,13 +119,15 @@
     "maxLevel": 20,
     "type": "instant",
     "mp": 12,
+    "mpPerLevel": 0.6316,
     "cooldown": 20,
     "duration": 4,
     "value": 50,
     "valuePerLevel": 2.6316,
     "value2": 10,
     "value2PerLevel": 0.5263,
-    "desc": "{d}초 은신 (몹이 못 봄). 첫 공격 피해 +{v}% + 5초 출혈 (1초마다 스공의 {v2}%)"
+    "desc": "{d}초 은신 (몹이 못 봄). 첫 공격 피해 +{v}% + 5초 출혈 (1초마다 스공의 {v2}%)",
+    "hits": 1
   },
   "haste": {
     "name": "헤이스트",
@@ -122,6 +136,7 @@
     "maxLevel": 20,
     "type": "instant",
     "mp": 15,
+    "mpPerLevel": 0.7895,
     "cooldown": 0,
     "duration": 40,
     "value": 15,

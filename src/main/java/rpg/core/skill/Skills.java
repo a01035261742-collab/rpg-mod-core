@@ -83,7 +83,7 @@ public final class Skills {
         if (s == null || lv <= 0 || !available(d, s)) return;
         long now = p.level().getGameTime();
         if (now < d.cdEnd.getOrDefault(id, 0L)) return;
-        if (d.mp < s.mp()) {
+        if (d.mp < s.mp(lv)) {
             p.displayClientMessage(Component.literal("MP가 부족해요").withStyle(ChatFormatting.BLUE), true);
             return;
         }
@@ -99,12 +99,12 @@ public final class Skills {
             default -> JobSkills.use(p, d, s, lv, now);
         };
         if (!ok) return;
-        spend(d, s, now);
+        spend(d, s, lv, now);
         RpgData.sync(p);
     }
 
-    private static void spend(PlayerData d, Defs.SkillDef s, long now) {
-        d.mp -= s.mp();
+    private static void spend(PlayerData d, Defs.SkillDef s, int lv, long now) {
+        d.mp -= s.mp(lv);
         int cd = (int) Math.round(s.cooldown() * 20);
         d.cdEnd.put(s.id(), now + cd);
         d.cdLen.put(s.id(), cd);
@@ -120,9 +120,9 @@ public final class Skills {
         d.chargeSkill = null; d.chargeSlot = -1;
         Defs.SkillDef s = Defs.SKILLS.get(id);
         int lv = d.skills.getOrDefault(id, 0);
-        if (s == null || lv <= 0 || d.isDown() || !p.isAlive() || d.mp < s.mp()) { RpgData.sync(p); return; }
+        if (s == null || lv <= 0 || d.isDown() || !p.isAlive() || d.mp < s.mp(lv)) { RpgData.sync(p); return; }
         if ("power_strike".equals(id)) JobSkills.releaseCharge(p, d, s, lv, held);
-        spend(d, s, now);
+        spend(d, s, lv, now);
         RpgData.sync(p);
     }
 

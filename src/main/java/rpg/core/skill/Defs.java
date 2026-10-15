@@ -18,8 +18,10 @@ public final class Defs {
     /** type: "instant"(누르면 바로) / "charge"(누르고 있다가 떼면). job: 0 = 모든 직업 */
     public record SkillDef(String id, String name, int tier, int maxLevel, double mp, double cooldown, double duration,
                            double value, double valuePerLevel, String desc, String type, int job,
-                           double value2, double value2PerLevel) {
+                           double value2, double value2PerLevel, double mpPerLevel) {
         public double value(int level) { return value + valuePerLevel * Math.max(0, level - 1); }
+        /** 레벨별 MP (찍을수록 더 씀) */
+        public double mp(int level) { return Math.round(mp + mpPerLevel * Math.max(0, level - 1)); }
         public double value2(int level) { return value2 + value2PerLevel * Math.max(0, level - 1); }
         public boolean charge() { return "charge".equals(type); }
 
@@ -49,7 +51,7 @@ public final class Defs {
                 SKILLS.put(e.getKey(), new SkillDef(e.getKey(), str(o, "name", e.getKey()), (int) num(o, "tier", 0),
                         (int) num(o, "maxLevel", 10), num(o, "mp", 0), num(o, "cooldown", 1), num(o, "duration", 0),
                         num(o, "value", 0), num(o, "valuePerLevel", 0), str(o, "desc", ""), str(o, "type", "instant"),
-                        (int) num(o, "job", 0), num(o, "value2", 0), num(o, "value2PerLevel", 0)));
+                        (int) num(o, "job", 0), num(o, "value2", 0), num(o, "value2PerLevel", 0), num(o, "mpPerLevel", 0)));
             }
         } catch (Exception ex) {
             rpg.core.RpgCore.LOG.error("[rpgcore] skills.json 읽기 실패", ex);

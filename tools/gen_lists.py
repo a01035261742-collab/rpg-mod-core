@@ -152,8 +152,30 @@ for k in order + [k for k in mobs if not k.startswith('_') and k not in order]:
     mo.append(f'| {v.get("name", k)} | `{k}` | {body} | {ground_of.get(k, "-")} | {lv[0][0] if lv else "-"}~{lv[-1][0] if lv else "-"} | {rng("hp")} | {rng("atk")} | {rng("exp")} | {rng("gold")} | {atk} | {pat} | {v.get("stunArmor", 0):g} | {mat} | {uq} |')
 mo.append('')
 open(sys.argv[2], 'w').write('\n'.join(mo) + '\n')
+# ── 스킬 (게임에 있는 것 + tools/skills_draft.json 초안) ──
+ROWS_S = []
+sk = load('skills')
+def g(x): return f'{x:g}'
+JOBN = {0: '초보자', 1: '전사', 2: '궁수', 3: '마법사', 4: '도적'}
+for k, v in sk.items():
+    if k.startswith('_'): continue
+    mx = v.get('maxLevel', 10)
+    def val(lv, key): return v.get(key, 0) + v.get(key + 'PerLevel', 0) * (lv - 1)
+    def desc(lv): return v.get('desc', '').replace('{v}', g(round(val(lv, 'value'), 1))).replace('{v2}', g(round(val(lv, 'value2'), 1))).replace('{d}', g(v.get('duration', 0)))
+    mp1, mpx = round(v.get('mp', 0)), round(v.get('mp', 0) + v.get('mpPerLevel', 0) * (mx - 1))
+    kind = '차지' if v.get('type') == 'charge' else ('버프' if v.get('duration', 0) > 0 else '액티브')
+    ROWS_S.append({'job': JOBN.get(v.get('job', 0), '-'), 'branch': '-', 'tier': '초보자' if v.get('tier', 0) == 0 else f'{v.get("tier")}차',
+                   'name': v.get('name', k), 'id': k, 'kind': kind, 'max': mx, 'hits': str(v.get('hits', '-')), 'dmg': '-',
+                   'eff': f'Lv1: {desc(1)} → Lv{mx}: {desc(mx)}', 'cd': f'{g(v.get("cooldown", 0))}초' if v.get('cooldown') else '없음',
+                   'mp': f'{mp1} → {mpx}', 'status': '게임에 있음'})
+try:
+    for d in json.load(open('tools/skills_draft.json'))['skills']:
+        ROWS_S.append({**d, 'id': ''})
+except FileNotFoundError:
+    pass
+
 if len(sys.argv) > 3:   # 표 페이지: tools/lists_page.html 의 /*DATA*/ 자리에 데이터 넣기
     page = open('tools/lists_page.html').read()
-    data = json.dumps({'ver': ver, 'items': ROWS_I, 'mobs': ROWS_M, 'elite': mo[4][2:], 'stun': mo[5][2:]}, ensure_ascii=False)
+    data = json.dumps({'ver': ver, 'items': ROWS_I, 'mobs': ROWS_M, 'skills': ROWS_S, 'elite': mo[4][2:], 'stun': mo[5][2:]}, ensure_ascii=False)
     open(sys.argv[3], 'w').write(page.replace('/*DATA*/null', data.replace('</', '<\\/')))
 print('ok', len(items), 'items')

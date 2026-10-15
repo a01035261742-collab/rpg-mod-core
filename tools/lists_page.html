@@ -114,6 +114,7 @@ td.wide { min-width: 220px; }
   <div class="tabs" role="tablist">
     <button id="tab-items" role="tab" aria-selected="true" aria-controls="panel">아이템</button>
     <button id="tab-mobs" role="tab" aria-selected="false" aria-controls="panel">몹</button>
+    <button id="tab-skills" role="tab" aria-selected="false" aria-controls="panel">스킬</button>
   </div>
   <div class="note" id="note"></div>
   <div class="filters" id="filters"></div>
@@ -135,10 +136,12 @@ let tab = 'items';
 const state = {
   items: { q: '', cat: '', slot: '', job: '', lvMin: '', lvMax: '', src: new Set(), sort: null, dir: 1 },
   mobs: { q: '', body: '', ground: '', sort: 'lvMin', dir: 1 },
+  skills: { q: '', job: '', tier: '', status: '', kind: '', sort: null, dir: 1 },
 };
-try { const t = localStorage.getItem('rpgcore-dex-tab'); if (t === 'mobs' || t === 'items') tab = t; } catch (e) {}
-if (location.hash === '#mobs') tab = 'mobs';
-if (location.hash === '#items') tab = 'items';
+const LIST = () => tab === 'items' ? DATA.items : tab === 'mobs' ? DATA.mobs : DATA.skills;
+const COLS = () => tab === 'items' ? ITEM_COLS : tab === 'mobs' ? MOB_COLS : SKILL_COLS;
+try { const t = localStorage.getItem('rpgcore-dex-tab'); if (['items', 'mobs', 'skills'].includes(t)) tab = t; } catch (e) {}
+if (['#items', '#mobs', '#skills'].includes(location.hash)) tab = location.hash.slice(1);
 
 const ITEM_COLS = [
   { k: 'name', t: '이름', r: (x) => `<span class="nm">${esc(x.name)}</span><span class="id">${esc(x.id)}</span>` },
@@ -160,6 +163,15 @@ const MOB_COLS = [
   { k: 'gold', t: '골드', num: true, sortBy: (x) => x.gold[1], r: (x) => rng(x.gold) },
   { k: 'melee', t: '근접 공격', cls: 'small wide' }, { k: 'pattern', t: '패턴', cls: 'small wide' },
   { k: 'stun', t: '경직 방어', num: true }, { k: 'mats', t: '재료 드롭', cls: 'small' }, { k: 'unique', t: '전용 장비', cls: 'small' },
+];
+
+const SKILL_COLS = [
+  { k: 'name', t: '스킬', r: (x) => `<span class="nm">${esc(x.name)}</span>${x.id ? `<span class="id">${esc(x.id)}</span>` : ''}` },
+  { k: 'job', t: '직업', r: (x) => `<span class="job">${esc(x.job)}</span>` }, { k: 'branch', t: '갈래' }, { k: 'tier', t: '차수' },
+  { k: 'kind', t: '종류' }, { k: 'max', t: '최대 Lv', num: true }, { k: 'hits', t: '타수', cls: 'small' },
+  { k: 'dmg', t: '피해 % (1 → 최대)', cls: 'small wide' }, { k: 'eff', t: '효과 (1 → 최대)', cls: 'small wide' },
+  { k: 'cd', t: '쿨' }, { k: 'mp', t: 'MP (1 → 최대)', num: true, sortBy: (x) => parseFloat(x.mp) || 0 },
+  { k: 'status', t: '상태', r: (x) => `<span class="src"><span style="--c:var(--src-${x.status === '초안' ? 'craft' : 'quest'});--cb:var(--src-${x.status === '초안' ? 'craft' : 'quest'}-bg)">${esc(x.status)}</span></span>` },
 ];
 
 function uniq(list, k) { return [...new Set(list.map((x) => x[k]).filter((v) => v && v !== '-'))]; }
@@ -188,6 +200,17 @@ function renderFilters() {
       const k = b.dataset.src; s.src.has(k) ? s.src.delete(k) : s.src.add(k); b.setAttribute('aria-pressed', s.src.has(k)); renderBody();
     });
     $('#reset').onclick = () => { Object.assign(s, { q: '', cat: '', slot: '', job: '', lvMin: '', lvMax: '', src: new Set() }); renderFilters(); renderBody(); };
+  } else if (tab === 'skills') {
+    const s = state.skills, k = DATA.skills;
+    f.innerHTML =
+      `<input type="search" id="q" placeholder="스킬 이름·효과로 찾기" value="${esc(s.q)}" aria-label="찾기">` +
+      select('f-job', '직업', uniq(k, 'job'), s.job) + select('f-tier', '차수', uniq(k, 'tier'), s.tier) +
+      select('f-kind', '종류', uniq(k, 'kind'), s.kind) + select('f-status', '상태', uniq(k, 'status'), s.status) +
+      `<button class="reset" id="reset">필터 지우기</button><div class="count" id="count"></div>`;
+    $('#q').oninput = (e) => { s.q = e.target.value; renderBody(); };
+    for (const [id, key] of [['f-job', 'job'], ['f-tier', 'tier'], ['f-kind', 'kind'], ['f-status', 'status']])
+      $('#' + id).onchange = (e) => { s[key] = e.target.value; renderBody(); };
+    $('#reset').onclick = () => { Object.assign(s, { q: '', job: '', tier: '', status: '', kind: '' }); renderFilters(); renderBody(); };
   } else {
     const s = state.mobs, m = DATA.mobs;
     f.innerHTML =
@@ -211,6 +234,12 @@ function rows() {
       (mn === null || (x.lv != null && x.lv >= mn)) && (mx === null || (x.lv != null && x.lv <= mx)) &&
       (!s.src.size || [...s.src].some((k) => x.src.some((t) => t.startsWith(k)))));
   }
+  if (tab === 'skills') {
+    const s = state.skills, q = s.q.trim().toLowerCase();
+    return DATA.skills.filter((x) =>
+      (!q || [x.name, x.id, x.eff, x.dmg, x.branch].join(' ').toLowerCase().includes(q)) &&
+      (!s.job || x.job === s.job) && (!s.tier || x.tier === s.tier) && (!s.kind || x.kind === s.kind) && (!s.status || x.status === s.status));
+  }
   const s = state.mobs, q = s.q.trim().toLowerCase();
   return DATA.mobs.filter((x) =>
     (!q || [x.name, x.id, x.mats, x.unique, x.pattern].join(' ').toLowerCase().includes(q)) &&
@@ -218,7 +247,7 @@ function rows() {
 }
 
 function renderHead() {
-  const cols = tab === 'items' ? ITEM_COLS : MOB_COLS, s = state[tab];
+  const cols = COLS(), s = state[tab];
   $('#thead').innerHTML = '<tr>' + cols.map((c) =>
     `<th class="${c.num ? 'num' : ''}"><button data-k="${c.k}"${s.sort === c.k ? ` data-dir="${s.dir > 0 ? 'asc' : 'desc'}"` : ''}>${c.t}</button></th>`).join('') + '</tr>';
   $('#thead').querySelectorAll('button').forEach((b) => b.onclick = () => {
@@ -229,7 +258,7 @@ function renderHead() {
 }
 
 function renderBody() {
-  const cols = tab === 'items' ? ITEM_COLS : MOB_COLS, s = state[tab];
+  const cols = COLS(), s = state[tab];
   let list = rows();
   if (s.sort) {
     const c = cols.find((x) => x.k === s.sort), get = c.sortBy || ((x) => x[c.k]);
@@ -239,11 +268,11 @@ function renderBody() {
       return (typeof va === 'number' && typeof vb === 'number' ? va - vb : String(va).localeCompare(String(vb), 'ko')) * s.dir;
     });
   }
-  const total = (tab === 'items' ? DATA.items : DATA.mobs).length;
+  const total = LIST().length;
   const cnt = $('#count'); if (cnt) cnt.innerHTML = `<b>${list.length}</b> / ${total}개`;
   $('#tbody').innerHTML = list.length ? list.map((x) => '<tr>' + cols.map((c) =>
     `<td class="${c.num ? 'num' : ''} ${c.cls || ''}">${c.r ? c.r(x) : esc(fmt(x[c.k]))}</td>`).join('') + '</tr>').join('')
-    : `<tr><td class="empty" colspan="${cols.length}">조건에 맞는 ${tab === 'items' ? '아이템' : '몹'}이 없어요. 필터를 줄여 보세요.</td></tr>`;
+    : `<tr><td class="empty" colspan="${cols.length}">조건에 맞는 ${tab === 'items' ? '아이템' : tab === 'mobs' ? '몹' : '스킬'}이 없어요. 필터를 줄여 보세요.</td></tr>`;
 }
 
 function show(t) {
@@ -251,14 +280,17 @@ function show(t) {
   try { localStorage.setItem('rpgcore-dex-tab', t); } catch (e) {}
   $('#tab-items').setAttribute('aria-selected', t === 'items');
   $('#tab-mobs').setAttribute('aria-selected', t === 'mobs');
+  $('#tab-skills').setAttribute('aria-selected', t === 'skills');
   $('#note').innerHTML = t === 'items'
     ? '<span>추가 옵션: 상점 장비 0줄 · 제작·드롭·보상 장비 4줄 (종류·수치 무작위). 열 이름을 누르면 정렬, 한 번 더 누르면 반대로.</span>'
-    : `<span>${esc(DATA.elite)}</span><span>${esc(DATA.stun)}</span>`;
+    : t === 'mobs' ? `<span>${esc(DATA.elite)}</span><span>${esc(DATA.stun)}</span>`
+    : '<span>"게임에 있음" = 지금 모드에 들어간 스킬, "초안" = 정해 둔 2차 전직·패시브 (아직 안 만듦). 액티브 최대 20레벨 · 패시브 최대 10레벨 · MP는 찍을수록 늘어남 (20레벨 = 1레벨 ×2).</span>';
   renderFilters(); renderHead(); renderBody();
 }
 
 $('#ver').textContent = DATA.ver;
 $('#tab-items').onclick = () => show('items');
 $('#tab-mobs').onclick = () => show('mobs');
+$('#tab-skills').onclick = () => show('skills');
 show(tab);
 </script>
