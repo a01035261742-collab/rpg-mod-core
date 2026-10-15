@@ -106,11 +106,8 @@ public final class JobSkills {
     // ───────── 궁수 ─────────
     private static Arrow arrow(ServerPlayer p, double pct, float yawOff) {
         ServerLevel l = p.serverLevel();
-        Arrow a = new Arrow(l, p);
+        Arrow a = new rpg.core.item.RpgArrow(l, p);
         a.shootFromRotation(p, p.getXRot(), p.getYRot() + yawOff, 0, 3.0f, 0.3f);
-        a.setBaseDamage(0.5);
-        a.pickup = AbstractArrow.Pickup.DISALLOWED;
-        a.getPersistentData().putBoolean("rpgArrow", true);
         a.getPersistentData().putDouble("rpgSkillPct", pct);
         l.addFreshEntity(a);
         return a;

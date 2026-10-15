@@ -107,12 +107,9 @@ public final class GearItems {
             if (!(e instanceof net.minecraft.world.entity.player.Player p)) return;
             float power = getPowerForTime(getUseDuration(s) - timeLeft);
             if (power < 0.1f || level.isClientSide) return;
-            var a = new net.minecraft.world.entity.projectile.Arrow(level, p);
-            a.shootFromRotation(p, p.getXRot(), p.getYRot(), 0, power * 3.0f, 1.0f);
+            var a = new rpg.core.item.RpgArrow(level, p);
+            a.shootFromRotation(p, p.getXRot(), p.getYRot(), 0, 1.5f + power * 1.5f, 0.5f);   // 중력 없음: 덜 당겨도 똑바로
             if (power >= 1.0f) a.setCritArrow(true);
-            a.setBaseDamage(0.5);
-            a.pickup = net.minecraft.world.entity.projectile.AbstractArrow.Pickup.DISALLOWED;
-            a.getPersistentData().putBoolean("rpgArrow", true);
             a.getPersistentData().putFloat("rpgPower", power);
             level.addFreshEntity(a);
             level.playSound(null, p.getX(), p.getY(), p.getZ(), SoundEvents.ARROW_SHOOT, net.minecraft.sounds.SoundSource.PLAYERS,
