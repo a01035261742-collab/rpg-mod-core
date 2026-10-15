@@ -1,5 +1,5 @@
 {
- "_설명": "몹 표. levels = 레벨별 수치(없으면 바로 아래 레벨). skills = 예고 후 공격 패턴 (type slam 내 주변 원 / leap 대상 자리로 점프 / dash 돌진 / shot 직선 사격 / zone 대상 자리 장판 / cone 앞 부채꼴, range 쓰는 거리, cd 쿨(초), delay 예고 시간(초), pct 공격력%, r 반경, len 길이, w 폭, angle 부채꼴 각도, hits 타수, effect slow 둔화). passive = 먼저 안 때림. attacks = 근접 공격 (EF 방식 판정, GeckoLib 몹만): anim 애니 이름, start~end 판정 틱, length 전체 틱, range 몸 끝에서 칸, angle 부채꼴 각도(없으면 직사각형), width 직사각형 폭, knock 넉백. 여러 개면 번갈아 씀",
+ "_설명": "몹 표. levels = 레벨별 수치(없으면 바로 아래 레벨). skills = 예고 후 공격 패턴 (type slam 내 주변 원 / leap 대상 자리로 점프 / dash 돌진 / shot 직선 사격 / zone 대상 자리 장판 / cone 앞 부채꼴, range 쓰는 거리, cd 쿨(초), delay 예고 시간(초), pct 공격력%, r 반경, len 길이, w 폭, angle 부채꼴 각도, hits 타수, effect slow 둔화). passive = 먼저 안 때림. attacks = 근접 공격 (EF 방식 판정, GeckoLib 몹만): anim 애니 이름, start~end 판정 틱, length 전체 틱, range 몸 끝에서 칸, angle 부채꼴 각도(없으면 직사각형), width 직사각형 폭, knock 넉백, lunge 타격 순간 앞으로 내딛기. 여러 개면 번갈아 씀",
  "_elite": {
   "chance": 5,
   "hp": 5,
@@ -226,7 +226,7 @@
     "type": "leap",
     "range": 7,
     "cd": 6,
-    "delay": 1.5,
+    "delay": 1.0,
     "pct": 130,
     "r": 2.5
    }
@@ -316,8 +316,9 @@
     "start": 10,
     "end": 13,
     "length": 19,
-    "range": 0.8,
-    "width": 0.8
+    "range": 1.3,
+    "width": 1.2,
+    "lunge": 0.35
    }
   ],
   "levels": {
@@ -404,7 +405,7 @@
     "type": "dash",
     "range": 9,
     "cd": 6,
-    "delay": 1.2,
+    "delay": 0.8,
     "pct": 140,
     "len": 8,
     "w": 1.4
@@ -495,7 +496,7 @@
     "type": "shot",
     "range": 12,
     "cd": 4,
-    "delay": 1.2,
+    "delay": 0.8,
     "pct": 120,
     "len": 12,
     "w": 1.0
@@ -585,7 +586,7 @@
     "type": "dash",
     "range": 10,
     "cd": 7,
-    "delay": 1.5,
+    "delay": 1.0,
     "pct": 160,
     "len": 10,
     "w": 1.8
@@ -675,7 +676,7 @@
     "type": "cone",
     "range": 4,
     "cd": 7,
-    "delay": 1.4,
+    "delay": 0.9,
     "pct": 160,
     "r": 4,
     "angle": 90
@@ -765,7 +766,7 @@
     "type": "zone",
     "range": 14,
     "cd": 8,
-    "delay": 1.8,
+    "delay": 1.2,
     "pct": 130,
     "r": 2.5,
     "effect": "slow"
@@ -777,16 +778,18 @@
     "start": 12,
     "end": 16,
     "length": 21,
-    "range": 1.0,
-    "angle": 90
+    "range": 1.5,
+    "angle": 90,
+    "lunge": 0.4
    },
    {
     "anim": "attack2",
     "start": 12,
     "end": 16,
     "length": 21,
-    "range": 1.0,
-    "angle": 90
+    "range": 1.5,
+    "angle": 90,
+    "lunge": 0.4
    }
   ],
   "levels": {
@@ -873,7 +876,7 @@
     "type": "slam",
     "range": 2.2,
     "cd": 3,
-    "delay": 1.0,
+    "delay": 0.6,
     "pct": 100,
     "r": 1.8
    }
@@ -884,8 +887,9 @@
     "start": 10,
     "end": 13,
     "length": 16,
-    "range": 0.8,
-    "width": 1.0
+    "range": 1.3,
+    "width": 1.4,
+    "lunge": 0.35
    }
   ],
   "levels": {
@@ -972,7 +976,7 @@
     "type": "slam",
     "range": 3.5,
     "cd": 7,
-    "delay": 1.8,
+    "delay": 1.2,
     "pct": 180,
     "r": 3.5,
     "effect": "slow"
@@ -984,17 +988,19 @@
     "start": 14,
     "end": 19,
     "length": 23,
-    "range": 1.2,
-    "angle": 120
+    "range": 1.9,
+    "angle": 120,
+    "lunge": 0.45
    },
    {
     "anim": "attack2",
     "start": 11,
     "end": 14,
     "length": 19,
-    "range": 0.9,
-    "width": 1.2,
-    "knock": 0.6
+    "range": 1.4,
+    "width": 1.6,
+    "knock": 0.6,
+    "lunge": 0.45
    }
   ],
   "levels": {
@@ -1081,7 +1087,7 @@
     "type": "dash",
     "range": 7,
     "cd": 5,
-    "delay": 1.0,
+    "delay": 0.6,
     "pct": 120,
     "len": 6,
     "w": 1.2
@@ -1171,7 +1177,7 @@
     "type": "shot",
     "range": 10,
     "cd": 6,
-    "delay": 1.2,
+    "delay": 0.8,
     "pct": 130,
     "len": 10,
     "w": 1.2,
@@ -1262,7 +1268,7 @@
     "type": "zone",
     "range": 12,
     "cd": 7,
-    "delay": 1.8,
+    "delay": 1.2,
     "pct": 120,
     "r": 3,
     "effect": "slow"
@@ -1352,7 +1358,7 @@
     "type": "dash",
     "range": 10,
     "cd": 6,
-    "delay": 1.2,
+    "delay": 0.8,
     "pct": 150,
     "len": 9,
     "w": 1.6
@@ -1442,7 +1448,7 @@
     "type": "slam",
     "range": 5,
     "cd": 8,
-    "delay": 2.1,
+    "delay": 1.4,
     "pct": 200,
     "r": 5
    }

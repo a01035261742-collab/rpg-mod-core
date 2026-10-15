@@ -86,6 +86,11 @@ public class RpgMeleeGoal extends MeleeAttackGoal {
             mob.setYRot(lockedYaw);
             mob.yBodyRot = lockedYaw;
             mob.yHeadRot = lockedYaw;
+            // 타격 순간 앞으로 한 발 내딛기 (EF 몹처럼) → 뒤로 걷기만 해서는 못 피함, 옆으로 비키거나 구르기
+            if (t == cur.start() && cur.lunge() > 0) {
+                float r = lockedYaw * Mth.DEG_TO_RAD;
+                mob.setDeltaMovement(mob.getDeltaMovement().add(-Mth.sin(r) * cur.lunge(), 0, Mth.cos(r) * cur.lunge()));
+            }
             if (t >= cur.start() && t <= cur.end()) swingHits();
         }
         if (++t >= cur.length()) cur = null;

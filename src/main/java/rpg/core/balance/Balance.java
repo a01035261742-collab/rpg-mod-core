@@ -55,9 +55,9 @@ public final class Balance {
      */
     /**
      * 근접 공격 (EF 방식 판정): anim = GeckoLib 애니 이름, start~end 틱 동안 판정, length = 전체 길이(틱).
-     * range = 몸 끝에서 앞으로 몇 칸, angle > 0 이면 부채꼴(도), 아니면 폭 width 직사각형. knock = 넉백 세기
+     * range = 몸 끝에서 앞으로 몇 칸, angle > 0 이면 부채꼴(도), 아니면 폭 width 직사각형. knock = 넉백 세기, lunge = 타격 순간 앞으로 내딛는 세기
      */
-    public record MobAttack(String anim, int start, int end, int length, double range, double width, double angle, double knock) {}
+    public record MobAttack(String anim, int start, int end, int length, double range, double width, double angle, double knock, double lunge) {}
 
     public record MobSkill(String type, double range, double cd, double delay, double pct, double r, double len,
                            double w, double angle, int hits, String effect) {}
@@ -196,7 +196,7 @@ public final class Balance {
                     JsonObject o = at.getAsJsonObject();
                     attacks.add(new MobAttack(o.has("anim") ? o.get("anim").getAsString() : "attack",
                             (int) d(o, "start", 4), (int) d(o, "end", 7), (int) d(o, "length", 12),
-                            d(o, "range", 0.8), d(o, "width", 1), d(o, "angle", 0), d(o, "knock", 0)));
+                            d(o, "range", 0.8), d(o, "width", 1), d(o, "angle", 0), d(o, "knock", 0), d(o, "lunge", 0.35)));
                 }
                 MOBS.put(e.getKey(), new MobDef(e.getKey(), ent, name, levels, look, skills, attacks));
             }
