@@ -26,8 +26,7 @@ public final class JobEvents {
         e.setCanceled(true);
         if (e.getHand() != InteractionHand.MAIN_HAND || !(e.getEntity() instanceof ServerPlayer sp)) return;
         var d = RpgData.get(sp);
-        int state = d.job == fam ? 2 : d.job != 0 ? 3 : d.level < rpg.core.balance.Balance.jobLevel1 ? 1 : 0;
-        Net.openJob(sp, fam, state);
+        Net.openJob(sp, fam, Jobs.state(d, fam), d.pendingBranch);
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)

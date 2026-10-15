@@ -60,7 +60,7 @@ public final class Combat {
     }
 
     public static double statAttack(Player p, PlayerData d) {
-        return (mainStat(d) * 4.0 + subStat(d)) * weaponAtk(p, d) / 100.0 * (1 + d.bonus("atkPct") / 100.0);
+        return (mainStat(d) * 4.0 + subStat(d)) * weaponAtk(p, d) / 100.0 * (1 + (d.bonus("atkPct") + d.buffV("berserk", d.clock)) / 100.0);   // 광폭화: 스공 %
     }
 
     public static Hit roll(Player p, PlayerData d, double mult) {

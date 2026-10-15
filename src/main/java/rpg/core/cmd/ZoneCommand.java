@@ -145,9 +145,44 @@ public final class ZoneCommand {
                     var p = c.getSource().getPlayerOrException();
                     var d = rpg.core.data.RpgData.get(p);
                     d.job = IntegerArgumentType.getInteger(c, "job");
+                    d.branch = 0; d.pendingBranch = 0; d.trialCleared = false;
                     d.recalc();
                     rpg.core.data.RpgData.sync(p);
                     return ok(c, "직업을 " + rpg.core.job.Jobs.name(d.job) + "(으)로 바꿨어요 (테스트용, 보상 없음)");
+                })));
+        root.then(Commands.literal("branch").requires(s -> s.hasPermission(2))
+                .then(Commands.argument("branch", IntegerArgumentType.integer(0, 2)).executes(c -> {
+                    var p = c.getSource().getPlayerOrException();
+                    var d = rpg.core.data.RpgData.get(p);
+                    if (d.job == 0) return fail(c, "먼저 1차 직업이 있어야 해요 (/rpg job)");
+                    d.branch = IntegerArgumentType.getInteger(c, "branch");
+                    d.pendingBranch = 0; d.trialCleared = false;
+                    d.recalc();
+                    rpg.core.data.RpgData.sync(p);
+                    return ok(c, "2차 갈래를 " + (d.branch == 0 ? "없음" : rpg.core.job.Jobs.branchName(d.job, d.branch)) + "(으)로 바꿨어요 (테스트용, 보상 없음)");
+                })));
+        root.then(Commands.literal("trial").requires(s -> s.hasPermission(2))
+                .then(Commands.literal("point")
+                        .then(Commands.literal("add").executes(c -> {
+                            rpg.core.job.Trials.addPoint(c.getSource().getPlayerOrException());
+                            return ok(c, "교관의 시련 시련장을 여기로 추가했어요 (시련의 허수아비가 이 자리에 나와요)");
+                        }))
+                        .then(Commands.literal("remove").executes(c -> {
+                            boolean had = rpg.core.job.Trials.removePoint(c.getSource().getPlayerOrException());
+                            return had ? ok(c, "가까운 시련장을 지웠어요") : fail(c, "8칸 안에 시련장이 없어요");
+                        }))
+                        .then(Commands.literal("list").executes(c -> {
+                            var lines = rpg.core.job.Trials.points(c.getSource().getServer());
+                            if (lines.isEmpty()) return fail(c, "시련장이 없어요 (/rpg trial point add)");
+                            for (String l : lines) c.getSource().sendSystemMessage(Component.literal(l));
+                            return 1;
+                        })))
+                .then(Commands.literal("clear").executes(c -> {
+                    var p = c.getSource().getPlayerOrException();
+                    var d = rpg.core.data.RpgData.get(p);
+                    d.trialCleared = true;
+                    rpg.core.data.RpgData.sync(p);
+                    return ok(c, "시련을 통과한 걸로 했어요 (테스트용)");
                 })));
         root.then(Commands.literal("potions").requires(s -> s.hasPermission(2)).executes(c -> {
             var p = c.getSource().getPlayerOrException();

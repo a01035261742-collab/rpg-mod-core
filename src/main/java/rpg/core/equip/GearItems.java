@@ -114,6 +114,7 @@ public final class GearItems {
             if (power < 0.1f || level.isClientSide) return;
             var a = new rpg.core.item.RpgArrow(level, p);
             a.shootFromRotation(p, p.getXRot(), p.getYRot(), 0, 1.5f + power * 1.5f, 0.5f);   // 중력 없음: 덜 당겨도 똑바로
+            rpg.core.skill.JobSkills.tuneArrow(p, a);   // 바람 읽기
             if (power >= 1.0f) a.setCritArrow(true);
             a.getPersistentData().putFloat("rpgPower", power);
             level.addFreshEntity(a);

@@ -28,6 +28,8 @@ public final class ClientData {
     public static final java.util.List<Buff> BUFFS = new java.util.ArrayList<>();
     public static boolean charging;
     public static int chargeTicks;
+    public static int branch, pendingBranch;
+    public static boolean trialCleared;
 
     public static void read(FriendlyByteBuf b) {
         b.readerIndex(0);
@@ -56,6 +58,7 @@ public final class ClientData {
         for (int i = 0; i < nb; i++) BUFFS.add(new Buff(b.readUtf(), b.readVarInt()));
         charging = b.readBoolean();
         chargeTicks = b.readVarInt();
+        branch = b.readVarInt(); pendingBranch = b.readVarInt(); trialCleared = b.readBoolean();
         receivedAt = System.currentTimeMillis();
         ready = true;
     }
@@ -67,10 +70,11 @@ public final class ClientData {
     }
 
     public static int jobTier() {
-        return job == 0 ? 0 : 1;
+        return job == 0 ? 0 : branch > 0 ? 2 : 1;
     }
 
     public static String jobName() {
+        if (branch > 0) return rpg.core.job.Jobs.branchName(job, branch);
         return switch (job) {
             case 1 -> "전사";
             case 2 -> "궁수";

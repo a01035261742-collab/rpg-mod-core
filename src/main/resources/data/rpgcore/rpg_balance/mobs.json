@@ -1,5 +1,5 @@
 {
- "_설명": "몹 표. levels = 레벨별 수치(없으면 바로 아래 레벨). skills = 예고 후 공격 패턴 (type slam 내 주변 원 / leap 대상 자리로 점프 / dash 돌진 / shot 직선 사격 / zone 대상 자리 장판 / cone 앞 부채꼴, range 쓰는 거리, cd 쿨(초), delay 예고 시간(초), pct 공격력%, r 반경, len 길이, w 폭, angle 부채꼴 각도, hits 타수, effect slow 둔화). passive = 먼저 안 때림. attacks = 근접 공격 (EF 방식 판정, GeckoLib 몹만): anim 애니 이름, start~end 판정 틱, length 전체 틱, range 몸 끝에서 칸, angle 부채꼴 각도(없으면 직사각형), width 직사각형 폭, knock 넉백, lunge 타격 순간 앞으로 내딛기. 여러 개면 번갈아 씀 stunArmor = 경직 방어 (충격에서 뺌, 큰 몹일수록 높게). _stun = 경직 공통 (충격-방어가 shortMin 이상 짧은 경직 shortTicks, longMin 이상 긴 경직 longTicks+밀림, chainWindow 틱 안에 chain 번 넘게 경직되면 immuneTicks 면역, 엘리트는 eliteArmor 추가)",
+ "_설명": "몹 표. levels = 레벨별 수치(없으면 바로 아래 레벨). skills = 예고 후 공격 패턴 (type slam 내 주변 원 / leap 대상 자리로 점프 / dash 돌진 / shot 직선 사격 / zone 대상 자리 장판 / cone 앞 부채꼴, range 쓰는 거리, cd 쿨(초), delay 예고 시간(초), pct 공격력%, r 반경, len 길이, w 폭, angle 부채꼴 각도, hits 타수, effect slow 둔화, count 장판 개수(zone), hpBelow HP 이 % 아래에서만 씀). passive = 먼저 안 때림. attacks = 근접 공격 (EF 방식 판정, GeckoLib 몹만): anim 애니 이름, start~end 판정 틱, length 전체 틱, range 몸 끝에서 칸, angle 부채꼴 각도(없으면 직사각형), width 직사각형 폭, knock 넉백, lunge 타격 순간 앞으로 내딛기. 여러 개면 번갈아 씀 stunArmor = 경직 방어 (충격에서 뺌, 큰 몹일수록 높게). _stun = 경직 공통 (충격-방어가 shortMin 이상 짧은 경직 shortTicks, longMin 이상 긴 경직 longTicks+밀림, chainWindow 틱 안에 chain 번 넘게 경직되면 immuneTicks 면역, 엘리트는 eliteArmor 추가)",
  "_elite": {
   "chance": 5,
   "hp": 5,
@@ -1538,6 +1538,59 @@
     "atk": 67.6,
     "exp": 720,
     "gold": 127
+   }
+  }
+ },
+ "trial_golem": {
+  "entity": "minecraft:iron_golem",
+  "name": "시련의 허수아비",
+  "area": "교관의 시련 (2차 전직)",
+  "stunArmor": 1.0,
+  "skills": [
+   {
+    "type": "slam",
+    "range": 4,
+    "cd": 8,
+    "delay": 1.2,
+    "pct": 180,
+    "r": 4
+   },
+   {
+    "type": "dash",
+    "range": 10,
+    "cd": 10,
+    "delay": 1.0,
+    "pct": 150,
+    "len": 10,
+    "w": 2
+   },
+   {
+    "type": "cone",
+    "range": 5,
+    "cd": 7,
+    "delay": 1.0,
+    "pct": 160,
+    "r": 5,
+    "angle": 100
+   },
+   {
+    "type": "zone",
+    "range": 12,
+    "cd": 15,
+    "delay": 1.5,
+    "pct": 120,
+    "r": 3,
+    "count": 3,
+    "hpBelow": 50,
+    "effect": "slow"
+   }
+  ],
+  "levels": {
+   "30": {
+    "hp": 8400,
+    "atk": 55.0,
+    "exp": 0,
+    "gold": 0
    }
   }
  }

@@ -330,30 +330,35 @@ public final class Net {
         }
     }
 
-    public static void openJob(ServerPlayer p, int family, int state) {
-        CH.send(PacketDistributor.PLAYER.with(() -> p), new OpenJob(family, state));
+    public static void openJob(ServerPlayer p, int family, int state, int pending) {
+        CH.send(PacketDistributor.PLAYER.with(() -> p), new OpenJob(family, state, pending));
     }
 
-    // ───────── 서버 → 클라: 전직 창 (state 0 가능 1 레벨 부족 2 이미 이 직업 3 다른 직업) ─────────
-    public record OpenJob(int family, int state) {
-        OpenJob(FriendlyByteBuf b) { this(b.readVarInt(), b.readVarInt()); }
-        void encode(FriendlyByteBuf b) { b.writeVarInt(family); b.writeVarInt(state); }
+    // ───────── 서버 → 클라: 전직 창 (state 는 Jobs.state, pending = 고른 갈래) ─────────
+    public record OpenJob(int family, int state, int pending) {
+        OpenJob(FriendlyByteBuf b) { this(b.readVarInt(), b.readVarInt(), b.readVarInt()); }
+        void encode(FriendlyByteBuf b) { b.writeVarInt(family); b.writeVarInt(state); b.writeVarInt(pending); }
         void handle(Supplier<NetworkEvent.Context> ctx) {
-            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> rpg.core.client.JobScreen.open(family, state));
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> rpg.core.client.JobScreen.open(family, state, pending));
             ctx.get().setPacketHandled(true);
         }
     }
 
     // ───────── 클라 → 서버: 전직하기 ─────────
-    public record JobAdvance(int family) {
-        JobAdvance(FriendlyByteBuf b) { this(b.readVarInt()); }
-        void encode(FriendlyByteBuf b) { b.writeVarInt(family); }
+    /** action: 0 1차 전직 · 1 갈래 고르기(arg) · 2 갈래 포기 · 3 시련 시작 · 4 2차 전직 완료 */
+    public record JobAdvance(int family, int action, int arg) {
+        JobAdvance(FriendlyByteBuf b) { this(b.readVarInt(), b.readVarInt(), b.readVarInt()); }
+        void encode(FriendlyByteBuf b) { b.writeVarInt(family); b.writeVarInt(action); b.writeVarInt(arg); }
         void handle(Supplier<NetworkEvent.Context> ctx) {
             ServerPlayer p = ctx.get().getSender();
             if (p != null) {
-                String err = rpg.core.job.Jobs.advance(p, family);
+                String err = rpg.core.job.Jobs.action(p, family, action, arg);
                 if (err != null) p.sendSystemMessage(net.minecraft.network.chat.Component.literal("[전직] " + err)
                         .withStyle(net.minecraft.ChatFormatting.RED));
+                else if (action == 1 || action == 2) {   // 창 새로고침
+                    var d = rpg.core.data.RpgData.get(p);
+                    openJob(p, family, rpg.core.job.Jobs.state(d, family), d.pendingBranch);
+                }
             }
             ctx.get().setPacketHandled(true);
         }

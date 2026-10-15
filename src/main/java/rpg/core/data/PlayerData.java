@@ -21,7 +21,12 @@ public class PlayerData {
     public long exp;
     public final int[] stats = new int[N];
     public int statPoints;
-    public int job;          // 0 초보자 (전직은 6단계에서)
+    public int job;          // 0 초보자, 1 전사 2 궁수 3 마법사 4 도적
+    /** 2차 전직 갈래 (0 = 아직, 1·2 = 계열 안 갈래) */
+    public int branch;
+    /** 고른 갈래 (시련 중, 0 = 안 고름) · 교관의 시련 통과했나 */
+    public int pendingBranch;
+    public boolean trialCleared;
     public long gold;
     public double hp, mp;
 
@@ -57,6 +62,11 @@ public class PlayerData {
 
     public long sprintEnd;
     public double sprintPct;
+    /** 보호막 (넘치는 치유): 남은 양, 끝나는 틱 */
+    public double shield;
+    public long shieldEnd;
+    /** 광폭화 연장된 시간 (초, 연속 분노 최대치 계산용) */
+    public double berserkExt;
 
     // 다운·부활 (저장 안 함)
     public long downEnd;              // 0 = 다운 아님
@@ -86,12 +96,12 @@ public class PlayerData {
     public boolean isNew() { return level <= 0; }
 
     public int jobTier() {
-        return job == 0 ? 0 : 1;   // 전직 단계는 6단계에서 확장
+        return job == 0 ? 0 : branch > 0 ? 2 : 1;
     }
 
     /** 처음 시작 */
     public void init() {
-        level = 1; exp = 0; job = 0; gold = 0; statPoints = 0; skillPoints = 0; passivePoints = 0;
+        level = 1; exp = 0; job = 0; branch = 0; pendingBranch = 0; trialCleared = false; gold = 0; statPoints = 0; skillPoints = 0; passivePoints = 0;
         for (int i = 0; i < N; i++) stats[i] = start(i);
         skills.clear(); passives.clear(); cdEnd.clear(); cdLen.clear();
         questActive.clear(); questDone.clear();
@@ -112,8 +122,16 @@ public class PlayerData {
             if (n == null || n.stat().isEmpty()) continue;
             bonus.merge(n.stat(), n.perRank() * e.getValue(), Double::sum);
         }
-        double mh = (Balance.hpBase + Balance.hpPerLevel * level + Balance.hpPerVit * total(VIT) + eq("hp")) * (1 + bonus("hpPct") / 100.0);
-        double mm = Balance.mpBase + Balance.mpPerLevel * level + Balance.mpPerInt * total(INT) + eq("mp");
+        // 스킬 창 패시브 (배운 레벨만큼 항상 켜짐)
+        for (var e : skills.entrySet()) {
+            Defs.SkillDef sd = Defs.SKILLS.get(e.getKey());
+            if (sd == null || !sd.passive() || e.getValue() <= 0 || !rpg.core.skill.Skills.available(this, sd)) continue;
+            if (!sd.stat().isEmpty()) bonus.merge(sd.stat(), sd.value(e.getValue()), Double::sum);
+            if (!sd.stat2().isEmpty()) bonus.merge(sd.stat2(), sd.value2(e.getValue()), Double::sum);
+        }
+        double vitHp = Balance.hpPerVit * total(VIT) * (1 + bonus("vitHpPct") / 100.0);   // 단단한 피부
+        double mh = (Balance.hpBase + Balance.hpPerLevel * level + vitHp + eq("hp")) * (1 + bonus("hpPct") / 100.0);
+        double mm = (Balance.mpBase + Balance.mpPerLevel * level + Balance.mpPerInt * total(INT) + eq("mp")) * (1 + bonus("mpPct") / 100.0);
         boolean changed = mh != maxHp || mm != maxMp;
         maxHp = Math.max(1, mh); maxMp = Math.max(0, mm);
         if (hp > maxHp) { hp = maxHp; changed = true; }
@@ -134,11 +152,11 @@ public class PlayerData {
     }
 
     // ── 상세 능력치 (공식은 balance 파일) ──
-    public double crit() { return Balance.critBase + Balance.critPerDex * total(DEX) + bonus("critChance"); }
+    public double crit() { return Balance.critBase + Balance.critPerDex * total(DEX) + bonus("critChance") + buffV("focus", clock); }
     public double critDamage() { return Balance.critDamage + bonus("critDmg") / 100.0; }
     public double healBonus() { return Balance.healPerInt * total(INT); }
-    public double dropBonus() { return Balance.dropPerLuk * total(LUK); }
-    public double goldBonus() { return Balance.goldPerLuk * total(LUK); }
+    public double dropBonus() { return Balance.dropPerLuk * total(LUK) + bonus("dropPct"); }
+    public double goldBonus() { return Balance.goldPerLuk * total(LUK) + bonus("goldPct"); }
     /** Epic Fight 최대 스태미나에 더해지는 양 (스태미나 스탯 + 패시브) */
     public double staminaBonus() { return Balance.staminaPerPoint * total(STA) + bonus("stamina"); }
 
@@ -150,6 +168,7 @@ public class PlayerData {
         CompoundTag t = new CompoundTag();
         t.putInt("level", level); t.putLong("exp", exp); t.putIntArray("stats", stats.clone());
         t.putInt("sp", statPoints); t.putInt("job", job); t.putLong("gold", gold);
+        t.putInt("branch", branch); t.putInt("pendingBranch", pendingBranch); t.putBoolean("trialCleared", trialCleared);
         t.putDouble("hp", hp); t.putDouble("mp", mp);
         t.putInt("skp", skillPoints); t.putInt("pp", passivePoints);
         CompoundTag sk = new CompoundTag();
@@ -175,6 +194,7 @@ public class PlayerData {
         int[] s = t.getIntArray("stats");
         for (int i = 0; i < N; i++) stats[i] = i < s.length ? s[i] : start(i);
         statPoints = t.getInt("sp"); job = t.getInt("job"); gold = t.getLong("gold");
+        branch = t.getInt("branch"); pendingBranch = t.getInt("pendingBranch"); trialCleared = t.getBoolean("trialCleared");
         hp = t.getDouble("hp"); mp = t.getDouble("mp");
         skillPoints = t.getInt("skp"); passivePoints = t.getInt("pp");
         skills.clear();
@@ -233,6 +253,7 @@ public class PlayerData {
         java.util.List<String> names = new java.util.ArrayList<>();
         java.util.List<Integer> lefts = new java.util.ArrayList<>();
         if (now < sprintEnd) { names.add("질주"); lefts.add((int) (sprintEnd - now)); }
+        if (now < shieldEnd && shield > 0) { names.add("보호막 " + Math.round(shield)); lefts.add((int) (shieldEnd - now)); }
         buffEnd.forEach((id, end) -> {
             if (now < end) {
                 var def = Defs.SKILLS.get(id);
@@ -244,5 +265,6 @@ public class PlayerData {
         for (int i = 0; i < names.size(); i++) { b.writeUtf(names.get(i)); b.writeVarInt(lefts.get(i)); }
         b.writeBoolean(chargeSkill != null);
         b.writeVarInt(chargeSkill != null ? (int) (now - chargeStart) : 0);
+        b.writeVarInt(branch); b.writeVarInt(pendingBranch); b.writeBoolean(trialCleared);
     }
 }

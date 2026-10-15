@@ -22,11 +22,11 @@ public final class Skills {
 
     private static final UUID SPEED_ID = UUID.fromString("6f1f0d2e-7a51-4c1e-9b0a-52d0c1a1e001");
 
-    /** 이 플레이어가 지금 쓸 수 있는 스킬인가 (초보자 스킬은 2차 전직 전까지) */
+    /** 이 플레이어가 지금 쓸 수 있는 스킬인가 (초보자 스킬은 계속, 2차는 고른 갈래만) */
     public static boolean available(PlayerData d, Defs.SkillDef s) {
         if (s.job() != 0 && s.job() != d.job) return false;
-        if (s.tier() == 0) return d.jobTier() < 2;
-        return s.tier() <= d.jobTier();
+        if (s.tier() > d.jobTier()) return false;
+        return s.branch() == 0 || s.branch() == d.branch;
     }
 
     // ───────── 스킬 배우기 ─────────
@@ -38,6 +38,7 @@ public final class Skills {
         if (lv >= s.maxLevel() || d.skillPoints <= 0) return;
         d.skillPoints--;
         d.skills.put(id, lv + 1);
+        if (s.passive()) d.recalc();
         RpgData.sync(p);
     }
 
@@ -47,7 +48,7 @@ public final class Skills {
         if (slot < 0 || slot >= PlayerData.SLOTS) return;
         if (id.isEmpty()) { d.slots[slot] = null; RpgData.sync(p); return; }
         Defs.SkillDef s = Defs.SKILLS.get(id);
-        if (s == null || !available(d, s) || d.skills.getOrDefault(id, 0) <= 0) return;
+        if (s == null || s.passive() || !available(d, s) || d.skills.getOrDefault(id, 0) <= 0) return;
         if (id.equals(d.slots[slot])) { d.slots[slot] = null; RpgData.sync(p); return; }
         for (int i = 0; i < PlayerData.SLOTS; i++) if (id.equals(d.slots[i])) d.slots[i] = null;
         d.slots[slot] = id;
@@ -80,7 +81,7 @@ public final class Skills {
         if (id == null) return;
         Defs.SkillDef s = Defs.SKILLS.get(id);
         int lv = d.skills.getOrDefault(id, 0);
-        if (s == null || lv <= 0 || !available(d, s)) return;
+        if (s == null || lv <= 0 || s.passive() || !available(d, s)) return;
         long now = p.level().getGameTime();
         if (now < d.cdEnd.getOrDefault(id, 0L)) return;
         if (d.mp < s.mp(lv)) {
@@ -105,7 +106,8 @@ public final class Skills {
 
     private static void spend(PlayerData d, Defs.SkillDef s, int lv, long now) {
         d.mp -= s.mp(lv);
-        int cd = (int) Math.round(s.cooldown() * 20);
+        // 빠른 영창: 쿨타임 감소
+        int cd = (int) Math.round(s.cooldown(lv) * 20 * Math.max(0.1, 1 - d.bonus("cdPct") / 100.0));
         d.cdEnd.put(s.id(), now + cd);
         d.cdLen.put(s.id(), cd);
     }
@@ -122,6 +124,7 @@ public final class Skills {
         int lv = d.skills.getOrDefault(id, 0);
         if (s == null || lv <= 0 || d.isDown() || !p.isAlive() || d.mp < s.mp(lv)) { RpgData.sync(p); return; }
         if ("power_strike".equals(id)) JobSkills.releaseCharge(p, d, s, lv, held);
+        else if ("charged_shot".equals(id)) JobSkills.chargedShot(p, d, s, lv, held);
         spend(d, s, lv, now);
         RpgData.sync(p);
     }
@@ -141,7 +144,7 @@ public final class Skills {
             return false;
         }
         double heal = d.maxHp * s.value(lv) / 100.0 * (1 + d.healBonus() / 100.0) * (1 + d.bonus("healPct") / 100.0);
-        d.hp = Math.min(d.maxHp, d.hp + heal);
+        JobSkills.heal(p, d, p, d, heal);
         ServerLevel lv2 = p.serverLevel();
         lv2.sendParticles(ParticleTypes.HEART, p.getX(), p.getY() + 1.2, p.getZ(), 6, 0.4, 0.4, 0.4, 0);
         lv2.playSound(null, p.blockPosition(), SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS, 0.4f, 1.8f);
@@ -164,6 +167,10 @@ public final class Skills {
         int cd = (int) Math.round(Balance.dodgeCooldown * 20 * Math.max(0.1, 1 - d.bonus("dodgeCd") / 100.0));
         d.dodgeEnd = now + cd;
         d.dodgeLen = cd;
+        if (d.bonus("dodgeSpeed") > 0) {   // 회피 본능: 구른 뒤 2초 이동속도↑
+            d.buffEnd.put("evasion_instinct", now + 40);
+            d.buffVal.put("evasion_instinct", d.bonus("dodgeSpeed"));
+        }
         p.serverLevel().sendParticles(ParticleTypes.POOF, p.getX(), p.getY() + 0.3, p.getZ(), 6, 0.2, 0.1, 0.2, 0.02);
         p.serverLevel().playSound(null, p.blockPosition(), SoundEvents.PLAYER_ATTACK_NODAMAGE, SoundSource.PLAYERS, 0.7f, 1.4f);
         RpgData.sync(p);
@@ -181,6 +188,8 @@ public final class Skills {
         }
         // 은신: 끝나면 투명 해제
         if (!d.buff("stealth", now) && d.buffEnd.containsKey("stealth")) JobSkills.breakStealth(p, d);
+        if (!d.buff("shadow_step", now) && d.buffEnd.containsKey("shadow_step")) JobSkills.breakShadow(p, d);
+        if (d.shield > 0 && now >= d.shieldEnd) d.shield = 0;
         AttributeInstance as = p.getAttribute(Attributes.ATTACK_SPEED);
         if (as != null) {
             double wantA = 0;   // (헤이스트는 이제 점프력, 예전 공격 속도 보정 제거)
@@ -191,6 +200,7 @@ public final class Skills {
             }
         }
         double pct = d.bonus("speedPct") + (now < d.sprintEnd ? d.sprintPct : 0) + d.buffV("haste", now)
+                + d.buffV("evasion_instinct", now) + d.buffV("battle_thrill", now)
                 - (d.chargeSkill != null ? 50 : 0);
         AttributeInstance inst = p.getAttribute(Attributes.MOVEMENT_SPEED);
         if (inst == null) return;

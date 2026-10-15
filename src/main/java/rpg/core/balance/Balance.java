@@ -33,7 +33,7 @@ public final class Balance {
     public static double critBase = 5.0, critPerDex = 0.1, healPerInt = 0.5, dropPerLuk = 0.2, goldPerLuk = 0.3;
     public static double expBase = 15, expPower = 2.0, expLinear = 30;
     public static int skillPointsPerLevel = 2, passivePointsPerLevel = 1;
-    public static int jobLevel1 = 10, jobRewardPotions = 10;
+    public static int jobLevel1 = 10, jobRewardPotions = 10, jobLevel2 = 30, jobReward2Potions = 20;
     public static double redPotionHp = 60, bluePotionMp = 40, potionCooldown = 1.0, rangedRange = 20;
     public static int partyMax = 6;
     public static double partyRange = 40, partyBonusPerMember = 10, deathExpLossPct = 30;
@@ -60,7 +60,7 @@ public final class Balance {
     public record MobAttack(String anim, int start, int end, int length, double range, double width, double angle, double knock, double lunge) {}
 
     public record MobSkill(String type, double range, double cd, double delay, double pct, double r, double len,
-                           double w, double angle, int hits, String effect) {}
+                           double w, double angle, int hits, String effect, double hpBelow, int count) {}
 
     /** 몹 모양·행동 옵션: head = 머리에 씌울 아이템, baby = 아기, passive = 먼저 안 때림, chase = 다가오게 만듦 */
     public record MobLook(String head, boolean baby, boolean passive, boolean chase) {}
@@ -137,6 +137,7 @@ public final class Balance {
             dodgeCooldown = d(o, "dodgeCooldown", dodgeCooldown); dodgePower = d(o, "dodgePower", dodgePower);
             dodgeIframes = i(o, "dodgeIframes", dodgeIframes);
             jobLevel1 = i(o, "jobLevel1", jobLevel1); jobRewardPotions = i(o, "jobRewardPotions", jobRewardPotions);
+            jobLevel2 = i(o, "jobLevel2", jobLevel2); jobReward2Potions = i(o, "jobReward2Potions", jobReward2Potions);
             redPotionHp = d(o, "redPotionHp", redPotionHp); bluePotionMp = d(o, "bluePotionMp", bluePotionMp);
             potionCooldown = d(o, "potionCooldown", potionCooldown); rangedRange = d(o, "rangedRange", rangedRange);
             partyMax = i(o, "partyMax", partyMax); partyRange = d(o, "partyRange", partyRange);
@@ -200,7 +201,8 @@ public final class Balance {
                     JsonObject o = sk.getAsJsonObject();
                     skills.add(new MobSkill(o.has("type") ? o.get("type").getAsString() : "slam", d(o, "range", 4), d(o, "cd", 6),
                             d(o, "delay", 1), d(o, "pct", 100), d(o, "r", 3), d(o, "len", 8), d(o, "w", 1.5), d(o, "angle", 90),
-                            (int) d(o, "hits", 1), o.has("effect") ? o.get("effect").getAsString() : ""));
+                            (int) d(o, "hits", 1), o.has("effect") ? o.get("effect").getAsString() : "",
+                            d(o, "hpBelow", 0), (int) d(o, "count", 1)));
                 }
                 java.util.List<MobAttack> attacks = new java.util.ArrayList<>();
                 if (m.has("attacks")) for (var at : m.getAsJsonArray("attacks")) {

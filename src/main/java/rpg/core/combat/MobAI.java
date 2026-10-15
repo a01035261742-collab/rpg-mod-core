@@ -102,6 +102,7 @@ public final class MobAI {
         if (def == null) return;
         long now = mob.level().getGameTime();
         if (def.look().baby() && mob instanceof AgeableMob am && mob.tickCount % 200 == 0) am.setAge(-24000);
+        applySlow(mob, m, now);
 
         if (m.casting >= 0) {
             if (m.casting >= def.skills().size()) { m.casting = -1; return; }
@@ -135,6 +136,11 @@ public final class MobAI {
         if (mob.tickCount % 5 != 0) return;
 
         Player t = mob.getTarget() instanceof Player p && valid(p) ? p : null;
+        Player taunter = taunter(mob, m, now);
+        if (taunter != null) {
+            t = taunter;
+            if (mob.getTarget() != taunter) mob.setTarget(taunter);
+        }
         if (t == null && (def.look().chase() || def.look().passive())) t = nearest(mob, 16);
         if (t == null) return;
         if (def.look().chase() && mob.tickCount % 10 == 0) mob.getNavigation().moveTo(t, 1.2);
@@ -146,6 +152,7 @@ public final class MobAI {
         for (int i = 0; i < def.skills().size() && i < m.skillReady.length; i++) {
             Balance.MobSkill sk = def.skills().get(i);
             if (now < m.skillReady[i] || dist > sk.range() || !mob.hasLineOfSight(t)) continue;
+            if (sk.hpBelow() > 0 && m.hp > m.maxHp * sk.hpBelow() / 100.0) continue;   // HP 몇 % 아래에서만 쓰는 패턴
             start(mob, m, sk, i, t, now);
             return;
         }
@@ -174,6 +181,37 @@ public final class MobAI {
             double l = Math.max(0.01, Math.sqrt(dx * dx + dz * dz));
             mob.setDeltaMovement(mob.getDeltaMovement().add(dx / l * 0.35, 0.05, dz / l * 0.35));
         }
+    }
+
+    private static final java.util.UUID SLOW_ID = java.util.UUID.fromString("6f1f0d2e-7a51-4c1e-9b0a-52d0c1a1e010");
+
+    /** 덫·독안개 둔화: 이동속도 속성에 -slowPct% (100 = 속박) */
+    private static void applySlow(Mob mob, MobData m, long now) {
+        var inst = mob.getAttribute(Attributes.MOVEMENT_SPEED);
+        if (inst == null) return;
+        double want = now < m.slowUntil ? -Math.min(100, m.slowPct) / 100.0 : 0;
+        var cur = inst.getModifier(SLOW_ID);
+        if (cur != null && Math.abs(cur.getAmount() - want) < 1e-6) return;
+        if (cur != null) inst.removeModifier(SLOW_ID);
+        if (want != 0) inst.addTransientModifier(new net.minecraft.world.entity.ai.attributes.AttributeModifier(SLOW_ID, "rpg slow", want,
+                net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.MULTIPLY_TOTAL));
+        if (want <= -1) mob.getNavigation().stop();
+    }
+
+    /** 도발한 플레이어 (끝났거나 없으면 null) */
+    public static Player taunter(Mob mob, MobData m, long now) {
+        if (m.tauntBy == null) return null;
+        if (now >= m.tauntUntil) { m.tauntBy = null; return null; }
+        Player p = mob.level().getPlayerByUUID(m.tauntBy);
+        if (p == null || !p.isAlive() || p.isSpectator() || p.distanceToSqr(mob) > 32 * 32) { m.tauntBy = null; return null; }
+        return p;
+    }
+
+    /** 도발: 이 몹이 duration 틱 동안 p 만 노림 */
+    public static void taunt(Mob mob, MobData m, Player p, int ticks) {
+        m.tauntBy = p.getUUID();
+        m.tauntUntil = mob.level().getGameTime() + ticks;
+        mob.setTarget(p);
     }
 
     /** 몸 바깥끼리 거리 */
@@ -215,6 +253,16 @@ public final class MobAI {
             default -> { m.castPos = mob.position(); shape = CIRCLE; a = sk.r(); b = 0; }   // slam
         }
         Net.telegraph((ServerLevel) mob.level(), m.castPos, m.castDir, shape, a, b, delay);
+        m.castExtra = null;
+        if ("zone".equals(sk.type()) && sk.count() > 1) {   // 장판 여러 개: 대상 주변에 흩어서
+            m.castExtra = new Vec3[sk.count() - 1];
+            var rnd = mob.getRandom();
+            for (int i = 0; i < m.castExtra.length; i++) {
+                double ang = rnd.nextDouble() * Math.PI * 2, dd = sk.r() * (1.4 + rnd.nextDouble() * 0.8);
+                m.castExtra[i] = t.position().add(Math.cos(ang) * dd, 0, Math.sin(ang) * dd);
+                Net.telegraph((ServerLevel) mob.level(), m.castExtra[i], m.castDir, CIRCLE, sk.r(), 0, delay);
+            }
+        }
         mob.level().playSound(null, mob.blockPosition(), SoundEvents.NOTE_BLOCK_BASS.value(), SoundSource.HOSTILE, 0.8f, 0.6f);
     }
 
@@ -237,6 +285,12 @@ public final class MobAI {
                 l.sendParticles(ParticleTypes.SNEEZE, p0.x, p0.y + 0.3, p0.z, 20, sk.r() / 2, 0.2, sk.r() / 2, 0.02);
                 l.playSound(null, net.minecraft.core.BlockPos.containing(p0), SoundEvents.PUFFER_FISH_BLOW_UP, SoundSource.HOSTILE, 0.8f, 0.8f);
                 hitCircle(mob, p0, sk.r(), pct, sk.effect());
+                if (m.castExtra != null) for (Vec3 q : m.castExtra) {
+                    l.sendParticles(ParticleTypes.SPORE_BLOSSOM_AIR, q.x, q.y + 0.5, q.z, 40, sk.r() / 2, 0.3, sk.r() / 2, 0);
+                    l.sendParticles(ParticleTypes.SNEEZE, q.x, q.y + 0.3, q.z, 20, sk.r() / 2, 0.2, sk.r() / 2, 0.02);
+                    hitCircle(mob, q, sk.r(), pct, sk.effect());
+                }
+                m.castExtra = null;
             }
             case "dash" -> {
                 mob.setDeltaMovement(dir.x * Math.min(3.0, sk.len() / 3.0), 0.15, dir.z * Math.min(3.0, sk.len() / 3.0));
@@ -308,6 +362,10 @@ public final class MobAI {
 
     private static void hit(Mob mob, ServerPlayer p, double pct, String effect) {
         CombatEvents.mobSkillHit(mob, p, pct);
-        if ("slow".equals(effect)) p.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 60, 1));
+        if ("slow".equals(effect)) {   // 무게중심: 둔화 시간 줄어듦
+            double resist = Math.min(100, rpg.core.data.RpgData.get(p).bonus("kbResist"));
+            int ticks = (int) Math.round(60 * (1 - resist / 100.0));
+            if (ticks > 0) p.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, ticks, 1));
+        }
     }
 }

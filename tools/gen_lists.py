@@ -157,17 +157,23 @@ ROWS_S = []
 sk = load('skills')
 def g(x): return f'{x:g}'
 JOBN = {0: '초보자', 1: '전사', 2: '궁수', 3: '마법사', 4: '도적'}
+BRN = {(1, 1): '가디언', (1, 2): '버서커', (2, 1): '스나이퍼', (2, 2): '헌터', (3, 1): '아크메이지', (3, 2): '클레릭', (4, 1): '어쌔신', (4, 2): '트릭스터'}
 for k, v in sk.items():
     if k.startswith('_'): continue
     mx = v.get('maxLevel', 10)
     def val(lv, key): return v.get(key, 0) + v.get(key + 'PerLevel', 0) * (lv - 1)
     def desc(lv): return v.get('desc', '').replace('{v}', g(round(val(lv, 'value'), 1))).replace('{v2}', g(round(val(lv, 'value2'), 1))).replace('{d}', g(v.get('duration', 0)))
     mp1, mpx = round(v.get('mp', 0)), round(v.get('mp', 0) + v.get('mpPerLevel', 0) * (mx - 1))
-    kind = '차지' if v.get('type') == 'charge' else ('버프' if v.get('duration', 0) > 0 else '액티브')
-    ROWS_S.append({'job': JOBN.get(v.get('job', 0), '-'), 'branch': '-', 'tier': '초보자' if v.get('tier', 0) == 0 else f'{v.get("tier")}차',
-                   'name': v.get('name', k), 'id': k, 'kind': kind, 'max': mx, 'hits': str(v.get('hits', '-')), 'dmg': '-',
-                   'eff': f'Lv1: {desc(1)} → Lv{mx}: {desc(mx)}', 'cd': f'{g(v.get("cooldown", 0))}초' if v.get('cooldown') else '없음',
-                   'mp': f'{mp1} → {mpx}', 'status': '게임에 있음'})
+    t = v.get('type')
+    kind = '패시브' if t == 'passive' else '차지' if t == 'charge' else ('버프' if v.get('duration', 0) > 0 and not v.get('hits') else '액티브')
+    cd1 = v.get('cooldown', 0); cdx = cd1 + v.get('cooldownPerLevel', 0) * (mx - 1)
+    cd = '-' if t == 'passive' else (f'{g(round(cd1, 1))}초' + (f' → {g(round(cdx, 1))}초' if abs(cdx - cd1) > 1e-6 else '')) if cd1 else '없음'
+    ROWS_S.append({'job': JOBN.get(v.get('job', 0), '-'), 'branch': BRN.get((v.get('job', 0), v.get('branch', 0)), '-'),
+                   'tier': '초보자' if v.get('tier', 0) == 0 else f'{v.get("tier")}차',
+                   'name': v.get('name', k), 'id': k, 'kind': kind, 'max': mx, 'hits': str(v.get('hits', '-')),
+                   'dmg': f"{g(round(val(1, 'value'), 1))}% → {g(round(val(mx, 'value'), 1))}%" if v.get('hits') else '-',
+                   'eff': f'Lv1: {desc(1)} → Lv{mx}: {desc(mx)}', 'cd': cd,
+                   'mp': '-' if t == 'passive' else f'{mp1} → {mpx}', 'status': '게임에 있음'})
 try:
     for d in json.load(open('tools/skills_draft.json'))['skills']:
         ROWS_S.append({**d, 'id': ''})

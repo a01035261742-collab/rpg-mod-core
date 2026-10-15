@@ -34,6 +34,20 @@ public class MobData {
     public transient int stunCount;             // 창 안 경직 횟수
     public transient long stunImmuneUntil;      // 연속 경직 후 면역
     public transient boolean stunCancel;        // 경직이 공격을 끊어야 함 (근접 goal 이 처리)
+    public transient net.minecraft.world.phys.Vec3[] castExtra;   // 여러 장판 패턴의 추가 위치
+    // 도발 (저장 안 함): 이 플레이어만 노림
+    public transient java.util.UUID tauntBy;
+    public transient long tauntUntil;
+    // 둔화·속박 (덫·독안개): 이동속도 -slowPct% (100 = 못 움직임)
+    public transient double slowPct;
+    public transient long slowUntil;
+
+    /** 둔화 걸기 (지금 걸린 것보다 센 값·긴 시간 유지) */
+    public void slow(double pct, long now, long until) {
+        if (now >= slowUntil) slowPct = 0;
+        slowPct = Math.max(slowPct, pct);
+        slowUntil = Math.max(slowUntil, until);
+    }
 
     public boolean isRpg() { return level > 0; }
 

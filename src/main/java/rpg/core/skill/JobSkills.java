@@ -51,7 +51,7 @@ public final class JobSkills {
             case "double_shot" -> doubleShot(p, s, lv);
             case "retreat_shot" -> retreatShot(p, s, lv);
             case "magic_bolt" -> magicBolt(p, s, lv);
-            default -> false;
+            default -> BranchSkills.use(p, d, s, lv, now);   // 2차 전직 스킬
         };
     }
 
@@ -104,13 +104,30 @@ public final class JobSkills {
     }
 
     // ───────── 궁수 ─────────
-    private static Arrow arrow(ServerPlayer p, double pct, float yawOff) {
+    static rpg.core.item.RpgArrow arrow(ServerPlayer p, double pct, float yawOff) {
+        return arrow(p, pct, yawOff, 3.0f, null);
+    }
+
+    /** 스킬 화살 (setup 은 쏘기 전에 화살 설정: 관통·폭발 등) */
+    static rpg.core.item.RpgArrow arrow(ServerPlayer p, double pct, float yawOff, float speed,
+                                        java.util.function.Consumer<rpg.core.item.RpgArrow> setup) {
         ServerLevel l = p.serverLevel();
-        Arrow a = new rpg.core.item.RpgArrow(l, p);
-        a.shootFromRotation(p, p.getXRot(), p.getYRot() + yawOff, 0, 3.0f, 0.3f);
+        rpg.core.item.RpgArrow a = new rpg.core.item.RpgArrow(l, p);
+        a.shootFromRotation(p, p.getXRot(), p.getYRot() + yawOff, 0, speed, 0.3f);
         a.getPersistentData().putDouble("rpgSkillPct", pct);
+        tuneArrow(p, a);
+        if (setup != null) setup.accept(a);
         l.addFreshEntity(a);
         return a;
+    }
+
+    /** 바람 읽기: 화살 속도·사거리 (평타 활에도) */
+    public static void tuneArrow(net.minecraft.world.entity.player.Player p, rpg.core.item.RpgArrow a) {
+        if (!(p instanceof ServerPlayer sp)) return;
+        PlayerData d = rpg.core.data.RpgData.get(sp);
+        double spd = d.bonus("arrowSpeedPct");
+        if (spd > 0) a.setDeltaMovement(a.getDeltaMovement().scale(1 + spd / 100.0));
+        a.range = rpg.core.item.RpgArrow.MAX_DIST + d.bonus("arrowRange");
     }
 
     private static boolean doubleShot(ServerPlayer p, Defs.SkillDef s, int lv) {
@@ -152,7 +169,7 @@ public final class JobSkills {
     private record Later(ServerPlayer p, long at, Runnable r) {}
     private static final List<Later> LATER = new java.util.ArrayList<>();
 
-    private static void later(ServerPlayer p, int ticks, Runnable r) {
+    static void later(ServerPlayer p, int ticks, Runnable r) {
         LATER.add(new Later(p, p.level().getGameTime() + ticks, r));
     }
 
@@ -208,32 +225,6 @@ public final class JobSkills {
         return b.travelled >= BOLT_RANGE;
     }
 
-    private static boolean oldBoltUnused(ServerPlayer p, Defs.SkillDef s, int lv) {
-        ServerLevel l = p.serverLevel();
-        Vec3 eye = p.getEyePosition();
-        Vec3 end = eye.add(p.getLookAngle().scale(Balance.rangedRange));
-        var bh = l.clip(new ClipContext(eye, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, p));
-        if (bh.getType() != HitResult.Type.MISS) end = bh.getLocation();
-        AABB box = p.getBoundingBox().expandTowards(end.subtract(eye)).inflate(1.2);
-        EntityHitResult hit = ProjectileUtil.getEntityHitResult(l, p, eye, end, box,
-                e -> e instanceof Mob && e.isAlive() && !e.isSpectator());
-        Vec3 to = hit != null ? hit.getLocation() : end;
-        Vec3 step = to.subtract(eye);
-        int n = (int) Math.max(2, step.length() * 2.5);
-        for (int i = 1; i <= n; i++) {
-            Vec3 q = eye.add(step.scale(i / (double) n)).add(0, -0.15, 0);
-            l.sendParticles(ParticleTypes.ENCHANTED_HIT, q.x, q.y, q.z, 1, 0, 0, 0, 0);
-            l.sendParticles(ParticleTypes.WITCH, q.x, q.y, q.z, 1, 0, 0, 0, 0);
-        }
-        l.playSound(null, p.blockPosition(), SoundEvents.ILLUSIONER_CAST_SPELL, SoundSource.PLAYERS, 0.6f, 1.6f);
-        p.swing(net.minecraft.world.InteractionHand.MAIN_HAND, true);
-        if (hit != null && hit.getEntity() instanceof Mob t) {
-            CombatEvents.skillHit(p, t, s.value(lv));
-            l.sendParticles(ParticleTypes.WITCH, t.getX(), t.getY() + t.getBbHeight() * 0.6, t.getZ(), 10, 0.25, 0.25, 0.25, 0);
-        }
-        return true;
-    }
-
     // ───────── 도적 ─────────
     private static boolean stealth(ServerPlayer p, PlayerData d, Defs.SkillDef s, int lv, long now) {
         int dur = (int) Math.round(s.duration() * 20);
@@ -281,9 +272,23 @@ public final class JobSkills {
         p.hurtMarked = true;
     }
 
-    /** 은신 중이면 몹이 못 노림 */
+    /** 은신·그림자 발걸음 중이면 몹이 못 노림 */
     public static boolean hidden(LivingEntity e) {
         if (!(e instanceof ServerPlayer sp)) return false;
-        return rpg.core.data.RpgData.get(sp).buff("stealth", sp.level().getGameTime());
+        PlayerData d = rpg.core.data.RpgData.get(sp);
+        long now = sp.level().getGameTime();
+        return d.buff("stealth", now) || d.buff("shadow_step", now);
+    }
+
+    // ───────── 2차 전직 쪽으로 넘기기 ─────────
+    public static void chargedShot(ServerPlayer p, PlayerData d, Defs.SkillDef s, int lv, long held) { BranchSkills.chargedShot(p, d, s, lv, held); }
+    public static void heal(ServerPlayer caster, PlayerData cd, ServerPlayer target, PlayerData td, double amount) { BranchSkills.heal(caster, cd, target, td, amount); }
+    public static void onHit(ServerPlayer p, PlayerData d, long now) { BranchSkills.onHit(p, d, now); }
+    public static void onKill(ServerPlayer p, PlayerData d) { BranchSkills.onKill(p, d); }
+
+    /** 그림자 발걸음 끝내기 (시간 끝 / 공격) */
+    public static void breakShadow(ServerPlayer p, PlayerData d) {
+        d.buffEnd.remove("shadow_step");
+        if (!d.buff("stealth", p.level().getGameTime())) p.removeEffect(MobEffects.INVISIBILITY);
     }
 }

@@ -49,6 +49,9 @@ public final class CombatEvents {
     public static void noInfight(net.minecraftforge.event.entity.living.LivingChangeTargetEvent e) {
         if (!(e.getEntity() instanceof Mob m) || m.level().isClientSide || e.getNewTarget() == null) return;
         if (rpg.core.skill.JobSkills.hidden(e.getNewTarget())) { e.setCanceled(true); return; }
+        MobData md = Combat.mob(m);
+        if (md != null && md.tauntBy != null && m.level().getGameTime() < md.tauntUntil
+                && !md.tauntBy.equals(e.getNewTarget().getUUID())) { e.setCanceled(true); return; }   // 도발 중
         if (isRpg(m) && !(e.getNewTarget() instanceof net.minecraft.world.entity.player.Player)) e.setCanceled(true);
     }
 
@@ -116,27 +119,51 @@ public final class CombatEvents {
         if (direct != null && direct.getPersistentData().contains("rpgSkillPct")) e.getEntity().invulnerableTime = 0;
     }
 
-    // ── 출혈: 몹 id → (주인, 초당 피해, 끝나는 틱) ──
-    private record Bleed(ServerPlayer owner, double dmg, long end) {}
-    private static final Map<Integer, Bleed> BLEED = new java.util.HashMap<>();
+    // ── 지속 피해 (출혈·화상·독): "몹 id:종류" → (주인, 초당 피해, 끝나는 틱) ──
+    private record Dot(ServerPlayer owner, int mob, String kind, double dmg, long end) {}
+    private static final Map<String, Dot> DOTS = new java.util.HashMap<>();
+
+    /** 지속 피해 걸기 (같은 종류는 새로 덮어씀). kind: bleed 출혈 / burn 화상 / poison 독 */
+    public static void dot(ServerPlayer owner, Mob m, String kind, double perSecond, int ticks) {
+        if (perSecond <= 0 || ticks <= 0) return;
+        DOTS.put(m.getId() + ":" + kind, new Dot(owner, m.getId(), kind, perSecond, owner.level().getGameTime() + ticks));
+    }
 
     @SubscribeEvent
-    public static void bleedTick(net.minecraftforge.event.TickEvent.ServerTickEvent e) {
-        if (e.phase != net.minecraftforge.event.TickEvent.Phase.END || BLEED.isEmpty()) return;
-        var it = BLEED.entrySet().iterator();
+    public static void dotTick(net.minecraftforge.event.TickEvent.ServerTickEvent e) {
+        if (e.phase != net.minecraftforge.event.TickEvent.Phase.END || DOTS.isEmpty()) return;
+        var it = DOTS.entrySet().iterator();
+        java.util.List<Runnable> run = new java.util.ArrayList<>();
         while (it.hasNext()) {
-            var en = it.next();
-            Bleed b = en.getValue();
+            Dot b = it.next().getValue();
             if (!b.owner().isAlive()) { it.remove(); continue; }
-            Entity ent = b.owner().serverLevel().getEntity(en.getKey());
+            Entity ent = b.owner().serverLevel().getEntity(b.mob());
             long now = b.owner().level().getGameTime();
             if (!(ent instanceof Mob m) || !m.isAlive() || now > b.end()) { it.remove(); continue; }
-            if (now % 20 == 0) {
+            if (now % 20 == 0) run.add(() -> {
                 fixedHit(b.owner(), m, b.dmg());
-                b.owner().serverLevel().sendParticles(new net.minecraft.core.particles.DustParticleOptions(new org.joml.Vector3f(0.7f, 0f, 0f), 1.2f),
-                        m.getX(), m.getY() + m.getBbHeight() * 0.6, m.getZ(), 6, 0.2, 0.3, 0.2, 0);
-            }
+                var l = b.owner().serverLevel();
+                double y = m.getY() + m.getBbHeight() * 0.6;
+                switch (b.kind()) {
+                    case "burn" -> l.sendParticles(net.minecraft.core.particles.ParticleTypes.FLAME, m.getX(), y, m.getZ(), 8, 0.25, 0.35, 0.25, 0.02);
+                    case "poison" -> l.sendParticles(new net.minecraft.core.particles.DustParticleOptions(new org.joml.Vector3f(0.3f, 0.8f, 0.2f), 1.2f),
+                            m.getX(), y, m.getZ(), 6, 0.2, 0.3, 0.2, 0);
+                    default -> l.sendParticles(new net.minecraft.core.particles.DustParticleOptions(new org.joml.Vector3f(0.7f, 0f, 0f), 1.2f),
+                            m.getX(), y, m.getZ(), 6, 0.2, 0.3, 0.2, 0);
+                }
+            });
         }
+        run.forEach(Runnable::run);   // 피해로 몹이 죽으면서 DOTS 를 건드려도 안전하게 밖에서
+    }
+
+    /** 무게중심: 넉백 줄임 */
+    @SubscribeEvent
+    public static void knockback(net.minecraftforge.event.entity.living.LivingKnockBackEvent e) {
+        if (!(e.getEntity() instanceof ServerPlayer sp)) return;
+        double r = Math.min(100, RpgData.get(sp).bonus("kbResist"));
+        if (r <= 0) return;
+        if (r >= 100) e.setCanceled(true);
+        else e.setStrength((float) (e.getStrength() * (1 - r / 100.0)));
     }
 
     /** RPG 몹끼리 피해 없음 (스켈레톤 화살 오사 등) */
@@ -204,11 +231,18 @@ public final class CombatEvents {
             else dmg = e.getAmount() / 20.0 * d.maxHp;   // 환경 피해: 바닐라와 같은 비율
             long now = sp.level().getGameTime();
             dmg *= 1 - Math.min(90, d.buffV("iron_body", now)) / 100.0;           // 아이언 바디: 받는 피해 감소
+            dmg *= 1 - Math.min(90, d.buffV("iron_wall", now)) / 100.0;           // 철벽: 받는 피해 감소
+            dmg *= 1 + d.buffV2("berserk", now) / 100.0;                           // 광폭화: 받는 피해 증가
             double guard = d.buffV("magic_guard", now);                            // 매직 가드: 일부를 MP로
             if (guard > 0 && src != null) {
                 double toMp = Math.min(d.mp, dmg * Math.min(90, guard) / 100.0);
                 d.mp -= toMp;
                 dmg -= toMp;
+            }
+            if (d.shield > 0 && now < d.shieldEnd) {                               // 보호막 (넘치는 치유)
+                double absorb = Math.min(d.shield, dmg);
+                d.shield -= absorb;
+                dmg -= absorb;
             }
             d.hp = Math.max(0, d.hp - dmg);
             mirror(e, sp, d.hp, d.maxHp);
@@ -242,14 +276,19 @@ public final class CombatEvents {
                 if (ad.buff("stealth", now)) {
                     ratio *= 1 + ad.buffV("stealth", now) / 100.0;
                     double per = Combat.statAttack(ap, ad) * ad.buffV2("stealth", now) / 100.0;
-                    BLEED.put(target.getId(), new Bleed(ap, per, now + 100));
+                    dot(ap, mob, "bleed", per, 100);
                     rpg.core.skill.JobSkills.breakStealth(ap, ad);
                     ap.serverLevel().playSound(null, target.blockPosition(), net.minecraft.sounds.SoundEvents.PLAYER_ATTACK_CRIT,
                             net.minecraft.sounds.SoundSource.PLAYERS, 1f, 0.7f);
                 }
+                if (ad.buff("shadow_step", now)) rpg.core.skill.JobSkills.breakShadow(ap, ad);   // 공격하면 투명 풀림
+                if (ad.bonus("executePct") > 0 && m.hp <= m.maxHp * 0.3) ratio *= 1 + ad.bonus("executePct") / 100.0;   // 처형
                 Combat.Hit h = Combat.roll(ap, ad, ratio);
                 dmg = h.amount();
                 crit = h.crit();
+                if (crit && ad.bonus("backCritDmg") > 0 && behind(mob, ap))                                   // 급소: 뒤에서 치명타
+                    dmg = Math.round(dmg * (ad.critDamage() + ad.bonus("backCritDmg") / 100.0) / ad.critDamage());
+                rpg.core.skill.JobSkills.onHit(ap, ad, now);                                                  // 전투 흥분 등
                 // 경직 충격: 근접은 EF 모션 배율, 스킬은 배율, 화살은 당긴 정도 (출혈 등 고정 피해는 경직 없음)
                 double impact = Math.min(3.0, ratio * (crit ? 1.2 : 1.0));
                 MobAI.stun(mob, m, impact, ap);
@@ -267,6 +306,13 @@ public final class CombatEvents {
         mirror(e, mob, m.hp, m.maxHp);
         Mobs.sync(mob);
         if (src instanceof ServerPlayer) Net.damageText(mob, dmg, crit);
+    }
+
+    /** 공격자가 몹 등 뒤(몸이 보는 방향 반대쪽)에 있나 */
+    private static boolean behind(Mob mob, Entity a) {
+        net.minecraft.world.phys.Vec3 look = net.minecraft.world.phys.Vec3.directionFromRotation(0, mob.yBodyRot);
+        net.minecraft.world.phys.Vec3 to = new net.minecraft.world.phys.Vec3(a.getX() - mob.getX(), 0, a.getZ() - mob.getZ());
+        return to.lengthSqr() > 1e-4 && to.normalize().dot(look) < -0.2;
     }
 
     private static boolean isRpg(Mob m) {
@@ -298,6 +344,8 @@ public final class CombatEvents {
         if (!(e.getSource().getEntity() instanceof ServerPlayer killer)) return;
         MobData m = Combat.mob(mob);
         PlayerData d = RpgData.get(killer);
+        rpg.core.skill.JobSkills.onKill(killer, d);   // 연속 분노
+        if (rpg.core.job.Trials.isTrialMob(mob)) return;   // 시련 몹: 보상 없음 (통과는 Trials)
         rpg.core.loot.Drops.roll(mob, m, killer, d);   // 드롭은 막타 기준 (골드는 주머니로)
         // 경험치: 근처 파티원끼리 균등 분배 + 인원당 보너스
         var members = rpg.core.party.Parties.nearby(killer);

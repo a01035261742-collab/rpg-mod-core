@@ -30,6 +30,8 @@ public class QuestPlaces extends SavedData {
 
     public final Map<String, Place> points = new LinkedHashMap<>();
     public final Map<String, List<Place>> npcs = new LinkedHashMap<>();
+    /** 교관의 시련 시련장 (몹이 나오는 자리) */
+    public final List<Place> trials = new ArrayList<>();
 
     public static QuestPlaces get(MinecraftServer server) {
         return server.overworld().getDataStorage().computeIfAbsent(QuestPlaces::load, QuestPlaces::new, "rpgcore_quest_places");
@@ -46,6 +48,8 @@ public class QuestPlaces extends SavedData {
             for (int i = 0; i < l.size(); i++) ps.add(Place.load(l.getCompound(i)));
             d.npcs.put(k, ps);
         }
+        ListTag tr = tag.getList("trials", Tag.TAG_COMPOUND);
+        for (int i = 0; i < tr.size(); i++) d.trials.add(Place.load(tr.getCompound(i)));
         return d;
     }
 
@@ -61,6 +65,9 @@ public class QuestPlaces extends SavedData {
             np.put(k, l);
         });
         tag.put("npcs", np);
+        ListTag tr = new ListTag();
+        for (Place p : trials) tr.add(p.save());
+        tag.put("trials", tr);
         return tag;
     }
 }
