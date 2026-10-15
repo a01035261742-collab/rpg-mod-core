@@ -156,6 +156,22 @@ public final class GearItems {
         }
     }
 
+    /** 가죽 방어구 (궁수·마법사·도적): 직업·단계마다 정해진 색으로 칠해짐 (염색 안 됨) */
+    public static class DyedArmor extends Armor implements net.minecraft.world.item.DyeableLeatherItem {
+        private final int color;
+
+        public DyedArmor(Type type, Properties p, String id, int color) {
+            super(LEATHER, type, p, id);
+            this.color = color;
+        }
+
+        @Override public int getColor(ItemStack s) { return color; }
+        @Override public boolean hasCustomColor(ItemStack s) { return true; }
+        @Override public void setColor(ItemStack s, int c) {}
+        @Override public void clearColor(ItemStack s) {}
+        public int color() { return color; }
+    }
+
     /** 바닐라 텍스처(사슬·철)를 쓰는 방어력 0 재질 */
     public record Mat(String name, SoundEvent sound) implements ArmorMaterial {
         @Override public int getDurabilityForType(ArmorItem.Type t) { return 0; }
@@ -169,6 +185,7 @@ public final class GearItems {
     }
 
     public static final Mat CHAIN = new Mat("chainmail", SoundEvents.ARMOR_EQUIP_CHAIN);
+    public static final Mat LEATHER = new Mat("leather", SoundEvents.ARMOR_EQUIP_LEATHER);
     public static final Mat IRON = new Mat("iron", SoundEvents.ARMOR_EQUIP_IRON);
     public static final Mat GOLD = new Mat("gold", SoundEvents.ARMOR_EQUIP_GOLD);
     public static final Mat DIAMOND = new Mat("diamond", SoundEvents.ARMOR_EQUIP_DIAMOND);

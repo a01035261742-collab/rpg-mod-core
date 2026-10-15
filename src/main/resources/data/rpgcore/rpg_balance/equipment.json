@@ -887,6 +887,598 @@
     "def": 9,
     "vit": 5
    }
+  },
+  "warrior_hat_10": {
+   "slot": "hat",
+   "job": 1,
+   "level": 10,
+   "stats": {
+    "def": 10,
+    "str": 2
+   }
+  },
+  "warrior_top_10": {
+   "slot": "top",
+   "job": 1,
+   "level": 10,
+   "stats": {
+    "def": 16,
+    "str": 3
+   }
+  },
+  "warrior_bottom_10": {
+   "slot": "bottom",
+   "job": 1,
+   "level": 10,
+   "stats": {
+    "def": 13,
+    "str": 2
+   }
+  },
+  "warrior_shoes_10": {
+   "slot": "shoes",
+   "job": 1,
+   "level": 10,
+   "stats": {
+    "def": 8,
+    "str": 1
+   }
+  },
+  "warrior_hat_20": {
+   "slot": "hat",
+   "job": 1,
+   "level": 20,
+   "stats": {
+    "def": 17,
+    "str": 4
+   }
+  },
+  "warrior_top_20": {
+   "slot": "top",
+   "job": 1,
+   "level": 20,
+   "stats": {
+    "def": 25,
+    "str": 6
+   }
+  },
+  "warrior_bottom_20": {
+   "slot": "bottom",
+   "job": 1,
+   "level": 20,
+   "stats": {
+    "def": 21,
+    "str": 4
+   }
+  },
+  "warrior_shoes_20": {
+   "slot": "shoes",
+   "job": 1,
+   "level": 20,
+   "stats": {
+    "def": 13,
+    "str": 2
+   }
+  },
+  "warrior_hat_30": {
+   "slot": "hat",
+   "job": 1,
+   "level": 30,
+   "stats": {
+    "def": 23,
+    "str": 6
+   }
+  },
+  "warrior_top_30": {
+   "slot": "top",
+   "job": 1,
+   "level": 30,
+   "stats": {
+    "def": 34,
+    "str": 9
+   }
+  },
+  "warrior_bottom_30": {
+   "slot": "bottom",
+   "job": 1,
+   "level": 30,
+   "stats": {
+    "def": 29,
+    "str": 6
+   }
+  },
+  "warrior_shoes_30": {
+   "slot": "shoes",
+   "job": 1,
+   "level": 30,
+   "stats": {
+    "def": 18,
+    "str": 3
+   }
+  },
+  "warrior_hat_40": {
+   "slot": "hat",
+   "job": 1,
+   "level": 40,
+   "stats": {
+    "def": 30,
+    "str": 8
+   }
+  },
+  "warrior_top_40": {
+   "slot": "top",
+   "job": 1,
+   "level": 40,
+   "stats": {
+    "def": 43,
+    "str": 12
+   }
+  },
+  "warrior_bottom_40": {
+   "slot": "bottom",
+   "job": 1,
+   "level": 40,
+   "stats": {
+    "def": 36,
+    "str": 8
+   }
+  },
+  "warrior_shoes_40": {
+   "slot": "shoes",
+   "job": 1,
+   "level": 40,
+   "stats": {
+    "def": 23,
+    "str": 4
+   }
+  },
+  "archer_hat_10": {
+   "slot": "hat",
+   "job": 2,
+   "level": 10,
+   "stats": {
+    "def": 7,
+    "dex": 2
+   }
+  },
+  "archer_top_10": {
+   "slot": "top",
+   "job": 2,
+   "level": 10,
+   "stats": {
+    "def": 11,
+    "dex": 3
+   }
+  },
+  "archer_bottom_10": {
+   "slot": "bottom",
+   "job": 2,
+   "level": 10,
+   "stats": {
+    "def": 9,
+    "dex": 2
+   }
+  },
+  "archer_shoes_10": {
+   "slot": "shoes",
+   "job": 2,
+   "level": 10,
+   "stats": {
+    "def": 5,
+    "dex": 1
+   }
+  },
+  "archer_hat_20": {
+   "slot": "hat",
+   "job": 2,
+   "level": 20,
+   "stats": {
+    "def": 12,
+    "dex": 4
+   }
+  },
+  "archer_top_20": {
+   "slot": "top",
+   "job": 2,
+   "level": 20,
+   "stats": {
+    "def": 17,
+    "dex": 6
+   }
+  },
+  "archer_bottom_20": {
+   "slot": "bottom",
+   "job": 2,
+   "level": 20,
+   "stats": {
+    "def": 14,
+    "dex": 4
+   }
+  },
+  "archer_shoes_20": {
+   "slot": "shoes",
+   "job": 2,
+   "level": 20,
+   "stats": {
+    "def": 9,
+    "dex": 2
+   }
+  },
+  "archer_hat_30": {
+   "slot": "hat",
+   "job": 2,
+   "level": 30,
+   "stats": {
+    "def": 16,
+    "dex": 6
+   }
+  },
+  "archer_top_30": {
+   "slot": "top",
+   "job": 2,
+   "level": 30,
+   "stats": {
+    "def": 23,
+    "dex": 9
+   }
+  },
+  "archer_bottom_30": {
+   "slot": "bottom",
+   "job": 2,
+   "level": 30,
+   "stats": {
+    "def": 20,
+    "dex": 6
+   }
+  },
+  "archer_shoes_30": {
+   "slot": "shoes",
+   "job": 2,
+   "level": 30,
+   "stats": {
+    "def": 13,
+    "dex": 3
+   }
+  },
+  "archer_hat_40": {
+   "slot": "hat",
+   "job": 2,
+   "level": 40,
+   "stats": {
+    "def": 21,
+    "dex": 8
+   }
+  },
+  "archer_top_40": {
+   "slot": "top",
+   "job": 2,
+   "level": 40,
+   "stats": {
+    "def": 30,
+    "dex": 12
+   }
+  },
+  "archer_bottom_40": {
+   "slot": "bottom",
+   "job": 2,
+   "level": 40,
+   "stats": {
+    "def": 25,
+    "dex": 8
+   }
+  },
+  "archer_shoes_40": {
+   "slot": "shoes",
+   "job": 2,
+   "level": 40,
+   "stats": {
+    "def": 16,
+    "dex": 4
+   }
+  },
+  "mage_hat_10": {
+   "slot": "hat",
+   "job": 3,
+   "level": 10,
+   "stats": {
+    "def": 6,
+    "int": 2,
+    "mp": 10
+   }
+  },
+  "mage_top_10": {
+   "slot": "top",
+   "job": 3,
+   "level": 10,
+   "stats": {
+    "def": 8,
+    "int": 3,
+    "mp": 15
+   }
+  },
+  "mage_bottom_10": {
+   "slot": "bottom",
+   "job": 3,
+   "level": 10,
+   "stats": {
+    "def": 7,
+    "int": 2,
+    "mp": 10
+   }
+  },
+  "mage_shoes_10": {
+   "slot": "shoes",
+   "job": 3,
+   "level": 10,
+   "stats": {
+    "def": 4,
+    "int": 1,
+    "mp": 5
+   }
+  },
+  "mage_hat_20": {
+   "slot": "hat",
+   "job": 3,
+   "level": 20,
+   "stats": {
+    "def": 9,
+    "int": 4,
+    "mp": 20
+   }
+  },
+  "mage_top_20": {
+   "slot": "top",
+   "job": 3,
+   "level": 20,
+   "stats": {
+    "def": 13,
+    "int": 6,
+    "mp": 30
+   }
+  },
+  "mage_bottom_20": {
+   "slot": "bottom",
+   "job": 3,
+   "level": 20,
+   "stats": {
+    "def": 11,
+    "int": 4,
+    "mp": 20
+   }
+  },
+  "mage_shoes_20": {
+   "slot": "shoes",
+   "job": 3,
+   "level": 20,
+   "stats": {
+    "def": 7,
+    "int": 2,
+    "mp": 10
+   }
+  },
+  "mage_hat_30": {
+   "slot": "hat",
+   "job": 3,
+   "level": 30,
+   "stats": {
+    "def": 13,
+    "int": 6,
+    "mp": 30
+   }
+  },
+  "mage_top_30": {
+   "slot": "top",
+   "job": 3,
+   "level": 30,
+   "stats": {
+    "def": 18,
+    "int": 9,
+    "mp": 45
+   }
+  },
+  "mage_bottom_30": {
+   "slot": "bottom",
+   "job": 3,
+   "level": 30,
+   "stats": {
+    "def": 15,
+    "int": 6,
+    "mp": 30
+   }
+  },
+  "mage_shoes_30": {
+   "slot": "shoes",
+   "job": 3,
+   "level": 30,
+   "stats": {
+    "def": 10,
+    "int": 3,
+    "mp": 15
+   }
+  },
+  "mage_hat_40": {
+   "slot": "hat",
+   "job": 3,
+   "level": 40,
+   "stats": {
+    "def": 16,
+    "int": 8,
+    "mp": 40
+   }
+  },
+  "mage_top_40": {
+   "slot": "top",
+   "job": 3,
+   "level": 40,
+   "stats": {
+    "def": 23,
+    "int": 12,
+    "mp": 60
+   }
+  },
+  "mage_bottom_40": {
+   "slot": "bottom",
+   "job": 3,
+   "level": 40,
+   "stats": {
+    "def": 20,
+    "int": 8,
+    "mp": 40
+   }
+  },
+  "mage_shoes_40": {
+   "slot": "shoes",
+   "job": 3,
+   "level": 40,
+   "stats": {
+    "def": 13,
+    "int": 4,
+    "mp": 20
+   }
+  },
+  "thief_hat_10": {
+   "slot": "hat",
+   "job": 4,
+   "level": 10,
+   "stats": {
+    "def": 7,
+    "luk": 2
+   }
+  },
+  "thief_top_10": {
+   "slot": "top",
+   "job": 4,
+   "level": 10,
+   "stats": {
+    "def": 11,
+    "luk": 3
+   }
+  },
+  "thief_bottom_10": {
+   "slot": "bottom",
+   "job": 4,
+   "level": 10,
+   "stats": {
+    "def": 9,
+    "luk": 2
+   }
+  },
+  "thief_shoes_10": {
+   "slot": "shoes",
+   "job": 4,
+   "level": 10,
+   "stats": {
+    "def": 5,
+    "luk": 1
+   }
+  },
+  "thief_hat_20": {
+   "slot": "hat",
+   "job": 4,
+   "level": 20,
+   "stats": {
+    "def": 12,
+    "luk": 4
+   }
+  },
+  "thief_top_20": {
+   "slot": "top",
+   "job": 4,
+   "level": 20,
+   "stats": {
+    "def": 17,
+    "luk": 6
+   }
+  },
+  "thief_bottom_20": {
+   "slot": "bottom",
+   "job": 4,
+   "level": 20,
+   "stats": {
+    "def": 14,
+    "luk": 4
+   }
+  },
+  "thief_shoes_20": {
+   "slot": "shoes",
+   "job": 4,
+   "level": 20,
+   "stats": {
+    "def": 9,
+    "luk": 2
+   }
+  },
+  "thief_hat_30": {
+   "slot": "hat",
+   "job": 4,
+   "level": 30,
+   "stats": {
+    "def": 16,
+    "luk": 6
+   }
+  },
+  "thief_top_30": {
+   "slot": "top",
+   "job": 4,
+   "level": 30,
+   "stats": {
+    "def": 23,
+    "luk": 9
+   }
+  },
+  "thief_bottom_30": {
+   "slot": "bottom",
+   "job": 4,
+   "level": 30,
+   "stats": {
+    "def": 20,
+    "luk": 6
+   }
+  },
+  "thief_shoes_30": {
+   "slot": "shoes",
+   "job": 4,
+   "level": 30,
+   "stats": {
+    "def": 13,
+    "luk": 3
+   }
+  },
+  "thief_hat_40": {
+   "slot": "hat",
+   "job": 4,
+   "level": 40,
+   "stats": {
+    "def": 21,
+    "luk": 8
+   }
+  },
+  "thief_top_40": {
+   "slot": "top",
+   "job": 4,
+   "level": 40,
+   "stats": {
+    "def": 30,
+    "luk": 12
+   }
+  },
+  "thief_bottom_40": {
+   "slot": "bottom",
+   "job": 4,
+   "level": 40,
+   "stats": {
+    "def": 25,
+    "luk": 8
+   }
+  },
+  "thief_shoes_40": {
+   "slot": "shoes",
+   "job": 4,
+   "level": 40,
+   "stats": {
+    "def": 16,
+    "luk": 4
+   }
   }
  },
  "options": {

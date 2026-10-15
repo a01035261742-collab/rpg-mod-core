@@ -57,4 +57,13 @@ public final class EntityClient {
             public ResourceLocation getTextureLocation(PolarBear ent) { return bear; }
         });
     }
+
+    /** 직업 가죽 방어구: 아이콘 색 (아래층만 칠함, 위 오버레이는 그대로) */
+    @net.minecraftforge.eventbus.api.SubscribeEvent
+    public static void itemColors(net.minecraftforge.client.event.RegisterColorHandlersEvent.Item e) {
+        for (var ro : rpg.core.item.ModItems.GEAR) {
+            if (ro.get() instanceof rpg.core.equip.GearItems.DyedArmor d)
+                e.register((stack, tint) -> tint == 0 ? d.color() : -1, d);
+        }
+    }
 }

@@ -30,6 +30,12 @@ public final class ModItems {
             "gloves_1", "gloves_10", "cape_1", "cape_10", "belt_1", "belt_10",
             "earring_1", "earring_10", "ring_1", "ring_10", "pendant_1", "pendant_10", "medal_1", "medal_10"};
 
+    /** 직업 가죽 방어구 색 [궁수·마법사·도적][Lv10·20·30·40] */
+    public static final int[][] JOB_COLORS = {
+            {0x6B8E3D, 0x4E7A2E, 0x7A6A3A, 0x2F3B2A},
+            {0x4A5FC1, 0x6A3FA8, 0x8E4FB0, 0x2B1E4A},
+            {0x5A5A5A, 0x3C3C46, 0x5A3C5A, 0x1E1E24}};
+
     /** 몹 전용 장신구 16종 (drops.json uniques) */
     public static final String[] UNIQUE = {"pig_snout_pendant", "cow_horn_earring", "slime_ring", "rat_tail_belt", "dog_fang_earring", "bee_cape", "tusk_gloves", "bear_belt", "spirit_pendant", "mushroom_ring", "soldier_gloves", "fairy_cape", "gland_earring", "witch_pendant", "dark_eye_ring", "beast_belt"};
 
@@ -51,6 +57,21 @@ public final class ModItems {
             GEAR.add(ITEMS.register(a[0] + "_20", () -> new rpg.core.equip.GearItems.Armor(rpg.core.equip.GearItems.GOLD, type, new Item.Properties(), a[0] + "_20")));
             GEAR.add(ITEMS.register(a[0] + "_30", () -> new rpg.core.equip.GearItems.Armor(rpg.core.equip.GearItems.DIAMOND, type, new Item.Properties(), a[0] + "_30")));
             GEAR.add(ITEMS.register(a[0] + "_40", () -> new rpg.core.equip.GearItems.Armor(rpg.core.equip.GearItems.NETHERITE, type, new Item.Properties(), a[0] + "_40")));
+            // 직업별 방어구 (제작 전용): 전사 = 금속(철·금·다이아·네더라이트), 나머지 = 직업 색 가죽
+            int[] tiers = {10, 20, 30, 40};
+            var metal = new rpg.core.equip.GearItems.Mat[]{rpg.core.equip.GearItems.IRON, rpg.core.equip.GearItems.GOLD,
+                    rpg.core.equip.GearItems.DIAMOND, rpg.core.equip.GearItems.NETHERITE};
+            for (int t = 0; t < 4; t++) {
+                final int ti = t;
+                String wid = "warrior_" + a[0] + "_" + tiers[t];
+                GEAR.add(ITEMS.register(wid, () -> new rpg.core.equip.GearItems.Armor(metal[ti], type, new Item.Properties(), wid)));
+                for (int j = 0; j < 3; j++) {
+                    String job = new String[]{"archer", "mage", "thief"}[j];
+                    String id = job + "_" + a[0] + "_" + tiers[t];
+                    int color = JOB_COLORS[j][t];
+                    GEAR.add(ITEMS.register(id, () -> new rpg.core.equip.GearItems.DyedArmor(type, new Item.Properties(), id, color)));
+                }
+            }
         }
     }
 
