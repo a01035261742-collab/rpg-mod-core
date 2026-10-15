@@ -10,7 +10,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
 import rpg.core.RpgCore;
 
-/** Epic Fight 설정에 우리 무기를 "전투용"으로 넣음 (이미 저장된 EF 설정에도 적용) → 블록 조준·캐기 대신 공격 */
+/** 접속할 때 EF 설정 맞추기: 노리는 적 빨간 테두리 끄기 + Epic Fight 설정에 우리 무기를 "전투용"으로 넣음 (이미 저장된 EF 설정에도 적용) → 블록 조준·캐기 대신 공격 */
 @Mod.EventBusSubscriber(modid = RpgCore.MODID, value = Dist.CLIENT)
 public final class EfClientCompat {
     private EfClientCompat() {}
@@ -20,6 +20,14 @@ public final class EfClientCompat {
     public static void login(ClientPlayerNetworkEvent.LoggingIn e) {
         try {
             Class<?> cfg = Class.forName("yesman.epicfight.config.ClientConfig");
+            // 노리는 적 빨간 테두리 끄기 (지금 값 + 설정 파일)
+            try {
+                cfg.getField("enableTargetEntityGuide").setBoolean(null, false);
+                Object spec = cfg.getField("ENABLE_TARGET_ENTITY_GUIDE").get(null);
+                spec.getClass().getMethod("set", Object.class).invoke(spec, Boolean.FALSE);
+            } catch (Throwable ex) {
+                RpgCore.LOG.debug("[rpgcore] EF 타겟 테두리 끄기 실패: {}", ex.toString());
+            }
             Set<Item> combat = (Set<Item>) cfg.getField("combatPreferredItems").get(null);
             Set<Item> mining = (Set<Item>) cfg.getField("miningPreferredItems").get(null);
             if (combat == null) return;
