@@ -66,8 +66,11 @@ public class RpgGeoRenderer extends GeoEntityRenderer<GeoRpgMonster> {
             if (head != null && d != null) {
                 float pitch = Mth.clamp(d.headPitch() * pitchMul, -pitchMax, pitchMax);
                 float yaw = Mth.clamp(d.netHeadYaw() * yawMul, -yawMax, yawMax);
-                head.setRotX(head.getRotX() + pitch * Mth.DEG_TO_RAD);
-                head.setRotY(head.getRotY() + yaw * Mth.DEG_TO_RAD);
+                // 이번 프레임 애니메이션이 머리를 안 건드렸으면 기본 자세에서 다시 계산 (안 그러면 매 프레임 더해져서 무한 회전)
+                float baseX = head.hasRotationChanged() ? head.getRotX() : head.getInitialSnapshot().getRotX();
+                float baseY = head.hasRotationChanged() ? head.getRotY() : head.getInitialSnapshot().getRotY();
+                head.setRotX(baseX + pitch * Mth.DEG_TO_RAD);
+                head.setRotY(baseY + yaw * Mth.DEG_TO_RAD);
             }
         }
     }
