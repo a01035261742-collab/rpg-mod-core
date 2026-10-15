@@ -16,12 +16,14 @@ import rpg.core.entity.GeoRpgMonster;
 /**
  * RPG 몹 근접 공격.
  * - mobs.json 에 attacks 가 있는 GeckoLib 몹: Epic Fight 방식 판정
- *   준비(대상 쪽으로 돎) → 판정 구간(방향 고정, 매 틱 범위 안 플레이어를 한 번씩 때림) → 마무리(잠깐 멈춤)
+ *   준비(대상 쪽으로 돎, 판정 0.25초 전부터 방향 고정) → 판정 구간(방향 고정, 매 틱 범위 안 플레이어를 한 번씩 때림) → 마무리(잠깐 멈춤)
  *   모션은 우리 GeckoLib 애니메이션, 범위는 몸 끝 기준 (바닐라 근접 정도)
  * - 그 외: 바닐라 방식 (몸 바깥 REACH 칸 안이면 바로 때림)
  */
 public class RpgMeleeGoal extends MeleeAttackGoal {
     public static final double REACH = 1.2;
+    /** 판정 시작 몇 틱 전부터 방향 고정 (0.25초) */
+    private static final int LOCK_BEFORE = 5;
 
     private Balance.MobAttack cur;      // 진행 중인 공격 (null = 없음)
     private int t;                      // 공격 시작 후 틱
@@ -70,8 +72,8 @@ public class RpgMeleeGoal extends MeleeAttackGoal {
         if (cur == null) { super.tick(); return; }
         LivingEntity target = mob.getTarget();
         mob.getNavigation().stop();
-        if (t < cur.start()) {
-            // 준비: 대상 쪽으로 몸을 돌림
+        if (t < cur.start() - LOCK_BEFORE) {
+            // 준비: 대상 쪽으로 몸을 돌림 (맞기 LOCK_BEFORE 틱 전부터는 고정 → 옆으로 비키면 피함)
             if (target != null) {
                 mob.getLookControl().setLookAt(target, 30, 30);
                 double dx = target.getX() - mob.getX(), dz = target.getZ() - mob.getZ();
@@ -84,7 +86,7 @@ public class RpgMeleeGoal extends MeleeAttackGoal {
             mob.setYRot(lockedYaw);
             mob.yBodyRot = lockedYaw;
             mob.yHeadRot = lockedYaw;
-            if (t <= cur.end()) swingHits();
+            if (t >= cur.start() && t <= cur.end()) swingHits();
         }
         if (++t >= cur.length()) cur = null;
     }

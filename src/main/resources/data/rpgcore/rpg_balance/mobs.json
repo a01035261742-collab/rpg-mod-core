@@ -226,7 +226,7 @@
     "type": "leap",
     "range": 7,
     "cd": 6,
-    "delay": 1.0,
+    "delay": 1.5,
     "pct": 130,
     "r": 2.5
    }
@@ -313,9 +313,9 @@
   "attacks": [
    {
     "anim": "attack",
-    "start": 4,
-    "end": 7,
-    "length": 13,
+    "start": 10,
+    "end": 13,
+    "length": 19,
     "range": 0.8,
     "width": 0.8
    }
@@ -404,7 +404,7 @@
     "type": "dash",
     "range": 9,
     "cd": 6,
-    "delay": 0.8,
+    "delay": 1.2,
     "pct": 140,
     "len": 8,
     "w": 1.4
@@ -495,7 +495,7 @@
     "type": "shot",
     "range": 12,
     "cd": 4,
-    "delay": 0.8,
+    "delay": 1.2,
     "pct": 120,
     "len": 12,
     "w": 1.0
@@ -585,7 +585,7 @@
     "type": "dash",
     "range": 10,
     "cd": 7,
-    "delay": 1.0,
+    "delay": 1.5,
     "pct": 160,
     "len": 10,
     "w": 1.8
@@ -675,7 +675,7 @@
     "type": "cone",
     "range": 4,
     "cd": 7,
-    "delay": 0.9,
+    "delay": 1.4,
     "pct": 160,
     "r": 4,
     "angle": 90
@@ -765,7 +765,7 @@
     "type": "zone",
     "range": 14,
     "cd": 8,
-    "delay": 1.2,
+    "delay": 1.8,
     "pct": 130,
     "r": 2.5,
     "effect": "slow"
@@ -774,17 +774,17 @@
   "attacks": [
    {
     "anim": "attack",
-    "start": 5,
-    "end": 9,
-    "length": 14,
+    "start": 12,
+    "end": 16,
+    "length": 21,
     "range": 1.0,
     "angle": 90
    },
    {
     "anim": "attack2",
-    "start": 5,
-    "end": 9,
-    "length": 14,
+    "start": 12,
+    "end": 16,
+    "length": 21,
     "range": 1.0,
     "angle": 90
    }
@@ -873,7 +873,7 @@
     "type": "slam",
     "range": 2.2,
     "cd": 3,
-    "delay": 0.6,
+    "delay": 1.0,
     "pct": 100,
     "r": 1.8
    }
@@ -881,9 +881,9 @@
   "attacks": [
    {
     "anim": "attack",
-    "start": 4,
-    "end": 7,
-    "length": 10,
+    "start": 10,
+    "end": 13,
+    "length": 16,
     "range": 0.8,
     "width": 1.0
    }
@@ -972,7 +972,7 @@
     "type": "slam",
     "range": 3.5,
     "cd": 7,
-    "delay": 1.2,
+    "delay": 1.8,
     "pct": 180,
     "r": 3.5,
     "effect": "slow"
@@ -981,17 +981,17 @@
   "attacks": [
    {
     "anim": "attack",
-    "start": 5,
-    "end": 10,
-    "length": 14,
+    "start": 14,
+    "end": 19,
+    "length": 23,
     "range": 1.2,
     "angle": 120
    },
    {
     "anim": "attack2",
-    "start": 4,
-    "end": 7,
-    "length": 12,
+    "start": 11,
+    "end": 14,
+    "length": 19,
     "range": 0.9,
     "width": 1.2,
     "knock": 0.6
@@ -1081,7 +1081,7 @@
     "type": "dash",
     "range": 7,
     "cd": 5,
-    "delay": 0.6,
+    "delay": 1.0,
     "pct": 120,
     "len": 6,
     "w": 1.2
@@ -1171,7 +1171,7 @@
     "type": "shot",
     "range": 10,
     "cd": 6,
-    "delay": 0.8,
+    "delay": 1.2,
     "pct": 130,
     "len": 10,
     "w": 1.2,
@@ -1262,7 +1262,7 @@
     "type": "zone",
     "range": 12,
     "cd": 7,
-    "delay": 1.2,
+    "delay": 1.8,
     "pct": 120,
     "r": 3,
     "effect": "slow"
@@ -1352,7 +1352,7 @@
     "type": "dash",
     "range": 10,
     "cd": 6,
-    "delay": 0.8,
+    "delay": 1.2,
     "pct": 150,
     "len": 9,
     "w": 1.6
@@ -1442,7 +1442,7 @@
     "type": "slam",
     "range": 5,
     "cd": 8,
-    "delay": 1.4,
+    "delay": 2.1,
     "pct": 200,
     "r": 5
    }
