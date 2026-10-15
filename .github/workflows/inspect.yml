@@ -8,11 +8,9 @@ jobs:
         with: { distribution: temurin, java-version: '17' }
       - run: |
           curl -sL -o ef.jar https://cdn.modrinth.com/data/vu3NZ5Ma/versions/KEBfkBat/epic-fight-20.14.17-mc1.20.1-forge.jar
-          javap -cp ef.jar yesman.epicfight.gameasset.Animations | grep -i -E "greatsword|guillotine|sweep|slam|axe" > out.txt || true
-          javap -cp ef.jar yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch | grep -i -E "playAnimation|battle" >> out.txt || true
-          javap -cp ef.jar yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch | grep -i -E "playAnimation" >> out.txt || true
-          javap -cp ef.jar yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch | grep -i -E "battle|Mode" >> out.txt || true
-          javap -cp ef.jar yesman.epicfight.world.capabilities.EpicFightCapabilities | grep -i patch >> out.txt || true
+          javap -p -cp ef.jar yesman.epicfight.config.ClientConfig > out.txt || true
+          javap -p -cp ef.jar yesman.epicfight.config.EpicFightOptions >> out.txt 2>&1 || true
+          unzip -l ef.jar | grep -i -E "config/|TargetIndicator|Outline|Highlight" | head -40 >> out.txt || true
           cat out.txt
           msg=$(sed ':a;N;$!ba;s/%/%25/g;s/\r//g;s/\n/%0A/g' out.txt | head -c 60000)
           echo "::notice title=ef::$msg"
