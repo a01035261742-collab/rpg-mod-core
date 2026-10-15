@@ -143,7 +143,8 @@ public final class JobSkills {
         Vec3 eye = p.getEyePosition().add(0, -0.15, 0);
         BOLTS.add(new Bolt(p, eye, p.getLookAngle(), s.value(lv), 0));
         p.serverLevel().playSound(null, p.blockPosition(), SoundEvents.ILLUSIONER_CAST_SPELL, SoundSource.PLAYERS, 0.6f, 1.6f);
-        p.swing(net.minecraft.world.InteractionHand.MAIN_HAND, true);
+        if (!rpg.core.compat.EpicFightCompat.playAnim(p, "SPEAR_TWOHAND_AUTO1"))   // 지팡이 휘두르기 (보이기만)
+            p.swing(net.minecraft.world.InteractionHand.MAIN_HAND, true);
         return true;
     }
 
