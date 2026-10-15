@@ -30,6 +30,8 @@ public class GeoRpgMonster extends RpgMonster implements GeoEntity {
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private boolean otherHand;
+    /** 마지막으로 재생한 근접 공격 애니메이션 (attack / attack2) */
+    private String lastAttack = "attack";
 
     public GeoRpgMonster(EntityType<? extends Monster> type, Level level, int voice) {
         super(type, level, voice);
@@ -66,8 +68,20 @@ public class GeoRpgMonster extends RpgMonster implements GeoEntity {
         super.swing(hand, updateSelf);
         if (level().isClientSide) return;
         boolean alt = ALT_ATTACK.contains(net.minecraftforge.registries.ForgeRegistries.ENTITY_TYPES.getKey(getType()).getPath());
-        triggerAnim("attack", alt && otherHand ? "attack2" : "attack");
+        lastAttack = alt && otherHand ? "attack2" : "attack";
+        triggerAnim("attack", lastAttack);
         if (alt) otherHand = !otherHand;
+    }
+
+    /** 근접 공격 애니메이션이 시작되고 타격 순간까지 몇 틱 (애니 안에서 휘두른 무기·발톱이 닿는 시점) */
+    public int attackImpactTicks() {
+        String id = net.minecraftforge.registries.ForgeRegistries.ENTITY_TYPES.getKey(getType()).getPath();
+        return switch (id) {
+            case "rat", "mush_kid" -> 5;                                  // 0.25초 물기·박치기
+            case "mush_spirit" -> 8;                                      // 0.4초 할퀴기
+            case "mush_soldier" -> "attack2".equals(lastAttack) ? 6 : 8;  // 방패 밀치기 0.3초 / 검 0.4초
+            default -> 6;
+        };
     }
 
     @Override
