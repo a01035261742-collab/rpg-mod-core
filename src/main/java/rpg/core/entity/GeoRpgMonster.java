@@ -48,6 +48,12 @@ public class GeoRpgMonster extends RpgMonster implements GeoEntity {
         c.add(pat);
     }
 
+    /** 근접 공격 애니메이션 재생 (서버 → 모든 클라) */
+    public void playAttack(String anim) {
+        lastAttack = anim;
+        triggerAnim("attack", anim);
+    }
+
     /** 패턴 애니메이션 재생 (서버) */
     public void playPattern(String type) {
         triggerAnim("pattern", type);
@@ -71,17 +77,6 @@ public class GeoRpgMonster extends RpgMonster implements GeoEntity {
         lastAttack = alt && otherHand ? "attack2" : "attack";
         triggerAnim("attack", lastAttack);
         if (alt) otherHand = !otherHand;
-    }
-
-    /** 근접 공격 애니메이션이 시작되고 타격 순간까지 몇 틱 (애니 안에서 휘두른 무기·발톱이 닿는 시점) */
-    public int attackImpactTicks() {
-        String id = net.minecraftforge.registries.ForgeRegistries.ENTITY_TYPES.getKey(getType()).getPath();
-        return switch (id) {
-            case "rat", "mush_kid" -> 5;                                  // 0.25초 물기·박치기
-            case "mush_spirit" -> 8;                                      // 0.4초 할퀴기
-            case "mush_soldier" -> "attack2".equals(lastAttack) ? 6 : 8;  // 방패 밀치기 0.3초 / 검 0.4초
-            default -> 6;
-        };
     }
 
     @Override

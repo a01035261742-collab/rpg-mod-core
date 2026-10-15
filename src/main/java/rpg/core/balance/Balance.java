@@ -53,6 +53,12 @@ public final class Balance {
      * 몹 패턴 (예고 후 공격). type: slam(내 주변 원) · leap(대상 자리로 점프, 원) · dash(직선 돌진) ·
      * shot(직선 사격) · zone(대상 자리 장판) · cone(앞 부채꼴). 시간은 초, 피해는 몹 공격력의 %
      */
+    /**
+     * 근접 공격 (EF 방식 판정): anim = GeckoLib 애니 이름, start~end 틱 동안 판정, length = 전체 길이(틱).
+     * range = 몸 끝에서 앞으로 몇 칸, angle > 0 이면 부채꼴(도), 아니면 폭 width 직사각형. knock = 넉백 세기
+     */
+    public record MobAttack(String anim, int start, int end, int length, double range, double width, double angle, double knock) {}
+
     public record MobSkill(String type, double range, double cd, double delay, double pct, double r, double len,
                            double w, double angle, int hits, String effect) {}
 
@@ -66,7 +72,7 @@ public final class Balance {
     public static double eliteChance = 5, eliteHp = 5, eliteAtk = 1.5, eliteReward = 5, eliteGear = 3;
 
     public record MobDef(String key, String entity, String name, java.util.TreeMap<Integer, MobStats> levels,
-                         MobLook look, java.util.List<MobSkill> skills) {
+                         MobLook look, java.util.List<MobSkill> skills, java.util.List<MobAttack> attacks) {
         /** 그 레벨 수치 (표에 없으면 바로 아래 레벨, 그것도 없으면 가장 낮은 레벨) */
         public MobStats at(int level) {
             var e = levels.floorEntry(level);
@@ -185,7 +191,14 @@ public final class Balance {
                             d(o, "delay", 1), d(o, "pct", 100), d(o, "r", 3), d(o, "len", 8), d(o, "w", 1.5), d(o, "angle", 90),
                             (int) d(o, "hits", 1), o.has("effect") ? o.get("effect").getAsString() : ""));
                 }
-                MOBS.put(e.getKey(), new MobDef(e.getKey(), ent, name, levels, look, skills));
+                java.util.List<MobAttack> attacks = new java.util.ArrayList<>();
+                if (m.has("attacks")) for (var at : m.getAsJsonArray("attacks")) {
+                    JsonObject o = at.getAsJsonObject();
+                    attacks.add(new MobAttack(o.has("anim") ? o.get("anim").getAsString() : "attack",
+                            (int) d(o, "start", 4), (int) d(o, "end", 7), (int) d(o, "length", 12),
+                            d(o, "range", 0.8), d(o, "width", 1), d(o, "angle", 0), d(o, "knock", 0)));
+                }
+                MOBS.put(e.getKey(), new MobDef(e.getKey(), ent, name, levels, look, skills, attacks));
             }
             RpgCore.LOG.info("[rpgcore] 몹 {}종 읽음", MOBS.size());
         }

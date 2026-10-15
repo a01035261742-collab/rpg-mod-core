@@ -1,5 +1,5 @@
 {
- "_설명": "몹 표. levels = 레벨별 수치(없으면 바로 아래 레벨). skills = 예고 후 공격 패턴 (type slam 내 주변 원 / leap 대상 자리로 점프 / dash 돌진 / shot 직선 사격 / zone 대상 자리 장판 / cone 앞 부채꼴, range 쓰는 거리, cd 쿨(초), delay 예고 시간(초), pct 공격력%, r 반경, len 길이, w 폭, angle 부채꼴 각도, hits 타수, effect slow 둔화). passive = 먼저 안 때림",
+ "_설명": "몹 표. levels = 레벨별 수치(없으면 바로 아래 레벨). skills = 예고 후 공격 패턴 (type slam 내 주변 원 / leap 대상 자리로 점프 / dash 돌진 / shot 직선 사격 / zone 대상 자리 장판 / cone 앞 부채꼴, range 쓰는 거리, cd 쿨(초), delay 예고 시간(초), pct 공격력%, r 반경, len 길이, w 폭, angle 부채꼴 각도, hits 타수, effect slow 둔화). passive = 먼저 안 때림. attacks = 근접 공격 (EF 방식 판정, GeckoLib 몹만): anim 애니 이름, start~end 판정 틱, length 전체 틱, range 몸 끝에서 칸, angle 부채꼴 각도(없으면 직사각형), width 직사각형 폭, knock 넉백. 여러 개면 번갈아 씀",
  "_elite": {
   "chance": 5,
   "hp": 5,
@@ -310,6 +310,16 @@
   "entity": "rpgcore:rat",
   "name": "들쥐",
   "area": "Lv6~10",
+  "attacks": [
+   {
+    "anim": "attack",
+    "start": 4,
+    "end": 7,
+    "length": 13,
+    "range": 0.8,
+    "width": 0.8
+   }
+  ],
   "levels": {
    "4": {
     "hp": 43,
@@ -761,6 +771,24 @@
     "effect": "slow"
    }
   ],
+  "attacks": [
+   {
+    "anim": "attack",
+    "start": 5,
+    "end": 9,
+    "length": 14,
+    "range": 1.0,
+    "angle": 90
+   },
+   {
+    "anim": "attack2",
+    "start": 5,
+    "end": 9,
+    "length": 14,
+    "range": 1.0,
+    "angle": 90
+   }
+  ],
   "levels": {
    "19": {
     "hp": 596,
@@ -848,6 +876,16 @@
     "delay": 0.6,
     "pct": 100,
     "r": 1.8
+   }
+  ],
+  "attacks": [
+   {
+    "anim": "attack",
+    "start": 4,
+    "end": 7,
+    "length": 10,
+    "range": 0.8,
+    "width": 1.0
    }
   ],
   "levels": {
@@ -938,6 +976,25 @@
     "pct": 180,
     "r": 3.5,
     "effect": "slow"
+   }
+  ],
+  "attacks": [
+   {
+    "anim": "attack",
+    "start": 5,
+    "end": 10,
+    "length": 14,
+    "range": 1.2,
+    "angle": 120
+   },
+   {
+    "anim": "attack2",
+    "start": 4,
+    "end": 7,
+    "length": 12,
+    "range": 0.9,
+    "width": 1.2,
+    "knock": 0.6
    }
   ],
   "levels": {
