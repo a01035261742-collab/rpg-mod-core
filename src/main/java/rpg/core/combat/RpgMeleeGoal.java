@@ -55,6 +55,8 @@ public class RpgMeleeGoal extends MeleeAttackGoal {
         List<Balance.MobAttack> list = attacks();
         if (list.isEmpty()) { super.checkAndPerformAttack(target, distSqr); return; }
         if (cur != null || !isTimeToAttack()) return;
+        MobData sm = Combat.mob(mob);
+        if (sm != null && mob.level().getGameTime() < sm.stunUntil) return;   // 경직 중
         MobData m = Combat.mob(mob);
         if (m != null && m.casting >= 0) return;            // 패턴 쓰는 중
         Balance.MobAttack a = list.get(next % list.size());
@@ -67,9 +69,26 @@ public class RpgMeleeGoal extends MeleeAttackGoal {
         ((GeoRpgMonster) mob).playAttack(a.anim());
     }
 
+    /** 경직 중이면 true (준비 중 공격은 끊음, 판정 구간이면 그대로 휘두름) */
+    private boolean stunned() {
+        MobData m = Combat.mob(mob);
+        if (m == null) return false;
+        long now = mob.level().getGameTime();
+        if (m.stunCancel) {
+            m.stunCancel = false;
+            if (cur != null && t < cur.start()) cur = null;   // 준비 중이면 공격 취소
+        }
+        return now < m.stunUntil;
+    }
+
     @Override
     public void tick() {
-        if (cur == null) { super.tick(); return; }
+        boolean stun = stunned();
+        if (cur == null) {
+            if (stun) { mob.getNavigation().stop(); return; }
+            super.tick();
+            return;
+        }
         LivingEntity target = mob.getTarget();
         mob.getNavigation().stop();
         if (t < cur.start() - LOCK_BEFORE) {

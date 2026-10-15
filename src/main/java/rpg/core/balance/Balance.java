@@ -70,9 +70,12 @@ public final class Balance {
     public static final Map<String, Ground> GROUNDS = new java.util.LinkedHashMap<>();
     /** 엘리트: 확률 %, 체력·공격·보상 배수, 장비 드롭 배수 */
     public static double eliteChance = 5, eliteHp = 5, eliteAtk = 1.5, eliteReward = 5, eliteGear = 3;
+    /** 경직 (EF 방식): 충격 - 경직 방어 = 남는 충격. shortMin 이상 짧은 경직, longMin 이상 긴 경직 */
+    public static double stunShortMin = 0.5, stunLongMin = 1.4, eliteStunArmor = 0.8;
+    public static int stunShortTicks = 6, stunLongTicks = 12, stunChain = 4, stunChainWindow = 40, stunImmuneTicks = 30;
 
     public record MobDef(String key, String entity, String name, java.util.TreeMap<Integer, MobStats> levels,
-                         MobLook look, java.util.List<MobSkill> skills, java.util.List<MobAttack> attacks) {
+                         MobLook look, java.util.List<MobSkill> skills, java.util.List<MobAttack> attacks, double stunArmor) {
         /** 그 레벨 수치 (표에 없으면 바로 아래 레벨, 그것도 없으면 가장 낮은 레벨) */
         public MobStats at(int level) {
             var e = levels.floorEntry(level);
@@ -161,6 +164,12 @@ public final class Balance {
                 o.getAsJsonArray("mobs").forEach(x -> ms.add(x.getAsString()));
                 GROUNDS.put(g.getKey(), new Ground(o.get("name").getAsString(), ms, (int) d(o, "min", 1), (int) d(o, "max", 1)));
             }
+            if (root.has("_stun")) {
+                JsonObject o = root.getAsJsonObject("_stun");
+                stunShortMin = d(o, "shortMin", 0.5); stunLongMin = d(o, "longMin", 1.4); eliteStunArmor = d(o, "eliteArmor", 0.8);
+                stunShortTicks = (int) d(o, "shortTicks", 6); stunLongTicks = (int) d(o, "longTicks", 12);
+                stunChain = (int) d(o, "chain", 4); stunChainWindow = (int) d(o, "chainWindow", 40); stunImmuneTicks = (int) d(o, "immuneTicks", 30);
+            }
             if (root.has("_elite")) {
                 JsonObject o = root.getAsJsonObject("_elite");
                 eliteChance = d(o, "chance", 5); eliteHp = d(o, "hp", 5); eliteAtk = d(o, "atk", 1.5);
@@ -198,7 +207,7 @@ public final class Balance {
                             (int) d(o, "start", 4), (int) d(o, "end", 7), (int) d(o, "length", 12),
                             d(o, "range", 0.8), d(o, "width", 1), d(o, "angle", 0), d(o, "knock", 0), d(o, "lunge", 0.35)));
                 }
-                MOBS.put(e.getKey(), new MobDef(e.getKey(), ent, name, levels, look, skills, attacks));
+                MOBS.put(e.getKey(), new MobDef(e.getKey(), ent, name, levels, look, skills, attacks, d(m, "stunArmor", 0)));
             }
             RpgCore.LOG.info("[rpgcore] 몹 {}종 읽음", MOBS.size());
         }

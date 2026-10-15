@@ -72,6 +72,17 @@ public class RpgGeoRenderer extends GeoEntityRenderer<GeoRpgMonster> {
                 head.setRotX(baseX + pitch * Mth.DEG_TO_RAD);
                 head.setRotY(baseY + yaw * Mth.DEG_TO_RAD);
             }
+            // 맞았을 때 임시 반응: 몸을 뒤로 젖혔다 돌아옴 (hit 애니메이션 만들면 교체)
+            if (e.hurtTime > 0) {
+                CoreGeoBone body = getAnimationProcessor().getBone("body");
+                if (body != null) {
+                    float k = (e.hurtTime - st.getPartialTick()) / Math.max(1, e.hurtDuration);
+                    k = Mth.clamp(k, 0, 1);
+                    float tilt = Mth.sin(k * Mth.PI) * 14f * Mth.DEG_TO_RAD;
+                    float base = body.hasRotationChanged() ? body.getRotX() : body.getInitialSnapshot().getRotX();
+                    body.setRotX(base + tilt);
+                }
+            }
         }
     }
 }

@@ -28,6 +28,12 @@ public class MobData {
     public transient boolean castAnim;          // 패턴 애니메이션 시작했는지
     public transient net.minecraft.world.phys.Vec3 castPos, castDir;
     public transient int hitsLeft;
+    // 경직 (저장 안 함)
+    public transient long stunUntil;            // 이 시각까지 경직
+    public transient long stunWindow;           // 연속 경직 세기 시작 시각
+    public transient int stunCount;             // 창 안 경직 횟수
+    public transient long stunImmuneUntil;      // 연속 경직 후 면역
+    public transient boolean stunCancel;        // 경직이 공격을 끊어야 함 (근접 goal 이 처리)
 
     public boolean isRpg() { return level > 0; }
 

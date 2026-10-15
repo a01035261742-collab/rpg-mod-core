@@ -125,6 +125,12 @@ public final class MobAI {
             }
             return;
         }
+        if (now < m.stunUntil) {   // 경직 중: 제자리, 패턴 시작 안 함
+            mob.getNavigation().stop();
+            Vec3 v = mob.getDeltaMovement();
+            mob.setDeltaMovement(v.x * 0.5, v.y, v.z * 0.5);
+            return;
+        }
         if (def.skills().isEmpty() && !def.look().chase()) return;
         if (mob.tickCount % 5 != 0) return;
 
@@ -142,6 +148,31 @@ public final class MobAI {
             if (now < m.skillReady[i] || dist > sk.range() || !mob.hasLineOfSight(t)) continue;
             start(mob, m, sk, i, t, now);
             return;
+        }
+    }
+
+    /**
+     * 경직 (EF 방식): 충격(impact) - 경직 방어 = 남는 충격 → 없음 / 짧은 경직 / 긴 경직(뒤로 밀림)
+     * 패턴 예고 중에는 안 끊김, 연속 경직이 많으면 잠깐 면역
+     */
+    public static void stun(Mob mob, MobData m, double impact, net.minecraft.world.entity.Entity from) {
+        if (m == null || m.casting >= 0) return;
+        Balance.MobDef def = Balance.MOBS.get(m.key);
+        double armor = (def == null ? 0 : def.stunArmor()) + (m.elite ? Balance.eliteStunArmor : 0);
+        double left = impact - armor;
+        if (left < Balance.stunShortMin) return;
+        long now = mob.level().getGameTime();
+        if (now < m.stunImmuneUntil) return;
+        if (now - m.stunWindow > Balance.stunChainWindow) { m.stunWindow = now; m.stunCount = 0; }
+        if (++m.stunCount > Balance.stunChain) { m.stunImmuneUntil = now + Balance.stunImmuneTicks; m.stunCount = 0; return; }
+        boolean lng = left >= Balance.stunLongMin;
+        m.stunUntil = Math.max(m.stunUntil, now + (lng ? Balance.stunLongTicks : Balance.stunShortTicks));
+        m.stunCancel = true;
+        mob.getNavigation().stop();
+        if (lng && from != null) {
+            double dx = mob.getX() - from.getX(), dz = mob.getZ() - from.getZ();
+            double l = Math.max(0.01, Math.sqrt(dx * dx + dz * dz));
+            mob.setDeltaMovement(mob.getDeltaMovement().add(dx / l * 0.35, 0.05, dz / l * 0.35));
         }
     }
 

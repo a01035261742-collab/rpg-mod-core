@@ -240,6 +240,9 @@ public final class CombatEvents {
                 Combat.Hit h = Combat.roll(ap, ad, ratio);
                 dmg = h.amount();
                 crit = h.crit();
+                // 경직 충격: 근접은 EF 모션 배율, 스킬은 배율, 화살은 당긴 정도 (출혈 등 고정 피해는 경직 없음)
+                double impact = Math.min(3.0, ratio * (crit ? 1.2 : 1.0));
+                MobAI.stun(mob, m, impact, ap);
             }
             if (direct != null && direct.getPersistentData().contains("rpgSlow")) {
                 mob.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.MOVEMENT_SLOWDOWN,
