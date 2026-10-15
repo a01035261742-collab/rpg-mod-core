@@ -78,6 +78,8 @@ groups = [('무기', lambda k, v: v['slot'] == 'weapon'),
           ('몹 전용 장신구 (드롭)', lambda k, v: v['slot'] in ('gloves', 'cape', 'belt', 'earring', 'ring', 'pendant') and any('드롭' in x for x in src.get(k, []))),
           ('훈장', lambda k, v: v['slot'] == 'medal')]
 seen = set()
+ROWS_I = []
+def num(st, *ks): return sum(st.get(k, 0) for k in ks)
 for title, f in groups:
     ks = [k for k, v in items.items() if k not in seen and f(k, v)]
     ks.sort(key=lambda k: (items[k]['job'], tier(k), list(SLOT).index(items[k]['slot'])))
@@ -86,6 +88,9 @@ for title, f in groups:
     for k in ks:
         v = items[k]
         out.append(f'| {name(k)} | `{k}` | {SLOT[v["slot"]]} | {JOB[v["job"]]} | {v["level"]} | {stats(v["stats"])} | {where(k)} | {recipe_of.get(k, "-")} | {sell.get(k, "-")} |')
+        ROWS_I.append({'name': name(k), 'id': k, 'cat': title.split(' (')[0], 'slot': SLOT[v['slot']], 'job': JOB[v['job']], 'lv': v['level'],
+                       'stats': stats(v['stats']), 'atk': num(v['stats'], 'atk', 'matk'), 'def': num(v['stats'], 'def'),
+                       'src': list(dict.fromkeys(src.get(k, []))), 'recipe': recipe_of.get(k, ''), 'sell': sell.get(k)})
     out.append('')
 
 mat_ids = [m[0] for m in re.findall(r'\{"(\w+)", "([cr])"\}', open(f'{J}/item/ModItems.java').read())]
@@ -95,11 +100,15 @@ for k in mat_ids:
     mob, ch = mat_from.get(k, ('-', 0))
     uses = ', '.join(dict.fromkeys(used_in.get(k, []))) or '-'
     out.append(f'| {name(k)} | `{k}` | {"일반" if kinds[k] == "c" else "희귀"} | {mob} {ch:g}% | {sell.get(k, "-")} | {uses} | {recipe_of.get(k, "-")} |')
+    ROWS_I.append({'name': name(k), 'id': k, 'cat': '몹 재료', 'slot': '일반 재료' if kinds[k] == 'c' else '희귀 재료', 'job': '-', 'lv': None,
+                   'stats': '쓰는 곳: ' + uses, 'atk': 0, 'def': 0, 'src': list(dict.fromkeys(src.get(k, []))), 'recipe': recipe_of.get(k, ''), 'sell': sell.get(k)})
 out.append('')
 other = ['red_potion', 'blue_potion', 'stat_reset_scroll', 'star_fragment', 'scroll_fragment', 'gold_pouch']
 out += ['## 소모품 · 강화 재료 · 기타', '', '| 이름 | id | 얻는 곳 | 만들기 | 판매가 |', '|---|---|---|---|---|']
 for k in other:
     out.append(f'| {name(k)} | `{k}` | {where(k)} | {recipe_of.get(k, "-")} | {sell.get(k, "-")} |')
+    ROWS_I.append({'name': name(k), 'id': k, 'cat': '소모품·기타', 'slot': '-', 'job': '-', 'lv': None, 'stats': '', 'atk': 0, 'def': 0,
+                   'src': list(dict.fromkeys(src.get(k, []))), 'recipe': recipe_of.get(k, ''), 'sell': sell.get(k)})
 out.append('')
 qitems = re.findall(r'"(quest_\w+)"', open(f'{J}/item/ModItems.java').read())
 out += ['## 퀘스트 물건', '', ', '.join(f'{name(k)} (`{k}`)' for k in dict.fromkeys(qitems)), '']
@@ -119,6 +128,7 @@ mo = [f'# 몹 목록 (모드 {ver})', '', '저장소 데이터에서 자동으�
       f'- 경직: 충격 − 경직 방어 ≥ {st.get("shortMin", 0):g} 짧은 경직 {st.get("shortTicks", 0)}틱 · ≥ {st.get("longMin", 0):g} 긴 경직 {st.get("longTicks", 0)}틱 + 밀림 · {st.get("chainWindow", 0)}틱 안 {st.get("chain", 0)}번 넘으면 {st.get("immuneTicks", 0)}틱 면역', '',
       '| 몹 | key | 몸 | 사냥터 | 레벨 범위 | HP | 공격 | 경험치 | 골드 | 근접 공격 (EF 방식) | 패턴 | 경직 방어 | 재료 드롭 | 전용 장비 |',
       '|---|---|---|---|---|---|---|---|---|---|---|---|---|---|']
+ROWS_M = []
 order = [m for g in mobs['_grounds'].values() for m in g['mobs']]
 for k in order + [k for k in mobs if not k.startswith('_') and k not in order]:
     v = mobs[k]
@@ -133,7 +143,17 @@ for k in order + [k for k in mobs if not k.startswith('_') and k not in order]:
     dm = drops['mobs'].get(k, {})
     mat = ', '.join(f'{name(i)} {c:g}%' for i, c in dm.get('items', [])) or '-'
     uq = ', '.join(f'{name(i)} {c:g}%' for i, c in dm.get('uniques', [])) or '-'
+    def lo(f): return lv[0][1][f] if lv else None
+    def hi(f): return lv[-1][1][f] if lv else None
+    ROWS_M.append({'name': v.get('name', k), 'id': k, 'body': body, 'ground': ground_of.get(k, '-'), 'lvMin': int(lv[0][0]) if lv else None,
+                   'lvMax': int(lv[-1][0]) if lv else None, 'hp': [lo('hp'), hi('hp')], 'atk': [lo('atk'), hi('atk')], 'exp': [lo('exp'), hi('exp')],
+                   'gold': [lo('gold'), hi('gold')], 'melee': atk.replace('<br>', ' / '), 'pattern': pat.replace('<br>', ' / '),
+                   'stun': v.get('stunArmor', 0), 'mats': mat, 'unique': uq})
     mo.append(f'| {v.get("name", k)} | `{k}` | {body} | {ground_of.get(k, "-")} | {lv[0][0] if lv else "-"}~{lv[-1][0] if lv else "-"} | {rng("hp")} | {rng("atk")} | {rng("exp")} | {rng("gold")} | {atk} | {pat} | {v.get("stunArmor", 0):g} | {mat} | {uq} |')
 mo.append('')
 open(sys.argv[2], 'w').write('\n'.join(mo) + '\n')
+if len(sys.argv) > 3:   # 표 페이지: tools/lists_page.html 의 /*DATA*/ 자리에 데이터 넣기
+    page = open('tools/lists_page.html').read()
+    data = json.dumps({'ver': ver, 'items': ROWS_I, 'mobs': ROWS_M, 'elite': mo[4][2:], 'stun': mo[5][2:]}, ensure_ascii=False)
+    open(sys.argv[3], 'w').write(page.replace('/*DATA*/null', data.replace('</', '<\\/')))
 print('ok', len(items), 'items')

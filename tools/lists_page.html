@@ -1,0 +1,264 @@
+<title>rpgcore 도감</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Do+Hyeon&family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* 레이아웃: 위 띠(이름·버전) → 탭 → 필터 줄 → 넓은 표(가로 스크롤은 표 안에서만). 게임 도감처럼 촘촘하게 */
+:root {
+  --bg: #eef1ee;
+  --panel: #ffffff;
+  --ink: #1d2320;
+  --muted: #5d6a63;
+  --line: #d3dbd6;
+  --accent: #6b3fa0;        /* 독버섯 보라 */
+  --accent-soft: #ece4f6;
+  --gold: #9a6b00;
+  --row-hover: #f4f0fa;
+  --src-shop: #1f5fa8;  --src-shop-bg: #e3edf9;
+  --src-craft: #9a5a00; --src-craft-bg: #fbeedb;
+  --src-drop: #6b3fa0;  --src-drop-bg: #efe6f8;
+  --src-quest: #2c7a43; --src-quest-bg: #e2f2e7;
+  --src-job: #0f6f73;   --src-job-bg: #ddf1f1;
+  --font-display: "Do Hyeon", "IBM Plex Sans KR", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --font-data: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #141816; --panel: #1c211e; --ink: #e4ebe6; --muted: #98a59d; --line: #2e3631;
+    --accent: #b993e6; --accent-soft: #2c2338; --gold: #e0b34a; --row-hover: #241f2c;
+    --src-shop: #8dbaf0; --src-shop-bg: #1d2a3a; --src-craft: #f0b45e; --src-craft-bg: #33271a;
+    --src-drop: #c6a2ef; --src-drop-bg: #2b2238; --src-quest: #7fd09a; --src-quest-bg: #1b2e22;
+    --src-job: #6fd0d3; --src-job-bg: #183032;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #141816; --panel: #1c211e; --ink: #e4ebe6; --muted: #98a59d; --line: #2e3631;
+  --accent: #b993e6; --accent-soft: #2c2338; --gold: #e0b34a; --row-hover: #241f2c;
+  --src-shop: #8dbaf0; --src-shop-bg: #1d2a3a; --src-craft: #f0b45e; --src-craft-bg: #33271a;
+  --src-drop: #c6a2ef; --src-drop-bg: #2b2238; --src-quest: #7fd09a; --src-quest-bg: #1b2e22;
+  --src-job: #6fd0d3; --src-job-bg: #183032;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 14px; line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 40px;
+}
+.wrap { max-width: 1500px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
+header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; }
+h1 { font-family: var(--font-display); font-weight: 400; font-size: 34px; margin: 0; letter-spacing: 0.5px; text-wrap: balance; }
+h1 span { color: var(--accent); }
+.meta { color: var(--muted); font-size: 13px; }
+.meta b { font-family: var(--font-data); font-weight: 500; color: var(--ink); }
+.tabs { display: flex; gap: 6px; border-bottom: 1px solid var(--line); }
+.tabs button {
+  font: 500 15px var(--font-body); color: var(--muted); background: none; border: 0; border-bottom: 3px solid transparent;
+  padding: 8px 14px 9px; cursor: pointer; margin-bottom: -1px;
+}
+.tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); }
+.tabs button:focus-visible, .filters :focus-visible, th button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.note { color: var(--muted); font-size: 12.5px; display: flex; flex-direction: column; gap: 2px; }
+.filters { display: flex; flex-wrap: wrap; gap: 8px 10px; align-items: center; }
+.filters label { display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--muted); }
+.filters input, .filters select {
+  font: 14px var(--font-body); color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px;
+  padding: 6px 8px; min-width: 0;
+}
+.filters input[type="search"] { width: 220px; max-width: 100%; }
+.filters input[type="number"] { width: 64px; font-family: var(--font-data); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip {
+  font: 500 12.5px var(--font-body); border: 1px solid var(--line); background: var(--panel); color: var(--muted);
+  border-radius: 999px; padding: 4px 10px; cursor: pointer;
+}
+.chip[aria-pressed="true"] { color: var(--c); background: var(--cb); border-color: var(--c); }
+.reset { font: 13px var(--font-body); color: var(--accent); background: none; border: 0; cursor: pointer; padding: 4px 2px; text-decoration: underline; text-underline-offset: 3px; }
+.count { font-size: 13px; color: var(--muted); margin-left: auto; }
+.count b { font-family: var(--font-data); color: var(--ink); font-weight: 500; }
+.table-box { overflow-x: auto; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; }
+table { border-collapse: collapse; width: 100%; min-width: 1100px; }
+th, td { text-align: left; vertical-align: top; padding: 7px 10px; border-bottom: 1px solid var(--line); }
+th { position: sticky; top: 0; background: var(--panel); z-index: 1; font-size: 12px; color: var(--muted); font-weight: 600; white-space: nowrap; }
+th button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; display: inline-flex; gap: 4px; align-items: center; }
+th button[data-dir] { color: var(--ink); }
+th button[data-dir="asc"]::after { content: "▲"; font-size: 9px; color: var(--accent); }
+th button[data-dir="desc"]::after { content: "▼"; font-size: 9px; color: var(--accent); }
+tbody tr:hover td { background: var(--row-hover); }
+td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; white-space: nowrap; text-align: right; }
+th.num { text-align: right; }
+td .nm { font-weight: 600; }
+td .id { display: block; font-family: var(--font-data); font-size: 11.5px; color: var(--muted); }
+td.small { font-size: 12.5px; color: var(--ink); min-width: 160px; }
+td.wide { min-width: 220px; }
+.job { font-size: 12px; font-weight: 600; white-space: nowrap; }
+.src { display: flex; flex-wrap: wrap; gap: 4px; min-width: 170px; }
+.src span { font-size: 11.5px; border-radius: 4px; padding: 1px 6px; color: var(--c); background: var(--cb); white-space: nowrap; }
+.gold { color: var(--gold); }
+.empty { padding: 28px 12px; text-align: center; color: var(--muted); }
+@media (max-width: 560px) {
+  h1 { font-size: 28px; }
+  .count { margin-left: 0; width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>rpgcore <span>도감</span></h1>
+    <div class="meta">모드 <b id="ver">-</b> · 저장소 데이터에서 자동 생성 · 수치는 임시값</div>
+  </header>
+  <div class="tabs" role="tablist">
+    <button id="tab-items" role="tab" aria-selected="true" aria-controls="panel">아이템</button>
+    <button id="tab-mobs" role="tab" aria-selected="false" aria-controls="panel">몹</button>
+  </div>
+  <div class="note" id="note"></div>
+  <div class="filters" id="filters"></div>
+  <div class="table-box" id="panel" role="tabpanel"><table><thead id="thead"></thead><tbody id="tbody"></tbody></table></div>
+</div>
+
+<script>
+const DATA = /*DATA*/null;
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const fmt = (n) => (n === null || n === undefined || n === '') ? '-' : (typeof n === 'number' ? n.toLocaleString('ko-KR', { maximumFractionDigits: 1 }) : n);
+const SRC = [
+  ['상점', 'shop'], ['제작', 'craft'], ['드롭', 'drop'], ['퀘스트', 'quest'], ['전직', 'job'],
+];
+const srcKind = (s) => (SRC.find(([k]) => s.startsWith(k)) || ['', 'job'])[1];
+const srcChip = (s) => { const k = srcKind(s); return `<span style="--c:var(--src-${k});--cb:var(--src-${k}-bg)">${esc(s)}</span>`; };
+
+let tab = 'items';
+const state = {
+  items: { q: '', cat: '', slot: '', job: '', lvMin: '', lvMax: '', src: new Set(), sort: null, dir: 1 },
+  mobs: { q: '', body: '', ground: '', sort: 'lvMin', dir: 1 },
+};
+try { const t = localStorage.getItem('rpgcore-dex-tab'); if (t === 'mobs' || t === 'items') tab = t; } catch (e) {}
+if (location.hash === '#mobs') tab = 'mobs';
+if (location.hash === '#items') tab = 'items';
+
+const ITEM_COLS = [
+  { k: 'name', t: '이름', r: (x) => `<span class="nm">${esc(x.name)}</span><span class="id">${esc(x.id)}</span>` },
+  { k: 'cat', t: '분류' }, { k: 'slot', t: '부위' }, { k: 'job', t: '직업', r: (x) => `<span class="job">${esc(x.job)}</span>` },
+  { k: 'lv', t: 'Lv', num: true }, { k: 'stats', t: '능력치', cls: 'small' },
+  { k: 'atk', t: '공격·마력', num: true }, { k: 'def', t: '방어', num: true },
+  { k: 'src', t: '얻는 곳', sortBy: (x) => x.src.join(' '), r: (x) => x.src.length ? `<div class="src">${x.src.map(srcChip).join('')}</div>` : '<span class="id">없음</span>' },
+  { k: 'recipe', t: '제작 재료', cls: 'small wide', r: (x) => esc(x.recipe || '-') },
+  { k: 'sell', t: '판매가', num: true, r: (x) => x.sell == null ? '-' : `<span class="gold">${fmt(x.sell)}</span>` },
+];
+const rng = (a) => a && a[0] != null ? (a[0] === a[1] ? fmt(a[0]) : `${fmt(a[0])}~${fmt(a[1])}`) : '-';
+const MOB_COLS = [
+  { k: 'name', t: '몹', r: (x) => `<span class="nm">${esc(x.name)}</span><span class="id">${esc(x.id)}</span>` },
+  { k: 'body', t: '몸' }, { k: 'ground', t: '사냥터' },
+  { k: 'lvMin', t: 'Lv', num: true, r: (x) => x.lvMin == null ? '-' : `${x.lvMin}~${x.lvMax}` },
+  { k: 'hp', t: 'HP', num: true, sortBy: (x) => x.hp[1], r: (x) => rng(x.hp) },
+  { k: 'atk', t: '공격', num: true, sortBy: (x) => x.atk[1], r: (x) => rng(x.atk) },
+  { k: 'exp', t: '경험치', num: true, sortBy: (x) => x.exp[1], r: (x) => rng(x.exp) },
+  { k: 'gold', t: '골드', num: true, sortBy: (x) => x.gold[1], r: (x) => rng(x.gold) },
+  { k: 'melee', t: '근접 공격', cls: 'small wide' }, { k: 'pattern', t: '패턴', cls: 'small wide' },
+  { k: 'stun', t: '경직 방어', num: true }, { k: 'mats', t: '재료 드롭', cls: 'small' }, { k: 'unique', t: '전용 장비', cls: 'small' },
+];
+
+function uniq(list, k) { return [...new Set(list.map((x) => x[k]).filter((v) => v && v !== '-'))]; }
+function select(id, label, opts, val) {
+  return `<label for="${id}">${label}<select id="${id}"><option value="">전체</option>${opts.map((o) => `<option${o === val ? ' selected' : ''}>${esc(o)}</option>`).join('')}</select></label>`;
+}
+
+function renderFilters() {
+  const f = $('#filters');
+  if (tab === 'items') {
+    const s = state.items, it = DATA.items;
+    f.innerHTML =
+      `<input type="search" id="q" placeholder="이름·id·재료로 찾기" value="${esc(s.q)}" aria-label="찾기">` +
+      select('f-cat', '분류', uniq(it, 'cat'), s.cat) + select('f-slot', '부위', uniq(it, 'slot'), s.slot) +
+      select('f-job', '직업', ['공용', '전사', '궁수', '마법사', '도적'], s.job) +
+      `<label for="lv-min">Lv<input type="number" id="lv-min" min="0" max="200" value="${esc(s.lvMin)}" aria-label="최소 레벨">~<input type="number" id="lv-max" min="0" max="200" value="${esc(s.lvMax)}" aria-label="최대 레벨"></label>` +
+      `<div class="chips" role="group" aria-label="얻는 곳">${SRC.map(([k, c]) => `<button class="chip" data-src="${k}" aria-pressed="${s.src.has(k)}" style="--c:var(--src-${c});--cb:var(--src-${c}-bg)">${k}</button>`).join('')}</div>` +
+      `<button class="reset" id="reset">필터 지우기</button><div class="count" id="count"></div>`;
+    $('#q').oninput = (e) => { s.q = e.target.value; renderBody(); };
+    $('#f-cat').onchange = (e) => { s.cat = e.target.value; renderBody(); };
+    $('#f-slot').onchange = (e) => { s.slot = e.target.value; renderBody(); };
+    $('#f-job').onchange = (e) => { s.job = e.target.value; renderBody(); };
+    $('#lv-min').oninput = (e) => { s.lvMin = e.target.value; renderBody(); };
+    $('#lv-max').oninput = (e) => { s.lvMax = e.target.value; renderBody(); };
+    f.querySelectorAll('.chip').forEach((b) => b.onclick = () => {
+      const k = b.dataset.src; s.src.has(k) ? s.src.delete(k) : s.src.add(k); b.setAttribute('aria-pressed', s.src.has(k)); renderBody();
+    });
+    $('#reset').onclick = () => { Object.assign(s, { q: '', cat: '', slot: '', job: '', lvMin: '', lvMax: '', src: new Set() }); renderFilters(); renderBody(); };
+  } else {
+    const s = state.mobs, m = DATA.mobs;
+    f.innerHTML =
+      `<input type="search" id="q" placeholder="몹 이름·재료·장비로 찾기" value="${esc(s.q)}" aria-label="찾기">` +
+      select('f-body', '몸', uniq(m, 'body'), s.body) + select('f-ground', '사냥터', uniq(m, 'ground'), s.ground) +
+      `<button class="reset" id="reset">필터 지우기</button><div class="count" id="count"></div>`;
+    $('#q').oninput = (e) => { s.q = e.target.value; renderBody(); };
+    $('#f-body').onchange = (e) => { s.body = e.target.value; renderBody(); };
+    $('#f-ground').onchange = (e) => { s.ground = e.target.value; renderBody(); };
+    $('#reset').onclick = () => { Object.assign(s, { q: '', body: '', ground: '' }); renderFilters(); renderBody(); };
+  }
+}
+
+function rows() {
+  if (tab === 'items') {
+    const s = state.items, q = s.q.trim().toLowerCase();
+    const mn = s.lvMin === '' ? null : +s.lvMin, mx = s.lvMax === '' ? null : +s.lvMax;
+    return DATA.items.filter((x) =>
+      (!q || [x.name, x.id, x.recipe, x.stats, x.src.join(' ')].join(' ').toLowerCase().includes(q)) &&
+      (!s.cat || x.cat === s.cat) && (!s.slot || x.slot === s.slot) && (!s.job || x.job === s.job) &&
+      (mn === null || (x.lv != null && x.lv >= mn)) && (mx === null || (x.lv != null && x.lv <= mx)) &&
+      (!s.src.size || [...s.src].some((k) => x.src.some((t) => t.startsWith(k)))));
+  }
+  const s = state.mobs, q = s.q.trim().toLowerCase();
+  return DATA.mobs.filter((x) =>
+    (!q || [x.name, x.id, x.mats, x.unique, x.pattern].join(' ').toLowerCase().includes(q)) &&
+    (!s.body || x.body === s.body) && (!s.ground || x.ground === s.ground));
+}
+
+function renderHead() {
+  const cols = tab === 'items' ? ITEM_COLS : MOB_COLS, s = state[tab];
+  $('#thead').innerHTML = '<tr>' + cols.map((c) =>
+    `<th class="${c.num ? 'num' : ''}"><button data-k="${c.k}"${s.sort === c.k ? ` data-dir="${s.dir > 0 ? 'asc' : 'desc'}"` : ''}>${c.t}</button></th>`).join('') + '</tr>';
+  $('#thead').querySelectorAll('button').forEach((b) => b.onclick = () => {
+    const k = b.dataset.k;
+    if (s.sort === k) s.dir = -s.dir; else { s.sort = k; s.dir = 1; }
+    renderHead(); renderBody();
+  });
+}
+
+function renderBody() {
+  const cols = tab === 'items' ? ITEM_COLS : MOB_COLS, s = state[tab];
+  let list = rows();
+  if (s.sort) {
+    const c = cols.find((x) => x.k === s.sort), get = c.sortBy || ((x) => x[c.k]);
+    list = [...list].sort((a, b) => {
+      const va = get(a), vb = get(b);
+      if (va == null && vb == null) return 0; if (va == null) return 1; if (vb == null) return -1;
+      return (typeof va === 'number' && typeof vb === 'number' ? va - vb : String(va).localeCompare(String(vb), 'ko')) * s.dir;
+    });
+  }
+  const total = (tab === 'items' ? DATA.items : DATA.mobs).length;
+  const cnt = $('#count'); if (cnt) cnt.innerHTML = `<b>${list.length}</b> / ${total}개`;
+  $('#tbody').innerHTML = list.length ? list.map((x) => '<tr>' + cols.map((c) =>
+    `<td class="${c.num ? 'num' : ''} ${c.cls || ''}">${c.r ? c.r(x) : esc(fmt(x[c.k]))}</td>`).join('') + '</tr>').join('')
+    : `<tr><td class="empty" colspan="${cols.length}">조건에 맞는 ${tab === 'items' ? '아이템' : '몹'}이 없어요. 필터를 줄여 보세요.</td></tr>`;
+}
+
+function show(t) {
+  tab = t;
+  try { localStorage.setItem('rpgcore-dex-tab', t); } catch (e) {}
+  $('#tab-items').setAttribute('aria-selected', t === 'items');
+  $('#tab-mobs').setAttribute('aria-selected', t === 'mobs');
+  $('#note').innerHTML = t === 'items'
+    ? '<span>추가 옵션: 상점 장비 0줄 · 제작·드롭·보상 장비 4줄 (종류·수치 무작위). 열 이름을 누르면 정렬, 한 번 더 누르면 반대로.</span>'
+    : `<span>${esc(DATA.elite)}</span><span>${esc(DATA.stun)}</span>`;
+  renderFilters(); renderHead(); renderBody();
+}
+
+$('#ver').textContent = DATA.ver;
+$('#tab-items').onclick = () => show('items');
+$('#tab-mobs').onclick = () => show('mobs');
+show(tab);
+</script>
