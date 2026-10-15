@@ -30,7 +30,7 @@ public final class Drops {
     private Drops() {}
 
     public record Entry(String item, double chance) {}
-    public record MobDrops(List<Entry> items, double potion, double gear, double enhance) {}
+    public record MobDrops(List<Entry> items, double potion, double gear, double enhance, List<Entry> uniques) {}
 
     public static double ownerSeconds = 30;
     public static double goldChance = 100;
@@ -63,7 +63,12 @@ public final class Drops {
                     JsonArray a = x.getAsJsonArray();
                     list.add(new Entry(a.get(0).getAsString(), a.get(1).getAsDouble()));
                 }
-                MOBS.put(e.getKey(), new MobDrops(list, d(m, "potion", -1), d(m, "gear", -1), d(m, "enhance", -1)));
+                List<Entry> uq = new ArrayList<>();
+                if (m.has("uniques")) for (var x : m.getAsJsonArray("uniques")) {
+                    JsonArray a = x.getAsJsonArray();
+                    uq.add(new Entry(a.get(0).getAsString(), a.get(1).getAsDouble()));
+                }
+                MOBS.put(e.getKey(), new MobDrops(list, d(m, "potion", -1), d(m, "gear", -1), d(m, "enhance", -1), uq));
             }
             RpgCore.LOG.info("[rpgcore] 드롭표 {}종 읽음", MOBS.size());
         } catch (Exception ex) {
@@ -93,9 +98,17 @@ public final class Drops {
         if (hit(r, pc * mul)) out.add(new ItemStack(r.nextDouble() * 100 < potionRed ? ModItems.RED_POTION.get() : ModItems.BLUE_POTION.get()));
 
         double gc = (md != null && md.gear() >= 0 ? md.gear() : gearChance) * (m.elite ? rpg.core.balance.Balance.eliteGear : 1);
-        if (hit(r, gc * mul)) {
+        if (gc > 0 && hit(r, gc * mul)) {
             ItemStack g = randomGear(m.level, r);
             if (!g.isEmpty()) out.add(g);
+        }
+
+        // 몹 전용 장비: 확률 × 드롭률 × 엘리트 배수, 추가 옵션 4줄
+        if (md != null) for (Entry u : md.uniques()) {
+            if (!hit(r, u.chance() * mul * (m.elite ? rpg.core.balance.Balance.eliteGear : 1))) continue;
+            List<ItemStack> one = new ArrayList<>();
+            add(one, u.item());
+            for (ItemStack g : one) { Gear.roll(g); out.add(g); }
         }
 
         double ec = md != null && md.enhance() >= 0 ? md.enhance() : enhanceChance;

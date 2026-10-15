@@ -110,6 +110,8 @@ public final class Balance {
             rpg.core.loot.Drops.parse(dr == null ? "{}" : dr.toString());
             JsonElement sh = files.get(RpgCore.id("shops"));
             rpg.core.shop.Shops.parse(sh == null ? "{}" : sh.toString());
+            JsonElement cr = files.get(RpgCore.id("crafts"));
+            rpg.core.craft.Crafts.parse(cr == null ? "{}" : cr.toString());
             JsonElement qu = files.get(RpgCore.id("quests"));
             rpg.core.quest.Quests.parse(qu == null ? "{}" : qu.toString());
             JsonElement el = files.get(RpgCore.id("player"));

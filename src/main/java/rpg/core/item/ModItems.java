@@ -30,10 +30,14 @@ public final class ModItems {
             "gloves_1", "gloves_10", "cape_1", "cape_10", "belt_1", "belt_10",
             "earring_1", "earring_10", "ring_1", "ring_10", "pendant_1", "pendant_10", "medal_1", "medal_10"};
 
+    /** 몹 전용 장신구 16종 (drops.json uniques) */
+    public static final String[] UNIQUE = {"pig_snout_pendant", "cow_horn_earring", "slime_ring", "rat_tail_belt", "dog_fang_earring", "bee_cape", "tusk_gloves", "bear_belt", "spirit_pendant", "mushroom_ring", "soldier_gloves", "fairy_cape", "gland_earring", "witch_pendant", "dark_eye_ring", "beast_belt"};
+
     static {
         java.util.List<String> all = new java.util.ArrayList<>(java.util.List.of(BASIC));
         for (String b : new String[]{"warrior_sword", "archer_bow", "mage_staff", "thief_dagger", "gloves", "cape", "belt", "earring", "ring", "pendant", "medal"})
-            for (int lv : new int[]{20, 30, 40}) all.add(b + "_" + lv);   // 테스트 장비 Lv20·30·40
+            for (int lv : new int[]{20, 30, 40}) all.add(b + "_" + lv);   // Lv20·30·40 (제작·상점)
+        all.addAll(java.util.List.of(UNIQUE));   // 몹 전용 장신구 (드롭 전용)
         for (String id : all) GEAR.add(ITEMS.register(id, () -> id.startsWith("archer_bow")
                 ? new rpg.core.equip.GearItems.Bow(new Item.Properties(), id)
                 : (id.startsWith("warrior_sword") || id.startsWith("mage_staff") || id.startsWith("thief_dagger"))

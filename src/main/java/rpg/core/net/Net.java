@@ -82,6 +82,57 @@ public final class Net {
                 .encoder(QuestAction::encode).decoder(QuestAction::new).consumerMainThread(QuestAction::handle).add();
         CH.messageBuilder(QuestPoints.class, id++, NetworkDirection.PLAY_TO_CLIENT)
                 .encoder(QuestPoints::encode).decoder(QuestPoints::new).consumerMainThread(QuestPoints::handle).add();
+        CH.messageBuilder(OpenCraft.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(OpenCraft::encode).decoder(OpenCraft::new).consumerMainThread(OpenCraft::handle).add();
+        CH.messageBuilder(CraftAction.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(CraftAction::encode).decoder(CraftAction::new).consumerMainThread(CraftAction::handle).add();
+    }
+
+    // ───────── 제작 NPC ─────────
+    /** 레시피 한 줄 (클라 표시용) */
+    public record CraftLine(String tab, String result, int count, long gold, java.util.List<String> mats, java.util.List<Integer> counts) {}
+
+    public static void openCraft(ServerPlayer p, int npcId, rpg.core.craft.Crafts.Station s) {
+        java.util.List<CraftLine> lines = new java.util.ArrayList<>();
+        for (var r : s.recipes()) {
+            java.util.List<String> m = new java.util.ArrayList<>();
+            java.util.List<Integer> c = new java.util.ArrayList<>();
+            for (var x : r.mats()) { m.add(x.item()); c.add(x.count()); }
+            lines.add(new CraftLine(r.tab(), r.result(), r.count(), r.gold(), m, c));
+        }
+        CH.send(PacketDistributor.PLAYER.with(() -> p), new OpenCraft(npcId, s.name(), s.tabs(), lines));
+    }
+
+    // ───────── 서버 → 클라: 제작 창 ─────────
+    public record OpenCraft(int npc, String name, java.util.List<String> tabs, java.util.List<CraftLine> lines) {
+        OpenCraft(FriendlyByteBuf b) {
+            this(b.readVarInt(), b.readUtf(), b.readList(FriendlyByteBuf::readUtf), b.readList(x -> new CraftLine(x.readUtf(), x.readUtf(),
+                    x.readVarInt(), x.readVarLong(), x.readList(FriendlyByteBuf::readUtf), x.readList(FriendlyByteBuf::readVarInt))));
+        }
+        void encode(FriendlyByteBuf b) {
+            b.writeVarInt(npc); b.writeUtf(name);
+            b.writeCollection(tabs, FriendlyByteBuf::writeUtf);
+            b.writeCollection(lines, (x, l) -> {
+                x.writeUtf(l.tab()); x.writeUtf(l.result()); x.writeVarInt(l.count()); x.writeVarLong(l.gold());
+                x.writeCollection(l.mats(), FriendlyByteBuf::writeUtf);
+                x.writeCollection(l.counts(), FriendlyByteBuf::writeVarInt);
+            });
+        }
+        void handle(Supplier<NetworkEvent.Context> ctx) {
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> rpg.core.client.CraftScreen.open(npc, name, tabs, lines));
+            ctx.get().setPacketHandled(true);
+        }
+    }
+
+    // ───────── 클라 → 서버: 제작 (index 번 레시피를 times 번) ─────────
+    public record CraftAction(int npc, int index, int times) {
+        CraftAction(FriendlyByteBuf b) { this(b.readVarInt(), b.readVarInt(), b.readVarInt()); }
+        void encode(FriendlyByteBuf b) { b.writeVarInt(npc); b.writeVarInt(index); b.writeVarInt(times); }
+        void handle(Supplier<NetworkEvent.Context> ctx) {
+            ServerPlayer p = ctx.get().getSender();
+            if (p != null) rpg.core.craft.Crafts.craft(p, npc, index, times);
+            ctx.get().setPacketHandled(true);
+        }
     }
 
     // ───────── 퀘스트 ─────────

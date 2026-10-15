@@ -35,17 +35,28 @@ public final class Gear {
         return s.hasTag() && s.getTag().getBoolean("rpgRolled");
     }
 
-    /** 처음 얻었을 때 한 번: 0~4줄 무작위 옵션 */
+    /** 상점 일반 장비: 추가 옵션 없음 (굴린 것으로 표시만) */
+    public static void rollPlain(ItemStack s) {
+        if (def(s) == null || rolled(s)) return;
+        s.getOrCreateTag().put("rpgOpts", new CompoundTag());
+        s.getOrCreateTag().putBoolean("rpgRolled", true);
+    }
+
+    /** 처음 얻었을 때 한 번 (제작·드롭·보상): 추가 옵션 고정 줄 수(equipment.json options.lines, 기본 4), 옵션 종류·수치는 무작위 */
     public static void roll(ItemStack s) {
         GearDefs.GearDef d = def(s);
         if (d == null || rolled(s)) return;
         ThreadLocalRandom r = ThreadLocalRandom.current();
-        int lines = 0, total = 0, pick;
-        for (int c : GearDefs.lineChances) total += c;
-        pick = r.nextInt(Math.max(1, total));
-        for (int i = 0; i < GearDefs.lineChances.length; i++) {
-            pick -= GearDefs.lineChances[i];
-            if (pick < 0) { lines = i; break; }
+        int lines = GearDefs.fixedLines;
+        if (lines < 0) {   // fixedLines 가 없으면 예전 방식 (lineChances 확률)
+            int total = 0, pick;
+            for (int c : GearDefs.lineChances) total += c;
+            pick = r.nextInt(Math.max(1, total));
+            for (int i = 0; i < GearDefs.lineChances.length; i++) {
+                pick -= GearDefs.lineChances[i];
+                if (pick < 0) { lines = i; break; }
+            }
+            lines = Math.max(0, lines);
         }
         List<String> pool = new ArrayList<>(GearDefs.POOLS.getOrDefault(d.slot(), List.of()));
         CompoundTag opts = new CompoundTag();

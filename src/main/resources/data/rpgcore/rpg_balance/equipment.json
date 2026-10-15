@@ -735,10 +735,183 @@
     "int": 5,
     "luk": 5
    }
+  },
+  "pig_snout_pendant": {
+   "slot": "pendant",
+   "job": 0,
+   "level": 5,
+   "stats": {
+    "hp": 35,
+    "mp": 15
+   }
+  },
+  "cow_horn_earring": {
+   "slot": "earring",
+   "job": 0,
+   "level": 5,
+   "stats": {
+    "str": 2,
+    "dex": 2,
+    "int": 2,
+    "luk": 2,
+    "hp": 10
+   }
+  },
+  "slime_ring": {
+   "slot": "ring",
+   "job": 0,
+   "level": 10,
+   "stats": {
+    "str": 2,
+    "dex": 2,
+    "int": 2,
+    "luk": 2,
+    "hp": 15
+   }
+  },
+  "rat_tail_belt": {
+   "slot": "belt",
+   "job": 0,
+   "level": 10,
+   "stats": {
+    "hp": 45,
+    "def": 3,
+    "dex": 2
+   }
+  },
+  "dog_fang_earring": {
+   "slot": "earring",
+   "job": 0,
+   "level": 15,
+   "stats": {
+    "str": 4,
+    "dex": 4,
+    "int": 4,
+    "luk": 4
+   }
+  },
+  "bee_cape": {
+   "slot": "cape",
+   "job": 0,
+   "level": 15,
+   "stats": {
+    "def": 7,
+    "hp": 30,
+    "dex": 2
+   }
+  },
+  "tusk_gloves": {
+   "slot": "gloves",
+   "job": 0,
+   "level": 20,
+   "stats": {
+    "def": 6,
+    "atk": 2,
+    "matk": 2,
+    "str": 2
+   }
+  },
+  "bear_belt": {
+   "slot": "belt",
+   "job": 0,
+   "level": 20,
+   "stats": {
+    "hp": 70,
+    "def": 4,
+    "vit": 2
+   }
+  },
+  "spirit_pendant": {
+   "slot": "pendant",
+   "job": 0,
+   "level": 25,
+   "stats": {
+    "hp": 100,
+    "mp": 70,
+    "int": 3
+   }
+  },
+  "mushroom_ring": {
+   "slot": "ring",
+   "job": 0,
+   "level": 25,
+   "stats": {
+    "str": 3,
+    "dex": 3,
+    "int": 3,
+    "luk": 3,
+    "hp": 25
+   }
+  },
+  "soldier_gloves": {
+   "slot": "gloves",
+   "job": 0,
+   "level": 30,
+   "stats": {
+    "def": 9,
+    "atk": 3,
+    "matk": 3,
+    "str": 3
+   }
+  },
+  "fairy_cape": {
+   "slot": "cape",
+   "job": 0,
+   "level": 30,
+   "stats": {
+    "def": 10,
+    "hp": 50,
+    "dex": 3,
+    "luk": 3
+   }
+  },
+  "gland_earring": {
+   "slot": "earring",
+   "job": 0,
+   "level": 35,
+   "stats": {
+    "str": 8,
+    "dex": 8,
+    "int": 8,
+    "luk": 8
+   }
+  },
+  "witch_pendant": {
+   "slot": "pendant",
+   "job": 0,
+   "level": 35,
+   "stats": {
+    "hp": 120,
+    "mp": 100,
+    "int": 4
+   }
+  },
+  "dark_eye_ring": {
+   "slot": "ring",
+   "job": 0,
+   "level": 40,
+   "stats": {
+    "str": 6,
+    "dex": 6,
+    "int": 6,
+    "luk": 6,
+    "hp": 40
+   }
+  },
+  "beast_belt": {
+   "slot": "belt",
+   "job": 0,
+   "level": 40,
+   "stats": {
+    "hp": 130,
+    "def": 9,
+    "vit": 5
+   }
   }
  },
  "options": {
-  "_설명": "추가 옵션. 줄 수 확률(0~4줄), 부위별로 나올 수 있는 옵션, 옵션 수치 = 무작위(min + minPerLevel×레벨 ~ max + maxPerLevel×레벨)",
+  "_설명": "추가 옵션. lines = 줄 수 고정 (제작·드롭·보상 장비, 상점 일반 장비는 없음). 없으면 lineChances 확률(0~4줄). 부위별로 나올 수 있는 옵션, 옵션 수치 = 무작위(min + minPerLevel×레벨 ~ max + maxPerLevel×레벨)",
+  "lines": 4,
   "lineChances": [
    20,
    30,

@@ -16,6 +16,8 @@ public final class GearDefs {
 
     public static final Map<String, GearDef> ITEMS = new LinkedHashMap<>();
     public static int[] lineChances = {20, 30, 25, 15, 10};
+    /** 추가 옵션 고정 줄 수 (-1 이면 lineChances 확률) */
+    public static int fixedLines = 4;
     public static final Map<String, List<String>> POOLS = new HashMap<>();
     public static final Map<String, double[]> RANGES = new HashMap<>();
     public static boolean keepInventory = true;
@@ -79,6 +81,7 @@ public final class GearDefs {
             }
             if (o.has("options")) {
                 JsonObject op = o.getAsJsonObject("options");
+                fixedLines = op.has("lines") ? op.get("lines").getAsInt() : -1;
                 if (op.has("lineChances")) {
                     var arr = op.getAsJsonArray("lineChances");
                     lineChances = new int[arr.size()];

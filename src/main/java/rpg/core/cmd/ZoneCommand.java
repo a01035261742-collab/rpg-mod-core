@@ -34,7 +34,8 @@ import rpg.core.zone.ZoneWand;
  *  /rpg mobs                                  몹 목록 (mobs.json)
  *  /rpg gear <1|10>                           테스트 장비 한 벌 받기
  *  /rpg npc job <1~4>                         전직 교관 세우기 (1 전사 2 궁수 3 마법사 4 도적)
- *  /rpg npc shop <general|gear>               상점 NPC 세우기 (shops.json)
+ *  /rpg npc shop <general|gear|gear2>         상점 NPC 세우기 (shops.json)
+ *  /rpg npc craft <smith|jeweler|alchemist>   제작 NPC 세우기 (crafts.json)
  *  /rpg npc quest <npc>                       퀘스트 NPC 세우기 (quests.json)
  *  /rpg quest reset                           내 퀘스트 전부 초기화 (테스트용)
  *  /rpg quest point add|remove <지점>          퀘스트 지점(두고 오기·가져오기) 위치 정하기 / 지우기
@@ -89,6 +90,16 @@ public final class ZoneCommand {
                     }
                     rpg.core.shop.Shops.spawn(c.getSource().getPlayerOrException(), id);
                     return ok(c, rpg.core.shop.Shops.SHOPS.get(id).name() + " 을(를) 세웠어요");
+                })))
+                .then(Commands.literal("craft").then(Commands.argument("station", com.mojang.brigadier.arguments.StringArgumentType.word())
+                        .suggests((c, b) -> SharedSuggestionProvider.suggest(rpg.core.craft.Crafts.STATIONS.keySet(), b)).executes(c -> {
+                    String id = com.mojang.brigadier.arguments.StringArgumentType.getString(c, "station");
+                    if (!rpg.core.craft.Crafts.STATIONS.containsKey(id)) {
+                        c.getSource().sendFailure(net.minecraft.network.chat.Component.literal("없는 제작 NPC: " + id + " (crafts.json)"));
+                        return 0;
+                    }
+                    rpg.core.craft.Crafts.spawn(c.getSource().getPlayerOrException(), id);
+                    return ok(c, rpg.core.craft.Crafts.STATIONS.get(id).name() + " 을(를) 세웠어요");
                 })))
                 .then(Commands.literal("quest").then(Commands.argument("npc", com.mojang.brigadier.arguments.StringArgumentType.word())
                         .suggests((c, b) -> SharedSuggestionProvider.suggest(rpg.core.quest.Quests.NPCS.keySet(), b)).executes(c -> {

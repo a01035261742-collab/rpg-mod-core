@@ -144,7 +144,7 @@ public final class Shops {
             msg(p, "골드가 부족해요 (" + String.format("%,d", cost) + " G 필요)", ChatFormatting.RED);
             return;
         }
-        if (gear) Gear.roll(st);   // 상점 장비도 추가 옵션 무작위
+        if (gear) Gear.rollPlain(st);   // 상점 일반 장비: 추가 옵션 없음
         st.setCount(count);
         d.gold -= cost;
         if (!p.getInventory().add(st) && !st.isEmpty()) p.drop(st, false);

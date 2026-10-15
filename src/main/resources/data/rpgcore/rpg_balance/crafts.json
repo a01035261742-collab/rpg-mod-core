@@ -1,0 +1,1451 @@
+{
+ "_설명": "NPC 제작 (작업대 레시피 없음). stations = 제작 NPC (/rpg npc craft <키>), tabs = 창 위 탭. recipes: station·tab·result·count(만들어지는 개수)·gold·mats [아이템, 개수] (minecraft: 없으면 rpgcore). 장비는 추가 옵션 4줄로 나옴. Lv40까지 광물은 철(방어구·무기)·구리(장신구), 단계마다 양만 늘림(×1·1.5·2·3). 숫자는 임시값",
+ "stations": {
+  "smith": {
+   "name": "대장장이",
+   "tabs": [
+    "방어구",
+    "무기"
+   ]
+  },
+  "jeweler": {
+   "name": "세공사",
+   "tabs": [
+    "장신구"
+   ]
+  },
+  "alchemist": {
+   "name": "연금술사",
+   "tabs": [
+    "물약",
+    "재료"
+   ]
+  }
+ },
+ "recipes": [
+  {
+   "station": "smith",
+   "tab": "방어구",
+   "result": "hat_10",
+   "count": 1,
+   "gold": 198,
+   "mats": [
+    [
+     "cow_hide",
+     8
+    ],
+    [
+     "slime_goo",
+     5
+    ],
+    [
+     "minecraft:iron_ingot",
+     2
+    ]
+   ]
+  },
+  {
+   "station": "smith",
+   "tab": "방어구",
+   "result": "top_10",
+   "count": 1,
+   "gold": 259,
+   "mats": [
+    [
+     "pig_hide",
+     12
+    ],
+    [
+     "cow_hide",
+     8
+    ],
+    [
+     "minecraft:iron_ingot",
+     4
+    ]
+   ]
+  },
+  {
+   "station": "smith",
+   "tab": "방어구",
+   "result": "bottom_10",
+   "count": 1,
+   "gold": 241,
+   "mats": [
+    [
+     "slime_goo",
+     10
+    ],
+    [
+     "rat_tail",
+     6
+    ],
+    [
+     "minecraft:iron_ingot",
+     3
+    ]
+   ]
+  },
+  {
+   "station": "smith",
+   "tab": "방어구",
+   "result": "shoes_10",
+   "count": 1,
+   "gold": 180,
+   "mats": [
+    [
+     "rat_tail",
+     6
+    ],
+    [
+     "pig_hide",
+     4
+    ],
+    [
+     "minecraft:iron_ingot",
+     2
+    ]
+   ]
+  },
+  {
+   "station": "smith",
+   "tab": "방어구",
+   "result": "hat_20",
+   "count": 1,
+   "gold": 739,
+   "mats": [
+    [
+     "bee_sting",
+     8
+    ],
+    [
+     "boar_bristle",
+     5
+    ],
+    [
+     "minecraft:iron_ingot",
+     3
+    ]
+   ]
+  },
+  {
+   "station": "smith",
+   "tab": "방어구",
+   "result": "top_20",
+   "count": 1,
+   "gold": 968,
+   "mats": [
+    [
+     "dog_fur",
+     12
+    ],
+    [
+     "bee_sting",
+     8
+    ],
+    [
+     "minecraft:iron_ingot",
+     6
+    ]
+   ]
+  },
+  {
+   "station": "smith",
+   "tab": "방어구",
+   "result": "bottom_20",
+   "count": 1,
+   "gold": 900,
+   "mats": [
+    [
+     "boar_bristle",
+     10
+    ],
+    [
+     "bear_pelt",
+     6
+    ],
+    [
+     "minecraft:iron_ingot",
+     5
+    ]
+   ]
+  },
+  {
+   "station": "smith",
+   "tab": "방어구",
+   "result": "shoes_20",
+   "count": 1,
+   "gold": 672,
+   "mats": [
+    [
+     "bear_pelt",
+     6
+    ],
+    [
+     "dog_fur",
+     4
+    ],
+    [
+     "minecraft:iron_ingot",
+     3
+    ]
+   ]
+  },
+  {
+   "station": "smith",
+   "tab": "방어구",
+   "result": "hat_30",
+   "count": 1,
+   "gold": 1641,
+   "mats": [
+    [
+     "tiny_cap",
+     8
+    ],
+    [
+     "toxic_cap",
+     5
+    ],
+    [
+     "minecraft:iron_ingot",
+     4
+    ]
+   ]
+  },
+  {
+   "station": "smith",
+   "tab": "방어구",
+   "result": "top_30",
+   "count": 1,
+   "gold": 2148,
+   "mats": [
+    [
+     "spore_dust",
+     12
+    ],
+    [
+     "tiny_cap",
+     8
+    ],
+    [
+     "minecraft:iron_ingot",
+     8
+    ]
+   ]
+  },
+  {
+   "station": "smith",
+   "tab": "방어구",
+   "result": "bottom_30",
+   "count": 1,
+   "gold": 1999,
+   "mats": [
+    [
+     "toxic_cap",
+     10
+    ],
+    [
+     "fairy_wing",
+     6
+    ],
+    [
+     "minecraft:iron_ingot",
+     6
+    ]
+   ]
+  },
+  {
+   "station": "smith",
+   "tab": "방어구",
+   "result": "shoes_30",
+   "count": 1,
+   "gold": 1492,
+   "mats": [
+    [
+     "fairy_wing",
+     6
+    ],
+    [
+     "spore_dust",
+     4
+    ],
+    [
+     "minecraft:iron_ingot",
+     4
+    ]
+   ]
+  },
+  {
+   "station": "smith",
+   "tab": "방어구",
+   "result": "hat_40",
+   "count": 1,
+   "gold": 2904,
+   "mats": [
+    [
+     "witch_herb",
+     8
+    ],
+    [
+     "dark_silk",
+     5
+    ],
+    [
+     "minecraft:iron_ingot",
+     6
+    ]
+   ]
+  },
+  {
+   "station": "smith",
+   "tab": "방어구",
+   "result": "top_40",
+   "count": 1,
+   "gold": 3802,
+   "mats": [
+    [
+     "spore_silk",
+     12
+    ],
+    [
+     "witch_herb",
+     8
+    ],
+    [
+     "minecraft:iron_ingot",
+     12
+    ]
+   ]
+  },
+  {
+   "station": "smith",
+   "tab": "방어구",
+   "result": "bottom_40",
+   "count": 1,
+   "gold": 3538,
+   "mats": [
+    [
+     "dark_silk",
+     10
+    ],
+    [
+     "beast_shell",
+     6
+    ],
+    [
+     "minecraft:iron_ingot",
+     9
+    ]
+   ]
+  },
+  {
+   "station": "smith",
+   "tab": "방어구",
+   "result": "shoes_40",
+   "count": 1,
+   "gold": 2640,
+   "mats": [
+    [
+     "beast_shell",
+     6
+    ],
+    [
+     "spore_silk",
+     4
+    ],
+    [
+     "minecraft:iron_ingot",
+     6
+    ]
+   ]
+  },
+  {
+   "station": "smith",
+   "tab": "무기",
+   "result": "warrior_sword_20",
+   "count": 1,
+   "gold": 1680,
+   "mats": [
+    [
+     "bear_pelt",
+     10
+    ],
+    [
+     "bear_paw",
+     2
+    ],
+    [
+     "minecraft:iron_ingot",
+     8
+    ]
+   ]
+  },
+  {
+   "station": "smith",
+   "tab": "무기",
+   "result": "archer_bow_20",
+   "count": 1,
+   "gold": 1680,
+   "mats": [
+    [
+     "dog_fur",
+     10
+    ],
+    [
+     "dog_fang",
+     2
+    ],
+    [
+     "minecraft:iron_ingot",
+     8
+    ]
+   ]
+  },
+  {
+   "station": "smith",
+   "tab": "무기",
+   "result": "mage_staff_20",
+   "count": 1,
+   "gold": 1680,
+   "mats": [
+    [
+     "bee_sting",
+     10
+    ],
+    [
+     "royal_jelly",
+     2
+    ],
+    [
+     "minecraft:iron_ingot",
+     8
+    ]
+   ]
+  },
+  {
+   "station": "smith",
+   "tab": "무기",
+   "result": "thief_dagger_20",
+   "count": 1,
+   "gold": 1680,
+   "mats": [
+    [
+     "boar_bristle",
+     10
+    ],
+    [
+     "boar_tusk",
+     2
+    ],
+    [
+     "minecraft:iron_ingot",
+     8
+    ]
+   ]
+  },
+  {
+   "station": "smith",
+   "tab": "무기",
+   "result": "warrior_sword_30",
+   "count": 1,
+   "gold": 3730,
+   "mats": [
+    [
+     "toxic_cap",
+     10
+    ],
+    [
+     "soldier_badge",
+     2
+    ],
+    [
+     "minecraft:iron_ingot",
+     10
+    ]
+   ]
+  },
+  {
+   "station": "smith",
+   "tab": "무기",
+   "result": "archer_bow_30",
+   "count": 1,
+   "gold": 3730,
+   "mats": [
+    [
+     "fairy_wing",
+     10
+    ],
+    [
+     "fairy_dust",
+     2
+    ],
+    [
+     "minecraft:iron_ingot",
+     10
+    ]
+   ]
+  },
+  {
+   "station": "smith",
+   "tab": "무기",
+   "result": "mage_staff_30",
+   "count": 1,
+   "gold": 3730,
+   "mats": [
+    [
+     "spore_dust",
+     10
+    ],
+    [
+     "spirit_cap",
+     2
+    ],
+    [
+     "minecraft:iron_ingot",
+     10
+    ]
+   ]
+  },
+  {
+   "station": "smith",
+   "tab": "무기",
+   "result": "thief_dagger_30",
+   "count": 1,
+   "gold": 3730,
+   "mats": [
+    [
+     "tiny_cap",
+     10
+    ],
+    [
+     "glow_spore",
+     2
+    ],
+    [
+     "minecraft:iron_ingot",
+     10
+    ]
+   ]
+  },
+  {
+   "station": "smith",
+   "tab": "무기",
+   "result": "warrior_sword_40",
+   "count": 1,
+   "gold": 6600,
+   "mats": [
+    [
+     "beast_shell",
+     10
+    ],
+    [
+     "beast_core",
+     2
+    ],
+    [
+     "minecraft:iron_ingot",
+     15
+    ]
+   ]
+  },
+  {
+   "station": "smith",
+   "tab": "무기",
+   "result": "archer_bow_40",
+   "count": 1,
+   "gold": 6600,
+   "mats": [
+    [
+     "dark_silk",
+     10
+    ],
+    [
+     "dark_eye",
+     2
+    ],
+    [
+     "minecraft:iron_ingot",
+     15
+    ]
+   ]
+  },
+  {
+   "station": "smith",
+   "tab": "무기",
+   "result": "mage_staff_40",
+   "count": 1,
+   "gold": 6600,
+   "mats": [
+    [
+     "witch_herb",
+     10
+    ],
+    [
+     "odd_potion",
+     2
+    ],
+    [
+     "minecraft:iron_ingot",
+     15
+    ]
+   ]
+  },
+  {
+   "station": "smith",
+   "tab": "무기",
+   "result": "thief_dagger_40",
+   "count": 1,
+   "gold": 6600,
+   "mats": [
+    [
+     "spore_silk",
+     10
+    ],
+    [
+     "spore_gland",
+     2
+    ],
+    [
+     "minecraft:iron_ingot",
+     15
+    ]
+   ]
+  },
+  {
+   "station": "jeweler",
+   "tab": "장신구",
+   "result": "gloves_1",
+   "count": 1,
+   "gold": 30,
+   "mats": [
+    [
+     "minecraft:leather",
+     4
+    ],
+    [
+     "pig_hide",
+     1
+    ]
+   ]
+  },
+  {
+   "station": "jeweler",
+   "tab": "장신구",
+   "result": "cape_1",
+   "count": 1,
+   "gold": 30,
+   "mats": [
+    [
+     "cow_hide",
+     5
+    ],
+    [
+     "pig_hide",
+     1
+    ]
+   ]
+  },
+  {
+   "station": "jeweler",
+   "tab": "장신구",
+   "result": "belt_1",
+   "count": 1,
+   "gold": 25,
+   "mats": [
+    [
+     "minecraft:leather",
+     2
+    ],
+    [
+     "rat_tail",
+     1
+    ]
+   ]
+  },
+  {
+   "station": "jeweler",
+   "tab": "장신구",
+   "result": "earring_1",
+   "count": 1,
+   "gold": 30,
+   "mats": [
+    [
+     "minecraft:copper_ingot",
+     3
+    ],
+    [
+     "slime_goo",
+     1
+    ]
+   ]
+  },
+  {
+   "station": "jeweler",
+   "tab": "장신구",
+   "result": "ring_1",
+   "count": 1,
+   "gold": 30,
+   "mats": [
+    [
+     "minecraft:copper_ingot",
+     4
+    ],
+    [
+     "rat_tail",
+     1
+    ]
+   ]
+  },
+  {
+   "station": "jeweler",
+   "tab": "장신구",
+   "result": "pendant_1",
+   "count": 1,
+   "gold": 30,
+   "mats": [
+    [
+     "minecraft:copper_ingot",
+     2
+    ],
+    [
+     "cow_hide",
+     1
+    ]
+   ]
+  },
+  {
+   "station": "jeweler",
+   "tab": "장신구",
+   "result": "gloves_10",
+   "count": 1,
+   "gold": 300,
+   "mats": [
+    [
+     "minecraft:iron_ingot",
+     4
+    ],
+    [
+     "dog_fang",
+     1
+    ]
+   ]
+  },
+  {
+   "station": "jeweler",
+   "tab": "장신구",
+   "result": "cape_10",
+   "count": 1,
+   "gold": 300,
+   "mats": [
+    [
+     "minecraft:leather",
+     4
+    ],
+    [
+     "minecraft:blue_dye",
+     1
+    ],
+    [
+     "cow_horn",
+     1
+    ]
+   ]
+  },
+  {
+   "station": "jeweler",
+   "tab": "장신구",
+   "result": "belt_10",
+   "count": 1,
+   "gold": 250,
+   "mats": [
+    [
+     "minecraft:iron_ingot",
+     2
+    ],
+    [
+     "golden_hoof",
+     1
+    ]
+   ]
+  },
+  {
+   "station": "jeweler",
+   "tab": "장신구",
+   "result": "earring_10",
+   "count": 1,
+   "gold": 300,
+   "mats": [
+    [
+     "minecraft:iron_ingot",
+     3
+    ],
+    [
+     "rat_tooth",
+     1
+    ]
+   ]
+  },
+  {
+   "station": "jeweler",
+   "tab": "장신구",
+   "result": "ring_10",
+   "count": 1,
+   "gold": 300,
+   "mats": [
+    [
+     "minecraft:iron_ingot",
+     4
+    ],
+    [
+     "slime_core",
+     1
+    ]
+   ]
+  },
+  {
+   "station": "jeweler",
+   "tab": "장신구",
+   "result": "pendant_10",
+   "count": 1,
+   "gold": 400,
+   "mats": [
+    [
+     "minecraft:iron_ingot",
+     4
+    ],
+    [
+     "royal_jelly",
+     1
+    ]
+   ]
+  },
+  {
+   "station": "jeweler",
+   "tab": "장신구",
+   "result": "gloves_20",
+   "count": 1,
+   "gold": 800,
+   "mats": [
+    [
+     "dog_fur",
+     6
+    ],
+    [
+     "royal_jelly",
+     1
+    ],
+    [
+     "minecraft:copper_ingot",
+     3
+    ]
+   ]
+  },
+  {
+   "station": "jeweler",
+   "tab": "장신구",
+   "result": "cape_20",
+   "count": 1,
+   "gold": 800,
+   "mats": [
+    [
+     "bee_sting",
+     6
+    ],
+    [
+     "boar_tusk",
+     1
+    ],
+    [
+     "minecraft:copper_ingot",
+     3
+    ]
+   ]
+  },
+  {
+   "station": "jeweler",
+   "tab": "장신구",
+   "result": "belt_20",
+   "count": 1,
+   "gold": 800,
+   "mats": [
+    [
+     "boar_bristle",
+     6
+    ],
+    [
+     "bear_paw",
+     1
+    ],
+    [
+     "minecraft:copper_ingot",
+     3
+    ]
+   ]
+  },
+  {
+   "station": "jeweler",
+   "tab": "장신구",
+   "result": "earring_20",
+   "count": 1,
+   "gold": 800,
+   "mats": [
+    [
+     "bear_pelt",
+     6
+    ],
+    [
+     "dog_fang",
+     1
+    ],
+    [
+     "minecraft:copper_ingot",
+     3
+    ]
+   ]
+  },
+  {
+   "station": "jeweler",
+   "tab": "장신구",
+   "result": "ring_20",
+   "count": 1,
+   "gold": 800,
+   "mats": [
+    [
+     "dog_fur",
+     6
+    ],
+    [
+     "royal_jelly",
+     1
+    ],
+    [
+     "minecraft:copper_ingot",
+     3
+    ]
+   ]
+  },
+  {
+   "station": "jeweler",
+   "tab": "장신구",
+   "result": "pendant_20",
+   "count": 1,
+   "gold": 800,
+   "mats": [
+    [
+     "bee_sting",
+     6
+    ],
+    [
+     "boar_tusk",
+     1
+    ],
+    [
+     "minecraft:copper_ingot",
+     3
+    ]
+   ]
+  },
+  {
+   "station": "jeweler",
+   "tab": "장신구",
+   "result": "gloves_30",
+   "count": 1,
+   "gold": 1600,
+   "mats": [
+    [
+     "spore_dust",
+     6
+    ],
+    [
+     "glow_spore",
+     1
+    ],
+    [
+     "minecraft:copper_ingot",
+     4
+    ]
+   ]
+  },
+  {
+   "station": "jeweler",
+   "tab": "장신구",
+   "result": "cape_30",
+   "count": 1,
+   "gold": 1600,
+   "mats": [
+    [
+     "tiny_cap",
+     6
+    ],
+    [
+     "soldier_badge",
+     1
+    ],
+    [
+     "minecraft:copper_ingot",
+     4
+    ]
+   ]
+  },
+  {
+   "station": "jeweler",
+   "tab": "장신구",
+   "result": "belt_30",
+   "count": 1,
+   "gold": 1600,
+   "mats": [
+    [
+     "toxic_cap",
+     6
+    ],
+    [
+     "fairy_dust",
+     1
+    ],
+    [
+     "minecraft:copper_ingot",
+     4
+    ]
+   ]
+  },
+  {
+   "station": "jeweler",
+   "tab": "장신구",
+   "result": "earring_30",
+   "count": 1,
+   "gold": 1600,
+   "mats": [
+    [
+     "fairy_wing",
+     6
+    ],
+    [
+     "spirit_cap",
+     1
+    ],
+    [
+     "minecraft:copper_ingot",
+     4
+    ]
+   ]
+  },
+  {
+   "station": "jeweler",
+   "tab": "장신구",
+   "result": "ring_30",
+   "count": 1,
+   "gold": 1600,
+   "mats": [
+    [
+     "spore_dust",
+     6
+    ],
+    [
+     "glow_spore",
+     1
+    ],
+    [
+     "minecraft:copper_ingot",
+     4
+    ]
+   ]
+  },
+  {
+   "station": "jeweler",
+   "tab": "장신구",
+   "result": "pendant_30",
+   "count": 1,
+   "gold": 1600,
+   "mats": [
+    [
+     "tiny_cap",
+     6
+    ],
+    [
+     "soldier_badge",
+     1
+    ],
+    [
+     "minecraft:copper_ingot",
+     4
+    ]
+   ]
+  },
+  {
+   "station": "jeweler",
+   "tab": "장신구",
+   "result": "gloves_40",
+   "count": 1,
+   "gold": 2800,
+   "mats": [
+    [
+     "spore_silk",
+     6
+    ],
+    [
+     "odd_potion",
+     1
+    ],
+    [
+     "minecraft:copper_ingot",
+     6
+    ]
+   ]
+  },
+  {
+   "station": "jeweler",
+   "tab": "장신구",
+   "result": "cape_40",
+   "count": 1,
+   "gold": 2800,
+   "mats": [
+    [
+     "witch_herb",
+     6
+    ],
+    [
+     "dark_eye",
+     1
+    ],
+    [
+     "minecraft:copper_ingot",
+     6
+    ]
+   ]
+  },
+  {
+   "station": "jeweler",
+   "tab": "장신구",
+   "result": "belt_40",
+   "count": 1,
+   "gold": 2800,
+   "mats": [
+    [
+     "dark_silk",
+     6
+    ],
+    [
+     "beast_core",
+     1
+    ],
+    [
+     "minecraft:copper_ingot",
+     6
+    ]
+   ]
+  },
+  {
+   "station": "jeweler",
+   "tab": "장신구",
+   "result": "earring_40",
+   "count": 1,
+   "gold": 2800,
+   "mats": [
+    [
+     "beast_shell",
+     6
+    ],
+    [
+     "spore_gland",
+     1
+    ],
+    [
+     "minecraft:copper_ingot",
+     6
+    ]
+   ]
+  },
+  {
+   "station": "jeweler",
+   "tab": "장신구",
+   "result": "ring_40",
+   "count": 1,
+   "gold": 2800,
+   "mats": [
+    [
+     "spore_silk",
+     6
+    ],
+    [
+     "odd_potion",
+     1
+    ],
+    [
+     "minecraft:copper_ingot",
+     6
+    ]
+   ]
+  },
+  {
+   "station": "jeweler",
+   "tab": "장신구",
+   "result": "pendant_40",
+   "count": 1,
+   "gold": 2800,
+   "mats": [
+    [
+     "witch_herb",
+     6
+    ],
+    [
+     "dark_eye",
+     1
+    ],
+    [
+     "minecraft:copper_ingot",
+     6
+    ]
+   ]
+  },
+  {
+   "station": "alchemist",
+   "tab": "물약",
+   "result": "red_potion",
+   "count": 3,
+   "gold": 10,
+   "mats": [
+    [
+     "pig_hide",
+     1
+    ],
+    [
+     "slime_goo",
+     1
+    ],
+    [
+     "minecraft:glass_bottle",
+     1
+    ]
+   ]
+  },
+  {
+   "station": "alchemist",
+   "tab": "물약",
+   "result": "blue_potion",
+   "count": 3,
+   "gold": 10,
+   "mats": [
+    [
+     "dog_fur",
+     1
+    ],
+    [
+     "slime_goo",
+     1
+    ],
+    [
+     "minecraft:glass_bottle",
+     1
+    ]
+   ]
+  },
+  {
+   "station": "alchemist",
+   "tab": "재료",
+   "result": "bear_paw",
+   "count": 1,
+   "gold": 38,
+   "mats": [
+    [
+     "bear_pelt",
+     9
+    ]
+   ]
+  },
+  {
+   "station": "alchemist",
+   "tab": "재료",
+   "result": "beast_core",
+   "count": 1,
+   "gold": 58,
+   "mats": [
+    [
+     "beast_shell",
+     9
+    ]
+   ]
+  },
+  {
+   "station": "alchemist",
+   "tab": "재료",
+   "result": "boar_tusk",
+   "count": 1,
+   "gold": 38,
+   "mats": [
+    [
+     "boar_bristle",
+     9
+    ]
+   ]
+  },
+  {
+   "station": "alchemist",
+   "tab": "재료",
+   "result": "cow_horn",
+   "count": 1,
+   "gold": 23,
+   "mats": [
+    [
+     "cow_hide",
+     9
+    ]
+   ]
+  },
+  {
+   "station": "alchemist",
+   "tab": "재료",
+   "result": "dark_eye",
+   "count": 1,
+   "gold": 58,
+   "mats": [
+    [
+     "dark_silk",
+     9
+    ]
+   ]
+  },
+  {
+   "station": "alchemist",
+   "tab": "재료",
+   "result": "dog_fang",
+   "count": 1,
+   "gold": 33,
+   "mats": [
+    [
+     "dog_fur",
+     9
+    ]
+   ]
+  },
+  {
+   "station": "alchemist",
+   "tab": "재료",
+   "result": "fairy_dust",
+   "count": 1,
+   "gold": 48,
+   "mats": [
+    [
+     "fairy_wing",
+     9
+    ]
+   ]
+  },
+  {
+   "station": "alchemist",
+   "tab": "재료",
+   "result": "glow_spore",
+   "count": 1,
+   "gold": 43,
+   "mats": [
+    [
+     "tiny_cap",
+     9
+    ]
+   ]
+  },
+  {
+   "station": "alchemist",
+   "tab": "재료",
+   "result": "golden_hoof",
+   "count": 1,
+   "gold": 23,
+   "mats": [
+    [
+     "pig_hide",
+     9
+    ]
+   ]
+  },
+  {
+   "station": "alchemist",
+   "tab": "재료",
+   "result": "odd_potion",
+   "count": 1,
+   "gold": 53,
+   "mats": [
+    [
+     "witch_herb",
+     9
+    ]
+   ]
+  },
+  {
+   "station": "alchemist",
+   "tab": "재료",
+   "result": "rat_tooth",
+   "count": 1,
+   "gold": 28,
+   "mats": [
+    [
+     "rat_tail",
+     9
+    ]
+   ]
+  },
+  {
+   "station": "alchemist",
+   "tab": "재료",
+   "result": "royal_jelly",
+   "count": 1,
+   "gold": 33,
+   "mats": [
+    [
+     "bee_sting",
+     9
+    ]
+   ]
+  },
+  {
+   "station": "alchemist",
+   "tab": "재료",
+   "result": "slime_core",
+   "count": 1,
+   "gold": 28,
+   "mats": [
+    [
+     "slime_goo",
+     9
+    ]
+   ]
+  },
+  {
+   "station": "alchemist",
+   "tab": "재료",
+   "result": "soldier_badge",
+   "count": 1,
+   "gold": 48,
+   "mats": [
+    [
+     "toxic_cap",
+     9
+    ]
+   ]
+  },
+  {
+   "station": "alchemist",
+   "tab": "재료",
+   "result": "spirit_cap",
+   "count": 1,
+   "gold": 43,
+   "mats": [
+    [
+     "spore_dust",
+     9
+    ]
+   ]
+  },
+  {
+   "station": "alchemist",
+   "tab": "재료",
+   "result": "spore_gland",
+   "count": 1,
+   "gold": 53,
+   "mats": [
+    [
+     "spore_silk",
+     9
+    ]
+   ]
+  }
+ ]
+}

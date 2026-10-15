@@ -1,5 +1,5 @@
 {
- "_설명": "확률은 %. 골드 외 전부 운(LUK) 드롭률 보너스가 곱해짐. 드롭은 막타 플레이어 기준, ownerSeconds 동안 그 사람만 주움",
+ "_설명": "확률은 %. 골드 외 전부 운(LUK) 드롭률 보너스가 곱해짐. 드롭은 막타 플레이어 기준, ownerSeconds 동안 그 사람만 주움. gear.chance = 아무 장비 무작위 드롭 (0 = 끔, 지금은 몹 전용 장비 uniques 만 씀)",
  "ownerSeconds": 30,
  "goldChance": 100,
  "potion": {
@@ -7,7 +7,7 @@
   "redRatio": 70
  },
  "gear": {
-  "chance": 2,
+  "chance": 0,
   "levelRange": 10
  },
  "enhance": {
@@ -17,7 +17,7 @@
    "scroll_fragment": 30
   }
  },
- "_mobs": "items = [아이템, 확률%]. potion/gear/enhance 를 몹마다 덮어쓸 수 있음",
+ "_mobs": "items = [아이템, 확률%] 재료. uniques = [장비, 확률%] 몹 전용 장비 (엘리트 ×eliteGear, 추가 옵션 4줄). potion/gear/enhance 를 몹마다 덮어쓸 수 있음",
  "mobs": {
   "pig": {
    "items": [
@@ -28,6 +28,12 @@
     [
      "golden_hoof",
      3
+    ]
+   ],
+   "uniques": [
+    [
+     "pig_snout_pendant",
+     2
     ]
    ]
   },
@@ -41,6 +47,12 @@
      "cow_horn",
      3
     ]
+   ],
+   "uniques": [
+    [
+     "cow_horn_earring",
+     2
+    ]
    ]
   },
   "slime": {
@@ -52,6 +64,12 @@
     [
      "slime_core",
      3
+    ]
+   ],
+   "uniques": [
+    [
+     "slime_ring",
+     2
     ]
    ]
   },
@@ -65,6 +83,12 @@
      "rat_tooth",
      3
     ]
+   ],
+   "uniques": [
+    [
+     "rat_tail_belt",
+     2
+    ]
    ]
   },
   "wild_dog": {
@@ -76,6 +100,12 @@
     [
      "dog_fang",
      3
+    ]
+   ],
+   "uniques": [
+    [
+     "dog_fang_earring",
+     2
     ]
    ]
   },
@@ -89,6 +119,12 @@
      "royal_jelly",
      3
     ]
+   ],
+   "uniques": [
+    [
+     "bee_cape",
+     2
+    ]
    ]
   },
   "boar": {
@@ -100,6 +136,12 @@
     [
      "boar_tusk",
      3
+    ]
+   ],
+   "uniques": [
+    [
+     "tusk_gloves",
+     2
     ]
    ]
   },
@@ -113,6 +155,12 @@
      "bear_paw",
      3
     ]
+   ],
+   "uniques": [
+    [
+     "bear_belt",
+     2
+    ]
    ]
   },
   "mush_spirit": {
@@ -124,6 +172,12 @@
     [
      "spirit_cap",
      3
+    ]
+   ],
+   "uniques": [
+    [
+     "spirit_pendant",
+     2
     ]
    ]
   },
@@ -137,6 +191,12 @@
      "glow_spore",
      3
     ]
+   ],
+   "uniques": [
+    [
+     "mushroom_ring",
+     2
+    ]
    ]
   },
   "mush_soldier": {
@@ -148,6 +208,12 @@
     [
      "soldier_badge",
      3
+    ]
+   ],
+   "uniques": [
+    [
+     "soldier_gloves",
+     2
     ]
    ]
   },
@@ -161,6 +227,12 @@
      "fairy_dust",
      3
     ]
+   ],
+   "uniques": [
+    [
+     "fairy_cape",
+     2
+    ]
    ]
   },
   "spore_spider": {
@@ -172,6 +244,12 @@
     [
      "spore_gland",
      3
+    ]
+   ],
+   "uniques": [
+    [
+     "gland_earring",
+     2
     ]
    ]
   },
@@ -185,6 +263,12 @@
      "odd_potion",
      3
     ]
+   ],
+   "uniques": [
+    [
+     "witch_pendant",
+     2
+    ]
    ]
   },
   "dark_spider": {
@@ -197,6 +281,12 @@
      "dark_eye",
      3
     ]
+   ],
+   "uniques": [
+    [
+     "dark_eye_ring",
+     2
+    ]
    ]
   },
   "mush_beast": {
@@ -208,6 +298,12 @@
     [
      "beast_core",
      3
+    ]
+   ],
+   "uniques": [
+    [
+     "beast_belt",
+     2
     ]
    ]
   }
