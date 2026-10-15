@@ -7,8 +7,7 @@ jobs:
       - uses: actions/setup-java@v5
         with: { distribution: temurin, java-version: '17' }
       - run: |
-          curl -sL -o gl.jar https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/software/bernie/geckolib/geckolib-forge-1.20.1/4.7.4/geckolib-forge-1.20.1-4.7.4.jar
-          ls -la gl.jar
-          javap -cp gl.jar software.bernie.geckolib.animatable.GeoEntity software.bernie.geckolib.core.animatable.GeoAnimatable software.bernie.geckolib.core.animation.AnimationController | grep -i -E "trigger|stop|interface|class" > out.txt || true
-          split -l 25 out.txt part_
+          curl -sL -o ef.jar https://cdn.modrinth.com/data/vu3NZ5Ma/versions/KEBfkBat/epic-fight-20.14.17-mc1.20.1-forge.jar
+          javap -cp ef.jar yesman.epicfight.gameasset.Animations | grep -o -E "[A-Z_0-9]*(SPEAR|STAFF|MAGIC|CAST|TRIDENT|POKE|STAB|THRUST)[A-Z_0-9]*" | sort -u > out.txt || true
+          split -l 40 out.txt part_
           for f in part_*; do msg=$(sed ':a;N;$!ba;s/%/%25/g;s/\r//g;s/\n/%0A/g' $f); echo "::notice title=$f::$msg"; done
