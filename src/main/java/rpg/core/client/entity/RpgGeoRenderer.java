@@ -1,5 +1,7 @@
 package rpg.core.client.entity;
 
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.renderer.RenderType;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
@@ -25,7 +27,16 @@ public class RpgGeoRenderer extends GeoEntityRenderer<GeoRpgMonster> {
     public RpgGeoRenderer(EntityRendererProvider.Context ctx, String id, float shadow, boolean glow) {
         super(ctx, new Model(id));
         this.shadowRadius = shadow;
+        this.cull = !id.equals("rat");   // 쥐는 얇은 판(귀·수염)이 있어서 양면 그대로
         if (glow) addRenderLayer(new AutoGlowingGeoLayer<>(this));
+    }
+
+    /** 뒷면 그리기 끔 → 맞붙은 면끼리 깜빡이며 겹쳐 보이는 현상 없앰 */
+    private final boolean cull;
+
+    @Override
+    public RenderType getRenderType(GeoRpgMonster e, ResourceLocation texture, MultiBufferSource buf, float pt) {
+        return cull ? RenderType.entityCutout(texture) : super.getRenderType(e, texture, buf, pt);
     }
 
     @Override
