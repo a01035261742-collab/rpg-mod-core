@@ -8,9 +8,7 @@ jobs:
         with: { distribution: temurin, java-version: '17' }
       - run: |
           curl -sL -o ef.jar https://cdn.modrinth.com/data/vu3NZ5Ma/versions/KEBfkBat/epic-fight-20.14.17-mc1.20.1-forge.jar
-          javap -p -cp ef.jar yesman.epicfight.config.ClientConfig > out.txt || true
-          javap -p -cp ef.jar yesman.epicfight.config.EpicFightOptions >> out.txt 2>&1 || true
-          unzip -l ef.jar | grep -i -E "config/|TargetIndicator|Outline|Highlight" | head -40 >> out.txt || true
-          cat out.txt
-          msg=$(sed ':a;N;$!ba;s/%/%25/g;s/\r//g;s/\n/%0A/g' out.txt | head -c 60000)
-          echo "::notice title=ef::$msg"
+          javap -p -cp ef.jar yesman.epicfight.config.ClientConfig | grep -v -E "ForgeConfigSpec|lambda" | sed 's/yesman.epicfight.//g;s/java.util.//g;s/net.minecraft.//g' > out.txt || true
+          unzip -l ef.jar | grep -i -E "TargetIndicator|Outline|EntityGuide|TargetGuide" | awk '{print $4}' | head -20 >> out.txt || true
+          split -l 25 out.txt part_
+          for f in part_*; do msg=$(sed ':a;N;$!ba;s/%/%25/g;s/\r//g;s/\n/%0A/g' $f); echo "::notice title=$f::$msg"; done
