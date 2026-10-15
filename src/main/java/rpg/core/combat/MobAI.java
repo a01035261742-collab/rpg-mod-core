@@ -37,6 +37,8 @@ public final class MobAI {
 
     // ───────── 스폰할 때 ─────────
     public static void setup(Mob mob, Balance.MobDef def) {
+        MobData md = Combat.mob(mob);
+        if (md != null) { if (md.aiReady) return; md.aiReady = true; }
         GoalSelector goals = selector(mob, 0), targets = selector(mob, 1);
         // 근접 공격 거리 통일: 기존 근접 공격(거미·곰·늑대 등 포함)을 RPG 근접 공격으로 바꿈
         if (goals != null && mob instanceof PathfinderMob pm) {
@@ -78,6 +80,16 @@ public final class MobAI {
         } catch (Exception ex) {
             return null;
         }
+    }
+
+    /** 저장된 RPG 몹을 다시 불러올 때(접속·청크 로드)도 AI 다시 설정 — 안 하면 바닐라 근접 공격으로 돌아감 */
+    @SubscribeEvent
+    public static void rejoin(net.minecraftforge.event.entity.EntityJoinLevelEvent e) {
+        if (e.getLevel().isClientSide || !(e.getEntity() instanceof Mob mob)) return;
+        MobData m = Combat.mob(mob);
+        if (m == null || !m.isRpg() || m.aiReady) return;
+        Balance.MobDef def = Balance.MOBS.get(m.key);
+        if (def != null) setup(mob, def);
     }
 
     // ───────── 매 틱 ─────────
