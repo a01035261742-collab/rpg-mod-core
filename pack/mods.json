@@ -24,18 +24,8 @@
       "side": "client"
     },
     {
-      "modrinth": "architectury-api",
-      "optional": false,
-      "side": "client"
-    },
-    {
-      "modrinth": "cloth-config",
-      "optional": false,
-      "side": "client"
-    },
-    {
-      "modrinth": "leawind-third-person",
-      "version": "2.2.0",
+      "modrinth": "shoulder-surfing-reloaded",
+      "version": "1.20.1-5.2.0+forge",
       "optional": false,
       "side": "client"
     }
