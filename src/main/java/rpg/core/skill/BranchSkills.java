@@ -332,7 +332,8 @@ public final class BranchSkills {
 
     private static boolean dash(ServerPlayer p, PlayerData d, Defs.SkillDef s, int lv, long now) {
         ServerLevel l = p.serverLevel();
-        Vec3 dir = flatLook(p);
+        // 방향키 쪽으로 (대각선 포함), 안 누르면 조준 방향
+        Vec3 dir = d.moveX * d.moveX + d.moveZ * d.moveZ > 0.01 ? new Vec3(d.moveX, 0, d.moveZ).normalize() : flatLook(p);
         Vec3 from = p.position().add(0, 0.6, 0);
         var bh = l.clip(new ClipContext(from, from.add(dir.scale(6)), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, p));
         double dist = bh.getType() == HitResult.Type.MISS ? 6 : Math.max(0, bh.getLocation().distanceTo(from) - 0.5);

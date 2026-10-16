@@ -71,6 +71,8 @@ public class PlayerData {
     public net.minecraft.world.phys.Vec3 aim;
     public long aimTick;
     public long lastRoll;
+    /** 스킬 쓸 때 누르고 있던 방향키 (월드 방향, 0 = 안 누름) */
+    public double moveX, moveZ;
 
     // 다운·부활 (저장 안 함)
     public long downEnd;              // 0 = 다운 아님

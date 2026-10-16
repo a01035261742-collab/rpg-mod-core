@@ -467,13 +467,17 @@ public final class Net {
 
     // ───────── 클라 → 서버: 스킬 키 (0~5 = Q E R F Z X) ─────────
     /** ax ay az = 화면 가운데(조준점)가 가리키는 곳 (3인칭·숄더 시점에서도 조준점으로 쏘게) */
-    public record UseSkill(int slot, double ax, double ay, double az) {
-        UseSkill(FriendlyByteBuf b) { this(b.readVarInt(), b.readDouble(), b.readDouble(), b.readDouble()); }
-        void encode(FriendlyByteBuf b) { b.writeVarInt(slot); b.writeDouble(ax); b.writeDouble(ay); b.writeDouble(az); }
+    /** mx mz = 누르고 있는 방향키를 월드 방향으로 바꾼 것 (안 누르면 0, 0) — 대쉬 방향용 */
+    public record UseSkill(int slot, double ax, double ay, double az, float mx, float mz) {
+        UseSkill(FriendlyByteBuf b) { this(b.readVarInt(), b.readDouble(), b.readDouble(), b.readDouble(), b.readFloat(), b.readFloat()); }
+        void encode(FriendlyByteBuf b) { b.writeVarInt(slot); b.writeDouble(ax); b.writeDouble(ay); b.writeDouble(az); b.writeFloat(mx); b.writeFloat(mz); }
         void handle(Supplier<NetworkEvent.Context> ctx) {
             ServerPlayer p = ctx.get().getSender();
             if (p != null) {
                 aim(p, ax, ay, az);
+                var d = rpg.core.data.RpgData.get(p);
+                d.moveX = Float.isFinite(mx) ? mx : 0;
+                d.moveZ = Float.isFinite(mz) ? mz : 0;
                 rpg.core.skill.Skills.use(p, slot);
             }
             ctx.get().setPacketHandled(true);

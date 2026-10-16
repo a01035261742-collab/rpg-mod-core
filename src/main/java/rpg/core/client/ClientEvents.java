@@ -26,6 +26,18 @@ public final class ClientEvents {
      * 화면 가운데(조준점)가 가리키는 곳: 카메라에서 64칸 광선 (블록·엔티티).
      * 3인칭·숄더 시점 모드에서도 스킬이 조준점으로 날아가게 서버에 같이 보냄.
      */
+    /** 누르고 있는 방향키 (WASD) → 월드 방향 (카메라 기준). 안 누르면 0, 0 */
+    public static float[] moveDir(Minecraft mc) {
+        if (mc.player == null) return new float[]{0, 0};
+        float fwd = mc.player.input.forwardImpulse, left = mc.player.input.leftImpulse;
+        if (Math.abs(fwd) < 0.01f && Math.abs(left) < 0.01f) return new float[]{0, 0};
+        double yaw = Math.toRadians(mc.gameRenderer.getMainCamera().getYRot());
+        double sin = Math.sin(yaw), cos = Math.cos(yaw);
+        double x = left * cos - fwd * sin, z = fwd * cos + left * sin;
+        double l = Math.sqrt(x * x + z * z);
+        return new float[]{(float) (x / l), (float) (z / l)};
+    }
+
     public static net.minecraft.world.phys.Vec3 aimPoint(Minecraft mc) {
         var cam = mc.gameRenderer.getMainCamera();
         var lv = cam.getLookVector();
@@ -159,7 +171,8 @@ public final class ClientEvents {
                 if (pressed && free && wait[i] == 0) {
                     wait[i] = 4;
                     var a = aimPoint(mc);
-                    Net.CH.sendToServer(new Net.UseSkill(i, a.x, a.y, a.z));
+                    float[] mv = moveDir(mc);
+                    Net.CH.sendToServer(new Net.UseSkill(i, a.x, a.y, a.z, mv[0], mv[1]));
                     var def = ClientData.slots[i] == null ? null : rpg.core.skill.Defs.SKILLS.get(ClientData.slots[i]);
                     if (def != null && def.charge()) charging[i] = true;
                 }
