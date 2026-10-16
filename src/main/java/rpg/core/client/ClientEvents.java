@@ -132,6 +132,22 @@ public final class ClientEvents {
             }
         }
 
+        private static int faceTicks;
+
+        /** 캐릭터 몸·머리를 조준점 쪽으로 돌리기 (클라에서 돌리면 서버에도 이동 패킷으로 감) */
+        private static void faceAim(Minecraft mc, net.minecraft.world.phys.Vec3 at) {
+            var p = mc.player;
+            if (p == null) return;
+            var d = at.subtract(p.getEyePosition());
+            if (d.lengthSqr() < 0.25) return;
+            float yaw = (float) Math.toDegrees(Math.atan2(-d.x, d.z));
+            float pitch = (float) -Math.toDegrees(Math.atan2(d.y, Math.sqrt(d.x * d.x + d.z * d.z)));
+            p.setYRot(yaw); p.setXRot(pitch);
+            p.yRotO = yaw; p.xRotO = pitch;
+            p.setYHeadRot(yaw); p.yHeadRotO = yaw;
+            p.setYBodyRot(yaw); p.yBodyRotO = yaw;
+        }
+
         private static KeyMapping efRoll;
         private static boolean efRollSearched, rollWasDown;
 
@@ -154,6 +170,13 @@ public final class ClientEvents {
             if (!keysMoved) { keysMoved = true; moveVanillaKeys(mc); }
             if (mc.player != null && mc.player.tickCount % 100 == 1) killInnateKey(mc);
             boolean free = mc.player != null && mc.screen == null;
+            // 스킬 쓴 직후·차지 중: 캐릭터가 조준점을 보게 (숄더 시점에서 뒤로 걸으며 써도 앞으로 나가게)
+            boolean anyCharge = false;
+            for (boolean c : charging) anyCharge |= c;
+            if (mc.player != null && (faceTicks > 0 || anyCharge)) {
+                faceAim(mc, aimPoint(mc));
+                if (faceTicks > 0) faceTicks--;
+            }
             // Epic Fight 구르기 키: 누르는 순간 서버에 알림 (회피 본능)
             KeyMapping roll = efDodgeKey(mc);
             boolean rollDown = roll != null && roll.isDown();
@@ -171,6 +194,8 @@ public final class ClientEvents {
                 if (pressed && free && wait[i] == 0) {
                     wait[i] = 4;
                     var a = aimPoint(mc);
+                    faceAim(mc, a);
+                    faceTicks = 10;
                     float[] mv = moveDir(mc);
                     Net.CH.sendToServer(new Net.UseSkill(i, a.x, a.y, a.z, mv[0], mv[1]));
                     var def = ClientData.slots[i] == null ? null : rpg.core.skill.Defs.SKILLS.get(ClientData.slots[i]);
@@ -180,6 +205,8 @@ public final class ClientEvents {
                 if (charging[i] && !SKILL_KEYS[i].isDown()) {
                     charging[i] = false;
                     var a = aimPoint(mc);
+                    faceAim(mc, a);
+                    faceTicks = 10;
                     Net.CH.sendToServer(new Net.SkillRelease(i, a.x, a.y, a.z));
                 }
             }
