@@ -94,6 +94,8 @@ public final class Net {
                 .encoder(QuestPoints::encode).decoder(QuestPoints::new).consumerMainThread(QuestPoints::handle).add();
         CH.messageBuilder(OpenCraft.class, id++, NetworkDirection.PLAY_TO_CLIENT)
                 .encoder(OpenCraft::encode).decoder(OpenCraft::new).consumerMainThread(OpenCraft::handle).add();
+        CH.messageBuilder(Rolled.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(Rolled::encode).decoder(Rolled::new).consumerMainThread(Rolled::handle).add();
         CH.messageBuilder(CraftAction.class, id++, NetworkDirection.PLAY_TO_SERVER)
                 .encoder(CraftAction::encode).decoder(CraftAction::new).consumerMainThread(CraftAction::handle).add();
     }
@@ -479,6 +481,17 @@ public final class Net {
     }
 
     // ───────── 클라 → 서버: 구르기 (이동 방향) ─────────
+    // ───────── 클라 → 서버: Epic Fight 구르기 키를 눌렀음 (회피 본능) ─────────
+    public record Rolled(int dummy) {
+        Rolled(FriendlyByteBuf b) { this(b.readVarInt()); }
+        void encode(FriendlyByteBuf b) { b.writeVarInt(dummy); }
+        void handle(Supplier<NetworkEvent.Context> ctx) {
+            ServerPlayer p = ctx.get().getSender();
+            if (p != null) rpg.core.skill.Skills.rolled(p);
+            ctx.get().setPacketHandled(true);
+        }
+    }
+
     public record Dodge(float dx, float dz) {
         Dodge(FriendlyByteBuf b) { this(b.readFloat(), b.readFloat()); }
         void encode(FriendlyByteBuf b) { b.writeFloat(dx); b.writeFloat(dz); }

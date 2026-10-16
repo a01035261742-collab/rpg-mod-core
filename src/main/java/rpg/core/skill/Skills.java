@@ -176,6 +176,17 @@ public final class Skills {
         RpgData.sync(p);
     }
 
+    /** Epic Fight 구르기를 함 (클라가 키 눌림을 알려줌): 회피 본능 */
+    public static void rolled(ServerPlayer p) {
+        PlayerData d = RpgData.get(p);
+        long now = p.level().getGameTime();
+        if (d.bonus("dodgeSpeed") <= 0 || d.isDown() || now - d.lastRoll < 10) return;
+        d.lastRoll = now;
+        d.buffEnd.put("evasion_instinct", now + 40);
+        d.buffVal.put("evasion_instinct", d.bonus("dodgeSpeed"));
+        RpgData.sync(p);
+    }
+
     private static final UUID ATK_SPEED_ID = UUID.fromString("6f1f0d2e-7a51-4c1e-9b0a-52d0c1a1e004");
 
     // ───────── 매 틱: 이동속도 (패시브 + 질주 + 헤이스트 - 차지), 공격 속도 (헤이스트), 차지 ─────────

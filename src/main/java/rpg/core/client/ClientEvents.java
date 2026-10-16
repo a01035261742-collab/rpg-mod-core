@@ -120,6 +120,21 @@ public final class ClientEvents {
             }
         }
 
+        private static KeyMapping efRoll;
+        private static boolean efRollSearched, rollWasDown;
+
+        /** Epic Fight 구르기 키 (이름으로 찾기, 없으면 null) */
+        private static KeyMapping efDodgeKey(Minecraft mc) {
+            if (!efRollSearched) {
+                efRollSearched = true;
+                for (KeyMapping k : mc.options.keyMappings) {
+                    String n = k.getName();
+                    if (n.contains("epicfight") && n.contains("dodge")) { efRoll = k; break; }
+                }
+            }
+            return efRoll;
+        }
+
         @SubscribeEvent
         public static void tick(TickEvent.ClientTickEvent e) {
             if (e.phase != TickEvent.Phase.END) return;
@@ -127,6 +142,11 @@ public final class ClientEvents {
             if (!keysMoved) { keysMoved = true; moveVanillaKeys(mc); }
             if (mc.player != null && mc.player.tickCount % 100 == 1) killInnateKey(mc);
             boolean free = mc.player != null && mc.screen == null;
+            // Epic Fight 구르기 키: 누르는 순간 서버에 알림 (회피 본능)
+            KeyMapping roll = efDodgeKey(mc);
+            boolean rollDown = roll != null && roll.isDown();
+            if (rollDown && !rollWasDown && free && mc.player.onGround()) Net.CH.sendToServer(new Net.Rolled(0));
+            rollWasDown = rollDown;
             while (STAT_KEY.consumeClick()) if (free) mc.setScreen(new StatScreen());
             while (SKILL_WINDOW_KEY.consumeClick()) if (free) mc.setScreen(new SkillScreen());
             while (PASSIVE_KEY.consumeClick()) if (free) mc.setScreen(new PassiveScreen());

@@ -70,6 +70,7 @@ public class PlayerData {
     /** 조준점 (클라 화면 가운데가 가리키는 곳, 스킬 쓸 때 받음) */
     public net.minecraft.world.phys.Vec3 aim;
     public long aimTick;
+    public long lastRoll;
 
     // 다운·부활 (저장 안 함)
     public long downEnd;              // 0 = 다운 아님
