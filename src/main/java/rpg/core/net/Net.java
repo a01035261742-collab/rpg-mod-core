@@ -26,6 +26,16 @@ public final class Net {
     public static final SimpleChannel CH = NetworkRegistry.newSimpleChannel(
             RpgCore.id("main"), () -> VERSION, VERSION::equals, VERSION::equals);
 
+    /** 조준점 기억 (멀리 떨어진 엉뚱한 값은 무시) */
+    static void aim(ServerPlayer p, double x, double y, double z) {
+        if (!Double.isFinite(x) || !Double.isFinite(y) || !Double.isFinite(z)) return;
+        var v = new net.minecraft.world.phys.Vec3(x, y, z);
+        if (v.distanceToSqr(p.getEyePosition()) > 80 * 80) return;
+        var d = rpg.core.data.RpgData.get(p);
+        d.aim = v;
+        d.aimTick = p.level().getGameTime();
+    }
+
     public static void register() {
         int id = 0;
         CH.messageBuilder(SyncData.class, id++, NetworkDirection.PLAY_TO_CLIENT)
@@ -246,12 +256,15 @@ public final class Net {
     }
 
     // ───────── 클라 → 서버: 차지 스킬 키 뗌 ─────────
-    public record SkillRelease(int slot) {
-        SkillRelease(FriendlyByteBuf b) { this(b.readVarInt()); }
-        void encode(FriendlyByteBuf b) { b.writeVarInt(slot); }
+    public record SkillRelease(int slot, double ax, double ay, double az) {
+        SkillRelease(FriendlyByteBuf b) { this(b.readVarInt(), b.readDouble(), b.readDouble(), b.readDouble()); }
+        void encode(FriendlyByteBuf b) { b.writeVarInt(slot); b.writeDouble(ax); b.writeDouble(ay); b.writeDouble(az); }
         void handle(Supplier<NetworkEvent.Context> ctx) {
             ServerPlayer p = ctx.get().getSender();
-            if (p != null) rpg.core.skill.Skills.release(p);
+            if (p != null) {
+                aim(p, ax, ay, az);
+                rpg.core.skill.Skills.release(p);
+            }
             ctx.get().setPacketHandled(true);
         }
     }
@@ -451,12 +464,16 @@ public final class Net {
     }
 
     // ───────── 클라 → 서버: 스킬 키 (0~5 = Q E R F Z X) ─────────
-    public record UseSkill(int slot) {
-        UseSkill(FriendlyByteBuf b) { this(b.readVarInt()); }
-        void encode(FriendlyByteBuf b) { b.writeVarInt(slot); }
+    /** ax ay az = 화면 가운데(조준점)가 가리키는 곳 (3인칭·숄더 시점에서도 조준점으로 쏘게) */
+    public record UseSkill(int slot, double ax, double ay, double az) {
+        UseSkill(FriendlyByteBuf b) { this(b.readVarInt(), b.readDouble(), b.readDouble(), b.readDouble()); }
+        void encode(FriendlyByteBuf b) { b.writeVarInt(slot); b.writeDouble(ax); b.writeDouble(ay); b.writeDouble(az); }
         void handle(Supplier<NetworkEvent.Context> ctx) {
             ServerPlayer p = ctx.get().getSender();
-            if (p != null) rpg.core.skill.Skills.use(p, slot);
+            if (p != null) {
+                aim(p, ax, ay, az);
+                rpg.core.skill.Skills.use(p, slot);
+            }
             ctx.get().setPacketHandled(true);
         }
     }

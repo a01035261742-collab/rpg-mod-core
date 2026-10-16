@@ -22,6 +22,29 @@ import rpg.core.net.Net;
 
 /** 클라이언트: 키, HUD 등록, 바닐라 하트·배고픔·경험치 숨기기 */
 public final class ClientEvents {
+    /**
+     * 화면 가운데(조준점)가 가리키는 곳: 카메라에서 64칸 광선 (블록·엔티티).
+     * 3인칭·숄더 시점 모드에서도 스킬이 조준점으로 날아가게 서버에 같이 보냄.
+     */
+    public static net.minecraft.world.phys.Vec3 aimPoint(Minecraft mc) {
+        var cam = mc.gameRenderer.getMainCamera();
+        var lv = cam.getLookVector();
+        var dir = new net.minecraft.world.phys.Vec3(lv.x(), lv.y(), lv.z()).normalize();
+        var from = cam.getPosition();
+        if (mc.player == null || mc.level == null) return from.add(dir.scale(64));
+        // 카메라와 플레이어 사이(벽 등)는 건너뛰기: 플레이어 눈 높이쯤부터 광선 시작
+        double skip = Math.max(0, mc.player.getEyePosition().subtract(from).dot(dir));
+        from = from.add(dir.scale(skip));
+        var end = from.add(dir.scale(64));
+        var bh = mc.level.clip(new net.minecraft.world.level.ClipContext(from, end, net.minecraft.world.level.ClipContext.Block.COLLIDER,
+                net.minecraft.world.level.ClipContext.Fluid.NONE, mc.player));
+        if (bh.getType() != net.minecraft.world.phys.HitResult.Type.MISS) end = bh.getLocation();
+        var eh = net.minecraft.world.entity.projectile.ProjectileUtil.getEntityHitResult(mc.player, from, end,
+                new net.minecraft.world.phys.AABB(from, end).inflate(1), e -> e != mc.player && !e.isSpectator() && e.isPickable(),
+                from.distanceToSqr(end));
+        return eh != null ? eh.getLocation().add(0, eh.getEntity().getBbHeight() * 0.5, 0) : end;
+    }
+
     private ClientEvents() {}
 
     public static final String CATEGORY = "key.categories.rpgcore";
@@ -115,14 +138,16 @@ public final class ClientEvents {
                 while (SKILL_KEYS[i].consumeClick()) pressed = true;
                 if (pressed && free && wait[i] == 0) {
                     wait[i] = 4;
-                    Net.CH.sendToServer(new Net.UseSkill(i));
+                    var a = aimPoint(mc);
+                    Net.CH.sendToServer(new Net.UseSkill(i, a.x, a.y, a.z));
                     var def = ClientData.slots[i] == null ? null : rpg.core.skill.Defs.SKILLS.get(ClientData.slots[i]);
                     if (def != null && def.charge()) charging[i] = true;
                 }
                 // 차지 스킬: 키를 떼면 발동
                 if (charging[i] && !SKILL_KEYS[i].isDown()) {
                     charging[i] = false;
-                    Net.CH.sendToServer(new Net.SkillRelease(i));
+                    var a = aimPoint(mc);
+                    Net.CH.sendToServer(new Net.SkillRelease(i, a.x, a.y, a.z));
                 }
             }
         }

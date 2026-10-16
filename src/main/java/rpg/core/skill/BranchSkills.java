@@ -91,7 +91,7 @@ public final class BranchSkills {
     }
 
     private static Vec3 flatLook(ServerPlayer p) {
-        return Vec3.directionFromRotation(0, p.getYRot());
+        return JobSkills.flatAim(p);
     }
 
     // ═════════ 가디언 ═════════
@@ -223,7 +223,7 @@ public final class BranchSkills {
 
     private static boolean teleport(ServerPlayer p, Defs.SkillDef s, int lv) {
         ServerLevel l = p.serverLevel();
-        Vec3 look = p.getLookAngle();
+        Vec3 look = JobSkills.aimDir(p);
         Vec3 eye = p.getEyePosition();
         double dist = s.value(lv);
         var bh = l.clip(new ClipContext(eye, eye.add(look.scale(dist)), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, p));
@@ -314,7 +314,7 @@ public final class BranchSkills {
     private static boolean knifeThrow(ServerPlayer p, Defs.SkillDef s, int lv) {
         for (float off : new float[]{-12, 0, 12}) {
             Shot sh = new Shot(p, "dagger", 1.4, 16, s.value(lv), 0);
-            sh.dir = Vec3.directionFromRotation(p.getXRot(), p.getYRot() + off);
+            sh.dir = JobSkills.turn(JobSkills.aimDir(p), off);
             SHOTS.add(sh);
         }
         p.serverLevel().playSound(null, p.blockPosition(), SoundEvents.TRIDENT_THROW, SoundSource.PLAYERS, 0.8f, 1.6f);
@@ -370,7 +370,7 @@ public final class BranchSkills {
         Shot(ServerPlayer o, String kind, double speed, double range, double pct, double radius) {
             owner = o; this.kind = kind; this.speed = speed; this.range = range; this.pct = pct; this.radius = radius;
             pos = o.getEyePosition().add(0, -0.15, 0);
-            dir = o.getLookAngle();
+            dir = JobSkills.aimDir(o);
         }
     }
     private static final List<Shot> SHOTS = new ArrayList<>();

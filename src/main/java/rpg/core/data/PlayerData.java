@@ -67,6 +67,9 @@ public class PlayerData {
     public long shieldEnd;
     /** 광폭화 연장된 시간 (초, 연속 분노 최대치 계산용) */
     public double berserkExt;
+    /** 조준점 (클라 화면 가운데가 가리키는 곳, 스킬 쓸 때 받음) */
+    public net.minecraft.world.phys.Vec3 aim;
+    public long aimTick;
 
     // 다운·부활 (저장 안 함)
     public long downEnd;              // 0 = 다운 아님
@@ -253,7 +256,7 @@ public class PlayerData {
         java.util.List<String> names = new java.util.ArrayList<>();
         java.util.List<Integer> lefts = new java.util.ArrayList<>();
         if (now < sprintEnd) { names.add("질주"); lefts.add((int) (sprintEnd - now)); }
-        if (now < shieldEnd && shield > 0) { names.add("보호막 " + Math.round(shield)); lefts.add((int) (shieldEnd - now)); }
+        if (now < shieldEnd && shield > 0) { names.add("보호막"); lefts.add((int) (shieldEnd - now)); }
         buffEnd.forEach((id, end) -> {
             if (now < end) {
                 var def = Defs.SKILLS.get(id);
@@ -266,5 +269,6 @@ public class PlayerData {
         b.writeBoolean(chargeSkill != null);
         b.writeVarInt(chargeSkill != null ? (int) (now - chargeStart) : 0);
         b.writeVarInt(branch); b.writeVarInt(pendingBranch); b.writeBoolean(trialCleared);
+        b.writeDouble(now < shieldEnd ? shield : 0);
     }
 }

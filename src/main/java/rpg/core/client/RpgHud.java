@@ -101,7 +101,8 @@ public final class RpgHud {
         // HP / MP 바 (그 위)
         int by = ey - 12;
         // 검은 테두리(1칸) 포함 바깥 끝이 핫바(182칸) 양 끝과 딱 맞게
-        bar(g, font, left + 1, by, 88, 10, ClientData.hp, ClientData.maxHp, 0xFFD02828, 0xFF4A1414, "HP");
+        if (ClientData.shield > 0) shieldBar(g, font, left + 1, by, 88, 10);   // 보호막: HP+보호막, 보호막 색
+        else bar(g, font, left + 1, by, 88, 10, ClientData.hp, ClientData.maxHp, 0xFFD02828, 0xFF4A1414, "HP");
         bar(g, font, left + 93, by, 88, 10, ClientData.mp, ClientData.maxMp, 0xFF2A68E0, 0xFF142448, "MP");
 
         // 레벨 (왼쪽)
@@ -226,6 +227,18 @@ public final class RpgHud {
             g.fill(bx - 1, by - 1, bx + bw + 1, by + 7, 0xFF000000);
             g.fill(bx, by, bx + bw * ClientData.reviveProgress / 100, by + 6, 0xFF60FF60);
         }
+    }
+
+    /** HP 바 (보호막 있을 때): 바는 보호막 색, 글자 "HP 현재+보호막/최대" */
+    private static void shieldBar(GuiGraphics g, Font font, int x, int y, int bw, int bh) {
+        g.fill(x - 1, y - 1, x + bw + 1, y + bh + 1, 0xFF000000);
+        g.fill(x, y, x + bw, y + bh, 0xFF4A3A10);
+        double max = ClientData.maxHp;
+        double r = max <= 0 ? 0 : Math.max(0, Math.min(1, ClientData.hp / max));
+        g.fill(x, y, x + (int) (bw * r), y + bh, 0xFFE8B830);
+        g.fill(x, y, x + (int) (bw * r), y + 2, 0xFFFFF0A0);   // 윗줄 반짝
+        String s = "HP " + (long) Math.ceil(ClientData.hp) + "+" + (long) Math.ceil(ClientData.shield) + "/" + (long) Math.ceil(max);
+        g.drawString(font, s, x + bw / 2 - font.width(s) / 2, y + 1, 0xFFFFFFFF, true);
     }
 
     private static void bar(GuiGraphics g, Font font, int x, int y, int bw, int bh, double v, double max, int fg, int bg, String label) {

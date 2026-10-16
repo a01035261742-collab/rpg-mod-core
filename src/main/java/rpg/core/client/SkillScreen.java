@@ -11,7 +11,8 @@ import rpg.core.skill.Defs;
 
 /** 스킬 창 (L): 쓸 수 있는 스킬 목록 + 레벨업 버튼 */
 public class SkillScreen extends Screen {
-    private static final int W = 230, ROW = 26;
+    private static final int ROW = 26;
+    private int W = 360;   // 화면 폭에 맞춰 init 에서 정함
     private int x, y, h, rows, scroll;
     private final List<Defs.SkillDef> list = new ArrayList<>();
 
@@ -30,6 +31,7 @@ public class SkillScreen extends Screen {
         clearWidgets();
         list.clear();
         for (Defs.SkillDef s : Defs.SKILLS.values()) if (available(s)) list.add(s);
+        W = Math.max(230, Math.min(400, width - 20));
         rows = Math.max(1, Math.min(list.size(), (height - 80) / ROW));   // 화면에 다 안 들어가면 스크롤
         scroll = Math.max(0, Math.min(scroll, list.size() - rows));
         h = 40 + rows * ROW + 24;

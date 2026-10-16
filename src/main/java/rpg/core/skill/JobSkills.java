@@ -73,7 +73,7 @@ public final class JobSkills {
         double ratio = Math.max(0, Math.min(1, (held - minT) / (maxT - minT)));
         double pct = s.value(lv) * (1 + 0.5 * ratio);   // 최소 value%, 가득 차면 1.5배
         ServerLevel l = p.serverLevel();
-        Vec3 look = Vec3.directionFromRotation(0, p.getYRot());
+        Vec3 look = flatAim(p);
         double range = 3.0;
         int hits = 0;
         for (Mob m : l.getEntitiesOfClass(Mob.class, p.getBoundingBox().inflate(range))) {
@@ -113,7 +113,8 @@ public final class JobSkills {
                                         java.util.function.Consumer<rpg.core.item.RpgArrow> setup) {
         ServerLevel l = p.serverLevel();
         rpg.core.item.RpgArrow a = new rpg.core.item.RpgArrow(l, p);
-        a.shootFromRotation(p, p.getXRot(), p.getYRot() + yawOff, 0, speed, 0.3f);
+        Vec3 dir = turn(aimDir(p), yawOff);
+        a.shoot(dir.x, dir.y, dir.z, speed, 0.3f);
         a.getPersistentData().putDouble("rpgSkillPct", pct);
         tuneArrow(p, a);
         if (setup != null) setup.accept(a);
@@ -143,7 +144,7 @@ public final class JobSkills {
     }
 
     private static boolean retreatShot(ServerPlayer p, Defs.SkillDef s, int lv) {
-        Vec3 back = Vec3.directionFromRotation(0, p.getYRot()).scale(-1.1);
+        Vec3 back = flatAim(p).scale(-1.1);
         p.setDeltaMovement(back.x, 0.35, back.z);
         p.hurtMarked = true;
         Arrow a = arrow(p, s.value(lv), 0);
@@ -158,7 +159,7 @@ public final class JobSkills {
     // ───────── 마법사: 매직 볼트 (바라보는 몹에 즉시 명중) ─────────
     private static boolean magicBolt(ServerPlayer p, Defs.SkillDef s, int lv) {
         Vec3 eye = p.getEyePosition().add(0, -0.15, 0);
-        BOLTS.add(new Bolt(p, eye, p.getLookAngle(), s.value(lv), 0));
+        BOLTS.add(new Bolt(p, eye, aimDir(p), s.value(lv), 0));
         p.serverLevel().playSound(null, p.blockPosition(), SoundEvents.ILLUSIONER_CAST_SPELL, SoundSource.PLAYERS, 0.6f, 1.6f);
         if (!rpg.core.compat.EpicFightCompat.playAnim(p, "SPEAR_TWOHAND_AUTO1"))   // 지팡이 휘두르기 (보이기만)
             p.swing(net.minecraft.world.InteractionHand.MAIN_HAND, true);
@@ -278,6 +279,29 @@ public final class JobSkills {
         PlayerData d = rpg.core.data.RpgData.get(sp);
         long now = sp.level().getGameTime();
         return d.buff("stealth", now) || d.buff("shadow_step", now);
+    }
+
+    // ───────── 조준 ─────────
+    /** 스킬 방향: 조준점(클라 화면 가운데가 가리키는 곳, 3초 안에 받은 것)으로. 없으면 바라보는 방향 */
+    public static Vec3 aimDir(ServerPlayer p) {
+        PlayerData d = rpg.core.data.RpgData.get(p);
+        if (d.aim != null && p.level().getGameTime() - d.aimTick <= 60) {
+            Vec3 to = d.aim.subtract(p.getEyePosition());
+            if (to.lengthSqr() > 1.0) return to.normalize();
+        }
+        return p.getLookAngle();
+    }
+
+    /** 조준 방향의 수평 성분 (근접 범위·돌진용) */
+    public static Vec3 flatAim(ServerPlayer p) {
+        Vec3 a = aimDir(p);
+        Vec3 f = new Vec3(a.x, 0, a.z);
+        return f.lengthSqr() < 1e-4 ? Vec3.directionFromRotation(0, p.getYRot()) : f.normalize();
+    }
+
+    /** 좌우로 deg 도 돌리기 (부채꼴 발사용) */
+    public static Vec3 turn(Vec3 v, float deg) {
+        return deg == 0 ? v : v.yRot((float) Math.toRadians(-deg));
     }
 
     // ───────── 2차 전직 쪽으로 넘기기 ─────────

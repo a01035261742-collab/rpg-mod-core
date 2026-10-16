@@ -30,6 +30,7 @@ public final class ClientData {
     public static int chargeTicks;
     public static int branch, pendingBranch;
     public static boolean trialCleared;
+    public static double shield;
 
     public static void read(FriendlyByteBuf b) {
         b.readerIndex(0);
@@ -59,6 +60,7 @@ public final class ClientData {
         charging = b.readBoolean();
         chargeTicks = b.readVarInt();
         branch = b.readVarInt(); pendingBranch = b.readVarInt(); trialCleared = b.readBoolean();
+        shield = b.readDouble();
         receivedAt = System.currentTimeMillis();
         ready = true;
     }
