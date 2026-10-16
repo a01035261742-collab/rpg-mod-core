@@ -22,8 +22,9 @@ jobs:
           [ -s err.txt ] || grep -B2 -A25 "What went wrong" build.log | head -80 > err.txt
           msg=$(sed ':a;N;$!ba;s/%/%25/g;s/\r//g;s/\n/%0A/g' err.txt)
           echo "::error title=build::$msg"
+      # 런처 배포는 커밋 메시지에 [release] 가 있을 때나 수동 실행 때만 (평소 push 는 build-output 에 jar 만)
       - name: Release + manifest (launcher auto-update)
-        if: success() && github.ref == 'refs/heads/main'
+        if: success() && github.ref == 'refs/heads/main' && (github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[release]'))
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
