@@ -342,9 +342,20 @@ public final class BranchSkills {
             double along = to.dot(dir), side = Math.abs(to.x * dir.z - to.z * dir.x);
             if (along >= -0.5 && along <= dist + 0.8 && side <= 0.8 + m.getBbWidth() / 2) CombatEvents.skillHit(p, m, s.value(lv));
         }
-        double v = p.onGround() ? dist / 2.2 : dist * 0.09;
-        p.setDeltaMovement(dir.x * v, 0.1, dir.z * v);
-        p.hurtMarked = true;
+        // 땅·공중 상관없이 같은 거리: 6틱 동안 매 틱 속도를 다시 넣음
+        double step = dist / 6.0;
+        task(p, t -> {
+            if (t >= 6) {
+                Vec3 v = p.getDeltaMovement();
+                p.setDeltaMovement(v.x * 0.3, v.y, v.z * 0.3);
+                p.hurtMarked = true;
+                return true;
+            }
+            p.setDeltaMovement(dir.x * step, 0, dir.z * step);
+            p.hurtMarked = true;
+            p.fallDistance = 0;
+            return false;
+        });
         p.invulnerableTime = Math.max(p.invulnerableTime, 10);
         for (double t = 0; t <= dist; t += 0.6) {
             Vec3 q = p.position().add(dir.scale(t));
