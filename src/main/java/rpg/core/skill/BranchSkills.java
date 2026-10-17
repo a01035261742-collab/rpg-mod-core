@@ -263,7 +263,7 @@ public final class BranchSkills {
         return true;
     }
 
-    /** 회복 (응급치료·힐). 넘치는 치유: 넘친 양의 일부를 보호막으로 (최대 HP 20%, 5초) */
+    /** 회복 (응급치료·힐). 넘치는 치유: 넘친 양의 일부를 보호막으로 (최대 HP 20%, 깨질 때까지 유지) */
     static void heal(ServerPlayer caster, PlayerData cd, ServerPlayer target, PlayerData td, double amount) {
         double before = td.hp;
         td.hp = Math.min(td.maxHp, td.hp + amount);
@@ -273,7 +273,7 @@ public final class BranchSkills {
             long now = target.level().getGameTime();
             if (now >= td.shieldEnd) td.shield = 0;
             td.shield = Math.min(td.maxHp * 0.2, td.shield + over * pct / 100.0);
-            td.shieldEnd = now + 100;
+            td.shieldEnd = Long.MAX_VALUE;   // 보호막은 깨질 때까지 유지 (다운되면 사라짐)
         }
         if (target != caster) RpgData.sync(target);
     }
@@ -290,7 +290,8 @@ public final class BranchSkills {
     private static boolean flurry(ServerPlayer p, PlayerData d, Defs.SkillDef s, int lv) {
         double pct = s.value(lv);
         int bleedTicks = (int) Math.round(s.duration() * 20);
-        for (int i = 0; i < 4; i++) {
+        int n = s.hits(lv);   // 레벨 오를수록 타수 3~6
+        for (int i = 0; i < n; i++) {
             Runnable hit = () -> {
                 ServerLevel l = p.serverLevel();
                 Vec3 look = flatLook(p);

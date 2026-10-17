@@ -1,10 +1,27 @@
 {
- "_설명": "확률은 %. 골드 외 전부 운(LUK) 드롭률 보너스가 곱해짐. 드롭은 막타 플레이어 기준, ownerSeconds 동안 그 사람만 주움. gear.chance = 아무 장비 무작위 드롭 (0 = 끔, 지금은 몹 전용 장비 uniques 만 씀)",
+ "_설명": "확률은 %. 골드 외 전부 운(LUK) 드롭률 보너스가 곱해짐. 드롭은 막타 플레이어 기준, ownerSeconds 동안 그 사람만 주움. gear.chance = 아무 장비 무작위 드롭 (0 = 끔, 지금은 몹 전용 장비 uniques 만 씀) potion.tiers = 몹 레벨별 물약 등급 (minLevel 이상 중 가장 높은 것, hp/mp 물약 id).",
  "ownerSeconds": 30,
  "goldChance": 100,
  "potion": {
   "chance": 8,
-  "redRatio": 70
+  "redRatio": 70,
+  "tiers": [
+   {
+    "minLevel": 1,
+    "hp": "red_potion",
+    "mp": "blue_potion"
+   },
+   {
+    "minLevel": 20,
+    "hp": "orange_potion",
+    "mp": "deep_blue_potion"
+   },
+   {
+    "minLevel": 35,
+    "hp": "white_potion",
+    "mp": "mana_elixir"
+   }
+  ]
  },
  "gear": {
   "chance": 0,

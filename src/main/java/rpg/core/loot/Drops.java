@@ -35,6 +35,9 @@ public final class Drops {
     public static double ownerSeconds = 30;
     public static double goldChance = 100;
     public static double potionChance = 8, potionRed = 70;
+    /** 몹 레벨별 물약 등급 (minLevel 이상 중 가장 높은 것): HP 물약 id · MP 물약 id */
+    public record PotionTier(int minLevel, String hp, String mp) {}
+    public static final List<PotionTier> POTION_TIERS = new ArrayList<>();
     public static double gearChance = 2;
     public static int gearLevelRange = 10;
     public static double enhanceChance = 1.5;
@@ -48,7 +51,14 @@ public final class Drops {
             JsonObject o = JsonParser.parseString(text).getAsJsonObject();
             ownerSeconds = d(o, "ownerSeconds", 30);
             goldChance = d(o, "goldChance", 100);
-            if (o.has("potion")) { JsonObject p = o.getAsJsonObject("potion"); potionChance = d(p, "chance", 8); potionRed = d(p, "redRatio", 70); }
+            if (o.has("potion")) {
+                JsonObject p = o.getAsJsonObject("potion"); potionChance = d(p, "chance", 8); potionRed = d(p, "redRatio", 70);
+                POTION_TIERS.clear();
+                if (p.has("tiers")) for (var te : p.getAsJsonArray("tiers")) {
+                    JsonObject t = te.getAsJsonObject();
+                    POTION_TIERS.add(new PotionTier((int) d(t, "minLevel", 1), t.get("hp").getAsString(), t.get("mp").getAsString()));
+                }
+            }
             if (o.has("gear")) { JsonObject g = o.getAsJsonObject("gear"); gearChance = d(g, "chance", 2); gearLevelRange = (int) d(g, "levelRange", 10); }
             if (o.has("enhance")) {
                 JsonObject en = o.getAsJsonObject("enhance");
@@ -80,6 +90,17 @@ public final class Drops {
         return o.has(k) ? o.get(k).getAsDouble() : def;
     }
 
+    /** 몹 레벨에 맞는 물약 (drops.json potion.tiers). 없으면 빨강·파랑 */
+    private static net.minecraft.world.item.Item potionFor(int level, boolean hp) {
+        PotionTier best = null;
+        for (PotionTier t : POTION_TIERS) if (t.minLevel() <= level && (best == null || t.minLevel() > best.minLevel())) best = t;
+        if (best != null) {
+            var it = net.minecraftforge.registries.ForgeRegistries.ITEMS.getValue(new net.minecraft.resources.ResourceLocation(RpgCore.MODID, hp ? best.hp() : best.mp()));
+            if (it != null && it != net.minecraft.world.item.Items.AIR) return it;
+        }
+        return hp ? ModItems.RED_POTION.get() : ModItems.BLUE_POTION.get();
+    }
+
     /** 처치 시 막타 플레이어 기준으로 굴림 */
     public static void roll(Mob mob, MobData m, ServerPlayer killer, PlayerData d) {
         ThreadLocalRandom r = ThreadLocalRandom.current();
@@ -95,7 +116,7 @@ public final class Drops {
         for (int k = 0; k < rolls; k++) if (md != null) for (Entry e : md.items()) if (hit(r, e.chance() * mul)) add(out, e.item());
 
         double pc = md != null && md.potion() >= 0 ? md.potion() : potionChance;
-        if (hit(r, pc * mul)) out.add(new ItemStack(r.nextDouble() * 100 < potionRed ? ModItems.RED_POTION.get() : ModItems.BLUE_POTION.get()));
+        if (hit(r, pc * mul)) out.add(new ItemStack(potionFor(m.level, r.nextDouble() * 100 < potionRed)));
 
         double gc = (md != null && md.gear() >= 0 ? md.gear() : gearChance) * (m.elite ? rpg.core.balance.Balance.eliteGear : 1);
         if (gc > 0 && hit(r, gc * mul)) {

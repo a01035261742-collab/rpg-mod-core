@@ -103,7 +103,7 @@ for k in mat_ids:
     ROWS_I.append({'name': name(k), 'id': k, 'cat': '몹 재료', 'slot': '일반 재료' if kinds[k] == 'c' else '희귀 재료', 'job': '-', 'lv': None,
                    'stats': '쓰는 곳: ' + uses, 'atk': 0, 'def': 0, 'src': list(dict.fromkeys(src.get(k, []))), 'recipe': recipe_of.get(k, ''), 'sell': sell.get(k)})
 out.append('')
-other = ['red_potion', 'blue_potion', 'stat_reset_scroll', 'star_fragment', 'scroll_fragment', 'gold_pouch']
+other = ['red_potion', 'orange_potion', 'white_potion', 'blue_potion', 'deep_blue_potion', 'mana_elixir', 'elixir', 'power_elixir', 'stat_reset_scroll', 'star_fragment', 'scroll_fragment', 'gold_pouch']
 out += ['## 소모품 · 강화 재료 · 기타', '', '| 이름 | id | 얻는 곳 | 만들기 | 판매가 |', '|---|---|---|---|---|']
 for k in other:
     out.append(f'| {name(k)} | `{k}` | {where(k)} | {recipe_of.get(k, "-")} | {sell.get(k, "-")} |')
@@ -162,7 +162,8 @@ for k, v in sk.items():
     if k.startswith('_'): continue
     mx = v.get('maxLevel', 10)
     def val(lv, key): return v.get(key, 0) + v.get(key + 'PerLevel', 0) * (lv - 1)
-    def desc(lv): return v.get('desc', '').replace('{v}', g(round(val(lv, 'value'), 1))).replace('{v2}', g(round(val(lv, 'value2'), 1))).replace('{d}', g(v.get('duration', 0)))
+    def hitsn(lv): return max(1, int(v.get('hits', 1) + v.get('hitsPerLevel', 0) * (lv - 1) + 0.5))
+    def desc(lv): return v.get('desc', '').replace('{n}', str(hitsn(lv))).replace('{v}', g(round(val(lv, 'value'), 1))).replace('{v2}', g(round(val(lv, 'value2'), 1))).replace('{d}', g(v.get('duration', 0)))
     mp1, mpx = round(v.get('mp', 0)), round(v.get('mp', 0) + v.get('mpPerLevel', 0) * (mx - 1))
     t = v.get('type')
     kind = '패시브' if t == 'passive' else '차지' if t == 'charge' else ('버프' if v.get('duration', 0) > 0 and not v.get('hits') else '액티브')
@@ -170,7 +171,7 @@ for k, v in sk.items():
     cd = '-' if t == 'passive' else (f'{g(round(cd1, 1))}초' + (f' → {g(round(cdx, 1))}초' if abs(cdx - cd1) > 1e-6 else '')) if cd1 else '없음'
     ROWS_S.append({'job': JOBN.get(v.get('job', 0), '-'), 'branch': BRN.get((v.get('job', 0), v.get('branch', 0)), '-'),
                    'tier': '초보자' if v.get('tier', 0) == 0 else f'{v.get("tier")}차',
-                   'name': v.get('name', k), 'id': k, 'kind': kind, 'max': mx, 'hits': str(v.get('hits', '-')),
+                   'name': v.get('name', k), 'id': k, 'kind': kind, 'max': mx, 'hits': (f'{hitsn(1)} → {hitsn(mx)}' if v.get('hitsPerLevel') else str(v.get('hits', '-'))),
                    'dmg': f"{g(round(val(1, 'value'), 1))}% → {g(round(val(mx, 'value'), 1))}%" if v.get('hits') else '-',
                    'eff': f'Lv1: {desc(1)} → Lv{mx}: {desc(mx)}', 'cd': cd,
                    'mp': '-' if t == 'passive' else f'{mp1} → {mpx}', 'status': '게임에 있음'})

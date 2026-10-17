@@ -65,7 +65,7 @@
    "stats": {
     "atk": 15
    },
-   "speed": 2.0
+   "speed": 1.8
   },
   "thief_dagger_10": {
    "slot": "weapon",
@@ -75,7 +75,7 @@
     "atk": 28,
     "luk": 2
    },
-   "speed": 2.0
+   "speed": 1.8
   },
   "hat_1": {
    "slot": "hat",
@@ -379,7 +379,7 @@
     "atk": 41,
     "luk": 4
    },
-   "speed": 2.0
+   "speed": 1.8
   },
   "thief_dagger_30": {
    "slot": "weapon",
@@ -389,7 +389,7 @@
     "atk": 54,
     "luk": 6
    },
-   "speed": 2.0
+   "speed": 1.8
   },
   "thief_dagger_40": {
    "slot": "weapon",
@@ -399,7 +399,7 @@
     "atk": 67,
     "luk": 8
    },
-   "speed": 2.0
+   "speed": 1.8
   },
   "hat_20": {
    "slot": "hat",

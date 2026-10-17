@@ -224,5 +224,11 @@
   "item.rpgcore.thief_hat_40": "밤그림자 복면",
   "item.rpgcore.thief_top_40": "밤그림자 경갑",
   "item.rpgcore.thief_bottom_40": "밤그림자 바지",
-  "item.rpgcore.thief_shoes_40": "밤그림자 신발"
+  "item.rpgcore.thief_shoes_40": "밤그림자 신발",
+  "item.rpgcore.orange_potion": "주황 물약",
+  "item.rpgcore.white_potion": "하얀 물약",
+  "item.rpgcore.deep_blue_potion": "진한 파란 물약",
+  "item.rpgcore.mana_elixir": "마나 엘릭서",
+  "item.rpgcore.elixir": "엘릭서",
+  "item.rpgcore.power_elixir": "파워 엘릭서"
 }

@@ -41,7 +41,7 @@ import rpg.core.zone.ZoneWand;
  *  /rpg quest point add|remove <지점>          퀘스트 지점(두고 오기·가져오기) 위치 정하기 / 지우기
  *  /rpg quest check                           NPC·지점 배치 점검 (안 세운 것 빨간색)
  *  /rpg job <0~4>                             직업 바로 바꾸기 (테스트용)
- *  /rpg potions                               물약 받기
+ *  /rpg potions                               물약 받기 (빨강·파랑 30개, 나머지 10개씩)
  */
 public final class ZoneCommand {
     private ZoneCommand() {}
@@ -188,6 +188,9 @@ public final class ZoneCommand {
             var p = c.getSource().getPlayerOrException();
             p.getInventory().add(new net.minecraft.world.item.ItemStack(ModItems.RED_POTION.get(), 30));
             p.getInventory().add(new net.minecraft.world.item.ItemStack(ModItems.BLUE_POTION.get(), 30));
+            for (var po : new net.minecraftforge.registries.RegistryObject[]{ModItems.ORANGE_POTION, ModItems.WHITE_POTION, ModItems.DEEP_BLUE_POTION,
+                    ModItems.MANA_ELIXIR, ModItems.ELIXIR, ModItems.POWER_ELIXIR})
+                p.getInventory().add(new net.minecraft.world.item.ItemStack((net.minecraft.world.item.Item) po.get(), 10));
             return ok(c, "물약 지급");
         }));
         root.then(Commands.literal("mobs").requires(s -> s.hasPermission(2)).executes(c -> {

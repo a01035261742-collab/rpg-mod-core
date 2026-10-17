@@ -34,7 +34,14 @@ public final class Balance {
     public static double expBase = 15, expPower = 2.0, expLinear = 30;
     public static int skillPointsPerLevel = 2, passivePointsPerLevel = 1;
     public static int jobLevel1 = 10, jobRewardPotions = 10, jobLevel2 = 30, jobReward2Potions = 20;
-    public static double redPotionHp = 60, bluePotionMp = 40, potionCooldown = 1.0, rangedRange = 20;
+    public static double potionCooldown = 1.0, rangedRange = 20;
+    /** 물약 종류 (player.json potions): hp/mp 고정 회복, hpPct/mpPct 최대치 %, cooldown 초 (0 = potionCooldown) */
+    public record PotionDef(double hp, double mp, double hpPct, double mpPct, double cooldown) {}
+    public static final java.util.Map<String, PotionDef> POTIONS = new java.util.LinkedHashMap<>();
+    static {   // player.json 을 못 읽어도 기본 물약은 동작
+        POTIONS.put("red_potion", new PotionDef(60, 0, 0, 0, 0));
+        POTIONS.put("blue_potion", new PotionDef(0, 40, 0, 0, 0));
+    }
     public static int partyMax = 6;
     public static double partyRange = 40, partyBonusPerMember = 10, deathExpLossPct = 30;
     public static boolean downEverywhere = true;
@@ -138,7 +145,14 @@ public final class Balance {
             dodgeIframes = i(o, "dodgeIframes", dodgeIframes);
             jobLevel1 = i(o, "jobLevel1", jobLevel1); jobRewardPotions = i(o, "jobRewardPotions", jobRewardPotions);
             jobLevel2 = i(o, "jobLevel2", jobLevel2); jobReward2Potions = i(o, "jobReward2Potions", jobReward2Potions);
-            redPotionHp = d(o, "redPotionHp", redPotionHp); bluePotionMp = d(o, "bluePotionMp", bluePotionMp);
+            if (o.has("potions") && o.get("potions").isJsonObject()) {
+                POTIONS.clear();
+                for (var pe : o.getAsJsonObject("potions").entrySet()) {
+                    if (!pe.getValue().isJsonObject()) continue;
+                    JsonObject po = pe.getValue().getAsJsonObject();
+                    POTIONS.put(pe.getKey(), new PotionDef(d(po, "hp", 0), d(po, "mp", 0), d(po, "hpPct", 0), d(po, "mpPct", 0), d(po, "cooldown", 0)));
+                }
+            }
             potionCooldown = d(o, "potionCooldown", potionCooldown); rangedRange = d(o, "rangedRange", rangedRange);
             partyMax = i(o, "partyMax", partyMax); partyRange = d(o, "partyRange", partyRange);
             partyBonusPerMember = d(o, "partyBonusPerMember", partyBonusPerMember);

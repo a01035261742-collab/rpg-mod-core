@@ -29,7 +29,7 @@
   "healPerInt": 0.5,
   "dropPerLuk": 0.2,
   "goldPerLuk": 0.3,
-  "skillPointsPerLevel": 2,
+  "skillPointsPerLevel": 3,
   "passivePointsPerLevel": 1,
   "_구르기": "왼쪽 Alt. 쿨타임(초), 힘(속도), 무적(틱)",
   "dodgeCooldown": 3.0,
@@ -49,13 +49,42 @@
   "jobRewardPotions": 10,
   "jobLevel2": 30,
   "jobReward2Potions": 20,
-  "redPotionHp": 60,
-  "bluePotionMp": 40,
   "potionCooldown": 1.0,
   "_원거리": "궁수 화살·마법사 마법탄 사거리(칸)",
   "rangedRange": 20,
   "_경험치": "필요 경험치 = expBase × 레벨^expPower + expLinear × 레벨",
   "expBase": 15,
   "expPower": 2.0,
-  "expLinear": 30
+  "expLinear": 30,
+  "_물약": "물약 종류. hp/mp = 고정 회복량, hpPct/mpPct = 최대치의 % 회복 (둘 다 쓸 수 있음), cooldown = 그 물약 쿨타임(초, 없으면 potionCooldown). 회복량 증가(healPct)가 곱해짐. 엘릭서는 상점에서 안 팖",
+  "potions": {
+    "red_potion": {
+      "hp": 60
+    },
+    "orange_potion": {
+      "hp": 150
+    },
+    "white_potion": {
+      "hp": 300
+    },
+    "blue_potion": {
+      "mp": 40
+    },
+    "deep_blue_potion": {
+      "mp": 100
+    },
+    "mana_elixir": {
+      "mp": 200
+    },
+    "elixir": {
+      "hpPct": 50,
+      "mpPct": 50,
+      "cooldown": 30
+    },
+    "power_elixir": {
+      "hpPct": 100,
+      "mpPct": 100,
+      "cooldown": 60
+    }
+  }
 }

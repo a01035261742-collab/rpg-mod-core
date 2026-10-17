@@ -145,7 +145,7 @@ public final class RpgHud {
         for (ClientData.Buff b : ClientData.BUFFS) {
             int bl = ClientData.left(b.left());
             if (bl <= 0) continue;
-            String t = b.name() + " " + (bl + 19) / 20 + "s";
+            String t = b.name() + (b.left() >= 900_000_000 ? "" : " " + (bl + 19) / 20 + "s");
             g.drawString(font, t, x0 - font.width(t) - 4, by, 0xFF80E0FF, true);
             by += 10;
         }

@@ -200,7 +200,7 @@ public final class Skills {
         // 은신: 끝나면 투명 해제
         if (!d.buff("stealth", now) && d.buffEnd.containsKey("stealth")) JobSkills.breakStealth(p, d);
         if (!d.buff("shadow_step", now) && d.buffEnd.containsKey("shadow_step")) JobSkills.breakShadow(p, d);
-        if (d.shield > 0 && now >= d.shieldEnd) d.shield = 0;
+        if (d.shield > 0 && (now >= d.shieldEnd || d.isDown() || !p.isAlive())) d.shield = 0;
         AttributeInstance as = p.getAttribute(Attributes.ATTACK_SPEED);
         if (as != null) {
             double wantA = 0;   // (헤이스트는 이제 점프력, 예전 공격 속도 보정 제거)

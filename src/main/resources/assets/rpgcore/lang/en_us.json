@@ -224,5 +224,11 @@
   "item.rpgcore.thief_hat_40": "Nightshade Mask",
   "item.rpgcore.thief_top_40": "Nightshade Light Armor",
   "item.rpgcore.thief_bottom_40": "Nightshade Pants",
-  "item.rpgcore.thief_shoes_40": "Nightshade Shoes"
+  "item.rpgcore.thief_shoes_40": "Nightshade Shoes",
+  "item.rpgcore.orange_potion": "Orange Potion",
+  "item.rpgcore.white_potion": "White Potion",
+  "item.rpgcore.deep_blue_potion": "Deep Blue Potion",
+  "item.rpgcore.mana_elixir": "Mana Elixir",
+  "item.rpgcore.elixir": "Elixir",
+  "item.rpgcore.power_elixir": "Power Elixir"
 }

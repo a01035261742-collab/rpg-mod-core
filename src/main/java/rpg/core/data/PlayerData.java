@@ -259,7 +259,7 @@ public class PlayerData {
         java.util.List<String> names = new java.util.ArrayList<>();
         java.util.List<Integer> lefts = new java.util.ArrayList<>();
         if (now < sprintEnd) { names.add("질주"); lefts.add((int) (sprintEnd - now)); }
-        if (now < shieldEnd && shield > 0) { names.add("보호막"); lefts.add((int) (shieldEnd - now)); }
+        if (now < shieldEnd && shield > 0) { names.add("보호막"); lefts.add(shieldEnd == Long.MAX_VALUE ? 1_000_000_000 : (int) (shieldEnd - now)); }
         buffEnd.forEach((id, end) -> {
             if (now < end) {
                 var def = Defs.SKILLS.get(id);

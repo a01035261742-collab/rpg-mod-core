@@ -19,7 +19,8 @@ public final class Defs {
     public record SkillDef(String id, String name, int tier, int maxLevel, double mp, double cooldown, double duration,
                            double value, double valuePerLevel, String desc, String type, int job,
                            double value2, double value2PerLevel, double mpPerLevel,
-                           int branch, String stat, String stat2, double cdPerLevel) {
+                           int branch, String stat, String stat2, double cdPerLevel,
+                           double hits, double hitsPerLevel) {
         public double value(int level) { return value + valuePerLevel * Math.max(0, level - 1); }
         /** 레벨별 MP (찍을수록 더 씀) */
         public double mp(int level) { return Math.round(mp + mpPerLevel * Math.max(0, level - 1)); }
@@ -30,9 +31,12 @@ public final class Defs {
         /** 레벨별 쿨타임 (초) */
         public double cooldown(int level) { return Math.max(0, cooldown + cdPerLevel * Math.max(0, level - 1)); }
 
+        /** 레벨별 타수 (연속 찌르기처럼 레벨이 오르면 타수가 늘어나는 스킬) */
+        public int hits(int level) { return (int) Math.max(1, Math.round(hits + hitsPerLevel * Math.max(0, level - 1))); }
+
         public String describe(int level) {
             int lv = Math.max(1, level);
-            return desc.replace("{v}", fmt(value(lv))).replace("{v2}", fmt(value2(lv))).replace("{d}", fmt(duration));
+            return desc.replace("{n}", String.valueOf(hits(lv))).replace("{v}", fmt(value(lv))).replace("{v2}", fmt(value2(lv))).replace("{d}", fmt(duration));
         }
     }
 
@@ -57,7 +61,8 @@ public final class Defs {
                         (int) num(o, "maxLevel", 10), num(o, "mp", 0), num(o, "cooldown", 1), num(o, "duration", 0),
                         num(o, "value", 0), num(o, "valuePerLevel", 0), str(o, "desc", ""), str(o, "type", "instant"),
                         (int) num(o, "job", 0), num(o, "value2", 0), num(o, "value2PerLevel", 0), num(o, "mpPerLevel", 0),
-                        (int) num(o, "branch", 0), str(o, "stat", ""), str(o, "stat2", ""), num(o, "cooldownPerLevel", 0)));
+                        (int) num(o, "branch", 0), str(o, "stat", ""), str(o, "stat2", ""), num(o, "cooldownPerLevel", 0),
+                        num(o, "hits", 1), num(o, "hitsPerLevel", 0)));
             }
         } catch (Exception ex) {
             rpg.core.RpgCore.LOG.error("[rpgcore] skills.json 읽기 실패", ex);
