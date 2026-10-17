@@ -225,9 +225,9 @@ public final class CombatEvents {
             double dmg;
             if (src instanceof Mob m && isRpg(m)) {
                 Double pc = MOB_PCT.get(sp.getId());
-                dmg = Combat.mobToPlayer(Combat.mob(m).atk * (pc == null ? 1 : pc / 100.0), d);
+                dmg = Combat.mobToPlayer(Combat.mob(m).atk * (pc == null ? 1 : pc / 100.0), Combat.mob(m).level, d);
             }
-            else if (src instanceof Mob) dmg = Math.max(1, e.getAmount() / 20.0 * d.maxHp - Combat.defCut(d));  // 일반 몹: 비율 - 방어
+            else if (src instanceof Mob) dmg = Math.max(1, e.getAmount() / 20.0 * d.maxHp * (1 - Combat.defRatio(d, d.level)));  // 일반 몹: 비율, 내 레벨 몹으로 보고 방어
             else dmg = e.getAmount() / 20.0 * d.maxHp;   // 환경 피해: 바닐라와 같은 비율
             long now = sp.level().getGameTime();
             dmg *= 1 - Math.min(90, d.buffV("iron_body", now)) / 100.0;           // 아이언 바디: 받는 피해 감소

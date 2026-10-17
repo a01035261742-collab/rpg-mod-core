@@ -41,7 +41,7 @@ public final class Balance {
     public static double downSeconds = 30, reviveSeconds = 3, reviveHpPct = 30;
     public static double dodgeCooldown = 3.0, dodgePower = 1.1;
     public static int dodgeIframes = 8;
-    public static double mastery = 0.8, critDamage = 1.5, fistAttack = 5, defPerVit = 1.0, defConstant = 100, defFactor = 0.5;
+    public static double mastery = 0.8, critDamage = 1.5, fistAttack = 5, defPerVit = 1.0, defBase = 50, defPerMobLevel = 10;
     public static java.util.Set<String> huntingDimensions = new java.util.HashSet<>();
 
     /** 몹 표: 키 → 몹 정의 */
@@ -146,7 +146,7 @@ public final class Balance {
             downEverywhere = o.has("downEverywhere") ? o.get("downEverywhere").getAsBoolean() : downEverywhere;
             downSeconds = d(o, "downSeconds", downSeconds); reviveSeconds = d(o, "reviveSeconds", reviveSeconds);
             reviveHpPct = d(o, "reviveHpPct", reviveHpPct);
-            defPerVit = d(o, "defPerVit", defPerVit); defFactor = d(o, "defFactor", defFactor); defConstant = d(o, "defConstant", defConstant);
+            defPerVit = d(o, "defPerVit", defPerVit); defBase = d(o, "defBase", defBase); defPerMobLevel = d(o, "defPerMobLevel", defPerMobLevel);
             huntingDimensions = new java.util.HashSet<>();
             if (o.has("huntingDimensions")) o.getAsJsonArray("huntingDimensions").forEach(x -> huntingDimensions.add(x.getAsString()));
             RpgCore.LOG.info("[rpgcore] 밸런스 수치 읽음");

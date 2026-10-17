@@ -77,14 +77,17 @@ public final class Combat {
         return d.total(PlayerData.VIT) * Balance.defPerVit + d.bonus("def") + d.eq("def") + d.buffV("iron_body", d.clock);
     }
 
-    /** 몹 → 플레이어 피해 */
-    public static double mobToPlayer(double mobAtk, PlayerData d) {
-        double def = defense(d);
-        return Math.max(1, mobAtk - def * Balance.defFactor);   // 빼기: 방어력 1 = 받는 피해 -defFactor
+    /**
+     * 방어 비율: 방어 / (방어 + defBase + 몹 레벨 × defPerMobLevel).
+     * 0 은 안 됨 (방어가 아무리 높아도 조금은 아픔), 레벨 높은 몹일수록 방어가 덜 먹힘
+     */
+    public static double defRatio(PlayerData d, int mobLevel) {
+        double def = Math.max(0, defense(d));
+        return def / (def + Balance.defBase + Math.max(1, mobLevel) * Balance.defPerMobLevel);
     }
 
-    /** 일반(바닐라) 몹·환경이 아닌 몹 피해에서 빼는 양 */
-    public static double defCut(PlayerData d) {
-        return defense(d) * Balance.defFactor;
+    /** 몹 → 플레이어 피해 */
+    public static double mobToPlayer(double mobAtk, int mobLevel, PlayerData d) {
+        return Math.max(1, mobAtk * (1 - defRatio(d, mobLevel)));
     }
 }

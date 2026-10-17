@@ -66,6 +66,8 @@ public class StatScreen extends Screen {
             ry = line(g, dx, ry, "최대 HP", String.format("%,.0f", ClientData.maxHp));
             ry = line(g, dx, ry, "최대 MP", String.format("%,.0f", ClientData.maxMp));
             ry = line(g, dx, ry, "방어력", String.format("%,.0f", ClientData.defPct));
+            double k = rpg.core.balance.Balance.defBase + Math.max(1, ClientData.level) * rpg.core.balance.Balance.defPerMobLevel;
+            ry = line(g, dx, ry, "피해 감소 (같은 Lv 몹)", String.format("%.0f%%", ClientData.defPct / (ClientData.defPct + k) * 100));
             ry = line(g, dx, ry, "치명타 확률", String.format("%.1f%%", ClientData.crit));
             ry = line(g, dx, ry, "치명타 피해", String.format("%.0f%%", ClientData.critDmgPct));
             ry = line(g, dx, ry, "회복량 증가", String.format("+%.1f%%", ClientData.healBonus));
