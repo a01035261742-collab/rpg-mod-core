@@ -58,7 +58,8 @@ public final class ZoneSpawner {
         for (int tries = 0; tries < 8; tries++) {
             int x = z.min.getX() + r.nextInt(z.max2.getX() - z.min.getX() + 1);
             int zz = z.min.getZ() + r.nextInt(z.max2.getZ() - z.min.getZ() + 1);
-            for (int y = z.max2.getY(); y >= z.min.getY(); y--) {
+            // 땅 블록을 찍어서 높이가 0인 구역도 되게: 위로 4칸, 아래로 2칸 더 찾기
+            for (int y = z.max2.getY() + 4; y >= z.min.getY() - 2; y--) {
                 BlockPos p = new BlockPos(x, y, zz);
                 BlockState below = level.getBlockState(p.below());
                 if (below.isSolid() && level.getBlockState(p).isAir() && level.getBlockState(p.above()).isAir()) return p;
