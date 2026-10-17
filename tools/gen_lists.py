@@ -161,7 +161,10 @@ BRN = {(1, 1): '가디언', (1, 2): '버서커', (2, 1): '스나이퍼', (2, 2):
 for k, v in sk.items():
     if k.startswith('_'): continue
     mx = v.get('maxLevel', 10)
-    def val(lv, key): return v.get(key, 0) + v.get(key + 'PerLevel', 0) * (lv - 1)
+    def val(lv, key):
+        x = v.get(key, 0) + v.get(key + 'PerLevel', 0) * (lv - 1)
+        st = v.get('step' if key == 'value' else 'step2', 0) if key in ('value', 'value2') else 0
+        return int(x / st + 0.5) * st if st else x
     def hitsn(lv): return max(1, int(v.get('hits', 1) + v.get('hitsPerLevel', 0) * (lv - 1) + 0.5))
     def desc(lv): return v.get('desc', '').replace('{n}', str(hitsn(lv))).replace('{v}', g(round(val(lv, 'value'), 1))).replace('{v2}', g(round(val(lv, 'value2'), 1))).replace('{d}', g(v.get('duration', 0)))
     mp1, mpx = round(v.get('mp', 0)), round(v.get('mp', 0) + v.get('mpPerLevel', 0) * (mx - 1))

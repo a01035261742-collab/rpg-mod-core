@@ -160,7 +160,7 @@ public class PlayerData {
     // ── 상세 능력치 (공식은 balance 파일) ──
     public double crit() { return Balance.critBase + Balance.critPerDex * total(DEX) + bonus("critChance") + buffV("focus", clock); }
     public double critDamage() { return Balance.critDamage + bonus("critDmg") / 100.0; }
-    public double healBonus() { return Balance.healPerInt * total(INT); }
+    public double healBonus() { return bonus("healPct"); }   // 회복량 증가 (패시브·전사의 회복력). 지력은 이제 힐 스공으로 반영
     public double dropBonus() { return Balance.dropPerLuk * total(LUK) + bonus("dropPct"); }
     public double goldBonus() { return Balance.goldPerLuk * total(LUK) + bonus("goldPct"); }
     /** Epic Fight 최대 스태미나에 더해지는 양 (스태미나 스탯 + 패시브) */

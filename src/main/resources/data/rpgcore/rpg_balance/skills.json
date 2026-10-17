@@ -1,5 +1,5 @@
 {
-  "_설명": "스킬 수치. tier 0 = 초보자 (계속 씀), tier 1 = 1차, tier 2 = 2차 (branch 1·2 = 계열 안 갈래: 전사 가디언/버서커, 궁수 스나이퍼/헌터, 마법사 아크메이지/클레릭, 도적 어쌔신/트릭스터). job: 1 전사 2 궁수 3 마법사 4 도적. type charge = 누르고 있다가 떼기, passive = 배우면 항상 켜짐 (stat/stat2 에 value/value2 를 더함, 최대 10레벨). cooldownPerLevel = 레벨당 쿨타임 변화. value/value2 = 1레벨 효과, PerLevel = 레벨당 증가. 시간은 초. {v} {v2} {d} = 설명에 숫자 넣기 mpPerLevel = 레벨당 MP 증가 (찍을수록 더 씀, 20레벨이면 1레벨의 2배, 5레벨 스킬은 1.5배). hits = 타수 (도감 표시용)",
+  "_설명": "스킬 수치. tier 0 = 초보자 (계속 씀), tier 1 = 1차, tier 2 = 2차 (branch 1·2 = 계열 안 갈래: 전사 가디언/버서커, 궁수 스나이퍼/헌터, 마법사 아크메이지/클레릭, 도적 어쌔신/트릭스터). job: 1 전사 2 궁수 3 마법사 4 도적. type charge = 누르고 있다가 떼기, passive = 배우면 항상 켜짐 (stat/stat2 에 value/value2 를 더함, 최대 10레벨). cooldownPerLevel = 레벨당 쿨타임 변화. value/value2 = 1레벨 효과, PerLevel = 레벨당 증가. 시간은 초. {v} {v2} {d} = 설명에 숫자 넣기 mpPerLevel = 레벨당 MP 증가 (찍을수록 더 씀, 20레벨이면 1레벨의 2배, 5레벨 스킬은 1.5배). hits = 타수 (도감 표시용) step/step2 = value/value2 를 그 단위(예: 5)로 반올림 (계수가 5·10 배수로 딱 떨어지게). 새 스킬도 Lv1·Lv20 계수는 5·10 배수로.",
   "sprint": {
     "name": "질주",
     "tier": 0,
@@ -20,9 +20,9 @@
     "mpPerLevel": 1.25,
     "cooldown": 120,
     "duration": 0,
-    "value": 25,
-    "valuePerLevel": 1.5,
-    "desc": "최대 HP의 {v}% 회복 (지력 회복량 증가 적용)"
+    "value": 3.5,
+    "valuePerLevel": 0.5,
+    "desc": "레벨 × {v} 만큼 HP 회복 (회복량 증가 적용)"
   },
   "power_strike": {
     "name": "강타 차지",
@@ -34,10 +34,11 @@
     "mpPerLevel": 0.6316,
     "cooldown": 4,
     "duration": 0,
-    "value": 400,
-    "valuePerLevel": 18.9474,
+    "value": 300,
+    "valuePerLevel": 6.3158,
     "desc": "꾹 눌러 모았다 떼면 앞쪽 3칸 범위 공격, 스공의 {v}% (1.5초 모으면 1.5배)",
-    "hits": 1
+    "hits": 1,
+    "step": 5
   },
   "iron_body": {
     "name": "아이언 바디",
@@ -161,7 +162,8 @@
     "value": 160,
     "valuePerLevel": 6.3158,
     "desc": "앞으로 5칸 뛰어올라 내려찍기, 반경 3칸 스공의 {v}%",
-    "hits": 1
+    "hits": 1,
+    "step": 5
   },
   "endless_rage": {
     "name": "연속 분노",
@@ -206,7 +208,8 @@
     "value": 90,
     "valuePerLevel": 1.5789,
     "desc": "화살 2발을 연속으로, 각각 스공의 {v}%",
-    "hits": 2
+    "hits": 2,
+    "step": 5
   },
   "retreat_shot": {
     "name": "후퇴 샷",
@@ -218,10 +221,11 @@
     "mpPerLevel": 0.5263,
     "cooldown": 8,
     "duration": 3,
-    "value": 124,
-    "valuePerLevel": 4,
+    "value": 120,
+    "valuePerLevel": 4.2105,
     "desc": "뒤로 물러나며 스공의 {v}% 화살, 맞은 몹 {d}초 느려짐",
-    "hits": 1
+    "hits": 1,
+    "step": 5
   },
   "archer_agility": {
     "name": "궁수의 날렵함",
@@ -253,7 +257,9 @@
     "value2": 600,
     "value2PerLevel": 6.3158,
     "desc": "꾹 눌러 모았다 떼면 관통 화살, 스공의 {v}% (1.5초 가득 모으면 {v2}%)",
-    "hits": 1
+    "hits": 1,
+    "step": 5,
+    "step2": 5
   },
   "focus": {
     "name": "집중",
@@ -317,7 +323,8 @@
     "value": 300,
     "valuePerLevel": 10.5263,
     "desc": "맞은 자리에서 터지는 화살, 반경 2.5칸 스공의 {v}%",
-    "hits": 1
+    "hits": 1,
+    "step": 5
   },
   "trap": {
     "name": "덫",
@@ -335,7 +342,8 @@
     "value2": 2,
     "value2PerLevel": 0.0789,
     "desc": "발밑에 덫 설치 ({d}초). 밟은 몹 스공의 {v}% + {v2}초 속박",
-    "hits": 1
+    "hits": 1,
+    "step": 5
   },
   "trap_mastery": {
     "name": "덫 숙련",
@@ -377,10 +385,11 @@
     "mpPerLevel": 0.2632,
     "cooldown": 0.8,
     "duration": 0,
-    "value": 92,
-    "valuePerLevel": 2,
+    "value": 90,
+    "valuePerLevel": 2.1053,
     "desc": "날아가는 마법탄, 맞으면 스공의 {v}%",
-    "hits": 1
+    "hits": 1,
+    "step": 5
   },
   "magic_guard": {
     "name": "매직 가드",
@@ -429,7 +438,9 @@
     "value2": 15,
     "value2PerLevel": 0.7895,
     "desc": "터지는 불덩이, 반경 3칸 스공의 {v}% + {d}초 화상 (1초마다 {v2}%)",
-    "hits": 1
+    "hits": 1,
+    "step": 5,
+    "step2": 5
   },
   "teleport": {
     "name": "텔레포트",
@@ -492,8 +503,9 @@
     "cooldown": 3,
     "duration": 0,
     "value": 15,
-    "valuePerLevel": 0.7895,
-    "desc": "8칸 안 파티원 최대 HP의 {v}% 회복 (지력 회복량 증가 적용)"
+    "valuePerLevel": 1.3158,
+    "desc": "8칸 안 파티원을 마법 스공의 {v}%만큼 회복 (마력·지력에 비례, 회복량 증가 적용)",
+    "step": 5
   },
   "holy_arrow": {
     "name": "홀리 애로우",
@@ -509,7 +521,8 @@
     "value": 150,
     "valuePerLevel": 5.7895,
     "desc": "빛의 화살, 스공의 {v}%",
-    "hits": 1
+    "hits": 1,
+    "step": 5
   },
   "overflowing_heal": {
     "name": "넘치는 치유",
@@ -608,7 +621,9 @@
     "value2PerLevel": 0.5263,
     "desc": "앞쪽 {n}연속 찌르기, 각각 스공의 {v}% + {d}초 출혈 (1초마다 {v2}%)",
     "hits": 3,
-    "hitsPerLevel": 0.1579
+    "hitsPerLevel": 0.1579,
+    "step": 5,
+    "step2": 5
   },
   "knife_throw": {
     "name": "단검 투척",
@@ -624,7 +639,8 @@
     "value": 80,
     "valuePerLevel": 3.1579,
     "desc": "단검 3개를 부채꼴로, 각각 스공의 {v}%",
-    "hits": 3
+    "hits": 3,
+    "step": 5
   },
   "backstab": {
     "name": "급소",
@@ -672,7 +688,9 @@
     "value2": 20,
     "value2PerLevel": 0.7895,
     "desc": "{d}초 동안 반경 3칸 독안개, 1초마다 스공의 {v}% + 이동속도 -{v2}%",
-    "hits": 6
+    "hits": 6,
+    "step": 5,
+    "step2": 5
   },
   "dash": {
     "name": "대쉬",
@@ -689,7 +707,8 @@
     "value": 100,
     "valuePerLevel": 3.6842,
     "desc": "앞으로 6칸 돌진, 지나간 몹 스공의 {v}%",
-    "hits": 1
+    "hits": 1,
+    "step": 5
   },
   "evasion_instinct": {
     "name": "회피 본능",

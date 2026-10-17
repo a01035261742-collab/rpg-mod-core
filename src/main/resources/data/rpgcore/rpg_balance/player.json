@@ -10,7 +10,7 @@
   "hpPerVit": 5,
   "mpBase": 30,
   "mpPerLevel": 4,
-  "mpPerInt": 2,
+  "mpPerInt": 4,
   "regenIntervalSec": 5,
   "hpRegenPercent": 0,
   "mpRegenPercent": 3,

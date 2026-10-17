@@ -143,7 +143,7 @@ public final class Skills {
             p.displayClientMessage(Component.literal("HP가 가득 차 있어요").withStyle(ChatFormatting.GRAY), true);
             return false;
         }
-        double heal = d.maxHp * s.value(lv) / 100.0 * (1 + d.healBonus() / 100.0) * (1 + d.bonus("healPct") / 100.0);
+        double heal = Math.round(d.level * s.value(lv) * (1 + d.bonus("healPct") / 100.0));   // 레벨 × 계수
         JobSkills.heal(p, d, p, d, heal);
         ServerLevel lv2 = p.serverLevel();
         lv2.sendParticles(ParticleTypes.HEART, p.getX(), p.getY() + 1.2, p.getZ(), 6, 0.4, 0.4, 0.4, 0);

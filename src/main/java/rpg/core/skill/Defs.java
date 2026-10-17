@@ -20,11 +20,13 @@ public final class Defs {
                            double value, double valuePerLevel, String desc, String type, int job,
                            double value2, double value2PerLevel, double mpPerLevel,
                            int branch, String stat, String stat2, double cdPerLevel,
-                           double hits, double hitsPerLevel) {
-        public double value(int level) { return value + valuePerLevel * Math.max(0, level - 1); }
+                           double hits, double hitsPerLevel, double step, double step2) {
+        /** 레벨별 계수. step 이 있으면 그 단위(예: 5)로 반올림해서 5·10의 배수로 딱 떨어지게 */
+        public double value(int level) { return snap(value + valuePerLevel * Math.max(0, level - 1), step); }
         /** 레벨별 MP (찍을수록 더 씀) */
         public double mp(int level) { return Math.round(mp + mpPerLevel * Math.max(0, level - 1)); }
-        public double value2(int level) { return value2 + value2PerLevel * Math.max(0, level - 1); }
+        public double value2(int level) { return snap(value2 + value2PerLevel * Math.max(0, level - 1), step2); }
+        private static double snap(double v, double st) { return st > 0 ? Math.round(v / st) * st : v; }
         public boolean charge() { return "charge".equals(type); }
         /** 패시브: 배우면 항상 켜짐 (칸에 못 넣음). stat/stat2 = PlayerData.bonus 에 value/value2 를 더함 */
         public boolean passive() { return "passive".equals(type); }
@@ -62,7 +64,7 @@ public final class Defs {
                         num(o, "value", 0), num(o, "valuePerLevel", 0), str(o, "desc", ""), str(o, "type", "instant"),
                         (int) num(o, "job", 0), num(o, "value2", 0), num(o, "value2PerLevel", 0), num(o, "mpPerLevel", 0),
                         (int) num(o, "branch", 0), str(o, "stat", ""), str(o, "stat2", ""), num(o, "cooldownPerLevel", 0),
-                        num(o, "hits", 1), num(o, "hitsPerLevel", 0)));
+                        num(o, "hits", 1), num(o, "hitsPerLevel", 0), num(o, "step", 0), num(o, "step2", 0)));
             }
         } catch (Exception ex) {
             rpg.core.RpgCore.LOG.error("[rpgcore] skills.json 읽기 실패", ex);

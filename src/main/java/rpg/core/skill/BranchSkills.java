@@ -254,7 +254,7 @@ public final class BranchSkills {
             if (t.distanceToSqr(p) > 8 * 8) continue;
             PlayerData td = RpgData.get(t);
             if (td.isDown()) continue;
-            double amount = td.maxHp * s.value(lv) / 100.0 * (1 + d.healBonus() / 100.0) * (1 + td.bonus("healPct") / 100.0);
+            double amount = Math.round(Combat.statAttack(p, d) * s.value(lv) / 100.0 * (1 + td.bonus("healPct") / 100.0));   // 마법 스공 비례 고정 수치
             heal(p, d, t, td, amount);
             t.serverLevel().sendParticles(ParticleTypes.HEART, t.getX(), t.getY() + 1.2, t.getZ(), 5, 0.4, 0.4, 0.4, 0);
             t.serverLevel().sendParticles(ParticleTypes.HAPPY_VILLAGER, t.getX(), t.getY() + 1, t.getZ(), 10, 0.4, 0.6, 0.4, 0);
