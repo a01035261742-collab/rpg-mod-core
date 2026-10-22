@@ -28,6 +28,114 @@
       "version": "1.20.1-5.2.0+forge",
       "optional": false,
       "side": "client"
+    },
+    {
+      "modrinth": "modernfix",
+      "version": "",
+      "optional": false,
+      "side": "both"
+    },
+    {
+      "modrinth": "ferrite-core",
+      "version": "",
+      "optional": false,
+      "side": "both"
+    },
+    {
+      "modrinth": "immediatelyfast",
+      "version": "",
+      "optional": false,
+      "side": "client"
+    },
+    {
+      "modrinth": "entityculling",
+      "version": "",
+      "optional": false,
+      "side": "client"
+    },
+    {
+      "modrinth": "ebe",
+      "version": "",
+      "optional": false,
+      "side": "client"
+    },
+    {
+      "modrinth": "badoptimizations",
+      "version": "",
+      "optional": false,
+      "side": "client"
+    },
+    {
+      "modrinth": "dynamic-fps",
+      "version": "",
+      "optional": false,
+      "side": "client"
+    },
+    {
+      "modrinth": "clumps",
+      "version": "",
+      "optional": false,
+      "side": "both"
+    },
+    {
+      "modrinth": "spark",
+      "version": "",
+      "optional": false,
+      "side": "both"
+    },
+    {
+      "modrinth": "ksyxis",
+      "version": "",
+      "optional": false,
+      "side": "both"
+    },
+    {
+      "modrinth": "fast-paintings",
+      "version": "",
+      "optional": false,
+      "side": "client"
+    },
+    {
+      "modrinth": "fastfurnace",
+      "version": "",
+      "optional": false,
+      "side": "both"
+    },
+    {
+      "modrinth": "fastsuite",
+      "version": "",
+      "optional": false,
+      "side": "both"
+    },
+    {
+      "modrinth": "async-logger",
+      "version": "",
+      "optional": false,
+      "side": "both"
+    },
+    {
+      "modrinth": "alltheleaks",
+      "version": "",
+      "optional": false,
+      "side": "both"
+    },
+    {
+      "modrinth": "particle-core",
+      "version": "",
+      "optional": false,
+      "side": "client"
+    },
+    {
+      "modrinth": "epic-fight-fps-optimizer",
+      "version": "",
+      "optional": false,
+      "side": "client"
+    },
+    {
+      "modrinth": "chloride",
+      "version": "",
+      "optional": false,
+      "side": "client"
     }
   ],
   "forge": "47.4.26",
