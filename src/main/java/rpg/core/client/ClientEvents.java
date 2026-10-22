@@ -54,7 +54,7 @@ public final class ClientEvents {
         var eh = net.minecraft.world.entity.projectile.ProjectileUtil.getEntityHitResult(mc.player, from, end,
                 new net.minecraft.world.phys.AABB(from, end).inflate(1), e -> e != mc.player && !e.isSpectator() && e.isPickable(),
                 from.distanceToSqr(end));
-        return eh != null ? eh.getLocation().add(0, eh.getEntity().getBbHeight() * 0.5, 0) : end;
+        return eh != null ? eh.getLocation() : end;   // 조준점이 닿은 몸 표면 그대로 (예전엔 + 키 절반 → 큰 몹 위로 날아감)
     }
 
     private ClientEvents() {}
