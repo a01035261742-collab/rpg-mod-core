@@ -41,8 +41,8 @@ public final class ModEntities {
             () -> EntityType.Builder.<BrownBear>of(BrownBear::new, MobCategory.CREATURE)
                     .sized(1.4f, 1.4f).clientTrackingRange(10).build(RpgCore.MODID + ":brown_bear"));
     /** 보스 "숲의 주인": 갈색 곰 몸 2.5배 */
-    public static final RegistryObject<EntityType<BrownBear>> FOREST_LORD = TYPES.register("forest_lord",
-            () -> EntityType.Builder.<BrownBear>of(BrownBear::new, MobCategory.CREATURE)
+    public static final RegistryObject<EntityType<ForestLord>> FOREST_LORD = TYPES.register("forest_lord",
+            () -> EntityType.Builder.<ForestLord>of(ForestLord::new, MobCategory.CREATURE)
                     .sized(3.5f, 3.5f).clientTrackingRange(16).updateInterval(1).build(RpgCore.MODID + ":forest_lord"));
 
     @SubscribeEvent

@@ -52,7 +52,8 @@ public final class Boss {
 
     public record Def(String key, double arena, int respawnSec, int resetSec, double phase2, double[] wait1, double[] wait2,
                       double penaltyPerLevel, double maxPenalty, List<Pattern> patterns,
-                      String sure, int fragments, double scrollChance, String ring, double ringChance, List<Mats> mats, String bar) {}
+                      String sure, int fragments, double scrollChance, String ring, double ringChance, List<Mats> mats, String bar,
+                      Pattern melee, double meleeCd) {}
 
     public static final Map<String, Def> DEFS = new HashMap<>();
 
@@ -68,6 +69,12 @@ public final class Boss {
                         d(p, "len", 10), d(p, "w", 3), d(p, "track", 0), d(p, "delay", 2), d(p, "pct", 100), d(p, "push", 0),
                         (int) d(p, "phase", 1), (int) d(p, "repeat2", 1)));
             }
+            Pattern melee = null;
+            if (o.has("melee")) {   // 기본 근접 공격 (패턴 사이, 붙어 있을 때)
+                JsonObject p = o.getAsJsonObject("melee");
+                melee = new Pattern("melee", s(p, "name", "공격"), "cone", d(p, "r", 5.5), d(p, "angle", 100), 0, 0, 0,
+                        d(p, "delay", 0.8), d(p, "pct", 100), 0, 1, 1);
+            }
             JsonObject rw = o.has("reward") ? o.getAsJsonObject("reward") : new JsonObject();
             List<Mats> mats = new ArrayList<>();
             if (rw.has("mats")) for (var x : rw.getAsJsonArray("mats")) {
@@ -77,7 +84,7 @@ public final class Boss {
             DEFS.put(key, new Def(key, d(o, "arena", 24), (int) d(o, "respawnSec", 600), (int) d(o, "resetSec", 30), d(o, "phase2", 50),
                     pair(o, "wait1", 2, 4), pair(o, "wait2", 1.5, 3), d(o, "penaltyPerLevel", 5), d(o, "maxPenalty", 90), ps,
                     s(rw, "sure", ""), (int) d(rw, "fragments", 0), d(rw, "scrollChance", 0), s(rw, "ring", ""), d(rw, "ringChance", 0), mats,
-                    s(o, "bar", "")));
+                    s(o, "bar", ""), melee, o.has("melee") ? d(o.getAsJsonObject("melee"), "cd", 1.5) : 0));
         } catch (Exception ex) {
             RpgCore.LOG.error("[rpgcore] 보스 {} 읽기 실패", key, ex);
         }
@@ -113,6 +120,7 @@ public final class Boss {
         final Map<UUID, Double> dmg = new HashMap<>();
         long emptySince = -1;
         ServerBossEvent bar;
+        long meleeReady;
         Vec3 dashFrom;
         int dashTick;
         final java.util.Set<UUID> dashHit = new java.util.HashSet<>();
@@ -209,6 +217,12 @@ public final class Boss {
         if (t == null) return;
         st.target = t.getUUID();
         if (now < st.nextAt || now < m.stunUntil) {
+            // 패턴 사이: 붙어 있으면 기본 근접 공격
+            if (def.melee() != null && now >= st.meleeReady && now >= m.stunUntil
+                    && flat(mob.position(), t.position()) <= def.melee().r() && Math.abs(t.getY() - mob.getY()) < HEIGHT) {
+                start(mob, st, def, def.melee(), t, fighters, l, now);
+                return;
+            }
             if (mob.tickCount % 10 == 0) {
                 if (mob.distanceTo(t) > 5) mob.getNavigation().moveTo(t, 1.0);
                 else mob.getNavigation().stop();
@@ -385,6 +399,13 @@ public final class Boss {
 
     private static void finish(Mob mob, State st, Def def, long now) {
         if (st.cur != null && st.stage == 0) Net.track((ServerLevel) mob.level(), mob.getId(), -1, 0, 0, 0, 0);
+        if (st.cur != null && st.cur == def.melee()) {   // 기본 공격은 패턴 대기 시간을 안 늘림
+            st.cur = null;
+            st.meleeReady = now + Math.round(def.meleeCd() * 20);
+            st.nextAt = Math.max(st.nextAt, now + 10);
+            standing(mob, false);
+            return;
+        }
         st.cur = null;
         st.dashHit.clear();
         st.rocks.clear();
