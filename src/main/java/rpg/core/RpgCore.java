@@ -33,6 +33,8 @@ public class RpgCore {
         rpg.core.craft.GoldShapedRecipe.SERIALIZERS.register(modBus);
         rpg.core.entity.ModEntities.TYPES.register(modBus);
         Net.register();
+        // 3인칭 카메라 기본값 (처음 한 번, 클라만)
+        if (net.minecraftforge.fml.loading.FMLEnvironment.dist == net.minecraftforge.api.distmarker.Dist.CLIENT) rpg.core.client.CameraDefaults.apply();
     }
 
     public static ResourceLocation id(String path) {
