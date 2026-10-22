@@ -160,8 +160,8 @@ public class QuestTalkScreen extends Screen {
             if (rw.exp() > 0) r.append("§a").append(String.format("%,d", rw.exp())).append(" EXP  ");
             if (rw.gold() > 0) r.append("§6").append(String.format("%,d", rw.gold())).append(" G  ");
             for (String[] it : rw.items()) {
-                Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(it[0]));
-                r.append("§b").append(item == null ? it[0] : new ItemStack(item).getHoverName().getString());
+                ItemStack rs = rpg.core.item.ItemIds.stack(it[0], 1);
+                r.append("§b").append(rs.isEmpty() ? it[0] : rs.getHoverName().getString());
                 if (!it[1].equals("1")) r.append(" x").append(it[1]);
                 r.append("  ");
             }

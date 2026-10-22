@@ -39,8 +39,7 @@ public class CraftScreen extends Screen {
     }
 
     private static ItemStack stack(String id, int n) {
-        Item it = ForgeRegistries.ITEMS.getValue(new ResourceLocation(id));
-        return it == null ? ItemStack.EMPTY : new ItemStack(it, Math.max(1, n));
+        return rpg.core.item.ItemIds.stack(id, n);
     }
 
     private void filter() {
@@ -75,7 +74,8 @@ public class CraftScreen extends Screen {
     private int have(String id) {
         var p = Minecraft.getInstance().player;
         if (p == null) return 0;
-        Item it = ForgeRegistries.ITEMS.getValue(new ResourceLocation(id));
+        Item it = rpg.core.item.ItemIds.item(id);
+        if (it == null) return 0;
         int n = 0;
         for (ItemStack s : p.getInventory().items) if (s.is(it)) n += s.getCount();
         return n;

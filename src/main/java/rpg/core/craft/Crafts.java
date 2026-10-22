@@ -82,7 +82,7 @@ public final class Crafts {
     }
 
     private static Item item(String id) {
-        return ForgeRegistries.ITEMS.getValue(new ResourceLocation(id));
+        return rpg.core.item.ItemIds.item(id);
     }
 
     // ───────── NPC ─────────
@@ -147,9 +147,9 @@ public final class Crafts {
         Station st = STATIONS.get(npcStation(e));
         if (st == null || index < 0 || index >= st.recipes().size()) return;
         Recipe r = st.recipes().get(index);
-        Item out = item(r.result());
-        if (out == null) return;
-        boolean gear = Gear.def(new ItemStack(out)) != null;
+        ItemStack proto = rpg.core.item.ItemIds.stack(r.result(), 1);
+        if (proto.isEmpty()) return;
+        boolean gear = Gear.def(proto) != null;
         if (gear) times = 1;
         times = Math.max(1, Math.min(times, 64));
         PlayerData d = RpgData.get(p);
@@ -165,7 +165,8 @@ public final class Crafts {
             if (gear && p.getInventory().getFreeSlot() < 0) { fail = "인벤토리에 빈칸이 없어요"; break; }
             for (Mat m : r.mats()) take(p, item(m.item()), m.count());
             d.gold -= r.gold();
-            ItemStack res = new ItemStack(out, r.count());
+            ItemStack res = proto.copy();
+            res.setCount(Math.max(1, r.count()));
             if (gear) Gear.roll(res);   // 제작 장비: 추가 옵션 고정 줄 수
             if (!p.getInventory().add(res) && !res.isEmpty()) p.drop(res, false);
             made++;

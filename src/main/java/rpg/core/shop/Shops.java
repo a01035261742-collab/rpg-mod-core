@@ -71,8 +71,7 @@ public final class Shops {
     }
 
     public static String idOf(ItemStack s) {
-        ResourceLocation rl = ForgeRegistries.ITEMS.getKey(s.getItem());
-        return rl == null ? "" : rl.toString();
+        return rpg.core.item.ItemIds.sellKey(s);
     }
 
     public static long sellPrice(ItemStack s) {
@@ -133,9 +132,8 @@ public final class Shops {
         Shop s = near(p, npcId);
         if (s == null || index < 0 || index >= s.offers().size()) return;
         Offer o = s.offers().get(index);
-        Item it = ForgeRegistries.ITEMS.getValue(new ResourceLocation(o.item()));
-        if (it == null) return;
-        ItemStack st = new ItemStack(it);
+        ItemStack st = rpg.core.item.ItemIds.stack(o.item(), 1);
+        if (st.isEmpty()) return;
         boolean gear = Gear.def(st) != null;
         count = gear ? 1 : Math.max(1, Math.min(count, st.getMaxStackSize()));
         long cost = o.price() * count;
@@ -149,7 +147,7 @@ public final class Shops {
         d.gold -= cost;
         if (!p.getInventory().add(st) && !st.isEmpty()) p.drop(st, false);
         RpgData.sync(p);
-        msg(p, it.getDescription().getString() + " x" + count + " 구매  -" + String.format("%,d", cost) + " G", ChatFormatting.YELLOW);
+        msg(p, st.getHoverName().getString() + " x" + count + " 구매  -" + String.format("%,d", cost) + " G", ChatFormatting.YELLOW);
         p.level().playSound(null, p.blockPosition(), SoundEvents.VILLAGER_YES, SoundSource.PLAYERS, 0.5f, 1.2f);
     }
 

@@ -48,7 +48,7 @@
   "jobLevel1": 10,
   "jobRewardPotions": 10,
   "jobLevel2": 30,
-  "jobReward2Potions": 20,
+  "jobReward2Potions": 10,
   "potionCooldown": 1.0,
   "_원거리": "궁수 화살·마법사 마법탄 사거리(칸)",
   "rangedRange": 20,

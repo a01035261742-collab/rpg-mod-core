@@ -136,8 +136,8 @@ public final class Jobs {
             if (((Gear.GearItem) g.get()).gearId().equals(weapon)) give(p, g.get().getDefaultInstance());
         }
         give(p, new ItemStack(ModItems.STAT_RESET_SCROLL.get()));
-        give(p, new ItemStack(ModItems.RED_POTION.get(), Balance.jobReward2Potions));
-        give(p, new ItemStack(ModItems.BLUE_POTION.get(), Balance.jobReward2Potions));
+        give(p, new ItemStack(ModItems.ORANGE_POTION.get(), Balance.jobReward2Potions));
+        give(p, new ItemStack(ModItems.DEEP_BLUE_POTION.get(), Balance.jobReward2Potions));
         p.serverLevel().sendParticles(ParticleTypes.TOTEM_OF_UNDYING, p.getX(), p.getY() + 1, p.getZ(), 80, 0.5, 1, 0.5, 0.5);
         p.level().playSound(null, p.blockPosition(), SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundSource.PLAYERS, 0.8f, 1f);
         p.sendSystemMessage(Component.literal("2차 전직 완료! 이제 " + branchName(family, d.branch) + "예요. ").withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD)

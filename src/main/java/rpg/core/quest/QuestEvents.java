@@ -269,9 +269,8 @@ public final class QuestEvents {
     }
 
     private static void give(ServerPlayer p, String item, int n) {
-        Item it = ForgeRegistries.ITEMS.getValue(new ResourceLocation(item));
-        if (it == null) return;
-        ItemStack st = new ItemStack(it, Math.max(1, n));
+        ItemStack st = rpg.core.item.ItemIds.stack(item, n);
+        if (st.isEmpty()) return;
         if (rpg.core.equip.Gear.def(st) != null) { st.setCount(1); rpg.core.equip.Gear.roll(st); }
         String name = st.getHoverName().getString() + (st.getCount() > 1 ? " x" + st.getCount() : "");
         if (!p.getInventory().add(st) && !st.isEmpty()) p.drop(st, false);

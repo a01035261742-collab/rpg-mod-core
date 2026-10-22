@@ -429,6 +429,10 @@
      [
       "red_potion",
       10
+     ],
+     [
+      "scroll_fragment",
+      5
      ]
     ]
    }
@@ -805,6 +809,10 @@
      [
       "red_potion",
       20
+     ],
+     [
+      "scroll_fragment",
+      10
      ]
     ]
    }
@@ -836,12 +844,12 @@
     "gold": 840,
     "items": [
      [
-      "red_potion",
-      20
+      "orange_potion",
+      10
      ],
      [
-      "blue_potion",
-      10
+      "deep_blue_potion",
+      5
      ]
     ]
    }
@@ -881,8 +889,8 @@
     "gold": 880,
     "items": [
      [
-      "red_potion",
-      15
+      "orange_potion",
+      10
      ]
     ]
    }
@@ -914,8 +922,8 @@
     "gold": 880,
     "items": [
      [
-      "blue_potion",
-      20
+      "deep_blue_potion",
+      10
      ]
     ]
    }
@@ -947,12 +955,12 @@
     "gold": 920,
     "items": [
      [
-      "red_potion",
-      20
+      "orange_potion",
+      10
      ],
      [
-      "blue_potion",
-      10
+      "deep_blue_potion",
+      5
      ]
     ]
    }
@@ -990,12 +998,12 @@
     "gold": 960,
     "items": [
      [
-      "red_potion",
-      20
+      "orange_potion",
+      10
      ],
      [
-      "blue_potion",
-      15
+      "deep_blue_potion",
+      10
      ]
     ]
    }
@@ -1030,6 +1038,10 @@
      [
       "earring_20",
       1
+     ],
+     [
+      "scroll_fragment",
+      10
      ]
     ]
    }
@@ -1061,8 +1073,8 @@
     "gold": 1040,
     "items": [
      [
-      "red_potion",
-      25
+      "orange_potion",
+      10
      ]
     ]
    }
@@ -1094,8 +1106,8 @@
     "gold": 1080,
     "items": [
      [
-      "blue_potion",
-      25
+      "deep_blue_potion",
+      10
      ]
     ]
    }
@@ -1135,8 +1147,8 @@
     "gold": 1120,
     "items": [
      [
-      "blue_potion",
-      20
+      "deep_blue_potion",
+      10
      ]
     ]
    }
@@ -1169,12 +1181,12 @@
     "gold": 1120,
     "items": [
      [
-      "star_fragment",
-      3
+      "scroll_fragment",
+      10
      ],
      [
-      "red_potion",
-      20
+      "orange_potion",
+      10
      ]
     ]
    }
@@ -1212,12 +1224,12 @@
     "gold": 1160,
     "items": [
      [
-      "red_potion",
-      25
+      "orange_potion",
+      10
      ],
      [
-      "blue_potion",
-      15
+      "deep_blue_potion",
+      10
      ]
     ]
    }
@@ -1249,12 +1261,12 @@
     "gold": 1160,
     "items": [
      [
-      "red_potion",
-      20
+      "orange_potion",
+      10
      ],
      [
-      "blue_potion",
-      15
+      "deep_blue_potion",
+      10
      ]
     ]
    }
@@ -1286,8 +1298,8 @@
     "gold": 1240,
     "items": [
      [
-      "red_potion",
-      25
+      "orange_potion",
+      10
      ]
     ]
    }
@@ -1319,8 +1331,8 @@
     "gold": 1280,
     "items": [
      [
-      "blue_potion",
-      25
+      "deep_blue_potion",
+      10
      ]
     ]
    }
@@ -1360,8 +1372,8 @@
     "gold": 1320,
     "items": [
      [
-      "red_potion",
-      20
+      "orange_potion",
+      10
      ]
     ]
    }
@@ -1393,12 +1405,12 @@
     "gold": 1320,
     "items": [
      [
-      "red_potion",
-      25
+      "orange_potion",
+      10
      ],
      [
-      "blue_potion",
-      15
+      "deep_blue_potion",
+      10
      ]
     ]
    }
@@ -1435,6 +1447,10 @@
      [
       "ring_30",
       1
+     ],
+     [
+      "scroll_fragment",
+      15
      ]
     ]
    }
@@ -1472,12 +1488,12 @@
     "gold": 1360,
     "items": [
      [
-      "red_potion",
-      25
+      "orange_potion",
+      10
      ],
      [
-      "blue_potion",
-      20
+      "deep_blue_potion",
+      10
      ]
     ]
    }
@@ -1509,8 +1525,8 @@
     "gold": 1440,
     "items": [
      [
-      "red_potion",
-      30
+      "white_potion",
+      15
      ]
     ]
    }
@@ -1550,8 +1566,8 @@
     "gold": 1480,
     "items": [
      [
-      "red_potion",
-      20
+      "white_potion",
+      10
      ]
     ]
    }
@@ -1583,8 +1599,8 @@
     "gold": 1480,
     "items": [
      [
-      "blue_potion",
-      30
+      "mana_elixir",
+      15
      ]
     ]
    }
@@ -1616,12 +1632,12 @@
     "gold": 1520,
     "items": [
      [
-      "red_potion",
-      30
+      "white_potion",
+      15
      ],
      [
-      "blue_potion",
-      15
+      "mana_elixir",
+      10
      ]
     ]
    }
@@ -1660,12 +1676,12 @@
     "gold": 1520,
     "items": [
      [
-      "red_potion",
-      30
+      "white_potion",
+      15
      ],
      [
-      "blue_potion",
-      20
+      "mana_elixir",
+      10
      ]
     ]
    }
@@ -1705,8 +1721,12 @@
       1
      ],
      [
-      "star_fragment",
-      5
+      "scroll#white",
+      1
+     ],
+     [
+      "scroll_fragment",
+      20
      ]
     ]
    }

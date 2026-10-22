@@ -52,8 +52,7 @@ public class ShopScreen extends Screen {
         this.prices = prices;
         this.sell = sell;
         for (String id : items) {
-            Item it = ForgeRegistries.ITEMS.getValue(new ResourceLocation(id));
-            offers.add(it == null ? ItemStack.EMPTY : new ItemStack(it));
+            offers.add(rpg.core.item.ItemIds.stack(id, 1));
         }
     }
 
@@ -86,8 +85,7 @@ public class ShopScreen extends Screen {
 
     private long sellPrice(ItemStack s) {
         if (s.isEmpty()) return 0;
-        ResourceLocation rl = ForgeRegistries.ITEMS.getKey(s.getItem());
-        return rl == null ? 0 : sell.getOrDefault(rl.toString(), 0L);
+        return sell.getOrDefault(rpg.core.item.ItemIds.sellKey(s), 0L);
     }
 
     private ItemStack inv(int i) {

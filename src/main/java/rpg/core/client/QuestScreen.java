@@ -141,9 +141,9 @@ public class QuestScreen extends Screen {
         if (r.exp() > 0) { g.drawString(font, " · " + String.format("%,d", r.exp()) + " EXP", dx, dy, 0xFFB0FF80, false); dy += 10; }
         if (r.gold() > 0) { g.drawString(font, " · " + String.format("%,d", r.gold()) + " G", dx, dy, 0xFFFFD24A, false); dy += 10; }
         for (String[] it : r.items()) {
-            Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(it[0]));
-            if (item != null) g.renderFakeItem(new ItemStack(item), dx + 4, dy - 3);
-            String nm = (item == null ? it[0] : new ItemStack(item).getHoverName().getString()) + (it[1].equals("1") ? "" : " x" + it[1]);
+            ItemStack rs = rpg.core.item.ItemIds.stack(it[0], 1);
+            if (!rs.isEmpty()) g.renderFakeItem(rs, dx + 4, dy - 3);
+            String nm = (rs.isEmpty() ? it[0] : rs.getHoverName().getString()) + (it[1].equals("1") ? "" : " x" + it[1]);
             g.drawString(font, nm, dx + 24, dy + 2, 0xFF80E0FF, false);
             dy += 17;
         }

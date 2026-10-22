@@ -1,5 +1,5 @@
 {
- "_설명": "NPC 제작 (작업대 레시피 없음). stations = 제작 NPC (/rpg npc craft <키>), tabs = 창 위 탭. recipes: station·tab·result·count(만들어지는 개수)·gold·mats [아이템, 개수] (minecraft: 없으면 rpgcore). 장비는 추가 옵션 4줄로 나옴. 방어구는 직업별(제작 전용), 공용 방어구는 상점 일반 장비. Lv40까지 광물은 철(방어구·무기)·구리(장신구), 단계마다 양만 늘림(×1·1.5·2·3). 숫자는 임시값",
+ "_설명": "NPC 제작 (작업대 레시피 없음). stations = 제작 NPC (/rpg npc craft <키>), tabs = 창 위 탭. recipes: station·tab·result·count(만들어지는 개수)·gold·mats [아이템, 개수] (minecraft: 없으면 rpgcore). 장비는 추가 옵션 4줄로 나옴. 방어구는 직업별(제작 전용), 공용 방어구는 상점 일반 장비. Lv40까지 광물은 철(방어구·무기)·구리(장신구), 단계마다 양만 늘림(×1·1.5·2·3). 숫자는 임시값 주문서 결과는 scroll#종류#등급 (등급 2=30% 3=10%), scroll#white=순백",
  "stations": {
   "smith": {
    "name": "대장장이",
@@ -26,7 +26,8 @@
    "name": "연금술사",
    "tabs": [
     "물약",
-    "재료"
+    "재료",
+    "주문서"
    ]
   }
  },
@@ -2252,6 +2253,323 @@
     [
      "minecraft:glass_bottle",
      1
+    ]
+   ]
+  },
+  {
+   "station": "alchemist",
+   "tab": "물약",
+   "result": "orange_potion",
+   "count": 3,
+   "gold": 30,
+   "mats": [
+    [
+     "spore_dust",
+     1
+    ],
+    [
+     "tiny_cap",
+     1
+    ],
+    [
+     "minecraft:glass_bottle",
+     1
+    ]
+   ]
+  },
+  {
+   "station": "alchemist",
+   "tab": "물약",
+   "result": "deep_blue_potion",
+   "count": 3,
+   "gold": 40,
+   "mats": [
+    [
+     "fairy_wing",
+     1
+    ],
+    [
+     "toxic_cap",
+     1
+    ],
+    [
+     "minecraft:glass_bottle",
+     1
+    ]
+   ]
+  },
+  {
+   "station": "alchemist",
+   "tab": "물약",
+   "result": "white_potion",
+   "count": 3,
+   "gold": 80,
+   "mats": [
+    [
+     "witch_herb",
+     1
+    ],
+    [
+     "dark_silk",
+     1
+    ],
+    [
+     "minecraft:glass_bottle",
+     1
+    ]
+   ]
+  },
+  {
+   "station": "alchemist",
+   "tab": "물약",
+   "result": "mana_elixir",
+   "count": 3,
+   "gold": 90,
+   "mats": [
+    [
+     "spore_silk",
+     1
+    ],
+    [
+     "beast_shell",
+     1
+    ],
+    [
+     "minecraft:glass_bottle",
+     1
+    ]
+   ]
+  },
+  {
+   "station": "alchemist",
+   "tab": "물약",
+   "result": "elixir",
+   "count": 1,
+   "gold": 300,
+   "mats": [
+    [
+     "odd_potion",
+     1
+    ],
+    [
+     "beast_core",
+     1
+    ],
+    [
+     "minecraft:glass_bottle",
+     1
+    ]
+   ]
+  },
+  {
+   "station": "alchemist",
+   "tab": "물약",
+   "result": "power_elixir",
+   "count": 1,
+   "gold": 800,
+   "mats": [
+    [
+     "elixir",
+     2
+    ],
+    [
+     "dark_eye",
+     1
+    ]
+   ]
+  },
+  {
+   "station": "alchemist",
+   "tab": "주문서",
+   "result": "scroll#watk#2",
+   "count": 1,
+   "gold": 2000,
+   "mats": [
+    [
+     "scroll_fragment",
+     20
+    ]
+   ]
+  },
+  {
+   "station": "alchemist",
+   "tab": "주문서",
+   "result": "scroll#wmatk#2",
+   "count": 1,
+   "gold": 2000,
+   "mats": [
+    [
+     "scroll_fragment",
+     20
+    ]
+   ]
+  },
+  {
+   "station": "alchemist",
+   "tab": "주문서",
+   "result": "scroll#str#2",
+   "count": 1,
+   "gold": 2000,
+   "mats": [
+    [
+     "scroll_fragment",
+     20
+    ]
+   ]
+  },
+  {
+   "station": "alchemist",
+   "tab": "주문서",
+   "result": "scroll#dex#2",
+   "count": 1,
+   "gold": 2000,
+   "mats": [
+    [
+     "scroll_fragment",
+     20
+    ]
+   ]
+  },
+  {
+   "station": "alchemist",
+   "tab": "주문서",
+   "result": "scroll#int#2",
+   "count": 1,
+   "gold": 2000,
+   "mats": [
+    [
+     "scroll_fragment",
+     20
+    ]
+   ]
+  },
+  {
+   "station": "alchemist",
+   "tab": "주문서",
+   "result": "scroll#luk#2",
+   "count": 1,
+   "gold": 2000,
+   "mats": [
+    [
+     "scroll_fragment",
+     20
+    ]
+   ]
+  },
+  {
+   "station": "alchemist",
+   "tab": "주문서",
+   "result": "scroll#vit#2",
+   "count": 1,
+   "gold": 2000,
+   "mats": [
+    [
+     "scroll_fragment",
+     20
+    ]
+   ]
+  },
+  {
+   "station": "alchemist",
+   "tab": "주문서",
+   "result": "scroll#watk#3",
+   "count": 1,
+   "gold": 5000,
+   "mats": [
+    [
+     "scroll_fragment",
+     40
+    ]
+   ]
+  },
+  {
+   "station": "alchemist",
+   "tab": "주문서",
+   "result": "scroll#wmatk#3",
+   "count": 1,
+   "gold": 5000,
+   "mats": [
+    [
+     "scroll_fragment",
+     40
+    ]
+   ]
+  },
+  {
+   "station": "alchemist",
+   "tab": "주문서",
+   "result": "scroll#str#3",
+   "count": 1,
+   "gold": 5000,
+   "mats": [
+    [
+     "scroll_fragment",
+     40
+    ]
+   ]
+  },
+  {
+   "station": "alchemist",
+   "tab": "주문서",
+   "result": "scroll#dex#3",
+   "count": 1,
+   "gold": 5000,
+   "mats": [
+    [
+     "scroll_fragment",
+     40
+    ]
+   ]
+  },
+  {
+   "station": "alchemist",
+   "tab": "주문서",
+   "result": "scroll#int#3",
+   "count": 1,
+   "gold": 5000,
+   "mats": [
+    [
+     "scroll_fragment",
+     40
+    ]
+   ]
+  },
+  {
+   "station": "alchemist",
+   "tab": "주문서",
+   "result": "scroll#luk#3",
+   "count": 1,
+   "gold": 5000,
+   "mats": [
+    [
+     "scroll_fragment",
+     40
+    ]
+   ]
+  },
+  {
+   "station": "alchemist",
+   "tab": "주문서",
+   "result": "scroll#vit#3",
+   "count": 1,
+   "gold": 5000,
+   "mats": [
+    [
+     "scroll_fragment",
+     40
+    ]
+   ]
+  },
+  {
+   "station": "alchemist",
+   "tab": "주문서",
+   "result": "scroll#white",
+   "count": 1,
+   "gold": 10000,
+   "mats": [
+    [
+     "scroll_fragment",
+     60
     ]
    ]
   },
