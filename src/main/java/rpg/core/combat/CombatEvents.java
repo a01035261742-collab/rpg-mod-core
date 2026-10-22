@@ -82,7 +82,7 @@ public final class CombatEvents {
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void meleeReach(net.minecraftforge.event.entity.living.LivingAttackEvent e) {
         if (!(e.getEntity() instanceof ServerPlayer p) || !(e.getSource().getEntity() instanceof Mob m)) return;
-        if (e.getSource().getDirectEntity() != m || !isRpg(m) || MOB_PCT.containsKey(p.getId())) return;   // 패턴·투사체는 제외
+        if (e.getSource().getDirectEntity() != m || !isRpg(m) || MOB_PCT.containsKey(p.getId()) || MAXHP_PCT.containsKey(p.getId())) return;   // 패턴·투사체는 제외
         if (MobAI.edge(m, p) > RpgMeleeGoal.REACH + 0.6) e.setCanceled(true);
     }
 
