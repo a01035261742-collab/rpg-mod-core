@@ -115,6 +115,7 @@ public final class Boss {
         ServerBossEvent bar;
         Vec3 dashFrom;
         int dashTick;
+        final java.util.Set<UUID> dashHit = new java.util.HashSet<>();
     }
 
     private static final Map<UUID, State> STATES = new HashMap<>();
@@ -255,6 +256,9 @@ public final class Boss {
     // ───────── 패턴 ─────────
     private static int ticks(double sec) { return (int) Math.max(4, Math.round(sec * 20)); }
 
+    /** 돌진 이동 시간 (틱) */
+    private static final int DASH_TICKS = 10;
+
     private static void start(Mob mob, State st, Def def, Pattern p, ServerPlayer t, List<ServerPlayer> fighters, ServerLevel l, long now) {
         st.cur = p;
         st.stage = 1;
@@ -271,21 +275,28 @@ public final class Boss {
                 for (ServerPlayer f : fighters) st.rocks.put(f.getUUID(), f.position());
                 st.stage = 0;
                 st.stageEnd = now + ticks(p.track());
+                for (ServerPlayer f : fighters) Net.track(l, mob.getId(), f.getId(), MobAI.CIRCLE, p.r(), 0, ticks(p.track()));
                 standing(mob, true);
                 return;
             }
             case "roar" -> { Net.telegraph(l, st.pos, st.dir, MobAI.CIRCLE, p.r(), 0, dl); standing(mob, true); }
             default -> { Net.telegraph(l, st.pos, st.dir, MobAI.CIRCLE, p.r(), 0, dl); standing(mob, true); }   // slam
         }
-        st.stageEnd = now + dl;
+        st.stageEnd = now + dl + HIT_LAG;
         l.playSound(null, mob.blockPosition(), SoundEvents.NOTE_BLOCK_BASS.value(), SoundSource.HOSTILE, 1f, 0.5f);
     }
+
+    /** 판정을 화면보다 조금 늦게 (빨강이 다 찬 걸 보고 맞게) */
+    private static final int HIT_LAG = 2;
+    /** 판정 여유: 몸 폭 0.3 + 0.3 */
+    private static final double PAD = 0.6, HEIGHT = 4;
 
     private static void beginCharge(Mob mob, State st, Pattern p, ServerPlayer t, long now) {
         st.target = t == null ? st.target : t.getUUID();
         st.stage = 0;
         st.stageEnd = now + ticks(p.track());
         st.pos = mob.position();
+        if (t != null) Net.track((ServerLevel) mob.level(), mob.getId(), t.getId(), MobAI.LINE, p.len(), p.w(), ticks(p.track()));
     }
 
     private static void standing(Mob mob, boolean on) {
@@ -294,14 +305,30 @@ public final class Boss {
 
     private static void run(Mob mob, MobData m, State st, Def def, ServerLevel l, long now) {
         Pattern p = st.cur;
-        // 돌진 중: 직선을 따라 이동
+        // 돌진 중: 직선을 따라 이동, 보스 몸이 지나가는 자리의 플레이어가 맞음 (한 사람당 1번)
         if (st.stage == 2) {
+            double before = p.len() * Math.min(1, st.dashTick / (double) DASH_TICKS);
             st.dashTick++;
-            double f = Math.min(1, st.dashTick / 8.0);
-            Vec3 q = st.dashFrom.add(st.dir.scale(p.len() * f));
+            double f = Math.min(1, st.dashTick / (double) DASH_TICKS);
+            double along = p.len() * f;
+            Vec3 q = st.dashFrom.add(st.dir.scale(along));
             mob.moveTo(q.x, st.dashFrom.y, q.z, mob.getYRot(), mob.getXRot());
+            mob.setDeltaMovement(Vec3.ZERO);
             l.sendParticles(ParticleTypes.CLOUD, q.x, q.y + 0.3, q.z, 3, 0.6, 0.1, 0.6, 0.01);
-            if (st.dashTick >= 8) {
+            double half = mob.getBbWidth() / 2;
+            for (ServerPlayer pl : arena(l, st, 4)) {
+                if (!valid(pl) || st.dashHit.contains(pl.getUUID())) continue;
+                Vec3 to = new Vec3(pl.getX() - st.dashFrom.x, 0, pl.getZ() - st.dashFrom.z);
+                double a = to.dot(st.dir), side = to.x * st.dir.z - to.z * st.dir.x;
+                if (a < before - half - PAD || a > along + half + PAD) continue;          // 이번 틱에 지나간 구간
+                if (Math.abs(side) > p.w() / 2 + PAD || Math.abs(pl.getY() - st.dashFrom.y) > HEIGHT) continue;
+                st.dashHit.add(pl.getUUID());
+                hit(mob, m, st, l, pl, p);
+                double sg = side == 0 ? 1 : Math.signum(side);
+                push(pl, new Vec3(st.dir.z * sg, 0, -st.dir.x * sg).add(st.dir.scale(0.6)).normalize(), 4);
+            }
+            if (st.dashTick >= DASH_TICKS) {
+                st.dashHit.clear();
                 if (--st.repeatLeft > 0) {
                     List<ServerPlayer> fs = new ArrayList<>();
                     for (ServerPlayer x : arena(l, st, 0)) if (valid(x)) fs.add(x);
@@ -327,19 +354,18 @@ public final class Boss {
                     Vec3 to = new Vec3(t.getX() - mob.getX(), 0, t.getZ() - mob.getZ());
                     if (to.lengthSqr() > 1e-4) st.dir = to.normalize();
                 }
-                if (now % 4 == 0) Net.telegraph(l, mob.position(), st.dir, MobAI.LINE + 10, p.len(), p.w(), 5);
             } else {   // rocks
                 for (var e : st.rocks.entrySet()) {
                     Player t = l.getPlayerByUUID(e.getKey());
                     if (t != null && valid(t)) e.setValue(t.position());
-                    if (now % 4 == 0) Net.telegraph(l, e.getValue(), st.dir, MobAI.CIRCLE + 10, p.r(), 0, 5);
                 }
             }
             if (now >= st.stageEnd) {   // 확정 (빨강)
                 int dl = ticks(p.delay());
                 st.stage = 1;
-                st.stageEnd = now + dl;
+                st.stageEnd = now + dl + HIT_LAG;
                 st.pos = mob.position();
+                Net.track(l, mob.getId(), -1, 0, 0, 0, 0);   // 노랑 지우기
                 if (p.type().equals("charge")) Net.telegraph(l, st.pos, st.dir, MobAI.LINE, p.len(), p.w(), dl);
                 else for (Vec3 q : st.rocks.values()) Net.telegraph(l, q, st.dir, MobAI.CIRCLE, p.r(), 0, dl);
                 l.playSound(null, mob.blockPosition(), SoundEvents.NOTE_BLOCK_BASS.value(), SoundSource.HOSTILE, 1f, 0.5f);
@@ -358,7 +384,9 @@ public final class Boss {
     }
 
     private static void finish(Mob mob, State st, Def def, long now) {
+        if (st.cur != null && st.stage == 0) Net.track((ServerLevel) mob.level(), mob.getId(), -1, 0, 0, 0, 0);
         st.cur = null;
+        st.dashHit.clear();
         st.rocks.clear();
         standing(mob, false);
         double[] w = st.phase >= 2 ? def.wait2() : def.wait1();
@@ -377,23 +405,11 @@ public final class Boss {
                     if (!valid(pl)) continue;
                     Vec3 to = new Vec3(pl.getX() - c.x, 0, pl.getZ() - c.z);
                     double dd = to.length();
-                    if (dd > p.r() + 0.3 || Math.abs(pl.getY() - c.y) >= 3) continue;
+                    if (dd > p.r() + PAD || Math.abs(pl.getY() - c.y) > HEIGHT) continue;
                     if (dd < 0.8 || to.normalize().dot(dir) >= cos) hit(mob, m, st, l, pl, p);
                 }
             }
-            case "charge" -> {
-                l.playSound(null, mob.blockPosition(), SoundEvents.RAVAGER_ROAR, SoundSource.HOSTILE, 1f, 1.2f);
-                for (ServerPlayer pl : arena(l, st, 4)) {
-                    if (!valid(pl)) continue;
-                    Vec3 to = new Vec3(pl.getX() - c.x, 0, pl.getZ() - c.z);
-                    double along = to.dot(dir), side = to.x * dir.z - to.z * dir.x;
-                    if (along >= -1 && along <= p.len() + 0.5 && Math.abs(side) <= p.w() / 2 + 0.3 && Math.abs(pl.getY() - c.y) < 3) {
-                        hit(mob, m, st, l, pl, p);
-                        Vec3 away = new Vec3(dir.z * Math.signum(side == 0 ? 1 : side), 0, -dir.x * Math.signum(side == 0 ? 1 : side));
-                        push(pl, away.add(dir.scale(0.6)).normalize(), 4);
-                    }
-                }
-            }
+            case "charge" -> l.playSound(null, mob.blockPosition(), SoundEvents.RAVAGER_ROAR, SoundSource.HOSTILE, 1f, 1.2f);   // 피해는 돌진 이동 중
             case "rocks" -> {
                 l.playSound(null, mob.blockPosition(), SoundEvents.GENERIC_EXPLODE, SoundSource.HOSTILE, 0.8f, 0.8f);
                 for (Vec3 q : st.rocks.values()) {
@@ -402,7 +418,7 @@ public final class Boss {
                             net.minecraft.world.level.block.Blocks.STONE.defaultBlockState()), q.x, q.y + 0.5, q.z, 30, p.r() / 2, 0.3, p.r() / 2, 0.1);
                     for (ServerPlayer pl : arena(l, st, 4)) {
                         if (!valid(pl)) continue;
-                        if (flat(pl.position(), q) <= p.r() + 0.3 && Math.abs(pl.getY() - q.y) < 3) hit(mob, m, st, l, pl, p);
+                        if (flat(pl.position(), q) <= p.r() + PAD && Math.abs(pl.getY() - q.y) <= HEIGHT) hit(mob, m, st, l, pl, p);
                     }
                 }
             }
@@ -412,7 +428,7 @@ public final class Boss {
                 for (ServerPlayer pl : arena(l, st, 4)) {
                     if (!valid(pl)) continue;
                     Vec3 to = new Vec3(pl.getX() - c.x, 0, pl.getZ() - c.z);
-                    if (to.length() > p.r() + 0.3) continue;
+                    if (to.length() > p.r() + PAD) continue;
                     push(pl, to.lengthSqr() < 1e-4 ? dir : to.normalize(), p.push());
                 }
             }
@@ -421,7 +437,7 @@ public final class Boss {
                 l.playSound(null, mob.blockPosition(), SoundEvents.GENERIC_EXPLODE, SoundSource.HOSTILE, 1f, 0.7f);
                 for (ServerPlayer pl : arena(l, st, 4)) {
                     if (!valid(pl)) continue;
-                    if (flat(pl.position(), c) <= p.r() + 0.3 && Math.abs(pl.getY() - c.y) < 3) hit(mob, m, st, l, pl, p);
+                    if (flat(pl.position(), c) <= p.r() + PAD && Math.abs(pl.getY() - c.y) <= HEIGHT) hit(mob, m, st, l, pl, p);
                 }
             }
         }

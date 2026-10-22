@@ -29,13 +29,25 @@ public final class Telegraphs {
         LIST.add(new T(t, now, now + t.ticks() * 50L));
     }
 
+    /** 추적 예고: 클라가 매 프레임 대상 위치로 그림 */
+    private record K(Net.Track t, long end) {}
+    private static final List<K> TRACKS = new ArrayList<>();
+
+    public static void track(Net.Track t) {
+        if (t.follow() < 0 || t.ticks() <= 0) { TRACKS.removeIf(k -> k.t().owner() == t.owner()); return; }
+        TRACKS.removeIf(k -> k.t().owner() == t.owner() && k.t().follow() == t.follow());
+        TRACKS.add(new K(t, System.currentTimeMillis() + t.ticks() * 50L));
+    }
+
     @SubscribeEvent
     public static void render(RenderLevelStageEvent e) {
-        if (e.getStage() != RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS || LIST.isEmpty()) return;
+        if (e.getStage() != RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS || (LIST.isEmpty() && TRACKS.isEmpty())) return;
         Minecraft mc = Minecraft.getInstance();
-        if (mc.level == null) { LIST.clear(); return; }
+        if (mc.level == null) { LIST.clear(); TRACKS.clear(); return; }
         long now = System.currentTimeMillis();
         LIST.removeIf(x -> now > x.end() + 150);
+        TRACKS.removeIf(k -> now > k.end());
+        float pt = e.getPartialTick();
         Vec3 cam = e.getCamera().getPosition();
         PoseStack ps = e.getPoseStack();
         ps.pushPose();
@@ -60,6 +72,26 @@ public final class Telegraphs {
                 case 1 -> { line(vc, m, t, y, 1f, 0x55FF2020, 0); line(vc, m, t, y + 0.01f, p, 0x99FF1010, 0); }
                 case 2 -> { cone(vc, m, t, y, 1f, 0x55FF2020); cone(vc, m, t, y + 0.01f, p, 0x99FF1010); }
                 default -> { circle(vc, m, t, y, 1f, 0x55FF2020); circle(vc, m, t, y + 0.01f, p, 0x99FF1010); }
+            }
+        }
+        // 추적 예고 (노랑): 보스·대상의 지금 프레임 위치
+        for (K k : TRACKS) {
+            Net.Track tr = k.t();
+            var owner = mc.level.getEntity(tr.owner());
+            var fol = mc.level.getEntity(tr.follow());
+            if (owner == null || fol == null) continue;
+            Vec3 o = owner.getPosition(pt), f = fol.getPosition(pt);
+            Net.Telegraph b;
+            if (tr.shape() == 1) {
+                Vec3 d = new Vec3(f.x - o.x, 0, f.z - o.z);
+                d = d.lengthSqr() < 1e-4 ? new Vec3(1, 0, 0) : d.normalize();
+                b = new Net.Telegraph(1, o.x, o.y, o.z, d.x, d.z, tr.a(), tr.b(), 1);
+                float y = (float) (groundY(mc, b) + 0.05);
+                line(vc, m, b, y, 1f, 0x66FFD020, 0);
+            } else {
+                b = new Net.Telegraph(0, f.x, f.y, f.z, 1, 0, tr.a(), 0, 1);
+                float y = (float) (groundY(mc, b) + 0.05);
+                circle(vc, m, b, y, 1f, 0x66FFD020);
             }
         }
         buf.endBatch(RenderType.debugQuads());

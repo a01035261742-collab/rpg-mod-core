@@ -102,6 +102,28 @@ public final class Net {
                 .encoder(OpenEnhance::encode).decoder(OpenEnhance::new).consumerMainThread(OpenEnhance::handle).add();
         CH.messageBuilder(EnhanceAction.class, id++, NetworkDirection.PLAY_TO_SERVER)
                 .encoder(EnhanceAction::encode).decoder(EnhanceAction::new).consumerMainThread(EnhanceAction::handle).add();
+        CH.messageBuilder(Track.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(Track::encode).decoder(Track::new).consumerMainThread(Track::handle).add();
+    }
+
+    // ───────── 서버 → 클라: 추적 예고 (노랑, 클라가 매 프레임 대상 위치를 따라 그림) ─────────
+    /** owner = 보스 엔티티, follow = 따라갈 플레이어 (-1 이면 owner 의 추적 예고 전부 지우기). 원: follow 발밑 / 직선: owner → follow 방향 */
+    public static void track(net.minecraft.server.level.ServerLevel level, int owner, int follow, int shape, double a, double b, int ticks) {
+        var e = level.getEntity(owner);
+        if (e == null) return;
+        Track t = new Track(owner, follow, shape, (float) a, (float) b, ticks);
+        for (ServerPlayer p : level.players()) if (p.distanceToSqr(e) < 64 * 64) CH.send(PacketDistributor.PLAYER.with(() -> p), t);
+    }
+
+    public record Track(int owner, int follow, int shape, float a, float b, int ticks) {
+        Track(FriendlyByteBuf f) { this(f.readVarInt(), f.readInt(), f.readByte(), f.readFloat(), f.readFloat(), f.readVarInt()); }
+        void encode(FriendlyByteBuf f) {
+            f.writeVarInt(owner); f.writeInt(follow); f.writeByte(shape); f.writeFloat(a); f.writeFloat(b); f.writeVarInt(ticks);
+        }
+        void handle(Supplier<NetworkEvent.Context> ctx) {
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> rpg.core.client.Telegraphs.track(this));
+            ctx.get().setPacketHandled(true);
+        }
     }
 
     // ───────── 장비 강화 ─────────
