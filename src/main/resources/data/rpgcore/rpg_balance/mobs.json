@@ -1713,7 +1713,7 @@
    }
   },
   "boss": {
-   "_설명": "거대버섯 수호자. 패턴 type 추가: combo(hits·hits2 연속, delay2 다음 타 예고, altChance% 확률로 마지막 타가 altR 원) · delayed(대상 추적 원 → 빨강 → hold초 멈췄다 폭발) · jump(대상 추적 원 → 뛰어서 착지, repeat2 = 2페이즈 연속, 착지 원 안 단단한 버섯 → 기절 propStun초) · counter(파란 원 window초, 그 안에 최대 HP need% 피해 → 기절 stun초 + 받는 피해 counterVuln%, 실패 → 폭발) · beam(대상 추적 선 → 빨강 → 발사, count발, maxPct = 최대 HP 비율 피해). gimmick: props 단단한 버섯 최대 개수 · propEvery초마다 · 중앙에서 propMin~propMax칸 · pillar 기둥 몹 키 · pillarAt HP% · pillarCount · pillarDist · pillarReduce% 받는 피해 감소",
+   "_설명": "거대버섯 수호자. 패턴 type 추가: combo(hits·hits2 연속, delay2 다음 타 예고, altChance% 확률로 마지막 타가 altR 원) · delayed(대상 추적 원 → 빨강 → hold초 멈췄다 폭발) · jump(대상 추적 원 → 뛰어서 착지, repeat2 = 2페이즈 연속, 착지 원 안 단단한 버섯 → 기절 propStun초) · counter(파란 원 window초, 그 안에 최대 HP need% 피해 → 기절 stun초 + 받는 피해 counterVuln%, 실패 → 폭발) · beam(대상 추적 선 → 빨강 → 발사, count발, maxPct = 최대 HP 비율 피해). gimmick: props 단단한 버섯 최대 개수 · propEvery초마다 · 중앙에서 propMin~propMax칸 · pillar 기둥 몹 키 · pillarAt HP% · pillarCount · pillarDist · pillarReduce% 받는 피해 감소 counter needPer = 경기장 인원 1명당 최대 HP %",
    "arena": 32,
    "respawnSec": 600,
    "resetSec": 30,
@@ -1782,9 +1782,9 @@
      "type": "counter",
      "r": 10,
      "window": 5.0,
-     "need": 3,
      "stun": 5,
-     "pct": 250
+     "pct": 250,
+     "needPer": 1
     },
     {
      "id": "beam",

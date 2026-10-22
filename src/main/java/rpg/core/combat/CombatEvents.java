@@ -317,6 +317,7 @@ public final class CombatEvents {
         }
         m.hp = Math.max(0, m.hp - dmg);
         mirror(e, mob, m.hp, m.maxHp);
+        mob.invulnerableTime = 0;   // 무적 시간 없음: 여러 명이 동시에 때려도 타격이 안 씹히게
         Mobs.sync(mob);
         if (src instanceof ServerPlayer) Net.damageText(mob, dmg, crit);
     }

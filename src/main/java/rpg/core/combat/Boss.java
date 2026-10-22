@@ -347,7 +347,7 @@ public final class Boss {
                 mob.setGlowingTag(true);
                 Net.telegraph(l, st.pos, st.dir, MobAI.CIRCLE + 20, p.r(), 0, w);
                 for (ServerPlayer x : arena(l, st, 16))
-                    x.displayClientMessage(Component.literal("◆ " + p.name() + " — 지금 때려서 끊으세요!").withStyle(ChatFormatting.AQUA), true);
+                    x.displayClientMessage(Component.literal("◆ " + p.name() + " — " + (int) p.x("window", 2) + "초 안에 때려서 끊으세요!").withStyle(ChatFormatting.AQUA), true);
                 l.playSound(null, mob.blockPosition(), SoundEvents.BEACON_POWER_SELECT, SoundSource.HOSTILE, 1.5f, 1.4f);
                 st.stageEnd = now + w;
                 return;
@@ -488,7 +488,10 @@ public final class Boss {
             return;
         }
         if (p.type().equals("counter") && st.stage == 1) {   // 카운터: 창 안에 충분히 맞으면 성공
-            if (st.counterDmg >= m.maxHp * p.x("need", 1) / 100.0) {
+            int people = 0;
+            for (ServerPlayer x : arena(l, st, 0)) if (valid(x)) people++;
+            double need = m.maxHp * (p.x("needPer", 0) > 0 ? p.x("needPer", 1) * Math.max(1, people) : p.x("need", 1)) / 100.0;   // 인원 비례
+            if (st.counterDmg >= need) {
                 long stun = Math.round(p.x("stun", 5) * 20);
                 m.stunUntil = now + stun;
                 st.vulnUntil = now + stun;
