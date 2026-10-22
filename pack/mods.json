@@ -84,12 +84,6 @@
       "side": "both"
     },
     {
-      "modrinth": "fast-paintings",
-      "version": "",
-      "optional": false,
-      "side": "client"
-    },
-    {
       "modrinth": "fastfurnace",
       "version": "",
       "optional": false,
@@ -100,12 +94,6 @@
       "version": "",
       "optional": false,
       "side": "both"
-    },
-    {
-      "modrinth": "particle-core",
-      "version": "",
-      "optional": false,
-      "side": "client"
     },
     {
       "modrinth": "chloride",
