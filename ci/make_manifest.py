@@ -37,6 +37,17 @@ for m in extra:
     except Exception as e:
         print(f'::warning title=manifest::{slug} 건너뜀 ({e})', file=sys.stderr)
 
+# 같이 깔 설정 파일 (pack/mods.json "files"): 커밋 기준 raw 주소
+sha_ref = os.environ.get('GITHUB_SHA', 'main')
+for c in pack.get('files', []):
+    try:
+        blob = open(c['src'], 'rb').read()
+        files.append({'path': c['path'], 'url': f'https://raw.githubusercontent.com/{REPO}/{sha_ref}/{c["src"]}', 'sha256': sha256(blob),
+                      'size': len(blob), 'optional': bool(c.get('optional')), 'side': c.get('side', 'both')})
+        print(f'[manifest] 설정 {c["path"]}', file=sys.stderr)
+    except Exception as e:
+        print(f'::warning title=manifest::설정 {c.get("src")} 건너뜀 ({e})', file=sys.stderr)
+
 print(json.dumps({'schema': 1, 'pack': 'rpg-mod', 'version': ver, 'minecraft': mc,
                   'loader': {'type': 'forge', 'version': forge}, 'java': 17, 'files': files},
                  ensure_ascii=False, indent=2))

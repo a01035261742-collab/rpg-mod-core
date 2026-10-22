@@ -1,5 +1,5 @@
 {
-  "_설명": "우리 모드 말고 같이 깔아야 하는 모드 목록. CI가 Modrinth에서 주소·해시를 자동으로 채워 manifest.json 에 넣는다. version 을 비우면 1.20.1 Forge 최신판. forge = 런처가 설치할 Forge 버전 (빌드용 forge_version 과 따로).",
+  "_설명": "우리 모드 말고 같이 깔아야 하는 모드 목록. CI가 Modrinth에서 주소·해시를 자동으로 채워 manifest.json 에 넣는다. version 을 비우면 1.20.1 Forge 최신판. forge = 런처가 설치할 Forge 버전 (빌드용 forge_version 과 따로). files = 같이 깔 설정 파일 [src(저장소 경로) → path(게임 폴더 기준)], 커밋 기준 raw 주소로 받음.",
   "mods": [
     {
       "modrinth": "geckolib",
@@ -30,5 +30,13 @@
       "side": "client"
     }
   ],
-  "forge": "47.4.26"
+  "forge": "47.4.26",
+  "files": [
+    {
+      "src": "pack/config/shouldersurfing-client.toml",
+      "path": "config/shouldersurfing-client.toml",
+      "side": "client",
+      "optional": false
+    }
+  ]
 }
