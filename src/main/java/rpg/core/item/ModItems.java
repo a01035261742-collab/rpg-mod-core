@@ -102,15 +102,20 @@ public final class ModItems {
             {"tiny_cap", "c"}, {"glow_spore", "r"}, {"toxic_cap", "c"}, {"soldier_badge", "r"}, {"fairy_wing", "c"}, {"fairy_dust", "r"},
             {"spore_silk", "c"}, {"spore_gland", "r"}, {"witch_herb", "c"}, {"odd_potion", "r"}, {"dark_silk", "c"}, {"dark_eye", "r"},
             {"beast_shell", "c"}, {"beast_core", "r"}};
+    public static final RegistryObject<Item> SCROLL_FRAGMENT;
     static {
         for (String[] m : MAT) {
             boolean rare = m[1].equals("r");
             MATERIALS.add(ITEMS.register(m[0], () -> new Material(new Item.Properties().rarity(rare ? Rarity.UNCOMMON : Rarity.COMMON),
                     rare ? "희귀 몹 재료 · 제작/판매" : "몹 재료 · 제작/판매", true)));
         }
-        MATERIALS.add(ITEMS.register("star_fragment", () -> new Material(new Item.Properties().rarity(Rarity.RARE), "강화 재료 (강화 시스템에서 사용 예정)", false)));
-        MATERIALS.add(ITEMS.register("scroll_fragment", () -> new Material(new Item.Properties().rarity(Rarity.RARE), "주문서 재료 (강화 시스템에서 사용 예정)", false)));
+        MATERIALS.add(ITEMS.register("star_fragment", () -> new Material(new Item.Properties().rarity(Rarity.RARE), "강화 재료 (지금은 쓰는 곳 없음)", false)));
+        SCROLL_FRAGMENT = ITEMS.register("scroll_fragment", () -> new Material(new Item.Properties().rarity(Rarity.RARE), "10개 → 메뉴(M) · 강화 · 조각 합성에서 무작위 주문서", false));
+        MATERIALS.add(SCROLL_FRAGMENT);
     }
+
+    /** 주문서 (종류·등급은 NBT) */
+    public static final RegistryObject<Item> SCROLL = ITEMS.register("scroll", () -> new Scroll(new Item.Properties()));
 
     public static final RegistryObject<Item> ZONE_WAND = ITEMS.register("zone_wand",
             () -> new rpg.core.zone.ZoneWand(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC)));
@@ -120,6 +125,8 @@ public final class ModItems {
             .icon(() -> STAT_RESET_SCROLL.get().getDefaultInstance())
             .displayItems((params, out) -> {
                 out.accept(STAT_RESET_SCROLL.get());
+                for (String k : Scroll.KINDS) for (int g = 0; g < 4; g++) out.accept(Scroll.make(k, g));
+                out.accept(Scroll.make("white", 0));
                 for (var po : new RegistryObject[]{RED_POTION, ORANGE_POTION, WHITE_POTION, BLUE_POTION, DEEP_BLUE_POTION, MANA_ELIXIR, ELIXIR, POWER_ELIXIR})
                     out.accept((Item) po.get());
                 for (var g : GEAR) out.accept(g.get());

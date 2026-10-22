@@ -67,6 +67,7 @@ public class PlayerEquip {
         d.stats().forEach((k, v) -> m.merge(k, v, Double::sum));
         CompoundTag o = Gear.opts(s);
         for (String k : o.getAllKeys()) m.merge(k, (double) o.getInt(k), Double::sum);
+        Enhance.addBonus(s, m);   // 주문서 + 스타포스
     }
 
     public static class Provider implements ICapabilitySerializable<CompoundTag> {

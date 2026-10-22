@@ -230,5 +230,7 @@
   "item.rpgcore.deep_blue_potion": "Deep Blue Potion",
   "item.rpgcore.mana_elixir": "Mana Elixir",
   "item.rpgcore.elixir": "Elixir",
-  "item.rpgcore.power_elixir": "Power Elixir"
+  "item.rpgcore.power_elixir": "Power Elixir",
+  "item.rpgcore.scroll": "Scroll",
+  "key.rpgcore.menu": "Menu"
 }

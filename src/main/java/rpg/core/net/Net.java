@@ -98,6 +98,66 @@ public final class Net {
                 .encoder(Rolled::encode).decoder(Rolled::new).consumerMainThread(Rolled::handle).add();
         CH.messageBuilder(CraftAction.class, id++, NetworkDirection.PLAY_TO_SERVER)
                 .encoder(CraftAction::encode).decoder(CraftAction::new).consumerMainThread(CraftAction::handle).add();
+        CH.messageBuilder(OpenEnhance.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(OpenEnhance::encode).decoder(OpenEnhance::new).consumerMainThread(OpenEnhance::handle).add();
+        CH.messageBuilder(EnhanceAction.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(EnhanceAction::encode).decoder(EnhanceAction::new).consumerMainThread(EnhanceAction::handle).add();
+    }
+
+    // ───────── 장비 강화 ─────────
+    /** 강화 창 내용 보내기 (open = 새로 열기, 아니면 열린 창만 갱신) */
+    public static void sendEnhance(ServerPlayer p, boolean open) {
+        java.util.List<Integer> locs = rpg.core.equip.Enhance.gearLocs(p);
+        java.util.List<net.minecraft.world.item.ItemStack> gear = new java.util.ArrayList<>();
+        for (int l : locs) gear.add(rpg.core.equip.Enhance.at(p, l).copy());
+        java.util.List<Integer> slots = new java.util.ArrayList<>();
+        java.util.List<net.minecraft.world.item.ItemStack> scrolls = new java.util.ArrayList<>();
+        for (int i = 0; i < 36; i++) {
+            var s = p.getInventory().items.get(i);
+            if (!rpg.core.item.Scroll.kind(s).isEmpty()) { slots.add(i); scrolls.add(s.copy()); }
+        }
+        int frags = rpg.core.equip.Enhance.count(p, rpg.core.item.ModItems.SCROLL_FRAGMENT.get());
+        CH.send(PacketDistributor.PLAYER.with(() -> p), new OpenEnhance(open, locs, gear, slots, scrolls, frags));
+    }
+
+    public record OpenEnhance(boolean open, java.util.List<Integer> locs, java.util.List<net.minecraft.world.item.ItemStack> gear,
+                              java.util.List<Integer> slots, java.util.List<net.minecraft.world.item.ItemStack> scrolls, int frags) {
+        OpenEnhance(FriendlyByteBuf b) {
+            this(b.readBoolean(), b.readList(FriendlyByteBuf::readVarInt), b.readList(FriendlyByteBuf::readItem),
+                    b.readList(FriendlyByteBuf::readVarInt), b.readList(FriendlyByteBuf::readItem), b.readVarInt());
+        }
+        void encode(FriendlyByteBuf b) {
+            b.writeBoolean(open);
+            b.writeCollection(locs, FriendlyByteBuf::writeVarInt);
+            b.writeCollection(gear, (x, s) -> x.writeItem(s));
+            b.writeCollection(slots, FriendlyByteBuf::writeVarInt);
+            b.writeCollection(scrolls, (x, s) -> x.writeItem(s));
+            b.writeVarInt(frags);
+        }
+        void handle(Supplier<NetworkEvent.Context> ctx) {
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> rpg.core.client.EnhanceScreen.receive(open, locs, gear, slots, scrolls, frags));
+            ctx.get().setPacketHandled(true);
+        }
+    }
+
+    /** op: 0 열기 · 1 스타포스(arg 1 = 파괴 방지) · 2 주문서(arg = 주문서 인벤 칸) · 3 복구(arg = 재료 인벤 칸) · 4 조각 합성 */
+    public record EnhanceAction(int op, int loc, int arg) {
+        EnhanceAction(FriendlyByteBuf b) { this(b.readVarInt(), b.readVarInt(), b.readVarInt()); }
+        void encode(FriendlyByteBuf b) { b.writeVarInt(op); b.writeVarInt(loc); b.writeVarInt(arg); }
+        void handle(Supplier<NetworkEvent.Context> ctx) {
+            ServerPlayer p = ctx.get().getSender();
+            if (p != null) {
+                switch (op) {
+                    case 1 -> rpg.core.equip.Enhance.starforce(p, loc, arg == 1);
+                    case 2 -> rpg.core.equip.Enhance.applyScroll(p, loc, arg);
+                    case 3 -> rpg.core.equip.Enhance.restore(p, loc, arg);
+                    case 4 -> rpg.core.equip.Enhance.synth(p);
+                    default -> {}
+                }
+                sendEnhance(p, op == 0);
+            }
+            ctx.get().setPacketHandled(true);
+        }
     }
 
     // ───────── 제작 NPC ─────────

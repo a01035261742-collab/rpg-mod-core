@@ -42,6 +42,7 @@ import rpg.core.zone.ZoneWand;
  *  /rpg quest check                           NPC·지점 배치 점검 (안 세운 것 빨간색)
  *  /rpg job <0~4>                             직업 바로 바꾸기 (테스트용)
  *  /rpg potions                               물약 받기 (빨강·파랑 30개, 나머지 10개씩)
+ *  /rpg scrolls                               강화 테스트 (주문서 전 종류·순백·조각·골드 10만)
  */
 public final class ZoneCommand {
     private ZoneCommand() {}
@@ -192,6 +193,23 @@ public final class ZoneCommand {
                     ModItems.MANA_ELIXIR, ModItems.ELIXIR, ModItems.POWER_ELIXIR})
                 p.getInventory().add(new net.minecraft.world.item.ItemStack((net.minecraft.world.item.Item) po.get(), 10));
             return ok(c, "물약 지급");
+        }));
+        root.then(Commands.literal("scrolls").requires(s -> s.hasPermission(2)).executes(c -> {
+            var p = c.getSource().getPlayerOrException();
+            for (String k : rpg.core.item.Scroll.KINDS) for (int g = 0; g < 4; g++) {
+                var s = rpg.core.item.Scroll.make(k, g);
+                s.setCount(16);
+                if (!p.getInventory().add(s)) p.drop(s, false);
+            }
+            var w = rpg.core.item.Scroll.make("white", 0);
+            w.setCount(16);
+            if (!p.getInventory().add(w)) p.drop(w, false);
+            var f = new net.minecraft.world.item.ItemStack(ModItems.SCROLL_FRAGMENT.get(), 64);
+            if (!p.getInventory().add(f)) p.drop(f, false);
+            var d = rpg.core.data.RpgData.get(p);
+            d.gold += 100000;
+            rpg.core.data.RpgData.sync(p);
+            return ok(c, "주문서 전 종류 16장씩 · 순백 16장 · 주문서 조각 64개 · 골드 +100,000");
         }));
         root.then(Commands.literal("mobs").requires(s -> s.hasPermission(2)).executes(c -> {
             StringBuilder sb = new StringBuilder("몹 목록: ");

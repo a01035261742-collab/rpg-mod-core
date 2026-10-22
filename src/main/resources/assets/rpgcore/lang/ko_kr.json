@@ -230,5 +230,7 @@
   "item.rpgcore.deep_blue_potion": "진한 파란 물약",
   "item.rpgcore.mana_elixir": "마나 엘릭서",
   "item.rpgcore.elixir": "엘릭서",
-  "item.rpgcore.power_elixir": "파워 엘릭서"
+  "item.rpgcore.power_elixir": "파워 엘릭서",
+  "item.rpgcore.scroll": "주문서",
+  "key.rpgcore.menu": "메뉴"
 }

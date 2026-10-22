@@ -30,9 +30,10 @@
  "enhance": {
   "chance": 1.5,
   "items": {
-   "star_fragment": 70,
-   "scroll_fragment": 30
-  }
+   "scroll_fragment": 70,
+   "scroll": 30
+  },
+  "_설명": "강화 드롭 (확률 chance%, 종류 비중). scroll = 주문서 (몹 레벨로 등급 제한: equipment.json enhance.gradeMinLevel). 별의 조각은 쓰는 곳이 없어 뺌"
  },
  "_mobs": "items = [아이템, 확률%] 재료. uniques = [장비, 확률%] 몹 전용 장비 (엘리트 ×eliteGear, 추가 옵션 4줄). potion/gear/enhance 를 몹마다 덮어쓸 수 있음",
  "mobs": {

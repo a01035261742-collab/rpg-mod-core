@@ -103,7 +103,7 @@ for k in mat_ids:
     ROWS_I.append({'name': name(k), 'id': k, 'cat': '몹 재료', 'slot': '일반 재료' if kinds[k] == 'c' else '희귀 재료', 'job': '-', 'lv': None,
                    'stats': '쓰는 곳: ' + uses, 'atk': 0, 'def': 0, 'src': list(dict.fromkeys(src.get(k, []))), 'recipe': recipe_of.get(k, ''), 'sell': sell.get(k)})
 out.append('')
-other = ['red_potion', 'orange_potion', 'white_potion', 'blue_potion', 'deep_blue_potion', 'mana_elixir', 'elixir', 'power_elixir', 'stat_reset_scroll', 'star_fragment', 'scroll_fragment', 'gold_pouch']
+other = ['red_potion', 'orange_potion', 'white_potion', 'blue_potion', 'deep_blue_potion', 'mana_elixir', 'elixir', 'power_elixir', 'stat_reset_scroll', 'scroll', 'star_fragment', 'scroll_fragment', 'gold_pouch']
 out += ['## 소모품 · 강화 재료 · 기타', '', '| 이름 | id | 얻는 곳 | 만들기 | 판매가 |', '|---|---|---|---|---|']
 for k in other:
     out.append(f'| {name(k)} | `{k}` | {where(k)} | {recipe_of.get(k, "-")} | {sell.get(k, "-")} |')

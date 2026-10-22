@@ -78,7 +78,7 @@ public final class Gear {
     // ───────── 착용 조건 ─────────
     public static boolean canEquip(Player p, ItemStack s) {
         GearDefs.GearDef d = def(s);
-        if (d == null) return false;
+        if (d == null || Enhance.broken(s)) return false;
         int level, job;
         if (p.level().isClientSide) { level = ClientData.level; job = ClientData.job; }
         else { PlayerData pd = RpgData.get(p); level = pd.level; job = pd.job; }
@@ -110,8 +110,27 @@ public final class Gear {
             default -> "모든 직업";
         };
         tip.add(Component.literal(GearDefs.slotName(d.slot()) + " · 착용 Lv." + d.level() + " · " + job).withStyle(ChatFormatting.GRAY));
-        for (Map.Entry<String, Double> e : d.stats().entrySet()) {
-            tip.add(Component.literal(GearDefs.label(e.getKey()) + " +" + fmt(e.getValue(), e.getKey())).withStyle(ChatFormatting.WHITE));
+        if (Enhance.broken(s)) tip.add(Component.literal("파괴된 장비 (능력치 없음) · 메뉴(M) → 강화에서 복구").withStyle(ChatFormatting.DARK_RED));
+        int max = Enhance.maxStar(d), st = Enhance.star(s);
+        if (max > 0) tip.add(Component.literal("★".repeat(Math.min(st, max)) + "☆".repeat(Math.max(0, max - st))).withStyle(ChatFormatting.YELLOW));
+        int um = Enhance.upgMax(d);
+        if (um > 0) tip.add(Component.literal("업그레이드 가능 " + Enhance.upgLeft(s) + " (실패 " + Enhance.upgFail(s) + ")").withStyle(ChatFormatting.GRAY));
+        // 능력치 = 기본 + 주문서(파랑) + 스타포스(노랑)
+        CompoundTag sc = Enhance.scr(s);
+        Map<String, Integer> sf = Enhance.starStats(s);
+        java.util.LinkedHashSet<String> keys = new java.util.LinkedHashSet<>(d.stats().keySet());
+        for (String k : GearDefs.STAT_KEYS) if (sc.contains(k) || sf.containsKey(k)) keys.add(k);
+        for (String k : keys) {
+            double base = d.stats().getOrDefault(k, 0.0);
+            int a = sc.getInt(k), b = sf.getOrDefault(k, 0);
+            var line = Component.literal(GearDefs.label(k) + " +" + fmt(base + a + b, k)).withStyle(ChatFormatting.WHITE);
+            if (a != 0 || b != 0) {
+                line.append(Component.literal(" (" + fmt(base, k)).withStyle(ChatFormatting.GRAY));
+                if (a != 0) line.append(Component.literal(" +" + a).withStyle(ChatFormatting.BLUE));
+                if (b != 0) line.append(Component.literal(" +" + b).withStyle(ChatFormatting.YELLOW));
+                line.append(Component.literal(")").withStyle(ChatFormatting.GRAY));
+            }
+            tip.add(line);
         }
         if (d.speed() > 0) tip.add(Component.literal("공격 속도 " + d.speed()).withStyle(ChatFormatting.DARK_GRAY));
         CompoundTag o = opts(s);
@@ -123,6 +142,19 @@ public final class Gear {
         } else if (rolled(s)) {
             tip.add(Component.literal("추가 옵션 없음").withStyle(ChatFormatting.DARK_GRAY));
         }
+    }
+
+    /** 장비 이름: 강화하면 뒤에 (+N★), 파괴되면 앞에 [파괴] */
+    public static Component name(ItemStack s, Component base) {
+        if (def(s) == null) return base;
+        int st = Enhance.star(s);
+        boolean br = Enhance.broken(s);
+        if (st <= 0 && !br) return base;
+        var c = Component.empty();
+        if (br) c.append(Component.literal("[파괴] ").withStyle(ChatFormatting.DARK_RED));
+        c.append(base);
+        if (st > 0) c.append(Component.literal(" (+" + st + "★)").withStyle(ChatFormatting.YELLOW));
+        return c;
     }
 
     private static String fmt(double v, String k) {

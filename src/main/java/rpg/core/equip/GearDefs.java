@@ -79,6 +79,7 @@ public final class GearDefs {
                             st, it.has("speed") ? it.get("speed").getAsDouble() : 0));
                 }
             }
+            Enhance.parse(o.has("enhance") ? o.getAsJsonObject("enhance") : null);
             if (o.has("options")) {
                 JsonObject op = o.getAsJsonObject("options");
                 fixedLines = op.has("lines") ? op.get("lines").getAsInt() : -1;

@@ -230,7 +230,6 @@ public final class CombatEvents {
             else if (src instanceof Mob) dmg = Math.max(1, e.getAmount() / 20.0 * d.maxHp * (1 - Combat.defRatio(d, d.level)));  // 일반 몹: 비율, 내 레벨 몹으로 보고 방어
             else dmg = e.getAmount() / 20.0 * d.maxHp;   // 환경 피해: 바닐라와 같은 비율
             long now = sp.level().getGameTime();
-            dmg *= 1 - Math.min(90, d.buffV("iron_body", now)) / 100.0;           // 아이언 바디: 받는 피해 감소
             dmg *= 1 - Math.min(90, d.buffV("iron_wall", now)) / 100.0;           // 철벽: 받는 피해 감소
             dmg *= 1 + d.buffV2("berserk", now) / 100.0;                           // 광폭화: 받는 피해 증가
             double guard = d.buffV("magic_guard", now);                            // 매직 가드: 일부를 MP로

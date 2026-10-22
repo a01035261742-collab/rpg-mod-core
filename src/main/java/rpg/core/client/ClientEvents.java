@@ -65,6 +65,7 @@ public final class ClientEvents {
     public static final KeyMapping PASSIVE_KEY = new KeyMapping("key.rpgcore.passives", InputConstants.KEY_N, CATEGORY);
     public static final KeyMapping PARTY_KEY = new KeyMapping("key.rpgcore.party", InputConstants.KEY_P, CATEGORY);
     public static final KeyMapping QUEST_KEY = new KeyMapping("key.rpgcore.quests", InputConstants.KEY_J, CATEGORY);
+    public static final KeyMapping MENU_KEY = new KeyMapping("key.rpgcore.menu", InputConstants.KEY_M, CATEGORY);
     public static final String[] SLOT_LABELS = {"Q", "E", "R", "F", "Z", "X"};
     public static final KeyMapping[] SKILL_KEYS = {
             new KeyMapping("key.rpgcore.skill1", InputConstants.KEY_Q, CATEGORY),
@@ -84,6 +85,7 @@ public final class ClientEvents {
             e.register(PASSIVE_KEY);
             e.register(PARTY_KEY);
             e.register(QUEST_KEY);
+            e.register(MENU_KEY);
             for (KeyMapping k : SKILL_KEYS) e.register(k);
         }
 
@@ -187,6 +189,7 @@ public final class ClientEvents {
             while (PASSIVE_KEY.consumeClick()) if (free) mc.setScreen(new PassiveScreen());
             while (PARTY_KEY.consumeClick()) if (free) mc.setScreen(new PartyScreen());
             while (QUEST_KEY.consumeClick()) if (free) mc.setScreen(new QuestScreen());
+            while (MENU_KEY.consumeClick()) if (free) mc.setScreen(new MenuScreen());
             for (int i = 0; i < 6; i++) {
                 if (wait[i] > 0) wait[i]--;
                 boolean pressed = false;

@@ -65,5 +65,7 @@ public final class EntityClient {
             if (ro.get() instanceof rpg.core.equip.GearItems.DyedArmor d)
                 e.register((stack, tint) -> tint == 0 ? d.color() : -1, d);
         }
+        // 주문서: 등급별 색 (아래층만)
+        e.register((stack, tint) -> tint == 0 ? rpg.core.item.Scroll.color(stack) : -1, rpg.core.item.ModItems.SCROLL.get());
     }
 }

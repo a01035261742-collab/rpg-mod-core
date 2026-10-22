@@ -133,7 +133,11 @@ public final class Drops {
         }
 
         double ec = md != null && md.enhance() >= 0 ? md.enhance() : enhanceChance;
-        if (!ENHANCE.isEmpty() && hit(r, ec * mul)) add(out, weighted(ENHANCE, r));
+        if (!ENHANCE.isEmpty() && hit(r, ec * mul)) {
+            String pick = weighted(ENHANCE, r);
+            if (pick.equals("scroll")) out.add(rpg.core.equip.Enhance.randomScroll(m.level, r));   // 주문서: 몹 레벨로 등급 제한
+            else add(out, pick);
+        }
 
         for (ItemStack s : out) spawn(mob, s, killer);
     }

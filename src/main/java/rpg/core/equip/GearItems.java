@@ -38,6 +38,11 @@ public final class GearItems {
         public void appendHoverText(ItemStack s, @Nullable Level level, List<Component> tip, TooltipFlag flag) {
             Gear.tooltip(s, tip);
         }
+
+        @Override
+        public Component getName(ItemStack s) {
+            return Gear.name(s, super.getName(s));
+        }
     }
 
     /** 근접 무기 (검·지팡이·단검): 마크 검 종류라 Epic Fight가 전투 무기로 인식 (블록 조준 안 함).
@@ -81,6 +86,11 @@ public final class GearItems {
         @Override
         public void appendHoverText(ItemStack s, @Nullable Level level, List<Component> tip, TooltipFlag flag) {
             Gear.tooltip(s, tip);
+        }
+
+        @Override
+        public Component getName(ItemStack s) {
+            return Gear.name(s, super.getName(s));
         }
     }
 
@@ -132,6 +142,11 @@ public final class GearItems {
             Gear.tooltip(s, tip);
         }
 
+        @Override
+        public Component getName(ItemStack s) {
+            return Gear.name(s, super.getName(s));
+        }
+
         @Override public boolean isEnchantable(ItemStack s) { return false; }
     }
 
@@ -154,6 +169,11 @@ public final class GearItems {
         @Override
         public void appendHoverText(ItemStack s, @Nullable Level level, List<Component> tip, TooltipFlag flag) {
             Gear.tooltip(s, tip);
+        }
+
+        @Override
+        public Component getName(ItemStack s) {
+            return Gear.name(s, super.getName(s));
         }
     }
 
