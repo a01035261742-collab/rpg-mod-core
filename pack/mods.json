@@ -54,12 +54,6 @@
       "side": "client"
     },
     {
-      "modrinth": "ebe",
-      "version": "",
-      "optional": false,
-      "side": "client"
-    },
-    {
       "modrinth": "badoptimizations",
       "version": "",
       "optional": false,
@@ -108,25 +102,7 @@
       "side": "both"
     },
     {
-      "modrinth": "async-logger",
-      "version": "",
-      "optional": false,
-      "side": "both"
-    },
-    {
-      "modrinth": "alltheleaks",
-      "version": "",
-      "optional": false,
-      "side": "both"
-    },
-    {
       "modrinth": "particle-core",
-      "version": "",
-      "optional": false,
-      "side": "client"
-    },
-    {
-      "modrinth": "epic-fight-fps-optimizer",
       "version": "",
       "optional": false,
       "side": "client"
@@ -136,6 +112,12 @@
       "version": "",
       "optional": false,
       "side": "client"
+    },
+    {
+      "modrinth": "placebo",
+      "version": "",
+      "optional": false,
+      "side": "both"
     }
   ],
   "forge": "47.4.26",
