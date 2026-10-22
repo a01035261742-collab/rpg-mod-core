@@ -56,6 +56,18 @@ public final class EntityClient {
             @Override
             public ResourceLocation getTextureLocation(PolarBear ent) { return bear; }
         });
+        // 보스 거대버섯 수호자: 버섯 짐승 모델 2배
+        ResourceLocation beastTex = RpgCore.id("textures/entity/mush_beast.png");
+        e.registerEntityRenderer(ModEntities.MUSH_GUARDIAN.get(), ctx -> new MobRenderer<rpg.core.entity.MushGuardian, RpgModel<rpg.core.entity.MushGuardian>>(
+                ctx, new RpgModel<>(ctx.bakeLayer(BEAST)), 2.4f) {
+            @Override
+            public ResourceLocation getTextureLocation(rpg.core.entity.MushGuardian ent) { return beastTex; }
+
+            @Override
+            protected void scale(rpg.core.entity.MushGuardian ent, com.mojang.blaze3d.vertex.PoseStack ps, float pt) {
+                ps.scale(2.0f, 2.0f, 2.0f);
+            }
+        });
         // 보스 숲의 주인: 곰 2.5배 (북극곰 기본 1.2배 × 2.5)
         e.registerEntityRenderer(ModEntities.FOREST_LORD.get(), ctx -> {
             PolarBearRenderer r = new PolarBearRenderer(ctx) {

@@ -47,7 +47,7 @@ public final class ModItems {
             {0x5A5A5A, 0x3C3C46, 0x5A3C5A, 0x1E1E24}};
 
     /** 몹 전용 장신구 16종 (drops.json uniques) */
-    public static final String[] UNIQUE = {"pig_snout_pendant", "cow_horn_earring", "slime_ring", "rat_tail_belt", "dog_fang_earring", "bee_cape", "tusk_gloves", "bear_belt", "spirit_pendant", "mushroom_ring", "soldier_gloves", "fairy_cape", "gland_earring", "witch_pendant", "dark_eye_ring", "beast_belt", "forest_lord_ring"};   // + 보스 장신구
+    public static final String[] UNIQUE = {"pig_snout_pendant", "cow_horn_earring", "slime_ring", "rat_tail_belt", "dog_fang_earring", "bee_cape", "tusk_gloves", "bear_belt", "spirit_pendant", "mushroom_ring", "soldier_gloves", "fairy_cape", "gland_earring", "witch_pendant", "dark_eye_ring", "beast_belt", "forest_lord_ring", "guardian_ring"};   // + 보스 장신구
 
     static {
         java.util.List<String> all = new java.util.ArrayList<>(java.util.List.of(BASIC));
@@ -111,6 +111,7 @@ public final class ModItems {
         }
         MATERIALS.add(ITEMS.register("star_fragment", () -> new Material(new Item.Properties().rarity(Rarity.RARE), "강화 재료 (지금은 쓰는 곳 없음)", false)));
         MATERIALS.add(ITEMS.register("forest_lord_claw", () -> new Material(new Item.Properties().rarity(Rarity.EPIC), "보스 \"숲의 주인\" 확정 드롭 · 판매용 (나중에 제작 재료)", false)));
+        MATERIALS.add(ITEMS.register("guardian_heart", () -> new Material(new Item.Properties().rarity(Rarity.EPIC), "보스 \"거대버섯 수호자\" 확정 드롭 · 판매용 (나중에 제작 재료)", false)));
         SCROLL_FRAGMENT = ITEMS.register("scroll_fragment", () -> new Material(new Item.Properties().rarity(Rarity.RARE), "10개 → 메뉴(M) · 강화 · 조각 합성에서 무작위 주문서", false));
         MATERIALS.add(SCROLL_FRAGMENT);
     }

@@ -68,6 +68,15 @@ public final class Telegraphs {
                 }
                 continue;
             }
+            if (t.shape() >= 20) {   // 파란 예고 (카운터 등): 차오름
+                Net.Telegraph b = new Net.Telegraph(t.shape() - 20, t.x(), t.y(), t.z(), t.dx(), t.dz(), t.a(), t.b(), t.ticks());
+                switch (b.shape()) {
+                    case 1 -> { line(vc, m, b, y, 1f, 0x5530A0FF, 0); line(vc, m, b, y + 0.01f, p, 0x992080FF, 0); }
+                    case 2 -> { cone(vc, m, b, y, 1f, 0x5530A0FF); cone(vc, m, b, y + 0.01f, p, 0x992080FF); }
+                    default -> { circle(vc, m, b, y, 1f, 0x5530A0FF); circle(vc, m, b, y + 0.01f, p, 0x992080FF); }
+                }
+                continue;
+            }
             switch (t.shape()) {
                 case 1 -> { line(vc, m, t, y, 1f, 0x55FF2020, 0); line(vc, m, t, y + 0.01f, p, 0x99FF1010, 0); }
                 case 2 -> { cone(vc, m, t, y, 1f, 0x55FF2020); cone(vc, m, t, y + 0.01f, p, 0x99FF1010); }

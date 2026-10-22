@@ -69,6 +69,15 @@ public final class CombatEvents {
         MOB_PCT.remove(p.getId());
     }
 
+    /** 보스 패턴 피해: 최대 HP × pct% (방어 무시) */
+    private static final Map<Integer, Double> MAXHP_PCT = new java.util.HashMap<>();
+
+    public static void maxHpHit(Mob mob, ServerPlayer p, double pct) {
+        MAXHP_PCT.put(p.getId(), pct);
+        p.hurt(mob.damageSources().mobAttack(mob), 4.0f);
+        MAXHP_PCT.remove(p.getId());
+    }
+
     /** RPG 몹 근접 공격은 몸 바깥 1.2칸(+여유) 안에서만 맞음 (멀리서 휘두르는 몹 막기) */
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void meleeReach(net.minecraftforge.event.entity.living.LivingAttackEvent e) {
@@ -223,7 +232,9 @@ public final class CombatEvents {
         if (target instanceof ServerPlayer sp) {
             PlayerData d = RpgData.get(sp);
             double dmg;
-            if (src instanceof Mob m && isRpg(m)) {
+            Double mx = MAXHP_PCT.get(sp.getId());
+            if (mx != null) dmg = d.maxHp * mx / 100.0;   // 최대 HP 비율 피해
+            else if (src instanceof Mob m && isRpg(m)) {
                 Double pc = MOB_PCT.get(sp.getId());
                 dmg = Combat.mobToPlayer(Combat.mob(m).atk * (pc == null ? 1 : pc / 100.0), Combat.mob(m).level, d);
             }
@@ -348,7 +359,8 @@ public final class CombatEvents {
         PlayerData d = RpgData.get(killer);
         rpg.core.skill.JobSkills.onKill(killer, d);   // 연속 분노
         if (rpg.core.job.Trials.isTrialMob(mob)) return;   // 시련 몹: 보상 없음 (통과는 Trials)
-        if (Boss.isBoss(m)) { Boss.onDeath(mob, m, killer); return; }   // 보스: 기여도 분배 · 드롭 세트
+        if (Boss.isBoss(m)) { Boss.onDeath(mob, m, killer); return; }
+        if (mob.getPersistentData().getBoolean("rpgPillar")) return;   // 보스 기둥: 보상 없음   // 보스: 기여도 분배 · 드롭 세트
         rpg.core.loot.Drops.roll(mob, m, killer, d);   // 드롭은 막타 기준 (골드는 주머니로)
         // 경험치: 근처 파티원끼리 균등 분배 + 인원당 보너스
         var members = rpg.core.party.Parties.nearby(killer);

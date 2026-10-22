@@ -235,5 +235,8 @@
   "key.rpgcore.menu": "메뉴",
   "item.rpgcore.forest_lord_claw": "숲의 주인의 발톱",
   "item.rpgcore.forest_lord_ring": "숲의 주인의 반지",
-  "entity.rpgcore.forest_lord": "숲의 주인"
+  "entity.rpgcore.forest_lord": "숲의 주인",
+  "item.rpgcore.guardian_heart": "수호자의 심",
+  "item.rpgcore.guardian_ring": "수호자의 반지",
+  "entity.rpgcore.mush_guardian": "거대버섯 수호자"
 }

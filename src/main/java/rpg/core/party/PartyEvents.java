@@ -49,7 +49,7 @@ public final class PartyEvents {
 
     /** 다운될 수 있나: 설정상 다운이 켜져 있고, 근처에 살아있는(다운 아닌) 파티원이 있을 때 */
     private static boolean canGoDown(ServerPlayer sp) {
-        if (!Balance.downEverywhere) return false;   // 보스 단계에서 "보스전 안이면" 조건 추가
+        if (!Balance.downEverywhere && !rpg.core.combat.Boss.inArena(sp)) return false;   // 다운은 보스 경기장 안에서만 (downEverywhere 면 어디서나)
         for (ServerPlayer m : Parties.nearby(sp)) {
             if (m != sp && !RpgData.get(m).isDown()) return true;
         }

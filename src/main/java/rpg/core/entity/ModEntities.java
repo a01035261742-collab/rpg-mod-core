@@ -40,6 +40,10 @@ public final class ModEntities {
     public static final RegistryObject<EntityType<BrownBear>> BROWN_BEAR = TYPES.register("brown_bear",
             () -> EntityType.Builder.<BrownBear>of(BrownBear::new, MobCategory.CREATURE)
                     .sized(1.4f, 1.4f).clientTrackingRange(10).build(RpgCore.MODID + ":brown_bear"));
+    /** 보스 "거대버섯 수호자": 버섯 짐승 몸 2배 */
+    public static final RegistryObject<EntityType<MushGuardian>> MUSH_GUARDIAN = TYPES.register("mush_guardian",
+            () -> EntityType.Builder.<MushGuardian>of(MushGuardian::new, MobCategory.MONSTER)
+                    .sized(3.8f, 4.4f).clientTrackingRange(16).updateInterval(1).build(RpgCore.MODID + ":mush_guardian"));
     /** 보스 "숲의 주인": 갈색 곰 몸 2.5배 */
     public static final RegistryObject<EntityType<ForestLord>> FOREST_LORD = TYPES.register("forest_lord",
             () -> EntityType.Builder.<ForestLord>of(ForestLord::new, MobCategory.CREATURE)
@@ -55,5 +59,6 @@ public final class ModEntities {
         e.put(MUSH_FAIRY.get(), FlyingRpgMonster.flyAttrs().build());
         e.put(BROWN_BEAR.get(), PolarBear.createAttributes().build());
         e.put(FOREST_LORD.get(), PolarBear.createAttributes().build());
+        e.put(MUSH_GUARDIAN.get(), RpgMonster.attrs(0.25).build());
     }
 }

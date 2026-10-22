@@ -235,5 +235,8 @@
   "key.rpgcore.menu": "Menu",
   "item.rpgcore.forest_lord_claw": "Forest Lord's Claw",
   "item.rpgcore.forest_lord_ring": "Forest Lord's Ring",
-  "entity.rpgcore.forest_lord": "Forest Lord"
+  "entity.rpgcore.forest_lord": "Forest Lord",
+  "item.rpgcore.guardian_heart": "Guardian's Heart",
+  "item.rpgcore.guardian_ring": "Guardian's Ring",
+  "entity.rpgcore.mush_guardian": "Mushroom Guardian"
 }

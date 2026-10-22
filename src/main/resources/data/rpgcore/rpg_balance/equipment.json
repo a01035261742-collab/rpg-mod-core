@@ -1492,6 +1492,19 @@
     "atk": 2,
     "matk": 2
    }
+  },
+  "guardian_ring": {
+   "slot": "ring",
+   "job": 0,
+   "level": 35,
+   "stats": {
+    "str": 7,
+    "dex": 7,
+    "int": 7,
+    "luk": 7,
+    "atk": 4,
+    "matk": 4
+   }
   }
  },
  "options": {

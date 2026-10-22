@@ -1614,12 +1614,12 @@
    "resetSec": 30,
    "phase2": 50,
    "wait1": [
-    0.5,
-    1.5
+    1,
+    2
    ],
    "wait2": [
-    0,
-    1
+    0.5,
+    1.5
    ],
    "penaltyPerLevel": 5,
    "maxPenalty": 90,
@@ -1694,7 +1694,142 @@
     "angle": 100,
     "delay": 0.8,
     "pct": 120,
-    "cd": 1.5
+    "cd": 2.5
+   }
+  }
+ },
+ "mush_guardian": {
+  "entity": "rpgcore:mush_guardian",
+  "name": "거대버섯 수호자",
+  "area": "보스 · 버섯 군락 깊은 곳 경기장",
+  "stunArmor": 2.0,
+  "levels": {
+   "35": {
+    "hp": 533000,
+    "atk": 189,
+    "exp": 10830,
+    "gold": 4020
+   }
+  },
+  "boss": {
+   "_설명": "거대버섯 수호자. 패턴 type 추가: combo(hits·hits2 연속, delay2 다음 타 예고, altChance% 확률로 마지막 타가 altR 원) · delayed(대상 추적 원 → 빨강 → hold초 멈췄다 폭발) · jump(대상 추적 원 → 뛰어서 착지, repeat2 = 2페이즈 연속, 착지 원 안 단단한 버섯 → 기절 propStun초) · counter(파란 원 window초, 그 안에 최대 HP need% 피해 → 기절 stun초 + 받는 피해 counterVuln%, 실패 → 폭발) · beam(대상 추적 선 → 빨강 → 발사, count발, maxPct = 최대 HP 비율 피해). gimmick: props 단단한 버섯 최대 개수 · propEvery초마다 · 중앙에서 propMin~propMax칸 · pillar 기둥 몹 키 · pillarAt HP% · pillarCount · pillarDist · pillarReduce% 받는 피해 감소",
+   "arena": 32,
+   "respawnSec": 600,
+   "resetSec": 30,
+   "phase2": 50,
+   "wait1": [
+    1.5,
+    2.5
+   ],
+   "wait2": [
+    0.8,
+    1.8
+   ],
+   "penaltyPerLevel": 5,
+   "maxPenalty": 90,
+   "gimmick": {
+    "props": 2,
+    "propEvery": 20,
+    "propMin": 6,
+    "propMax": 22,
+    "propStun": 10,
+    "counterVuln": 30,
+    "pillar": "spore_pillar",
+    "pillarAt": 50,
+    "pillarCount": 4,
+    "pillarDist": 18,
+    "pillarReduce": 80
+   },
+   "patterns": [
+    {
+     "id": "combo",
+     "name": "연속 내려치기",
+     "type": "combo",
+     "r": 8,
+     "angle": 100,
+     "delay": 1.2,
+     "delay2": 0.9,
+     "hits": 3,
+     "hits2": 4,
+     "altChance": 50,
+     "altR": 6,
+     "pct": 160
+    },
+    {
+     "id": "delayed",
+     "name": "지연 내려찍기",
+     "type": "delayed",
+     "r": 6,
+     "track": 1.2,
+     "delay": 1.5,
+     "hold": 0.6,
+     "pct": 220
+    },
+    {
+     "id": "jump",
+     "name": "점프 압착",
+     "type": "jump",
+     "r": 7,
+     "track": 2.0,
+     "delay": 1.2,
+     "pct": 220,
+     "repeat2": 2
+    },
+    {
+     "id": "counter",
+     "name": "기 모으기",
+     "type": "counter",
+     "r": 10,
+     "window": 2.0,
+     "need": 1,
+     "stun": 5,
+     "pct": 250
+    },
+    {
+     "id": "beam",
+     "name": "포자 광선",
+     "type": "beam",
+     "len": 40,
+     "w": 3,
+     "track": 0.8,
+     "delay": 1.0,
+     "count": 4,
+     "maxPct": 25,
+     "pct": 0,
+     "phase": 2
+    }
+   ],
+   "reward": {
+    "sure": "guardian_heart",
+    "mats": [
+     [
+      "mush_soldier",
+      5
+     ],
+     [
+      "spore_witch",
+      5
+     ]
+    ],
+    "fragments": 8,
+    "scrollChance": 25,
+    "ring": "guardian_ring",
+    "ringChance": 5
+   }
+  }
+ },
+ "spore_pillar": {
+  "entity": "rpgcore:mush_spirit",
+  "name": "독버섯 기둥",
+  "area": "보스 기믹 (거대버섯 수호자)",
+  "stunArmor": 99,
+  "passive": true,
+  "levels": {
+   "35": {
+    "hp": 8000,
+    "atk": 0,
+    "exp": 0,
+    "gold": 0
    }
   }
  }
