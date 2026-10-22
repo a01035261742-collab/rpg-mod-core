@@ -70,6 +70,13 @@ public final class WorldText {
         return i != null && i.name().startsWith("★");
     }
 
+    /** 플레이어 칭호 (서버가 보냄) */
+    private static final java.util.Map<java.util.UUID, rpg.core.net.Net.TitleSync> TITLES = new java.util.HashMap<>();
+
+    public static void title(rpg.core.net.Net.TitleSync t) {
+        if (t.title().isEmpty()) TITLES.remove(t.player()); else TITLES.put(t.player(), t);
+    }
+
     @SubscribeEvent
     public static void render(RenderLevelStageEvent e) {
         if (e.getStage() != RenderLevelStageEvent.Stage.AFTER_PARTICLES) return;
@@ -81,6 +88,22 @@ public final class WorldText {
         MultiBufferSource.BufferSource buf = mc.renderBuffers().bufferSource();
         Font font = mc.font;
         float pt = e.getPartialTick();
+
+        // 플레이어 머리 위 칭호: 《 칭호 》 (이름표 위, 32칸 이내, 1인칭 내 것은 안 보임)
+        for (var t : TITLES.values()) {
+            var pl = mc.level.getPlayerByUUID(t.player());
+            if (pl == null || pl.isInvisible() || pl.distanceToSqr(c) > 32 * 32) continue;
+            if (pl == mc.player && mc.options.getCameraType().isFirstPerson()) continue;
+            Vec3 p = pl.getPosition(pt).add(0, pl.getBbHeight() + 0.85, 0);
+            String s = "《 " + t.title() + " 》";
+            ps.pushPose();
+            ps.translate(p.x - c.x, p.y - c.y, p.z - c.z);
+            ps.mulPose(cam.rotation());
+            ps.scale(-0.025f, -0.025f, 0.025f);
+            Matrix4f m = ps.last().pose();
+            font.drawInBatch(s, -font.width(s) / 2f, 0, 0xFF000000 | t.titleColor(), true, m, buf, Font.DisplayMode.NORMAL, 0x40000000, 0xF000F0);
+            ps.popPose();
+        }
 
         // 몹 머리 위: "Lv.5 좀비" + 체력바 (20칸 이내, 바라보는 쪽)
         for (var en : ClientMobs.MAP.entrySet()) {

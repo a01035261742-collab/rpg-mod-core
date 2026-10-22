@@ -79,6 +79,7 @@ public final class EquipEvents {
         eq.dirty = false;
         PlayerData d = RpgData.get(sp);
         Map<String, Double> sum = eq.sum(sp);
+        Titles.update(sp, eq.items.getStackInSlot(10));   // 훈장 칸 칭호
         boolean changed = !sum.equals(d.equip);
         d.equip.clear();
         d.equip.putAll(sum);

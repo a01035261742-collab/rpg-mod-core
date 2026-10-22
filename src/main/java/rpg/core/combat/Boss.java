@@ -56,7 +56,7 @@ public final class Boss {
     public record Def(String key, double arena, int respawnSec, int resetSec, double phase2, double[] wait1, double[] wait2,
                       double penaltyPerLevel, double maxPenalty, List<Pattern> patterns,
                       String sure, int fragments, double scrollChance, String ring, double ringChance, List<Mats> mats, String bar,
-                      Pattern melee, double meleeCd, Map<String, Double> gim, String pillarKey) {
+                      Pattern melee, double meleeCd, Map<String, Double> gim, String pillarKey, String firstMedal) {
         public double g(String k, double def) { return gim.getOrDefault(k, def); }
     }
 
@@ -91,7 +91,7 @@ public final class Boss {
                     s(rw, "sure", ""), (int) d(rw, "fragments", 0), d(rw, "scrollChance", 0), s(rw, "ring", ""), d(rw, "ringChance", 0), mats,
                     s(o, "bar", ""), melee, o.has("melee") ? d(o.getAsJsonObject("melee"), "cd", 1.5) : 0,
                     o.has("gimmick") ? nums(o.getAsJsonObject("gimmick")) : new HashMap<>(),
-                    o.has("gimmick") ? s(o.getAsJsonObject("gimmick"), "pillar", "") : ""));
+                    o.has("gimmick") ? s(o.getAsJsonObject("gimmick"), "pillar", "") : "", s(rw, "first", "")));
         } catch (Exception ex) {
             RpgCore.LOG.error("[rpgcore] 보스 {} 읽기 실패", key, ex);
         }
@@ -725,6 +725,23 @@ public final class Boss {
         return false;
     }
 
+    /** 보스가 세운 단단한 버섯 블록인지 (못 캐게) */
+    public static boolean isProp(net.minecraft.world.level.Level level, BlockPos pos) {
+        for (State st : STATES.values())
+            for (BlockPos b : st.props) if (b.getX() == pos.getX() && b.getZ() == pos.getZ() && pos.getY() >= b.getY() && pos.getY() <= b.getY() + 2) return true;
+        return false;
+    }
+
+    @SubscribeEvent
+    public static void noBreakProp(net.minecraftforge.event.level.BlockEvent.BreakEvent e) {
+        if (isProp((net.minecraft.world.level.Level) e.getLevel(), e.getPos())) e.setCanceled(true);
+    }
+
+    @SubscribeEvent
+    public static void noExplodeProp(net.minecraftforge.event.level.ExplosionEvent.Detonate e) {
+        e.getAffectedBlocks().removeIf(bp -> isProp(e.getLevel(), bp));
+    }
+
     /** 보스 경기장 안인지 (다운 조건) */
     public static boolean inArena(ServerPlayer p) {
         for (var e : STATES.entrySet()) {
@@ -835,6 +852,20 @@ public final class Boss {
                     + " · " + String.format("%,d", gold) + " G").withStyle(ChatFormatting.GOLD));
         }
         rpg.core.quest.QuestEvents.onKill(new ArrayList<>(part.keySet()), m);
+        // 첫 처치 훈장: 사람마다 보스별 한 번 (죽어도 남는 저장 칸)
+        if (!def.firstMedal().isEmpty()) for (ServerPlayer p : part.keySet()) {
+            var keep = p.getPersistentData().getCompound(Player.PERSISTED_NBT_TAG);
+            var done = keep.getCompound("rpgBossFirst");
+            if (done.getBoolean(m.key)) continue;
+            done.putBoolean(m.key, true);
+            keep.put("rpgBossFirst", done);
+            p.getPersistentData().put(Player.PERSISTED_NBT_TAG, keep);
+            ItemStack medal = rpg.core.item.ItemIds.stack(RpgCore.MODID + ":" + def.firstMedal(), 1);
+            rpg.core.equip.Gear.rollPlain(medal);
+            String nm = medal.getHoverName().getString();
+            if (!p.getInventory().add(medal)) p.drop(medal, false);
+            p.sendSystemMessage(Component.literal("[첫 처치] " + nm + " 획득!").withStyle(ChatFormatting.GOLD));
+        }
 
         // 드롭 세트: 참여 인원수만큼, 바닥에 (누구나 주움)
         ThreadLocalRandom r = ThreadLocalRandom.current();

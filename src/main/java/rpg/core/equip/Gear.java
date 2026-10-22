@@ -110,6 +110,7 @@ public final class Gear {
             default -> "모든 직업";
         };
         tip.add(Component.literal(GearDefs.slotName(d.slot()) + " · 착용 Lv." + d.level() + " · " + job).withStyle(ChatFormatting.GRAY));
+        if (!d.title().isEmpty()) tip.add(Component.literal("칭호 《" + d.title() + "》 (훈장 칸에 끼면 머리 위에 표시)").withStyle(s2 -> s2.withColor(d.titleColor())));
         if (Enhance.broken(s)) tip.add(Component.literal("파괴된 장비 (능력치 없음) · 메뉴(M) → 강화에서 복구").withStyle(ChatFormatting.DARK_RED));
         int max = Enhance.maxStar(d), st = Enhance.star(s);
         if (max > 0) tip.add(Component.literal("★".repeat(Math.min(st, max)) + "☆".repeat(Math.max(0, max - st))).withStyle(ChatFormatting.YELLOW));

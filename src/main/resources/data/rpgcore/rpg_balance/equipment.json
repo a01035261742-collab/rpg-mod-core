@@ -1,5 +1,5 @@
 {
- "_설명": "장비 정의. slot: weapon hat top bottom shoes gloves cape belt earring ring pendant medal. job: 0 모두, 1 전사 2 궁수 3 마법사 4 도적 (초보자는 Lv10 미만 직업 무기 사용 가능). stats: str dex int luk vit atk matk hp mp def allPct. speed = 무기 공격 속도",
+ "_설명": "장비 정의. slot: weapon hat top bottom shoes gloves cape belt earring ring pendant medal. job: 0 모두, 1 전사 2 궁수 3 마법사 4 도적 (초보자는 Lv10 미만 직업 무기 사용 가능). stats: str dex int luk vit atk matk hp mp def allPct. speed = 무기 공격 속도 훈장: title = 머리 위 칭호, titleColor = 색 (#RRGGBB). 모든 훈장은 칭호를 가짐",
  "items": {
   "warrior_sword_1": {
    "slot": "weapon",
@@ -268,7 +268,9 @@
     "dex": 1,
     "int": 1,
     "luk": 1
-   }
+   },
+   "title": "초보 모험가",
+   "titleColor": "#C0C0C0"
   },
   "medal_10": {
    "slot": "medal",
@@ -279,7 +281,9 @@
     "dex": 2,
     "int": 2,
     "luk": 2
-   }
+   },
+   "title": "견습 모험가",
+   "titleColor": "#A0E0A0"
   },
   "warrior_sword_20": {
    "slot": "weapon",
@@ -692,7 +696,9 @@
     "dex": 3,
     "int": 3,
     "luk": 3
-   }
+   },
+   "title": "숙련 모험가",
+   "titleColor": "#80C8FF"
   },
   "medal_30": {
    "slot": "medal",
@@ -703,7 +709,9 @@
     "dex": 4,
     "int": 4,
     "luk": 4
-   }
+   },
+   "title": "베테랑 모험가",
+   "titleColor": "#C090FF"
   },
   "medal_40": {
    "slot": "medal",
@@ -714,7 +722,9 @@
     "dex": 5,
     "int": 5,
     "luk": 5
-   }
+   },
+   "title": "황금빛 영웅",
+   "titleColor": "#FFD24A"
   },
   "pig_snout_pendant": {
    "slot": "pendant",
@@ -1505,6 +1515,36 @@
     "atk": 4,
     "matk": 4
    }
+  },
+  "forest_hunter_medal": {
+   "slot": "medal",
+   "job": 0,
+   "level": 20,
+   "stats": {
+    "str": 4,
+    "dex": 4,
+    "int": 4,
+    "luk": 4,
+    "atk": 1,
+    "matk": 1
+   },
+   "title": "숲의 사냥꾼",
+   "titleColor": "#7FD25A"
+  },
+  "mush_hunter_medal": {
+   "slot": "medal",
+   "job": 0,
+   "level": 35,
+   "stats": {
+    "str": 6,
+    "dex": 6,
+    "int": 6,
+    "luk": 6,
+    "atk": 2,
+    "matk": 2
+   },
+   "title": "버섯 사냥꾼",
+   "titleColor": "#D27FFF"
   }
  },
  "options": {

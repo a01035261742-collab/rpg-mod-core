@@ -12,7 +12,7 @@ import java.util.Map;
 public final class GearDefs {
     private GearDefs() {}
 
-    public record GearDef(String id, String slot, int job, int level, Map<String, Double> stats, double speed) {}
+    public record GearDef(String id, String slot, int job, int level, Map<String, Double> stats, double speed, String title, int titleColor) {}
 
     public static final Map<String, GearDef> ITEMS = new LinkedHashMap<>();
     public static int[] lineChances = {20, 30, 25, 15, 10};
@@ -76,7 +76,9 @@ public final class GearDefs {
                     if (it.has("stats")) for (var s : it.getAsJsonObject("stats").entrySet()) st.put(s.getKey(), s.getValue().getAsDouble());
                     ITEMS.put(e.getKey(), new GearDef(e.getKey(), it.get("slot").getAsString(),
                             it.has("job") ? it.get("job").getAsInt() : 0, it.has("level") ? it.get("level").getAsInt() : 1,
-                            st, it.has("speed") ? it.get("speed").getAsDouble() : 0));
+                            st, it.has("speed") ? it.get("speed").getAsDouble() : 0,
+                            it.has("title") ? it.get("title").getAsString() : "",
+                            it.has("titleColor") ? Integer.parseInt(it.get("titleColor").getAsString().replace("#", ""), 16) : 0xFFD24A));
                 }
             }
             Enhance.parse(o.has("enhance") ? o.getAsJsonObject("enhance") : null);

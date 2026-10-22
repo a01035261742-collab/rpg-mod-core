@@ -1686,7 +1686,8 @@
     "fragments": 5,
     "scrollChance": 20,
     "ring": "forest_lord_ring",
-    "ringChance": 5
+    "ringChance": 5,
+    "first": "forest_hunter_medal"
    },
    "melee": {
     "name": "앞발",
@@ -1780,8 +1781,8 @@
      "name": "기 모으기",
      "type": "counter",
      "r": 10,
-     "window": 2.0,
-     "need": 1,
+     "window": 5.0,
+     "need": 3,
      "stun": 5,
      "pct": 250
     },
@@ -1814,7 +1815,8 @@
     "fragments": 8,
     "scrollChance": 25,
     "ring": "guardian_ring",
-    "ringChance": 5
+    "ringChance": 5,
+    "first": "mush_hunter_medal"
    }
   }
  },

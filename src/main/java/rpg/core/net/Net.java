@@ -104,6 +104,18 @@ public final class Net {
                 .encoder(EnhanceAction::encode).decoder(EnhanceAction::new).consumerMainThread(EnhanceAction::handle).add();
         CH.messageBuilder(Track.class, id++, NetworkDirection.PLAY_TO_CLIENT)
                 .encoder(Track::encode).decoder(Track::new).consumerMainThread(Track::handle).add();
+        CH.messageBuilder(TitleSync.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(TitleSync::encode).decoder(TitleSync::new).consumerMainThread(TitleSync::handle).add();
+    }
+
+    // ───────── 서버 → 클라: 플레이어 칭호 (빈 문자열 = 없음) ─────────
+    public record TitleSync(java.util.UUID player, String title, int titleColor) {
+        TitleSync(FriendlyByteBuf b) { this(b.readUUID(), b.readUtf(), b.readInt()); }
+        void encode(FriendlyByteBuf b) { b.writeUUID(player); b.writeUtf(title); b.writeInt(titleColor); }
+        void handle(Supplier<NetworkEvent.Context> ctx) {
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> rpg.core.client.WorldText.title(this));
+            ctx.get().setPacketHandled(true);
+        }
     }
 
     // ───────── 서버 → 클라: 추적 예고 (노랑, 클라가 매 프레임 대상 위치를 따라 그림) ─────────
