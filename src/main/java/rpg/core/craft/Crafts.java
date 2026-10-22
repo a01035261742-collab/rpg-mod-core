@@ -174,7 +174,7 @@ public final class Crafts {
         RpgData.sync(p);
         p.inventoryMenu.broadcastChanges();
         if (made > 0) {
-            String name = out.getDescription().getString();
+            String name = proto.getHoverName().getString();
             msg(p, name + (r.count() * made > 1 ? " x" + r.count() * made : "") + " 제작" + (r.gold() > 0 ? "  -" + String.format("%,d", r.gold() * made) + " G" : ""),
                     ChatFormatting.YELLOW);
             p.level().playSound(null, p.blockPosition(), SoundEvents.SMITHING_TABLE_USE, SoundSource.PLAYERS, 0.6f, 1.1f);
