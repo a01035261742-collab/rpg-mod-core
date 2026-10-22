@@ -24,7 +24,7 @@ import rpg.core.item.Scroll;
  * 장비 강화: 스타포스 · 주문서 · 파괴 복구 · 주문서 조각 합성.
  * 수치는 equipment.json "enhance" (클라이언트도 같은 값을 받아서 미리보기 계산).
  * 장비 NBT: rpgStar(★ 수) · rpgBroken(파괴됨) · rpgUpg(남은 업그레이드 횟수) · rpgUpgFail(실패 횟수) · rpgScr(주문서로 오른 수치)
- * 스타포스 수치는 저장하지 않고 ★ 수로 매번 계산 (기본 + 주문서 수치 기준)
+ * 스타포스 수치는 저장하지 않고 ★ 수로 매번 계산 (기본 수치 기준, 주문서와 무관)
  */
 public final class Enhance {
     private Enhance() {}
@@ -149,7 +149,7 @@ public final class Enhance {
         return switch (job) { case 2 -> "dex"; case 3 -> "int"; case 4 -> "luk"; default -> "str"; };
     }
 
-    /** ★ 수만큼 오른 수치 (기본 + 주문서 기준으로 누적 계산) */
+    /** ★ 수만큼 오른 수치 (기본 수치 기준으로 누적 계산) */
     public static Map<String, Integer> starStats(GearDefs.GearDef d, CompoundTag scr, int stars) {
         Map<String, Integer> m = new LinkedHashMap<>();
         if (d == null || stars <= 0) return m;
@@ -159,7 +159,7 @@ public final class Enhance {
             int n = i + 1;   // 이번에 얻는 ★
             for (String k : STATS4) m.merge(k, starStat[i], Integer::sum);
             if (c.equals("weapon")) {
-                double cur = d.stats().getOrDefault(wk, 0.0) + scr.getInt(wk) + m.getOrDefault(wk, 0);
+                double cur = d.stats().getOrDefault(wk, 0.0) + m.getOrDefault(wk, 0);   // 주문서 수치는 안 넣음 (기본 + 앞의 ★만)
                 if (cur > 0) m.merge(wk, (int) Math.floor(cur * weaponPct / 100.0 + weaponFlat), Integer::sum);
             } else if (c.equals("armor")) {
                 double cur = d.stats().getOrDefault("def", 0.0) + m.getOrDefault("def", 0);

@@ -168,6 +168,7 @@ public final class Balance {
 
         private static void loadMobs(JsonElement el) {
             MOBS.clear();
+            rpg.core.combat.Boss.clear();
             if (el == null || !el.isJsonObject()) {
                 RpgCore.LOG.warn("[rpgcore] rpg_balance/mobs.json 없음");
                 return;
@@ -226,6 +227,7 @@ public final class Balance {
                             d(o, "range", 0.8), d(o, "width", 1), d(o, "angle", 0), d(o, "knock", 0), d(o, "lunge", 0.35)));
                 }
                 MOBS.put(e.getKey(), new MobDef(e.getKey(), ent, name, levels, look, skills, attacks, d(m, "stunArmor", 0)));
+                if (m.has("boss")) rpg.core.combat.Boss.define(e.getKey(), m.getAsJsonObject("boss"));   // 보스 패턴·보상
             }
             RpgCore.LOG.info("[rpgcore] 몹 {}종 읽음", MOBS.size());
         }

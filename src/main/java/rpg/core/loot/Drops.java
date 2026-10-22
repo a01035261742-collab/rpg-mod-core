@@ -153,6 +153,14 @@ public final class Drops {
         else RpgCore.LOG.warn("[rpgcore] 드롭 아이템 없음: {}", id);
     }
 
+    /** 보스 보상: 그 몹의 재료 드롭표를 times 번 굴림 (확률 × mul) */
+    public static void rollMats(String mobKey, int times, double mul, List<ItemStack> out) {
+        MobDrops md = MOBS.get(mobKey);
+        if (md == null) return;
+        ThreadLocalRandom r = ThreadLocalRandom.current();
+        for (int k = 0; k < times; k++) for (Entry e : md.items()) if (hit(r, e.chance() * mul)) add(out, e.item());
+    }
+
     private static String weighted(Map<String, Double> w, ThreadLocalRandom r) {
         double total = 0;
         for (double v : w.values()) total += v;

@@ -395,6 +395,7 @@
   "scroll#g1": 300,
   "scroll#g2": 800,
   "scroll#g3": 2000,
-  "scroll#white": 3000
+  "scroll#white": 3000,
+  "forest_lord_claw": 1000
  }
 }

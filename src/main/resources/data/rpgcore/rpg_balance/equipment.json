@@ -1479,6 +1479,19 @@
     "def": 16,
     "luk": 4
    }
+  },
+  "forest_lord_ring": {
+   "slot": "ring",
+   "job": 0,
+   "level": 20,
+   "stats": {
+    "str": 4,
+    "dex": 4,
+    "int": 4,
+    "luk": 4,
+    "atk": 2,
+    "matk": 2
+   }
   }
  },
  "options": {
@@ -1680,7 +1693,7 @@
  },
  "keepInventory": true,
  "enhance": {
-  "_설명": "장비 강화 (메뉴 M → 강화). 숫자는 임시값. maxStars = [장비 레벨 이상, 최대 ★]. rates/destroy = ★n→n+1 성공·파괴 확률(%), 실패하면 ★ 유지. 파괴 방지 = 비용 × safeguardMul (destroy가 있는 단계만). 비용 = (costBase + 레벨²) × (★+1), 10단위. 파괴된 장비는 같은 장비 1개 + 12→13 비용 × restoreMul 로 ★restoreStar 복구. starStat = ★마다 4스탯(힘·민첩·지력·운) 증가. 무기 = 현재 공격력/마력 × weaponPct% + weaponFlat (내림, 누적). 방어구 = 현재 방어력 × defPct% (최소 1). 장갑은 gloveAtkStars 에서 공격력·마력 +1. 장신구 = 4스탯만. upgrades = 주문서 업그레이드 횟수. weaponScroll = [성공률, 공격력/마력, 주 스탯], statScroll = [성공률, 스탯]. 드롭·합성 등급 비중 gradeWeight, 나오는 레벨 gradeMinLevel (100·60·30·10%), 순백은 whiteMinLevel 이상에서 whiteChance%. fragments = 주문서 조각 합성 개수",
+  "_설명": "장비 강화 (메뉴 M → 강화). 숫자는 임시값. maxStars = [장비 레벨 이상, 최대 ★]. rates/destroy = ★n→n+1 성공·파괴 확률(%), 실패하면 ★ 유지. 파괴 방지 = 비용 × safeguardMul (destroy가 있는 단계만). 비용 = (costBase + 레벨²) × (★+1), 10단위. 파괴된 장비는 같은 장비 1개 + 12→13 비용 × restoreMul 로 ★restoreStar 복구. starStat = ★마다 4스탯(힘·민첩·지력·운) 증가. 무기 = (기본 + 앞의 ★로 오른 값) 공격력/마력 × weaponPct% + weaponFlat (내림, 누적, 주문서 수치는 안 넣음). 방어구 = 현재 방어력 × defPct% (최소 1). 장갑은 gloveAtkStars 에서 공격력·마력 +1. 장신구 = 4스탯만. upgrades = 주문서 업그레이드 횟수. weaponScroll = [성공률, 공격력/마력, 주 스탯], statScroll = [성공률, 스탯]. 드롭·합성 등급 비중 gradeWeight, 나오는 레벨 gradeMinLevel (100·60·30·10%), 순백은 whiteMinLevel 이상에서 whiteChance%. fragments = 주문서 조각 합성 개수",
   "maxStars": [
    [
     1,

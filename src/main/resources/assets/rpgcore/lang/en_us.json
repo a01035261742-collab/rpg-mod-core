@@ -232,5 +232,8 @@
   "item.rpgcore.elixir": "Elixir",
   "item.rpgcore.power_elixir": "Power Elixir",
   "item.rpgcore.scroll": "Scroll",
-  "key.rpgcore.menu": "Menu"
+  "key.rpgcore.menu": "Menu",
+  "item.rpgcore.forest_lord_claw": "Forest Lord's Claw",
+  "item.rpgcore.forest_lord_ring": "Forest Lord's Ring",
+  "entity.rpgcore.forest_lord": "Forest Lord"
 }

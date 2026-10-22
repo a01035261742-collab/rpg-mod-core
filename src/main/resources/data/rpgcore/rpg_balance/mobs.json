@@ -1593,5 +1593,101 @@
     "gold": 0
    }
   }
+ },
+ "forest_lord": {
+  "entity": "rpgcore:forest_lord",
+  "name": "숲의 주인",
+  "area": "보스 · 초원 끝 숲 경기장",
+  "stunArmor": 2.0,
+  "levels": {
+   "20": {
+    "hp": 155000,
+    "atk": 48.6,
+    "exp": 5880,
+    "gold": 2400
+   }
+  },
+  "boss": {
+   "_설명": "보스. arena = 경기장 반경, respawnSec 처치 후 재등장, resetSec 아무도 없으면 초기화, phase2 = HP % 이하 2페이즈, wait1/wait2 = 패턴 사이 대기(초) 범위, 레벨 낮으면 1레벨당 penaltyPerLevel% 감소 (최대 maxPenalty%). 패턴 type: cone(r·angle) slam(r) charge(len·w, track 추적초, repeat2 = 2페이즈 연속 횟수) rocks(r, 모든 플레이어 발밑 추적) roar(r, push 칸, 피해 없음). delay = 빨강 확정 후 발동까지 초, pct = 공격력 %, phase = 이 페이즈부터. 보상: 경험치·골드(levels)는 피해 비율로 나눔, 드롭 세트를 참여 인원수만큼 (sure 확정 · mats [몹, 굴림 횟수] · fragments 주문서 조각 · scrollChance% 주문서 · ring 장신구 ringChance%, 확률은 참여자 최고 드롭률 보너스 적용)",
+   "arena": 24,
+   "respawnSec": 600,
+   "resetSec": 30,
+   "phase2": 50,
+   "wait1": [
+    2,
+    4
+   ],
+   "wait2": [
+    1.5,
+    3
+   ],
+   "penaltyPerLevel": 5,
+   "maxPenalty": 90,
+   "patterns": [
+    {
+     "id": "claw",
+     "name": "할퀴기",
+     "type": "cone",
+     "r": 7,
+     "angle": 120,
+     "delay": 1.8,
+     "pct": 180
+    },
+    {
+     "id": "slam",
+     "name": "내려찍기",
+     "type": "slam",
+     "r": 6,
+     "delay": 2.2,
+     "pct": 220
+    },
+    {
+     "id": "charge",
+     "name": "돌진",
+     "type": "charge",
+     "len": 16,
+     "w": 5,
+     "track": 1.5,
+     "delay": 2.5,
+     "pct": 200,
+     "repeat2": 3
+    },
+    {
+     "id": "rocks",
+     "name": "바위 던지기",
+     "type": "rocks",
+     "r": 3,
+     "track": 1.5,
+     "delay": 2.0,
+     "pct": 150
+    },
+    {
+     "id": "roar",
+     "name": "포효",
+     "type": "roar",
+     "r": 12,
+     "delay": 2.0,
+     "push": 8,
+     "phase": 2
+    }
+   ],
+   "reward": {
+    "sure": "forest_lord_claw",
+    "mats": [
+     [
+      "bear",
+      5
+     ],
+     [
+      "boar",
+      5
+     ]
+    ],
+    "fragments": 5,
+    "scrollChance": 20,
+    "ring": "forest_lord_ring",
+    "ringChance": 5
+   }
+  }
  }
 }

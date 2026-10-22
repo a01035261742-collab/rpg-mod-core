@@ -42,10 +42,20 @@ import rpg.core.zone.ZoneWand;
  *  /rpg quest check                           NPC·지점 배치 점검 (안 세운 것 빨간색)
  *  /rpg job <0~4>                             직업 바로 바꾸기 (테스트용)
  *  /rpg potions                               물약 받기 (빨강·파랑 30개, 나머지 10개씩)
+ *  /rpg boss point add <보스> [반경] · remove · list   보스 경기장 (발밑이 중앙), /rpg boss spawn <보스> 테스트 소환, /rpg boss respawn
  *  /rpg scrolls                               강화 테스트 (주문서 전 종류·순백·조각·골드 10만)
  */
 public final class ZoneCommand {
     private ZoneCommand() {}
+
+    private static int bossAdd(com.mojang.brigadier.context.CommandContext<CommandSourceStack> c, String key, int radius) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        var def = rpg.core.combat.Boss.DEFS.get(key);
+        if (def == null) return ok(c, "보스 없음: " + key);
+        var p = c.getSource().getPlayerOrException();
+        double r = radius > 0 ? radius : def.arena();
+        var pt = rpg.core.combat.BossPoints.get(c.getSource().getLevel()).add(key, p.blockPosition(), r);
+        return ok(c, "보스 경기장 추가: " + pt.id + " (중앙 = 발밑, 반경 " + (int) r + ") — 곧 등장");
+    }
 
     private static final SuggestionProvider<CommandSourceStack> MOB_KEYS =
             (c, b) -> SharedSuggestionProvider.suggest(Balance.MOBS.keySet(), b);
@@ -211,6 +221,50 @@ public final class ZoneCommand {
             rpg.core.data.RpgData.sync(p);
             return ok(c, "주문서 전 종류 16장씩 · 순백 16장 · 주문서 조각 64개 · 골드 +100,000");
         }));
+        // ── 보스 ──
+        SuggestionProvider<CommandSourceStack> BOSS_KEYS = (c, b) -> SharedSuggestionProvider.suggest(rpg.core.combat.Boss.DEFS.keySet(), b);
+        root.then(Commands.literal("boss").requires(s -> s.hasPermission(2))
+                .then(Commands.literal("point")
+                        .then(Commands.literal("add").then(Commands.argument("boss", StringArgumentType.word()).suggests(BOSS_KEYS)
+                                .executes(c -> bossAdd(c, StringArgumentType.getString(c, "boss"), -1))
+                                .then(Commands.argument("radius", IntegerArgumentType.integer(8, 64))
+                                        .executes(c -> bossAdd(c, StringArgumentType.getString(c, "boss"), IntegerArgumentType.getInteger(c, "radius"))))))
+                        .then(Commands.literal("remove").executes(c -> {
+                            var l = c.getSource().getLevel();
+                            var d = rpg.core.combat.BossPoints.get(l);
+                            var here = c.getSource().getPlayerOrException().blockPosition();
+                            rpg.core.combat.BossPoints.Point best = null;
+                            double bd = 16 * 16;
+                            for (var pt : d.points) { double dd = pt.pos.distSqr(here); if (dd < bd) { bd = dd; best = pt; } }
+                            if (best == null) return ok(c, "16칸 안에 보스 경기장이 없어요");
+                            if (best.boss != null) { var ent = l.getEntity(best.boss); if (ent != null) ent.discard(); }
+                            d.points.remove(best);
+                            d.setDirty();
+                            return ok(c, "보스 경기장 삭제: " + best.id);
+                        }))
+                        .then(Commands.literal("list").executes(c -> {
+                            var d = rpg.core.combat.BossPoints.get(c.getSource().getLevel());
+                            if (d.points.isEmpty()) return ok(c, "보스 경기장 없음");
+                            long now = c.getSource().getLevel().getGameTime();
+                            StringBuilder sb = new StringBuilder("보스 경기장: ");
+                            for (var pt : d.points) sb.append(pt.id).append(" (").append(pt.pos.toShortString()).append(", 반경 ").append((int) pt.radius)
+                                    .append(pt.boss != null ? ", 등장 중" : pt.nextSpawn > now ? ", " + (pt.nextSpawn - now) / 20 + "초 뒤" : ", 곧 등장").append(")  ");
+                            return ok(c, sb.toString());
+                        })))
+                .then(Commands.literal("spawn").then(Commands.argument("boss", StringArgumentType.word()).suggests(BOSS_KEYS).executes(c -> {
+                    String key = StringArgumentType.getString(c, "boss");
+                    var def = rpg.core.combat.Boss.DEFS.get(key);
+                    if (def == null) return ok(c, "보스 없음: " + key);
+                    var p = c.getSource().getPlayerOrException();
+                    var mob = rpg.core.combat.BossPoints.spawnAt(c.getSource().getLevel(), key, p.blockPosition(), def.arena(), null);
+                    return ok(c, mob == null ? "소환 실패" : "테스트 소환: " + key + " (경기장 = 지금 위치, 반경 " + (int) def.arena() + ", 재등장 없음)");
+                })))
+                .then(Commands.literal("respawn").executes(c -> {
+                    var d = rpg.core.combat.BossPoints.get(c.getSource().getLevel());
+                    for (var pt : d.points) pt.nextSpawn = 0;
+                    d.setDirty();
+                    return ok(c, "모든 보스 경기장 재등장 대기 시간 초기화");
+                })));
         root.then(Commands.literal("mobs").requires(s -> s.hasPermission(2)).executes(c -> {
             StringBuilder sb = new StringBuilder("몹 목록: ");
             Balance.MOBS.values().forEach(d -> sb.append(d.key()).append("(").append(d.name()).append(") "));

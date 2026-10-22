@@ -67,7 +67,7 @@ public final class MobAI {
     /** Mob 의 GoalSelector 필드 (0 = 행동, 1 = 대상) — 이름 대신 순서로 찾기 */
     private static Field[] SEL;
 
-    private static GoalSelector selector(Mob mob, int idx) {
+    static GoalSelector selector(Mob mob, int idx) {
         try {
             if (SEL == null) {
                 List<Field> fs = new java.util.ArrayList<>();
@@ -103,6 +103,7 @@ public final class MobAI {
         long now = mob.level().getGameTime();
         if (def.look().baby() && mob instanceof AgeableMob am && mob.tickCount % 200 == 0) am.setAge(-24000);
         applySlow(mob, m, now);
+        if (Boss.isBoss(m)) { Boss.tick(mob, m, def); return; }   // 보스는 따로
 
         if (m.casting >= 0) {
             if (m.casting >= def.skills().size()) { m.casting = -1; return; }

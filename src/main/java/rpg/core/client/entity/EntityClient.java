@@ -56,6 +56,19 @@ public final class EntityClient {
             @Override
             public ResourceLocation getTextureLocation(PolarBear ent) { return bear; }
         });
+        // 보스 숲의 주인: 곰 2.5배 (북극곰 기본 1.2배 × 2.5)
+        e.registerEntityRenderer(ModEntities.FOREST_LORD.get(), ctx -> {
+            PolarBearRenderer r = new PolarBearRenderer(ctx) {
+                @Override
+                public ResourceLocation getTextureLocation(PolarBear ent) { return bear; }
+
+                @Override
+                protected void scale(PolarBear ent, com.mojang.blaze3d.vertex.PoseStack ps, float pt) {
+                    ps.scale(3.0f, 3.0f, 3.0f);
+                }
+            };
+            return r;
+        });
     }
 
     /** 직업 가죽 방어구: 아이콘 색 (아래층만 칠함, 위 오버레이는 그대로) */

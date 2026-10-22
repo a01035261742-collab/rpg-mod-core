@@ -301,6 +301,9 @@ public final class CombatEvents {
         } else {
             dmg = e.getAmount() / Math.max(1f, mob.getMaxHealth()) * m.maxHp;  // 환경 피해
         }
+        if (Boss.isBoss(m)) {   // 보스: 플레이어 피해만 (레벨 차이 감소·기여도), 나머지는 무시
+            dmg = src instanceof ServerPlayer bp ? Boss.onHurt(mob, m, bp, dmg) : 0;
+        }
         m.hp = Math.max(0, m.hp - dmg);
         mirror(e, mob, m.hp, m.maxHp);
         Mobs.sync(mob);
@@ -345,6 +348,7 @@ public final class CombatEvents {
         PlayerData d = RpgData.get(killer);
         rpg.core.skill.JobSkills.onKill(killer, d);   // 연속 분노
         if (rpg.core.job.Trials.isTrialMob(mob)) return;   // 시련 몹: 보상 없음 (통과는 Trials)
+        if (Boss.isBoss(m)) { Boss.onDeath(mob, m, killer); return; }   // 보스: 기여도 분배 · 드롭 세트
         rpg.core.loot.Drops.roll(mob, m, killer, d);   // 드롭은 막타 기준 (골드는 주머니로)
         // 경험치: 근처 파티원끼리 균등 분배 + 인원당 보너스
         var members = rpg.core.party.Parties.nearby(killer);
