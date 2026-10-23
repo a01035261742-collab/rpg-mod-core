@@ -135,6 +135,9 @@ public final class EpicFightCompat {
     public static final java.util.Map<String, Float> SPEED = new java.util.HashMap<>(java.util.Map.of(
             "STEEL_WHIRLWIND", 2.5f, "GIANT_WHIRLWIND", 2.5f));
     private static boolean speedDone;
+    /** 진단: 속도 설정 결과 · 마지막으로 재생한 모션 */
+    public static String speedStatus = "아직 안 함";
+    public static final java.util.Map<String, String> LAST = new java.util.concurrent.ConcurrentHashMap<>();
 
     /** EF 모션에 재생 속도 배수 붙이기 (한 번만, 서버·클라 둘 다 — 화면은 클라 쪽이 중요) */
     public static void applySpeeds() {
@@ -145,10 +148,11 @@ public final class EpicFightCompat {
             Class<?> propCls = Class.forName("yesman.epicfight.api.animation.property.AnimationProperty$StaticAnimationProperty");
             Class<?> modCls = Class.forName("yesman.epicfight.api.animation.property.AnimationProperty$PlaybackSpeedModifier");
             Object prop = propCls.getField("PLAY_SPEED_MODIFIER").get(null);
+            StringBuilder st = new StringBuilder();
             for (var e : SPEED.entrySet()) {
                 Object anim;
-                try { anim = animsCls.getField(e.getKey()).get(null); } catch (NoSuchFieldException nf) { continue; }
-                if (anim == null) continue;
+                try { anim = animsCls.getField(e.getKey()).get(null); } catch (NoSuchFieldException nf) { st.append(e.getKey()).append(" 없음 · "); continue; }
+                if (anim == null) { st.append(e.getKey()).append(" null · "); continue; }
                 final String key = e.getKey();   // 재생할 때마다 SPEED 에서 읽음 (/rpg anim speed 로 바로 바꿔보기)
                 Object modifier = java.lang.reflect.Proxy.newProxyInstance(modCls.getClassLoader(), new Class<?>[]{modCls}, (px, m, a) -> {
                     if (m.getName().equals("modify") && a != null && a.length >= 3 && a[2] instanceof Float sp) return sp * SPEED.getOrDefault(key, 1f);
@@ -157,11 +161,15 @@ public final class EpicFightCompat {
                     if (m.getName().equals("toString")) return "rpgcore speed " + key;
                     return null;
                 });
+                boolean done = false;
                 for (var m : anim.getClass().getMethods()) {
-                    if (m.getName().equals("addProperty") && m.getParameterCount() == 2) { m.invoke(anim, prop, modifier); break; }
+                    if (m.getName().equals("addProperty") && m.getParameterCount() == 2) { m.invoke(anim, prop, modifier); done = true; break; }
                 }
+                st.append(e.getKey()).append(done ? " 적용 (" + anim.getClass().getSimpleName() + ")" : " addProperty 없음").append(" · ");
             }
+            speedStatus = st.toString();
         } catch (Throwable ex) {
+            speedStatus = "실패: " + ex;
             RpgCore.LOG.debug("[rpgcore] EF 모션 속도 설정 실패: {}", ex.toString());
         }
     }
@@ -187,6 +195,7 @@ public final class EpicFightCompat {
 
     private static boolean playOne(ServerPlayer p, String field) {
         applySpeeds();
+        LAST.put("try", field);
         try {
             if (!animLookedUp) {
                 animLookedUp = true;
@@ -201,6 +210,7 @@ public final class EpicFightCompat {
             Object patch = getPatch.invoke(null, p, livingPatchClass);
             if (anim == null || patch == null) return false;
             playClient.invoke(patch, anim, 0f);
+            LAST.put("played", field);
             return true;
         } catch (Throwable ex) {
             RpgCore.LOG.debug("[rpgcore] EF 모션 실패 {}: {}", field, ex.toString());

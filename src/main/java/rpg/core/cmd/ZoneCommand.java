@@ -148,6 +148,16 @@ public final class ZoneCommand {
                             boolean ok = rpg.core.compat.EpicFightCompat.playAnim(c.getSource().getPlayerOrException(), n);
                             return ok(c, ok ? "모션 재생: " + n : "없는 모션: " + n);
                         })))
+                .then(Commands.literal("info").executes(c -> {
+                    var x = rpg.core.compat.EpicFightCompat.class;
+                    c.getSource().sendSystemMessage(Component.literal("§e버전 §f" + net.minecraftforge.fml.ModList.get().getModContainerById(rpg.core.RpgCore.MODID)
+                            .map(m -> m.getModInfo().getVersion().toString()).orElse("?")
+                            + " §e속도 §f" + rpg.core.compat.EpicFightCompat.speedStatus
+                            + " §e마지막 재생 §f" + rpg.core.compat.EpicFightCompat.LAST.getOrDefault("played", "-")
+                            + " §7(시도 " + rpg.core.compat.EpicFightCompat.LAST.getOrDefault("try", "-") + ")"
+                            + " §e회전 간격 §f" + rpg.core.skill.WarriorSkills.SPIN_GAP + "틱"));
+                    return 1;
+                }))
                 .then(Commands.literal("speed").then(Commands.argument("mul", com.mojang.brigadier.arguments.FloatArgumentType.floatArg(0.5f, 5f)).executes(c -> {
                     float mul = com.mojang.brigadier.arguments.FloatArgumentType.getFloat(c, "mul");
                     rpg.core.compat.EpicFightCompat.SPEED.put("STEEL_WHIRLWIND", mul);
