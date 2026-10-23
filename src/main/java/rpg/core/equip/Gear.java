@@ -116,19 +116,22 @@ public final class Gear {
         if (max > 0) tip.add(Component.literal("★".repeat(Math.min(st, max)) + "☆".repeat(Math.max(0, max - st))).withStyle(ChatFormatting.YELLOW));
         int um = Enhance.upgMax(d);
         if (um > 0) tip.add(Component.literal("업그레이드 가능 " + Enhance.upgLeft(s) + " (실패 " + Enhance.upgFail(s) + ")").withStyle(ChatFormatting.GRAY));
-        // 능력치 = 기본 + 주문서(파랑) + 스타포스(노랑)
+        // 능력치 = 기본 + 주문서(파랑) + 스타포스(노랑) + 추가 옵션(초록)
         CompoundTag sc = Enhance.scr(s);
+        CompoundTag o = opts(s);
         Map<String, Integer> sf = Enhance.starStats(s);
         java.util.LinkedHashSet<String> keys = new java.util.LinkedHashSet<>(d.stats().keySet());
-        for (String k : GearDefs.STAT_KEYS) if (sc.contains(k) || sf.containsKey(k)) keys.add(k);
+        for (String k : GearDefs.STAT_KEYS) if (sc.contains(k) || sf.containsKey(k) || o.contains(k)) keys.add(k);
+        keys.addAll(o.getAllKeys());
         for (String k : keys) {
             double base = d.stats().getOrDefault(k, 0.0);
-            int a = sc.getInt(k), b = sf.getOrDefault(k, 0);
-            var line = Component.literal(GearDefs.label(k) + " +" + fmt(base + a + b, k)).withStyle(ChatFormatting.WHITE);
-            if (a != 0 || b != 0) {
+            int a = sc.getInt(k), b = sf.getOrDefault(k, 0), c = o.getInt(k);
+            var line = Component.literal(GearDefs.label(k) + " +" + fmt(base + a + b + c, k)).withStyle(ChatFormatting.WHITE);
+            if (a != 0 || b != 0 || c != 0) {
                 line.append(Component.literal(" (" + fmt(base, k)).withStyle(ChatFormatting.GRAY));
                 if (a != 0) line.append(Component.literal(" +" + a).withStyle(ChatFormatting.BLUE));
                 if (b != 0) line.append(Component.literal(" +" + b).withStyle(ChatFormatting.YELLOW));
+                if (c != 0) line.append(Component.literal(" +" + fmt(c, k)).withStyle(ChatFormatting.GREEN));
                 line.append(Component.literal(")").withStyle(ChatFormatting.GRAY));
             }
             tip.add(line);
@@ -141,13 +144,7 @@ public final class Gear {
             tip.addAll(Potential.lines(pt));
             if (Potential.pending(s)) tip.add(Component.literal("새 옵션 선택 대기 중 (메뉴 → 강화 → 잠재능력)").withStyle(ChatFormatting.DARK_GRAY));
         }
-        CompoundTag o = opts(s);
-        if (!o.isEmpty()) {
-            tip.add(Component.literal("추가 옵션").withStyle(ChatFormatting.AQUA));
-            for (String k : o.getAllKeys()) {
-                tip.add(Component.literal(" " + GearDefs.label(k) + " +" + fmt(o.getInt(k), k)).withStyle(ChatFormatting.AQUA));
-            }
-        } else if (rolled(s)) {
+        if (o.isEmpty() && rolled(s)) {
             tip.add(Component.literal("추가 옵션 없음").withStyle(ChatFormatting.DARK_GRAY));
         }
     }
