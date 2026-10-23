@@ -107,7 +107,7 @@ public final class Skills {
     private static void spend(PlayerData d, Defs.SkillDef s, int lv, long now) {
         d.mp -= s.mp(lv);
         // 빠른 영창: 쿨타임 감소
-        int cd = (int) Math.round(s.cooldown(lv) * 20 * Math.max(0.1, 1 - d.bonus("cdPct") / 100.0));
+        int cd = (int) Math.round(s.cooldown(lv) * 20 * Math.max(0.6, 1 - d.bonus("cdPct") / 100.0));   // 쿨타임 감소 최대 40%
         d.cdEnd.put(s.id(), now + cd);
         d.cdLen.put(s.id(), cd);
     }

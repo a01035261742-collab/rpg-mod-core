@@ -44,15 +44,31 @@ public final class Potential {
         defaults();
     }
 
+    /** 2번째 값이 필요한 옵션 (확률 무적: 무적 초) — 등급별 */
+    public static final Map<String, double[]> V2 = new LinkedHashMap<>();
+    /** 피격 시 피해 무시가 터질 확률 % */
+    public static double ignoreChance = 20;
+
     private static void defaults() {
         POOLS.clear();
+        V2.clear();
         double[] pct = {3, 6, 9, 12};
         Map<String, double[]> w = new LinkedHashMap<>(), a = new LinkedHashMap<>(), c = new LinkedHashMap<>();
         for (String s : new String[]{"strPct", "dexPct", "intPct", "lukPct"}) { w.put(s, pct); a.put(s, pct); c.put(s, pct); }
+        for (String s : new String[]{"str", "dex", "int", "luk"}) w.put(s, new double[]{8, 0, 0, 0});
+        w.put("atk", new double[]{6, 0, 0, 0}); w.put("matk", new double[]{6, 0, 0, 0});
         w.put("atkPct", pct); w.put("critChance", new double[]{4, 6, 8, 10}); w.put("bossPct", new double[]{0, 0, 30, 40});
-        a.put("hpPct", pct); a.put("defPct", pct); a.put("allPct", new double[]{0, 3, 6, 9});
+        a.put("hpPct", pct); a.put("defPct", pct); a.put("allPct", new double[]{0, 3, 6, 9}); a.put("ignorePct", new double[]{0, 0, 20, 40});
+        for (String s : new String[]{"strPerLv", "dexPerLv", "intPerLv", "lukPerLv"}) { a.put(s, new double[]{0, 0, 1, 2}); c.put(s, new double[]{0, 0, 1, 2}); }
         c.put("hpPct", pct); c.put("speedPct", new double[]{2, 4, 6, 8}); c.put("goldPct", new double[]{0, 5, 8, 12}); c.put("dropPct", new double[]{0, 5, 8, 12});
         POOLS.put("weapon", w); POOLS.put("armor", a); POOLS.put("accessory", c);
+        POOLS.put("gloves", new LinkedHashMap<>(Map.of("critDmg", new double[]{0, 0, 0, 8})));
+        POOLS.put("hat", new LinkedHashMap<>(Map.of("cdPct", new double[]{0, 0, 0, 10})));
+        Map<String, double[]> top = new LinkedHashMap<>();
+        top.put("iframe", new double[]{0, 0.5, 1, 1.5});
+        top.put("invulProc", new double[]{0, 0, 5, 7});
+        POOLS.put("top", top);
+        V2.put("invulProc", new double[]{0, 0, 2, 3});
     }
 
     public static void parse(JsonObject o) {
@@ -64,6 +80,7 @@ public final class Potential {
             if (o.has("costMul")) { var x = o.getAsJsonArray("costMul"); for (int i = 0; i < 4 && i < x.size(); i++) costMul[i] = x.get(i).getAsDouble(); }
             if (o.has("line2Same")) line2Same = o.get("line2Same").getAsDouble();
             if (o.has("line3Same")) line3Same = o.get("line3Same").getAsDouble();
+            if (o.has("ignoreChance")) ignoreChance = o.get("ignoreChance").getAsDouble();
             if (o.has("pools")) {
                 POOLS.clear();
                 for (var e : o.getAsJsonObject("pools").entrySet()) {
@@ -75,6 +92,15 @@ public final class Potential {
                         m.put(k.getKey(), v);
                     }
                     POOLS.put(e.getKey(), m);
+                }
+            }
+            if (o.has("v2")) {
+                V2.clear();
+                for (var k : o.getAsJsonObject("v2").entrySet()) {
+                    var arr = k.getValue().getAsJsonArray();
+                    double[] v = new double[4];
+                    for (int i = 0; i < 4 && i < arr.size(); i++) v[i] = arr.get(i).getAsDouble();
+                    V2.put(k.getKey(), v);
                 }
             }
         } catch (Exception ex) {
@@ -100,7 +126,11 @@ public final class Potential {
     public static void addBonus(ItemStack s, Map<String, Double> m) {
         if (!has(s)) return;
         ListTag l = pot(s).getList("l", Tag.TAG_COMPOUND);
-        for (int i = 0; i < l.size(); i++) m.merge(l.getCompound(i).getString("k"), l.getCompound(i).getDouble("v"), Double::sum);
+        for (int i = 0; i < l.size(); i++) {
+            CompoundTag x = l.getCompound(i);
+            m.merge(x.getString("k"), x.getDouble("v"), Double::sum);
+            if (x.contains("v2")) m.merge(x.getString("k") + "Sec", x.getDouble("v2"), Math::max);   // 확률 무적 시간: 가장 긴 것
+        }
     }
 
     public static String label(String k) {
@@ -109,7 +139,23 @@ public final class Potential {
             case "atkPct" -> "공격력/마력"; case "critChance" -> "치명타 확률"; case "bossPct" -> "보스 공격 시 피해";
             case "hpPct" -> "최대 HP"; case "defPct" -> "방어력"; case "allPct" -> "올스탯";
             case "speedPct" -> "이동속도"; case "goldPct" -> "골드 획득"; case "dropPct" -> "아이템 드롭률";
+            case "critDmg" -> "크리티컬 데미지"; case "cdPct" -> "모든 스킬 재사용 대기시간";
             default -> k;
+        };
+    }
+
+    private static String n(double v) { return v == Math.floor(v) ? String.valueOf((long) v) : String.valueOf(v); }
+
+    /** 옵션 한 줄 글자 */
+    public static String text(String k, double v, double v2) {
+        return switch (k) {
+            case "str", "dex", "int", "luk", "atk", "matk" -> GearDefs.label(k) + " +" + n(v);
+            case "strPerLv", "dexPerLv", "intPerLv", "lukPerLv" -> "캐릭터 9레벨당 " + GearDefs.label(k.substring(0, 3)) + " +" + n(v);
+            case "cdPct" -> "모든 스킬 재사용 대기시간 -" + n(v) + "%";
+            case "ignorePct" -> "피격 시 " + n(ignoreChance) + "% 확률로 피해 " + n(v) + "% 무시";
+            case "iframe" -> "피격 후 무적 시간 +" + n(v) + "초";
+            case "invulProc" -> "피격 시 " + n(v) + "% 확률로 " + n(v2) + "초 무적";
+            default -> label(k) + " +" + n(v) + "%";
         };
     }
 
@@ -118,17 +164,23 @@ public final class Potential {
         ListTag l = p.getList("l", Tag.TAG_COMPOUND);
         for (int i = 0; i < l.size(); i++) {
             CompoundTag x = l.getCompound(i);
-            double v = x.getDouble("v");
-            out.add(Component.literal(" " + label(x.getString("k")) + " +" + (v == Math.floor(v) ? String.valueOf((long) v) : String.valueOf(v)) + "%")
+            out.add(Component.literal(" " + text(x.getString("k"), x.getDouble("v"), x.getDouble("v2")))
                     .withStyle(st -> st.withColor(COLOR[Math.max(0, Math.min(3, x.getInt("g")))])));
         }
         return out;
     }
 
     // ───────── 굴리기 ─────────
+    /** 장비의 옵션 목록 = 분류(무기·방어구·장신구) + 부위 전용 (장갑·모자·상의 등) */
+    public static Map<String, double[]> pool(GearDefs.GearDef d) {
+        Map<String, double[]> m = new LinkedHashMap<>(POOLS.getOrDefault(Enhance.cat(d.slot()), Map.of()));
+        if (!d.slot().equals(Enhance.cat(d.slot()))) m.putAll(POOLS.getOrDefault(d.slot(), Map.of()));
+        return m;
+    }
+
     static CompoundTag roll(GearDefs.GearDef d, int grade) {
         ThreadLocalRandom r = ThreadLocalRandom.current();
-        Map<String, double[]> pool = POOLS.get(Enhance.cat(d.slot()));
+        Map<String, double[]> pool = pool(d);
         CompoundTag p = new CompoundTag();
         p.putInt("g", grade);
         ListTag l = new ListTag();
@@ -143,6 +195,7 @@ public final class Potential {
             CompoundTag x = new CompoundTag();
             x.putString("k", k);
             x.putDouble("v", pool.get(k)[g]);
+            if (V2.containsKey(k)) x.putDouble("v2", V2.get(k)[g]);
             x.putInt("g", g);
             l.add(x);
         }

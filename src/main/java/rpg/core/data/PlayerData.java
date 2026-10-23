@@ -90,7 +90,9 @@ public class PlayerData {
 
     private static final String[] STAT_KEYS = {"vit", "str", "dex", "int", "luk", "sta"};
     /** 장비 합계에서 bonus 로 옮기는 % 옵션 (잠재능력) */
-    private static final String[] EQUIP_BONUS = {"atkPct", "hpPct", "critChance", "goldPct", "dropPct", "speedPct", "bossPct"};
+    private static final String[] EQUIP_BONUS = {"atkPct", "hpPct", "critChance", "goldPct", "dropPct", "speedPct", "bossPct", "critDmg", "cdPct"};
+    /** 피격 시 확률 무적 (잠재능력): 이 시각까지 피해 없음 */
+    public transient long invulUntil;
 
     public double eq(String k) {
         return equip.getOrDefault(k, 0.0);
@@ -98,7 +100,8 @@ public class PlayerData {
 
     /** 최종 스탯 = (찍은 스탯 + 장비) × (1 + 올스탯%) */
     public double total(int i) {
-        return (stats[i] + eq(STAT_KEYS[i])) * (1 + (eq("allPct") + eq(STAT_KEYS[i] + "Pct")) / 100.0);   // 잠재능력 힘% 등
+        double perLv = eq(STAT_KEYS[i] + "PerLv") * Math.floor(level / 9.0);   // 잠재능력: 캐릭터 9레벨당 스탯
+        return (stats[i] + eq(STAT_KEYS[i]) + perLv) * (1 + (eq("allPct") + eq(STAT_KEYS[i] + "Pct")) / 100.0);   // 잠재능력 힘% 등
     }
 
     public boolean isNew() { return level <= 0; }

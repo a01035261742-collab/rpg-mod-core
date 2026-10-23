@@ -231,6 +231,8 @@ public final class CombatEvents {
         // ── 플레이어가 맞음 ──
         if (target instanceof ServerPlayer sp) {
             PlayerData d = RpgData.get(sp);
+            long tnow = sp.level().getGameTime();
+            if (tnow < d.invulUntil) { e.setCanceled(true); return; }   // 잠재능력: 확률 무적 중
             double dmg;
             Double mx = MAXHP_PCT.get(sp.getId());
             if (mx != null) dmg = d.maxHp * mx / 100.0;   // 최대 HP 비율 피해
@@ -249,6 +251,14 @@ public final class CombatEvents {
                 d.mp -= toMp;
                 dmg -= toMp;
             }
+            // 잠재능력 피격 옵션
+            var rnd = java.util.concurrent.ThreadLocalRandom.current();
+            if (d.eq("ignorePct") > 0 && rnd.nextDouble() * 100 < rpg.core.equip.Potential.ignoreChance)
+                dmg *= 1 - Math.min(80, d.eq("ignorePct")) / 100.0;                  // 확률로 피해 일부 무시
+            if (d.eq("invulProc") > 0 && rnd.nextDouble() * 100 < Math.min(50, d.eq("invulProc"))) {
+                d.invulUntil = now + Math.round(d.eq("invulProcSec") * 20);          // 확률로 몇 초 무적
+                sp.displayClientMessage(net.minecraft.network.chat.Component.literal("무적!").withStyle(net.minecraft.ChatFormatting.AQUA), true);
+            }
             if (d.shield > 0 && now < d.shieldEnd) {                               // 보호막 (넘치는 치유)
                 double absorb = Math.min(d.shield, dmg);
                 d.shield -= absorb;
@@ -256,6 +266,7 @@ public final class CombatEvents {
             }
             d.hp = Math.max(0, d.hp - dmg);
             mirror(e, sp, d.hp, d.maxHp);
+            if (d.eq("iframe") > 0) sp.invulnerableTime = 20 + (int) Math.round(Math.min(2, d.eq("iframe")) * 20);   // 피격 후 무적 시간 증가
             RpgData.sync(sp);
             return;
         }
