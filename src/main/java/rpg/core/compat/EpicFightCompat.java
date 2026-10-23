@@ -151,7 +151,7 @@ public final class EpicFightCompat {
         boolean ok = false;
         for (var e : SPEED.entrySet()) {
             String r = setSpeed(e.getKey(), e.getValue());
-            if (r.endsWith("적용")) ok = true;
+            if (r.contains(" 적용")) ok = true;
             st.append(r).append(" · ");
         }
         speedStatus = st.toString();
@@ -180,13 +180,25 @@ public final class EpicFightCompat {
             }
             Class<?> atkProp = Class.forName("yesman.epicfight.api.animation.property.AnimationProperty$AttackAnimationProperty");
             Object basis = atkProp.getField("BASIS_ATTACK_SPEED").get(null), factor = atkProp.getField("ATTACK_SPEED_FACTOR").get(null);
-            java.lang.reflect.Method add = null;
-            for (var m : anim.getClass().getMethods())
-                if (m.getName().equals("addProperty") && m.getParameterCount() == 2 && m.getParameterTypes()[0].isAssignableFrom(atkProp)) { add = m; break; }
-            if (add == null) return field + " 공격모션 아님 (" + anim.getClass().getSimpleName() + ")";
-            add.invoke(anim, basis, BASE_ATTACK_SPEED / mul);
-            add.invoke(anim, factor, 1.0f);
-            return field + " ×" + mul + " 적용";
+            // addProperty 는 다음 리로드 때 적용(지연)이라 → 모션 안의 속성 맵에 바로 넣음
+            java.util.Map<Object, Object> props = null;
+            String found = "";
+            for (Class<?> c = anim.getClass(); c != null && props == null; c = c.getSuperclass()) {
+                for (var f : c.getDeclaredFields()) {
+                    if (java.util.Map.class.isAssignableFrom(f.getType()) && f.getName().toLowerCase().contains("propert")
+                            && !java.lang.reflect.Modifier.isStatic(f.getModifiers())) {
+                        f.setAccessible(true);
+                        @SuppressWarnings("unchecked") var m = (java.util.Map<Object, Object>) f.get(anim);
+                        props = m;
+                        found = c.getSimpleName() + "." + f.getName();
+                        break;
+                    }
+                }
+            }
+            if (props == null) return field + " 속성 맵 없음 (" + anim.getClass().getSimpleName() + ")";
+            props.put(basis, BASE_ATTACK_SPEED / mul);
+            props.put(factor, 1.0f);
+            return field + " ×" + mul + " 적용 [" + found + "]";
         } catch (Throwable ex) {
             return field + " 실패: " + ex.getClass().getSimpleName();
         }
