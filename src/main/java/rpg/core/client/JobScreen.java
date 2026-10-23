@@ -59,7 +59,7 @@ public class JobScreen extends Screen {
         y = Ui.cy(height, h);
         int by = y + h - Ui.FOOT;
         switch (state) {
-            case 0 -> addRenderableWidget(Button.builder(Component.literal(NAMES[family] + "(으)로 전직하기"), b -> {
+            case 0 -> addRenderableWidget(Ui.button(Component.literal(NAMES[family] + "(으)로 전직하기"), b -> {
                 send(0, 0);
                 onClose();
             }).bounds(x + 10, by, 130, 18).build());
@@ -67,22 +67,22 @@ public class JobScreen extends Screen {
                 int n = Math.max(skillLines(1).size(), skillLines(2).size());
                 for (int b = 1; b <= 2; b++) {   // 각 칸 아래에 고르기 버튼
                     int br = b;
-                    addRenderableWidget(Button.builder(Component.literal(Jobs.branchName(family, b) + " 고르기"), bt -> send(1, br))
+                    addRenderableWidget(Ui.button(Component.literal(Jobs.branchName(family, b) + " 고르기"), bt -> send(1, br))
                             .bounds(x + 10 + (b - 1) * 145, y + 40 + boxH(n) - 24, 132, Ui.BTN_H).build());
                 }
             }
             case 6 -> {
-                addRenderableWidget(Button.builder(Component.literal("시련 시작"), b -> {
+                addRenderableWidget(Ui.button(Component.literal("시련 시작"), b -> {
                     send(3, 0);
                     onClose();
                 }).bounds(x + 10, by, 60, 18).build());
-                addRenderableWidget(Button.builder(Component.literal("갈래 바꾸기"), b -> {
+                addRenderableWidget(Ui.button(Component.literal("갈래 바꾸기"), b -> {
                     state = 5;
                     init();
                 }).bounds(x + 74, by, 66, 18).build());
-                addRenderableWidget(Button.builder(Component.literal("포기"), b -> send(2, 0)).bounds(x + 144, by, 40, 18).build());
+                addRenderableWidget(Ui.button(Component.literal("포기"), b -> send(2, 0)).bounds(x + 144, by, 40, 18).build());
             }
-            case 7 -> addRenderableWidget(Button.builder(Component.literal("2차 전직 완료"), b -> {
+            case 7 -> addRenderableWidget(Ui.button(Component.literal("2차 전직 완료"), b -> {
                 send(4, 0);
                 onClose();
             }).bounds(x + 10, by, 100, 18).build());

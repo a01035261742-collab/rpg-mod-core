@@ -51,10 +51,10 @@ public class QuestScreen extends Screen {
         y = Ui.cy(height, H);
         for (int i = 0; i < 3; i++) {
             int t = i;
-            addRenderableWidget(Button.builder(Component.literal(TABS[i]), b -> { tab = t; scroll = 0; sel = null; })
+            addRenderableWidget(Ui.button(Component.literal(TABS[i]), b -> { tab = t; scroll = 0; sel = null; })
                     .bounds(x + 6 + i * 84, y + 20, 82, 16).build());
         }
-        abandon = addRenderableWidget(Button.builder(Component.literal("포기"), b -> {
+        abandon = addRenderableWidget(Ui.button(Component.literal("포기"), b -> {
             if (sel == null) return;
             long now = System.currentTimeMillis();
             if (now < confirmUntil) {

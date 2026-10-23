@@ -72,33 +72,33 @@ public class QuestTalkScreen extends Screen {
                 if (i >= 5) break;
                 int ry = y + 44 + i * 17;   // 5개: y+44 ~ y+129 (버튼줄 y+152 위)
                 String prefix = switch (en.kind()) { case 2 -> "§6? "; case 1 -> "§e! "; case 3 -> "§7… "; default -> "§8Lv." + en.q().minLevel() + " "; };
-                Button b = Button.builder(Component.literal(Ui.cut(font, prefix + en.q().name(), W - 30)), btn -> pick(en))
+                Button b = Ui.button(Component.literal(Ui.cut(font, prefix + en.q().name(), W - 30)), btn -> pick(en))
                         .bounds(x + 10, ry, W - 20, 15).build();
                 b.active = en.kind() != 4;
                 addRenderableWidget(b);
                 i++;
             }
-            addRenderableWidget(Button.builder(Component.literal("대화 끝내기"), b -> onClose()).bounds(x + W - 90, by, 80, 18).build());
+            addRenderableWidget(Ui.button(Component.literal("대화 끝내기"), b -> onClose()).bounds(x + W - 90, by, 80, 18).build());
             return;
         }
         boolean last = page >= lines.size() - 1;
         if (!last) {
-            addRenderableWidget(Button.builder(Component.literal("다음 ▶"), b -> { page++; rebuild(); }).bounds(x + W - 90, by, 80, 18).build());
+            addRenderableWidget(Ui.button(Component.literal("다음 ▶"), b -> { page++; rebuild(); }).bounds(x + W - 90, by, 80, 18).build());
         } else if (mode == 0) {
-            addRenderableWidget(Button.builder(Component.literal("§a수락"), b -> {
+            addRenderableWidget(Ui.button(Component.literal("§a수락"), b -> {
                 Net.CH.sendToServer(new Net.QuestAction(0, sel.id(), entity));
                 back();
             }).bounds(x + W - 176, by, 80, 18).build());
-            addRenderableWidget(Button.builder(Component.literal("거절"), b -> back()).bounds(x + W - 90, by, 80, 18).build());
+            addRenderableWidget(Ui.button(Component.literal("거절"), b -> back()).bounds(x + W - 90, by, 80, 18).build());
         } else if (mode == 2) {
-            addRenderableWidget(Button.builder(Component.literal("§6완료하기"), b -> {
+            addRenderableWidget(Ui.button(Component.literal("§6완료하기"), b -> {
                 Net.CH.sendToServer(new Net.QuestAction(1, sel.id(), entity));
                 back();
             }).bounds(x + W - 90, by, 80, 18).build());
         } else {
-            addRenderableWidget(Button.builder(Component.literal("알겠어요"), b -> back()).bounds(x + W - 90, by, 80, 18).build());
+            addRenderableWidget(Ui.button(Component.literal("알겠어요"), b -> back()).bounds(x + W - 90, by, 80, 18).build());
         }
-        if (page > 0) addRenderableWidget(Button.builder(Component.literal("◀"), b -> { page--; rebuild(); }).bounds(x + 10, by, 24, 18).build());
+        if (page > 0) addRenderableWidget(Ui.button(Component.literal("◀"), b -> { page--; rebuild(); }).bounds(x + 10, by, 24, 18).build());
     }
 
     private void pick(Entry en) {

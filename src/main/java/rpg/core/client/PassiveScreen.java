@@ -37,7 +37,7 @@ public class PassiveScreen extends Screen {
         cx = px + pw / 2 - (minX + maxX) * CELL / 2;
         cy = py + head + 4 + CELL / 2 - minY * CELL;
         addRenderableWidget(Ui.menu(px, py, ph));
-        addRenderableWidget(Button.builder(Component.literal("스킬 (L)"), b -> minecraft.setScreen(new SkillScreen()))
+        addRenderableWidget(Ui.button(Component.literal("스킬 (L)"), b -> minecraft.setScreen(new SkillScreen()))
                 .bounds(px + 50, py + ph - Ui.FOOT, 60, Ui.BTN_H).build());
         addRenderableWidget(Ui.close(px, py, pw, ph, this::onClose));
     }

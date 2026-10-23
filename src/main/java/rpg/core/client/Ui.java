@@ -49,12 +49,57 @@ public final class Ui {
 
     /** [닫기] 버튼 (오른쪽 아래) */
     public static Button close(int x, int y, int w, int h, Runnable onClose) {
-        return Button.builder(Component.literal("닫기"), b -> onClose.run()).bounds(x + w - 52, y + h - FOOT, 46, BTN_H).build();
+        return button(Component.literal("닫기"), b -> onClose.run()).bounds(x + w - 52, y + h - FOOT, 46, BTN_H).build();
     }
 
     /** [메뉴] 버튼 (왼쪽 아래) */
     public static Button menu(int x, int y, int h) {
-        return Button.builder(Component.literal("메뉴"), b -> Minecraft.getInstance().setScreen(new MenuScreen())).bounds(x + 6, y + h - FOOT, 40, BTN_H).build();
+        return button(Component.literal("메뉴"), b -> Minecraft.getInstance().setScreen(new MenuScreen())).bounds(x + 6, y + h - FOOT, 40, BTN_H).build();
+    }
+
+    // ───────── 납작한 버튼 (A안, 임시) ─────────
+    /** Button.builder 대신: Ui.button(글자, 동작).bounds(...).build() */
+    public static Builder button(Component msg, Button.OnPress press) { return new Builder(msg, press); }
+
+    public static final class Builder {
+        private final Component msg; private final Button.OnPress press;
+        private int x, y, w = 150, h = 20; private Boolean accent;
+        Builder(Component m, Button.OnPress p) { msg = m; press = p; }
+        public Builder bounds(int x, int y, int w, int h) { this.x = x; this.y = y; this.w = w; this.h = h; return this; }
+        public Builder accent(boolean a) { accent = a; return this; }
+        public FlatButton build() { return new FlatButton(x, y, w, h, msg, press, accent != null ? accent : autoAccent(msg.getString())); }
+    }
+
+    /** 강조 버튼 (주황): 강화 · 제작 · 수락 · 완료 · 적용 · 전직 · 시련 시작 */
+    private static boolean autoAccent(String s) {
+        String t = s.replaceAll("§.", "");
+        return t.equals("강화") || t.contains("제작") || t.equals("수락") || t.startsWith("완료") || t.equals("새 옵션 적용")
+                || t.contains("전직") || t.equals("시련 시작") || t.equals("합성") || t.startsWith("합성 ");
+    }
+
+    public static class FlatButton extends Button {
+        private final boolean accent;
+        protected FlatButton(int x, int y, int w, int h, Component msg, OnPress press, boolean accent) {
+            super(x, y, w, h, msg, press, DEFAULT_NARRATION);
+            this.accent = accent;
+        }
+
+        @Override
+        public void renderWidget(GuiGraphics g, int mx, int my, float pt) {
+            int x = getX(), y = getY(), w = getWidth(), h = getHeight();
+            boolean hov = active && isHoveredOrFocused();
+            int bg, edge, top;
+            if (!active) { bg = 0xFF16161E; edge = 0xFF2C2C38; top = 0xFF22222C; }
+            else if (accent) { bg = hov ? 0xFF6A4220 : 0xFF4E3018; edge = hov ? GOLD : 0xFFB07030; top = 0xFF8A5A2C; }
+            else { bg = hov ? 0xFF323A58 : 0xFF232A40; edge = hov ? GOLD : 0xFF4A5274; top = 0xFF3C4668; }
+            g.fill(x, y, x + w, y + h, edge);
+            g.fill(x + 1, y + 1, x + w - 1, y + h - 1, bg);
+            g.fill(x + 1, y + 1, x + w - 1, y + 2, top);   // 윗줄 살짝 밝게
+            Font f = Minecraft.getInstance().font;
+            String t = cut(f, getMessage().getString(), w - 6);
+            int col = !active ? 0xFF6A6A78 : hov ? 0xFFFFFFFF : 0xFFE6E6F0;
+            g.drawString(f, t, x + (w - f.width(t)) / 2, y + (h - 8) / 2, col, false);
+        }
     }
 
     /** 폭을 넘으면 … 로 자르기 */

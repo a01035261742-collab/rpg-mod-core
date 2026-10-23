@@ -26,9 +26,9 @@ public class StorageScreen extends ContainerScreen {
         super.init();
         for (int i = 0; i < Storage.MAX_PAGES; i++) {
             final int k = i;
-            tabs[i] = addRenderableWidget(Button.builder(Component.literal(String.valueOf(i + 1)), b -> press(k)).bounds(leftPos + i * 22, topPos - 16, 20, 14).build());
+            tabs[i] = addRenderableWidget(Ui.button(Component.literal(String.valueOf(i + 1)), b -> press(k)).bounds(leftPos + i * 22, topPos - 16, 20, 14).build());
         }
-        expand = addRenderableWidget(Button.builder(Component.literal("확장"), b -> press(9)).bounds(leftPos + imageWidth - 64, topPos - 16, 64, 14).build());
+        expand = addRenderableWidget(Ui.button(Component.literal("확장"), b -> press(9)).bounds(leftPos + imageWidth - 64, topPos - 16, 64, 14).build());
     }
 
     @Override

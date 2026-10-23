@@ -62,13 +62,13 @@ public class CraftScreen extends Screen {
         y = Ui.cy(height, H);
         for (int i = 0; i < labels.size(); i++) {
             final int k = i;
-            addRenderableWidget(Button.builder(Component.literal(labels.get(i)), b -> { tab = k; filter(); rebuildWidgets(); })
+            addRenderableWidget(Ui.button(Component.literal(labels.get(i)), b -> { tab = k; filter(); rebuildWidgets(); })
                     .bounds(x + 8 + fl[i][0], y + 20 + fl[i][1], fl[i][2], 16).build()).active = tab != i;
         }
         // 제작 버튼: 오른쪽 칸 아래 (버튼줄 위) · [닫기]: 버튼줄
         int cy = y + H - Ui.FOOT - 26;
-        craft1 = addRenderableWidget(Button.builder(Component.literal("제작"), b -> send(1)).bounds(x + 182, cy, 70, Ui.BTN_H).build());
-        craft10 = addRenderableWidget(Button.builder(Component.literal("10번 제작"), b -> send(10)).bounds(x + 256, cy, 76, Ui.BTN_H).build());
+        craft1 = addRenderableWidget(Ui.button(Component.literal("제작"), b -> send(1)).bounds(x + 182, cy, 70, Ui.BTN_H).build());
+        craft10 = addRenderableWidget(Ui.button(Component.literal("10번 제작"), b -> send(10)).bounds(x + 256, cy, 76, Ui.BTN_H).build());
         addRenderableWidget(Ui.close(x, y, W, H, this::onClose));
         if (shown.isEmpty() && sel < 0) filter();
     }

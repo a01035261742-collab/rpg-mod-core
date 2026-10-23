@@ -37,7 +37,7 @@ public class PartyScreen extends Screen {
         int i0 = 0;
         for (String name : onlineToInvite()) {
             if (i0 >= 8) break;
-            addRenderableWidget(Button.builder(Component.literal("초대"), b -> send(0, name))
+            addRenderableWidget(Ui.button(Component.literal("초대"), b -> send(0, name))
                     .bounds(x + W + 4 + SW - 36, y + 24 + i0 * 20, 30, 16).build());
             i0++;
         }
@@ -47,24 +47,24 @@ public class PartyScreen extends Screen {
         nameBox.setMaxLength(16);
         nameBox.setHint(Component.literal("초대할 이름"));
         addRenderableWidget(nameBox);
-        addRenderableWidget(Button.builder(Component.literal("초대"), b -> {
+        addRenderableWidget(Ui.button(Component.literal("초대"), b -> {
             if (!nameBox.getValue().isBlank()) send(0, nameBox.getValue().trim());
             nameBox.setValue("");
         }).bounds(x + 132, boxY, 44, Ui.BTN_H - 2).build());
-        addRenderableWidget(Button.builder(Component.literal("근처"), b -> fillNearest()).bounds(x + 180, boxY, 42, Ui.BTN_H - 2).build());
+        addRenderableWidget(Ui.button(Component.literal("근처"), b -> fillNearest()).bounds(x + 180, boxY, 42, Ui.BTN_H - 2).build());
         addRenderableWidget(Ui.menu(x, y, H));
-        addRenderableWidget(Button.builder(Component.literal("파티 나가기"), b -> send(3, "")).bounds(x + 50, y + H - Ui.FOOT, 70, Ui.BTN_H).build());
+        addRenderableWidget(Ui.button(Component.literal("파티 나가기"), b -> send(3, "")).bounds(x + 50, y + H - Ui.FOOT, 70, Ui.BTN_H).build());
         addRenderableWidget(Ui.close(x, y, W, H, this::onClose));
         if (!ClientParty.inviter.isEmpty()) {
-            addRenderableWidget(Button.builder(Component.literal("수락"), b -> send(1, "")).bounds(x + W - 92, inviteY, 40, Ui.BTN_H - 2).build());
-            addRenderableWidget(Button.builder(Component.literal("거절"), b -> send(2, "")).bounds(x + W - 48, inviteY, 40, Ui.BTN_H - 2).build());
+            addRenderableWidget(Ui.button(Component.literal("수락"), b -> send(1, "")).bounds(x + W - 92, inviteY, 40, Ui.BTN_H - 2).build());
+            addRenderableWidget(Ui.button(Component.literal("거절"), b -> send(2, "")).bounds(x + W - 48, inviteY, 40, Ui.BTN_H - 2).build());
         }
         if (amLeader()) {
             String me = Minecraft.getInstance().getUser().getName();
             for (int i = 0; i < ClientParty.MEMBERS.size(); i++) {
                 Net.Member m = ClientParty.MEMBERS.get(i);
                 if (m.name().equals(me)) continue;
-                addRenderableWidget(Button.builder(Component.literal("추방"), b -> send(4, m.name()))
+                addRenderableWidget(Ui.button(Component.literal("추방"), b -> send(4, m.name()))
                         .bounds(x + W - 40, y + 28 + i * 20, 32, 14).build());
             }
         }

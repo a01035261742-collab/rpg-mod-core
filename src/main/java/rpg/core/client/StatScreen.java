@@ -25,11 +25,11 @@ public class StatScreen extends Screen {
         for (int i = 0; i < 6; i++) {
             final int stat = i;
             int ry = y + 66 + i * 16;
-            addRenderableWidget(Button.builder(Component.literal("+"), b -> send(stat, hasShiftDown() ? 5 : 1))
+            addRenderableWidget(Ui.button(Component.literal("+"), b -> send(stat, hasShiftDown() ? 5 : 1))
                     .bounds(x + W - 24, ry - 3, 16, 14).build());
         }
         addRenderableWidget(Ui.menu(x, y, H));
-        addRenderableWidget(Button.builder(Component.literal(detail ? "상세 <" : "상세 >"), b -> {
+        addRenderableWidget(Ui.button(Component.literal(detail ? "상세 <" : "상세 >"), b -> {
             detail = !detail;
             rebuildWidgets();
         }).bounds(x + 50, y + H - Ui.FOOT, 46, Ui.BTN_H).build());

@@ -39,11 +39,11 @@ public class SkillScreen extends Screen {
         y = Ui.cy(height, h);
         for (int r = 0; r < rows && r + scroll < list.size(); r++) {
             String id = list.get(r + scroll).id();
-            addRenderableWidget(Button.builder(Component.literal("+"), b -> Net.CH.sendToServer(new Net.Learn(0, id)))
+            addRenderableWidget(Ui.button(Component.literal("+"), b -> Net.CH.sendToServer(new Net.Learn(0, id)))
                     .bounds(x + W - 24, y + 30 + r * ROW + 4, 16, 14).build());
         }
         addRenderableWidget(Ui.menu(x, y, h));
-        addRenderableWidget(Button.builder(Component.literal("패시브 (N)"), b -> minecraft.setScreen(new PassiveScreen()))
+        addRenderableWidget(Ui.button(Component.literal("패시브 (N)"), b -> minecraft.setScreen(new PassiveScreen()))
                 .bounds(x + 50, y + h - Ui.FOOT, 70, Ui.BTN_H).build());
         addRenderableWidget(Ui.close(x, y, W, h, this::onClose));
     }

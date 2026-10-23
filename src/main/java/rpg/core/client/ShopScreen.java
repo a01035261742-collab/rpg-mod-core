@@ -79,12 +79,12 @@ public class ShopScreen extends Screen {
         y = Ui.cy(height, H);
         for (int i = 0; i < labels.size(); i++) {
             final int k = i;
-            addRenderableWidget(Button.builder(Component.literal(labels.get(i)), b -> { tab = k; filter(); rebuildWidgets(); })
+            addRenderableWidget(Ui.button(Component.literal(labels.get(i)), b -> { tab = k; filter(); rebuildWidgets(); })
                     .bounds(x + 8 + fl[i][0], y + 19 + fl[i][1], fl[i][2], 14).build()).active = tab != i;
         }
         tab = Math.min(tab, Math.max(0, tabs.size() - 1));
         filter();
-        addRenderableWidget(Button.builder(Component.literal("재료 전부 팔기"), b ->
+        addRenderableWidget(Ui.button(Component.literal("재료 전부 팔기"), b ->
                 Net.CH.sendToServer(new Net.ShopAction(npc, 2, 0, 0))).bounds(x + W - 156, y + H - Ui.FOOT, 100, Ui.BTN_H).build());
         addRenderableWidget(Ui.close(x, y, W, H, this::onClose));
     }

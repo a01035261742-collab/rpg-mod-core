@@ -44,7 +44,7 @@ public class MenuScreen extends Screen {
             final int k = i;
             String label = ITEMS[i][0] + (ITEMS[i][1].isEmpty() ? "" : " (" + ITEMS[i][1] + ")");
             int bx = x + 8 + (i % 2) * (bw + GAP), by = y + 24 + (i / 2) * (BH + GAP);
-            addRenderableWidget(Button.builder(Component.literal(label), b -> open(k)).bounds(bx, by, bw, BH).build());
+            addRenderableWidget(Ui.button(Component.literal(label), b -> open(k)).bounds(bx, by, bw, BH).build());
         }
         addRenderableWidget(Ui.close(x, y, W, h, this::onClose));
     }

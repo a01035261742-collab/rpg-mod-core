@@ -38,11 +38,11 @@ public class DailyScreen extends Screen {
             final int k = i;
             Net.DailyRow r = data.rows().get(i);
             int ry = y + 26 + i * ROW;
-            Button done = Button.builder(Component.literal(r.done() ? "완료됨" : "완료"), b -> Net.CH.sendToServer(new Net.DailyAction(1, k)))
+            Button done = Ui.button(Component.literal(r.done() ? "완료됨" : "완료"), b -> Net.CH.sendToServer(new Net.DailyAction(1, k)))
                     .bounds(x + W - 104, ry + 4, 48, 18).build();
             done.active = !r.done() && r.prog() >= r.need();
             addRenderableWidget(done);
-            Button re = Button.builder(Component.literal("다시"), b -> Net.CH.sendToServer(new Net.DailyAction(2, k))).bounds(x + W - 52, ry + 4, 44, 18).build();
+            Button re = Ui.button(Component.literal("다시"), b -> Net.CH.sendToServer(new Net.DailyAction(2, k))).bounds(x + W - 52, ry + 4, 44, 18).build();
             re.active = !r.done() && data.rerolls() > 0;
             addRenderableWidget(re);
         }

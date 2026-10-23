@@ -101,7 +101,7 @@ public class EnhanceScreen extends Screen {
         for (int i : order) {
             final int k = i;
             int w = font.width(names[i]) + 8;
-            Button b = Button.builder(Component.literal(names[i]), bt -> { tab = k; lastTab = k; rebuildWidgets(); }).bounds(tx, y + 19, w, 14).build();
+            Button b = Ui.button(Component.literal(names[i]), bt -> { tab = k; lastTab = k; rebuildWidgets(); }).bounds(tx, y + 19, w, 14).build();
             b.active = tab != i;
             addRenderableWidget(b);
             tx += w + 2;
@@ -114,7 +114,7 @@ public class EnhanceScreen extends Screen {
         int bx = x + 158, by = y + H - 48;
         if (tab == 0 && d != null) {
             if (Enhance.broken(s)) {
-                Button b = Button.builder(Component.literal("복구 (★" + Enhance.restoreStar + ")"), bt ->
+                Button b = Ui.button(Component.literal("복구 (★" + Enhance.restoreStar + ")"), bt ->
                         Net.CH.sendToServer(new Net.EnhanceAction(3, curLoc(), material()))).bounds(bx, by, 110, 18).build();
                 b.active = material() >= 0 && ClientData.gold >= Enhance.restoreCost(d);
                 addRenderableWidget(b);
@@ -122,58 +122,58 @@ public class EnhanceScreen extends Screen {
                 int st = Enhance.star(s);
                 boolean can = st < Enhance.maxStar(d);
                 if (can && Enhance.destroyRate(st) > 0) {
-                    addRenderableWidget(Button.builder(Component.literal((guard ? "☑" : "☐") + " 파괴 방지"), bt -> { guard = !guard; rebuildWidgets(); })
+                    addRenderableWidget(Ui.button(Component.literal((guard ? "☑" : "☐") + " 파괴 방지"), bt -> { guard = !guard; rebuildWidgets(); })
                             .bounds(bx + 114, by, 66, 18).build());
                 }
-                Button b = Button.builder(Component.literal("강화"), bt ->
+                Button b = Ui.button(Component.literal("강화"), bt ->
                         Net.CH.sendToServer(new Net.EnhanceAction(1, curLoc(), guard ? 1 : 0))).bounds(bx, by, 110, 18).build();
                 b.active = can && ClientData.gold >= Enhance.cost(d, st, guard);
                 addRenderableWidget(b);
             }
         } else if (tab == 1 && d != null) {
-            Button b = Button.builder(Component.literal("주문서 바르기"), bt ->
+            Button b = Ui.button(Component.literal("주문서 바르기"), bt ->
                     Net.CH.sendToServer(new Net.EnhanceAction(2, curLoc(), slots.get(selScroll)))).bounds(bx, by, 110, 18).build();
             b.active = selScroll >= 0 && selScroll < scrolls.size() && Enhance.scrollBlock(s, scrolls.get(selScroll)) == null;
             addRenderableWidget(b);
         } else if (tab == 3 && d != null && rpg.core.equip.Potential.can(d)) {
             if (!rpg.core.equip.Potential.has(s)) {
-                Button b1 = Button.builder(Component.literal("레어 부여 (" + extra.get(1) + ")"), bt -> Net.CH.sendToServer(new Net.EnhanceAction(5, curLoc(), 0))).bounds(bx, by, 86, 18).build();
+                Button b1 = Ui.button(Component.literal("레어 부여 (" + extra.get(1) + ")"), bt -> Net.CH.sendToServer(new Net.EnhanceAction(5, curLoc(), 0))).bounds(bx, by, 86, 18).build();
                 b1.active = extra.get(1) > 0;
                 addRenderableWidget(b1);
-                Button b2 = Button.builder(Component.literal("에픽 부여 (" + extra.get(2) + ")"), bt -> Net.CH.sendToServer(new Net.EnhanceAction(5, curLoc(), 1))).bounds(bx + 90, by, 86, 18).build();
+                Button b2 = Ui.button(Component.literal("에픽 부여 (" + extra.get(2) + ")"), bt -> Net.CH.sendToServer(new Net.EnhanceAction(5, curLoc(), 1))).bounds(bx + 90, by, 86, 18).build();
                 b2.active = extra.get(2) > 0;
                 addRenderableWidget(b2);
             } else if (rpg.core.equip.Potential.pending(s)) {
-                addRenderableWidget(Button.builder(Component.literal("새 옵션 적용"), bt -> Net.CH.sendToServer(new Net.EnhanceAction(8, curLoc(), 0))).bounds(bx, by, 86, 18).build());
-                addRenderableWidget(Button.builder(Component.literal("기존 유지"), bt -> Net.CH.sendToServer(new Net.EnhanceAction(9, curLoc(), 0))).bounds(bx + 90, by, 86, 18).build());
+                addRenderableWidget(Ui.button(Component.literal("새 옵션 적용"), bt -> Net.CH.sendToServer(new Net.EnhanceAction(8, curLoc(), 0))).bounds(bx, by, 86, 18).build());
+                addRenderableWidget(Ui.button(Component.literal("기존 유지"), bt -> Net.CH.sendToServer(new Net.EnhanceAction(9, curLoc(), 0))).bounds(bx + 90, by, 86, 18).build());
             } else if (rpg.core.equip.Potential.locked(s)) {
-                addRenderableWidget(Button.builder(Component.literal("잠금 해제"), bt -> Net.CH.sendToServer(new Net.EnhanceAction(12, curLoc(), 0))).bounds(bx, by, 86, 18).build());
+                addRenderableWidget(Ui.button(Component.literal("잠금 해제"), bt -> Net.CH.sendToServer(new Net.EnhanceAction(12, curLoc(), 0))).bounds(bx, by, 86, 18).build());
             } else {
                 long c = rpg.core.equip.Potential.cost(d, rpg.core.equip.Potential.grade(s));
-                Button b1 = Button.builder(Component.literal(String.format("%,d G", c)), bt -> Net.CH.sendToServer(new Net.EnhanceAction(6, curLoc(), 0))).bounds(bx, by, 86, 18).build();
+                Button b1 = Ui.button(Component.literal(String.format("%,d G", c)), bt -> Net.CH.sendToServer(new Net.EnhanceAction(6, curLoc(), 0))).bounds(bx, by, 86, 18).build();
                 b1.active = ClientData.gold >= c;
                 addRenderableWidget(b1);
-                Button b2 = Button.builder(Component.literal("큐브 (" + extra.get(0) + ")"), bt -> Net.CH.sendToServer(new Net.EnhanceAction(7, curLoc(), 0))).bounds(bx + 90, by, 86, 18).build();
+                Button b2 = Ui.button(Component.literal("큐브 (" + extra.get(0) + ")"), bt -> Net.CH.sendToServer(new Net.EnhanceAction(7, curLoc(), 0))).bounds(bx + 90, by, 86, 18).build();
                 b2.active = extra.get(0) > 0;
                 addRenderableWidget(b2);
             }
         } else if (tab == 4 && d != null && rpg.core.equip.Flame.can(d) && !Enhance.broken(s)) {
             if (rpg.core.equip.Flame.pending(s)) {
-                addRenderableWidget(Button.builder(Component.literal("새 옵션 적용"), bt -> Net.CH.sendToServer(new Net.EnhanceAction(11, curLoc(), 0))).bounds(bx, by, 100, 18).build());
-                addRenderableWidget(Button.builder(Component.literal("이전 유지"), bt -> Net.CH.sendToServer(new Net.EnhanceAction(11, curLoc(), 1))).bounds(bx + 104, by, 100, 18).build());
+                addRenderableWidget(Ui.button(Component.literal("새 옵션 적용"), bt -> Net.CH.sendToServer(new Net.EnhanceAction(11, curLoc(), 0))).bounds(bx, by, 100, 18).build());
+                addRenderableWidget(Ui.button(Component.literal("이전 유지"), bt -> Net.CH.sendToServer(new Net.EnhanceAction(11, curLoc(), 1))).bounds(bx + 104, by, 100, 18).build());
             } else {
                 String[] nm = {"강력한", "영원한", "검은"};
                 long c = rpg.core.equip.Flame.cost(d);
                 for (int i = 0; i < 3; i++) {
                     final int k = i;
-                    Button b = Button.builder(Component.literal(nm[i] + " (" + extra.get(6 + i) + ")"), bt -> Net.CH.sendToServer(new Net.EnhanceAction(10, curLoc(), k)))
+                    Button b = Ui.button(Component.literal(nm[i] + " (" + extra.get(6 + i) + ")"), bt -> Net.CH.sendToServer(new Net.EnhanceAction(10, curLoc(), k)))
                             .bounds(bx + i * 70, by, 66, 18).build();
                     b.active = extra.get(6 + i) > 0 && ClientData.gold >= c;
                     addRenderableWidget(b);
                 }
             }
         } else if (tab == 2) {
-            Button b = Button.builder(Component.literal("합성 (조각 " + Enhance.fragments + "개)"), bt ->
+            Button b = Ui.button(Component.literal("합성 (조각 " + Enhance.fragments + "개)"), bt ->
                     Net.CH.sendToServer(new Net.EnhanceAction(4, 0, 0))).bounds(bx, by, 130, 18).build();
             b.active = frags >= Enhance.fragments;
             addRenderableWidget(b);

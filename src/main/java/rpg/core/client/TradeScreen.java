@@ -26,12 +26,12 @@ public class TradeScreen extends AbstractContainerScreen<Trade.TradeMenu> {
     protected void init() {
         super.init();
         int x = leftPos, y = topPos;
-        addRenderableWidget(Button.builder(Component.literal("+1천"), b -> press(2)).bounds(x + 62, y + 28, 50, 12).build());
-        addRenderableWidget(Button.builder(Component.literal("+1만"), b -> press(3)).bounds(x + 62, y + 41, 50, 12).build());
-        addRenderableWidget(Button.builder(Component.literal("+10만"), b -> press(4)).bounds(x + 62, y + 54, 50, 12).build());
-        addRenderableWidget(Button.builder(Component.literal("골드 0"), b -> press(5)).bounds(x + 62, y + 67, 50, 12).build());
-        ok = addRenderableWidget(Button.builder(Component.literal("확인"), b -> press(0)).bounds(x + 8, y + 84 - 2, 50, 14).build());
-        deal = addRenderableWidget(Button.builder(Component.literal("거래"), b -> press(1)).bounds(x + 118, y + 84 - 2, 50, 14).build());
+        addRenderableWidget(Ui.button(Component.literal("+1천"), b -> press(2)).bounds(x + 62, y + 28, 50, 12).build());
+        addRenderableWidget(Ui.button(Component.literal("+1만"), b -> press(3)).bounds(x + 62, y + 41, 50, 12).build());
+        addRenderableWidget(Ui.button(Component.literal("+10만"), b -> press(4)).bounds(x + 62, y + 54, 50, 12).build());
+        addRenderableWidget(Ui.button(Component.literal("골드 0"), b -> press(5)).bounds(x + 62, y + 67, 50, 12).build());
+        ok = addRenderableWidget(Ui.button(Component.literal("확인"), b -> press(0)).bounds(x + 8, y + 84 - 2, 50, 14).build());
+        deal = addRenderableWidget(Ui.button(Component.literal("거래"), b -> press(1)).bounds(x + 118, y + 84 - 2, 50, 14).build());
         inventoryLabelY = 1000;   // 인벤 글자 숨김 (버튼 자리)
     }
 
