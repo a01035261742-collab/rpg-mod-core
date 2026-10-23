@@ -74,13 +74,13 @@ public final class JobSkills {
         double pct = s.value(lv) * (1 + 0.5 * ratio);   // 최소 value%, 가득 차면 1.5배
         ServerLevel l = p.serverLevel();
         Vec3 look = flatAim(p);
-        double range = 3.0;
+        double range = 4.5;
         int hits = 0;
-        for (Mob m : l.getEntitiesOfClass(Mob.class, p.getBoundingBox().inflate(range))) {
+        for (Mob m : l.getEntitiesOfClass(Mob.class, p.getBoundingBox().inflate(range + 3))) {
             if (!m.isAlive() || !Combat.isRpgMob(m)) continue;
             Vec3 to = m.position().subtract(p.position());
             Vec3 flat = new Vec3(to.x, 0, to.z);
-            if (flat.length() > range || (flat.lengthSqr() > 0.5 && flat.normalize().dot(look) < 0.45)) continue;
+            if (flat.length() - m.getBbWidth() / 2 > range || (flat.length() > m.getBbWidth() / 2 + 0.5 && flat.normalize().dot(look) < 0.3)) continue;   // 몸통 가장자리 기준, 앞 약 145°
             CombatEvents.skillHit(p, m, pct);
             m.knockback(0.4 + ratio * 0.6, -look.x, -look.z);
             hits++;

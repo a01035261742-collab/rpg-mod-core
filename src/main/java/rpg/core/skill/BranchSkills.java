@@ -98,7 +98,7 @@ public final class BranchSkills {
     private static boolean taunt(ServerPlayer p, Defs.SkillDef s, int lv) {
         ServerLevel l = p.serverLevel();
         int ticks = (int) Math.round(s.value(lv) * 20);
-        for (Mob m : mobsAround(l, p.position(), 6)) {
+        for (Mob m : mobsAround(l, p.position(), 8)) {
             MobData md = Combat.mob(m);
             MobAI.taunt(m, md, p, ticks);
             l.sendParticles(ParticleTypes.ANGRY_VILLAGER, m.getX(), m.getY() + m.getBbHeight() + 0.3, m.getZ(), 3, 0.2, 0.1, 0.2, 0);
@@ -146,7 +146,7 @@ public final class BranchSkills {
             if (t < 4 || (!p.onGround() && t < 30)) return false;   // 내려올 때까지
             p.fallDistance = 0;
             ServerLevel l = p.serverLevel();
-            for (Mob m : mobsAround(l, p.position(), 3)) {
+            for (Mob m : mobsAround(l, p.position(), 4.5)) {
                 CombatEvents.skillHit(p, m, pct);
                 m.setDeltaMovement(m.getDeltaMovement().add(0, 0.3, 0));
             }
@@ -179,7 +179,7 @@ public final class BranchSkills {
     private static boolean explosiveShot(ServerPlayer p, Defs.SkillDef s, int lv) {
         JobSkills.arrow(p, 0, 0, 3.0f, a -> {
             a.getPersistentData().putDouble("rpgExplode", s.value(lv));
-            a.getPersistentData().putDouble("rpgExplodeR", 2.5);
+            a.getPersistentData().putDouble("rpgExplodeR", 3.25);
         });
         p.serverLevel().playSound(null, p.blockPosition(), SoundEvents.CROSSBOW_SHOOT, SoundSource.PLAYERS, 1.0f, 0.9f);
         p.swing(net.minecraft.world.InteractionHand.MAIN_HAND, true);
@@ -211,7 +211,7 @@ public final class BranchSkills {
 
     // ═════════ 아크메이지 ═════════
     private static boolean fireball(ServerPlayer p, PlayerData d, Defs.SkillDef s, int lv) {
-        Shot sh = new Shot(p, "fire", 1.0, 20, s.value(lv), 3);
+        Shot sh = new Shot(p, "fire", 1.0, 20, s.value(lv), 4);
         sh.dot = Combat.statAttack(p, d) * s.value2(lv) / 100.0 * (1 + d.bonus("burnPct") / 100.0);   // 화염 숙련
         sh.dotTicks = (int) Math.round((s.duration() + d.bonus("burnTime")) * 20);
         SHOTS.add(sh);
@@ -296,9 +296,9 @@ public final class BranchSkills {
                 ServerLevel l = p.serverLevel();
                 Vec3 look = flatLook(p);
                 double bleed = Combat.statAttack(p, RpgData.get(p)) * s.value2(lv) / 100.0;
-                for (Mob m : mobsAround(l, p.position(), 2.8)) {
+                for (Mob m : mobsAround(l, p.position(), 4)) {
                     Vec3 to = new Vec3(m.getX() - p.getX(), 0, m.getZ() - p.getZ());
-                    if (to.lengthSqr() > 0.5 && to.normalize().dot(look) < 0.5) continue;
+                    if (to.length() > m.getBbWidth() / 2 + 0.5 && to.normalize().dot(look) < 0.5) continue;
                     CombatEvents.skillHit(p, m, pct);
                     CombatEvents.dot(p, m, "bleed", bleed, bleedTicks);
                 }
@@ -342,7 +342,7 @@ public final class BranchSkills {
         for (Mob m : mobsAround(l, p.position().add(dir.scale(dist / 2)), dist / 2 + 1)) {
             Vec3 to = new Vec3(m.getX() - p.getX(), 0, m.getZ() - p.getZ());
             double along = to.dot(dir), side = Math.abs(to.x * dir.z - to.z * dir.x);
-            if (along >= -0.5 && along <= dist + 0.8 && side <= 0.8 + m.getBbWidth() / 2) CombatEvents.skillHit(p, m, s.value(lv));
+            if (along >= -0.5 && along <= dist + 0.8 + m.getBbWidth() / 2 && side <= 1.2 + m.getBbWidth() / 2) CombatEvents.skillHit(p, m, s.value(lv));
         }
         // 땅·공중 상관없이 같은 거리: 6틱 동안 매 틱 속도를 다시 넣음
         double step = dist / 6.0;
