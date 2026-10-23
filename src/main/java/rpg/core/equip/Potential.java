@@ -40,14 +40,14 @@ public final class Potential {
     /** 부위 분류(weapon/armor/accessory) → 옵션 키 → 등급별 수치 (0 = 그 등급엔 안 나옴) */
     public static final Map<String, Map<String, double[]>> POOLS = new LinkedHashMap<>();
 
-    static {
-        defaults();
-    }
-
     /** 2번째 값이 필요한 옵션 (확률 무적: 무적 초) — 등급별 */
     public static final Map<String, double[]> V2 = new LinkedHashMap<>();
     /** 피격 시 피해 무시가 터질 확률 % */
     public static double ignoreChance = 20;
+
+    static {
+        defaults();
+    }
 
     private static void defaults() {
         POOLS.clear();
