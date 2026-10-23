@@ -32,34 +32,33 @@ public class SkillScreen extends Screen {
         list.clear();
         for (Defs.SkillDef s : Defs.SKILLS.values()) if (available(s)) list.add(s);
         W = Math.max(230, Math.min(400, width - 20));
-        rows = Math.max(1, Math.min(list.size(), (height - 80) / ROW));   // 화면에 다 안 들어가면 스크롤
+        rows = Math.max(1, Math.min(list.size(), (height - 8 - 30 - Ui.FOOT - 6) / ROW));   // 화면에 다 안 들어가면 스크롤
         scroll = Math.max(0, Math.min(scroll, list.size() - rows));
-        h = 40 + rows * ROW + 24;
-        x = width / 2 - W / 2;
-        y = height / 2 - h / 2;
+        h = 30 + rows * ROW + Ui.FOOT + 6;
+        x = Ui.cx(width, W);
+        y = Ui.cy(height, h);
         for (int r = 0; r < rows && r + scroll < list.size(); r++) {
             String id = list.get(r + scroll).id();
             addRenderableWidget(Button.builder(Component.literal("+"), b -> Net.CH.sendToServer(new Net.Learn(0, id)))
                     .bounds(x + W - 24, y + 30 + r * ROW + 4, 16, 14).build());
         }
-        addRenderableWidget(Button.builder(Component.literal("패시브 트리 (N)"), b -> minecraft.setScreen(new PassiveScreen()))
-                .bounds(x + W - 96, y + h - 20, 88, 14).build());
+        addRenderableWidget(Ui.menu(x, y, h));
+        addRenderableWidget(Button.builder(Component.literal("패시브 (N)"), b -> minecraft.setScreen(new PassiveScreen()))
+                .bounds(x + 50, y + h - Ui.FOOT, 70, Ui.BTN_H).build());
+        addRenderableWidget(Ui.close(x, y, W, h, this::onClose));
     }
 
     @Override
     public void render(GuiGraphics g, int mx, int my, float pt) {
         renderBackground(g);
-        g.fill(x, y, x + W, y + h, 0xF0141420);
-        g.fill(x, y, x + W, y + 1, 0xFFFFD24A);
-        g.drawString(font, "스킬", x + 8, y + 6, 0xFFFFD24A, true);
-        String sp = "스킬 포인트: " + ClientData.skillPoints;
-        g.drawString(font, sp, x + W - 8 - font.width(sp), y + 6, ClientData.skillPoints > 0 ? 0xFF80FF80 : 0xFFA0A0A0, true);
+        Ui.frame(g, font, x, y, W, h, Ui.GOLD, "스킬 (L)", "스킬 포인트: " + ClientData.skillPoints, ClientData.skillPoints > 0 ? 0xFF80FF80 : 0xFFA0A0A0);
         g.drawString(font, ClientData.jobName() + " 스킬", x + 8, y + 18, 0xFFA0A0C0, false);
         if (list.isEmpty()) g.drawString(font, "배울 수 있는 스킬이 없어요", x + 8, y + 36, 0xFF808080, false);
         if (list.size() > rows) {
-            String sc = (scroll + 1) + "-" + Math.min(list.size(), scroll + rows) + " / " + list.size() + "  (휠로 스크롤)";
-            g.drawString(font, sc, x + 8, y + h - 17, 0xFF808080, false);
+            String sc = (scroll + 1) + "-" + Math.min(list.size(), scroll + rows) + " / " + list.size() + " (휠)";
+            g.drawString(font, sc, x + W - 8 - font.width(sc), y + 18, 0xFF808080, false);
         }
+        Ui.footLine(g, x, y, W, h);
         for (int r = 0; r < rows && r + scroll < list.size(); r++) {
             Defs.SkillDef s = list.get(r + scroll);
             int ry = y + 30 + r * ROW;
@@ -67,10 +66,10 @@ public class SkillScreen extends Screen {
             g.fill(x + 6, ry, x + W - 6, ry + ROW - 2, s.passive() ? 0x3080C0FF : 0x40FFFFFF);
             SkillIcons.draw(g, s.id(), x + 9, ry + 3);
             String tag = s.passive() ? " [패시브]" : s.tier() == 2 ? " [2차]" : "";
-            g.drawString(font, s.name() + "  " + lv + "/" + s.maxLevel() + tag, x + 30, ry + 2, lv > 0 ? 0xFFFFFFFF : 0xFF909090, true);
+            g.drawString(font, Ui.cut(font, s.name() + "  " + lv + "/" + s.maxLevel() + tag, W - 100), x + 30, ry + 2, lv > 0 ? 0xFFFFFFFF : 0xFF909090, true);
             String key = keyOf(s.id());
             if (key != null) g.drawString(font, "[" + key + "]", x + W - 30 - font.width("[" + key + "]") - 4, ry + 2, 0xFF80E0FF, true);
-            g.drawString(font, s.describe(Math.max(1, lv)), x + 30, ry + 13, 0xFFB0B0B0, false);
+            g.drawString(font, Ui.cut(font, s.describe(Math.max(1, lv)), W - 60), x + 30, ry + 13, 0xFFB0B0B0, false);
             if (mx >= x + 6 && mx < x + W - 30 && my >= ry && my < ry + ROW - 2) {
                 List<Component> tip = new ArrayList<>();
                 tip.add(Component.literal(s.name()));

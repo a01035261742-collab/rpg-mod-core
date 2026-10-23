@@ -11,7 +11,7 @@ import rpg.core.net.Net;
 
 /** 파티 창 (P): 파티원 목록, 초대, 수락/거절, 나가기, 추방 */
 public class PartyScreen extends Screen {
-    private static final int W = 220, H = 200, SW = 110;
+    private static final int W = 230, H = 226, SW = 110;
     private int x, y;
     private EditBox nameBox;
 
@@ -31,8 +31,8 @@ public class PartyScreen extends Screen {
 
     @Override
     protected void init() {
-        x = width / 2 - (W + 4 + SW) / 2;
-        y = height / 2 - H / 2;
+        x = Ui.cx(width, W + 4 + SW);
+        y = Ui.cy(height, H);
         // 오른쪽: 접속 중인 사람 → 바로 초대
         int i0 = 0;
         for (String name : onlineToInvite()) {
@@ -41,19 +41,23 @@ public class PartyScreen extends Screen {
                     .bounds(x + W + 4 + SW - 36, y + 24 + i0 * 20, 30, 16).build());
             i0++;
         }
-        nameBox = new EditBox(font, x + 8, y + H - 44, 120, 14, Component.literal("이름"));
+        // 아래: [초대 알림 + 수락/거절] → [이름칸 초대 근처] → [메뉴 나가기 … 닫기]
+        int inviteY = y + H - Ui.FOOT - 46, boxY = y + H - Ui.FOOT - 24;
+        nameBox = new EditBox(font, x + 8, boxY + 1, 120, 14, Component.literal("이름"));
         nameBox.setMaxLength(16);
         nameBox.setHint(Component.literal("초대할 이름"));
         addRenderableWidget(nameBox);
         addRenderableWidget(Button.builder(Component.literal("초대"), b -> {
             if (!nameBox.getValue().isBlank()) send(0, nameBox.getValue().trim());
             nameBox.setValue("");
-        }).bounds(x + 132, y + H - 45, 40, 16).build());
-        addRenderableWidget(Button.builder(Component.literal("근처"), b -> fillNearest()).bounds(x + 176, y + H - 45, 36, 16).build());
-        addRenderableWidget(Button.builder(Component.literal("파티 나가기"), b -> send(3, "")).bounds(x + 8, y + H - 22, 70, 16).build());
+        }).bounds(x + 132, boxY, 44, Ui.BTN_H - 2).build());
+        addRenderableWidget(Button.builder(Component.literal("근처"), b -> fillNearest()).bounds(x + 180, boxY, 42, Ui.BTN_H - 2).build());
+        addRenderableWidget(Ui.menu(x, y, H));
+        addRenderableWidget(Button.builder(Component.literal("파티 나가기"), b -> send(3, "")).bounds(x + 50, y + H - Ui.FOOT, 70, Ui.BTN_H).build());
+        addRenderableWidget(Ui.close(x, y, W, H, this::onClose));
         if (!ClientParty.inviter.isEmpty()) {
-            addRenderableWidget(Button.builder(Component.literal("수락"), b -> send(1, "")).bounds(x + W - 92, y + H - 22, 40, 16).build());
-            addRenderableWidget(Button.builder(Component.literal("거절"), b -> send(2, "")).bounds(x + W - 48, y + H - 22, 40, 16).build());
+            addRenderableWidget(Button.builder(Component.literal("수락"), b -> send(1, "")).bounds(x + W - 92, inviteY, 40, Ui.BTN_H - 2).build());
+            addRenderableWidget(Button.builder(Component.literal("거절"), b -> send(2, "")).bounds(x + W - 48, inviteY, 40, Ui.BTN_H - 2).build());
         }
         if (amLeader()) {
             String me = Minecraft.getInstance().getUser().getName();
@@ -112,10 +116,8 @@ public class PartyScreen extends Screen {
     @Override
     public void render(GuiGraphics g, int mx, int my, float pt) {
         renderBackground(g);
-        g.fill(x, y, x + W, y + H, 0xF0141420);
-        g.fill(x, y, x + W, y + 1, 0xFFFFD24A);
-        g.drawString(font, "파티", x + 8, y + 6, 0xFFFFD24A, true);
-        g.drawString(font, ClientParty.MEMBERS.size() + "명", x + W - 8 - font.width(ClientParty.MEMBERS.size() + "명"), y + 6, 0xFFA0A0A0, false);
+        Ui.frame(g, font, x, y, W, H, Ui.GOLD, "파티 (P)", ClientParty.MEMBERS.size() + "명", 0xFFA0A0A0);
+        Ui.footLine(g, x, y, W, H);
         if (ClientParty.MEMBERS.isEmpty()) {
             g.drawString(font, "파티가 없어요. 아래에서 초대하세요", x + 8, y + 30, 0xFF808080, false);
         }
@@ -123,7 +125,7 @@ public class PartyScreen extends Screen {
             Net.Member m = ClientParty.MEMBERS.get(i);
             int ry = y + 26 + i * 20;
             g.fill(x + 6, ry, x + W - 6, ry + 18, 0x30FFFFFF);
-            String name = (m.leader() ? "★ " : "") + m.name() + "  Lv." + m.level();
+            String name = Ui.cut(font, (m.leader() ? "★ " : "") + m.name() + "  Lv." + m.level(), W - 60);
             g.drawString(font, name, x + 10, ry + 2, m.down() ? 0xFFFF6060 : 0xFFFFFFFF, true);
             double r = m.maxHp() <= 0 ? 0 : Math.max(0, Math.min(1, m.hp() / m.maxHp()));
             g.fill(x + 10, ry + 12, x + 130, ry + 15, 0xFF401010);
@@ -132,13 +134,11 @@ public class PartyScreen extends Screen {
             if (m.down()) g.drawString(font, "다운", x + 136, ry + 6, 0xFFFF6060, false);
         }
         if (!ClientParty.inviter.isEmpty()) {
-            g.drawString(font, ClientParty.inviter + "님의 초대", x + W - 160, y + H - 18, 0xFF80FF80, false);
+            g.drawString(font, Ui.cut(font, ClientParty.inviter + "님의 파티 초대", W - 104), x + 8, y + H - Ui.FOOT - 42, 0xFF80FF80, false);
         }
         // 접속 중 목록
         int sx = x + W + 4;
-        g.fill(sx, y, sx + SW, y + H, 0xF0141420);
-        g.fill(sx, y, sx + SW, y + 1, 0xFF80E0FF);
-        g.drawString(font, "접속 중", sx + 8, y + 6, 0xFF80E0FF, true);
+        Ui.frame(g, font, sx, y, SW, H, 0xFF80E0FF, "접속 중", "", 0);
         var online = onlineToInvite();
         if (online.isEmpty()) g.drawString(font, "초대할 사람 없음", sx + 8, y + 28, 0xFF808080, false);
         for (int i = 0; i < Math.min(8, online.size()); i++) {

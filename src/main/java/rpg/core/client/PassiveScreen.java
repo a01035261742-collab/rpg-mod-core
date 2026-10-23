@@ -11,8 +11,8 @@ import rpg.core.skill.Defs;
 
 /** 패시브 트리 (N): 가운데에서 퍼지는 별 모양. 칸을 클릭하면 1포인트 */
 public class PassiveScreen extends Screen {
-    private static final int CELL = 28, BOX = 20;
-    private int cx, cy;
+    private int CELL = 28, BOX = 20;
+    private int cx, cy, px, py, pw, ph;
 
     public PassiveScreen() {
         super(Component.literal("패시브"));
@@ -20,10 +20,26 @@ public class PassiveScreen extends Screen {
 
     @Override
     protected void init() {
-        cx = width / 2;
-        cy = height / 2 + 6;
-        addRenderableWidget(Button.builder(Component.literal("스킬 창 (L)"), b -> minecraft.setScreen(new SkillScreen()))
-                .bounds(width / 2 + 110, height / 2 - 150, 70, 14).build());
+        // 트리 크기 (칸 좌표 범위) → 화면에 맞게 칸 크기 정함
+        int minX = 0, maxX = 0, minY = 0, maxY = 0;
+        for (Defs.Node n : Defs.NODES.values()) {
+            minX = Math.min(minX, n.x()); maxX = Math.max(maxX, n.x());
+            minY = Math.min(minY, n.y()); maxY = Math.max(maxY, n.y());
+        }
+        int spanX = maxX - minX + 1, spanY = maxY - minY + 1;
+        int head = 30, foot = Ui.FOOT + 6;
+        CELL = Math.max(16, Math.min(28, Math.min((width - 2 * Ui.MARGIN - 16) / spanX, (height - 2 * Ui.MARGIN - head - foot - 8) / spanY)));
+        BOX = Math.max(14, CELL - 8);
+        pw = Math.max(220, spanX * CELL + 16);
+        ph = head + spanY * CELL + 8 + foot;
+        px = Ui.cx(width, pw);
+        py = Ui.cy(height, ph);
+        cx = px + pw / 2 - (minX + maxX) * CELL / 2;
+        cy = py + head + 4 + CELL / 2 - minY * CELL;
+        addRenderableWidget(Ui.menu(px, py, ph));
+        addRenderableWidget(Button.builder(Component.literal("스킬 (L)"), b -> minecraft.setScreen(new SkillScreen()))
+                .bounds(px + 50, py + ph - Ui.FOOT, 60, Ui.BTN_H).build());
+        addRenderableWidget(Ui.close(px, py, pw, ph, this::onClose));
     }
 
     private int nx(Defs.Node n) { return cx + n.x() * CELL; }
@@ -44,9 +60,10 @@ public class PassiveScreen extends Screen {
     @Override
     public void render(GuiGraphics g, int mx, int my, float pt) {
         renderBackground(g);
-        g.drawCenteredString(font, "패시브 트리", width / 2, cy - 4 * CELL - 30, 0xFFFFD24A);
-        String pp = "패시브 포인트: " + ClientData.passivePoints;
-        g.drawCenteredString(font, pp, width / 2, cy - 4 * CELL - 18, ClientData.passivePoints > 0 ? 0xFF80FF80 : 0xFFA0A0A0);
+        Ui.frame(g, font, px, py, pw, ph, Ui.GOLD, "패시브 트리 (N)", "패시브 포인트: " + ClientData.passivePoints,
+                ClientData.passivePoints > 0 ? 0xFF80FF80 : 0xFFA0A0A0);
+        g.drawString(font, "칸 클릭 = 1포인트", px + 8, py + 18, 0xFF808080, false);
+        Ui.footLine(g, px, py, pw, ph);
 
         // 연결선
         for (Defs.Node n : Defs.NODES.values()) {
@@ -66,8 +83,8 @@ public class PassiveScreen extends Screen {
             int border = n.special() ? 0xFFFF8040 : n.maxRank() == 0 ? 0xFFFFFFFF : r >= n.maxRank() ? 0xFFFFD24A : can ? 0xFF80C0FF : 0xFF404050;
             g.fill(x - 1, y - 1, x + BOX + 1, y + BOX + 1, border);
             g.fill(x, y, x + BOX, y + BOX, r > 0 || n.maxRank() == 0 ? 0xFF2A2A40 : 0xFF141420);
-            String label = n.maxRank() == 0 ? "★" : r + "/" + n.maxRank();
-            g.drawCenteredString(font, label, x + BOX / 2, y + 7, r > 0 ? 0xFFFFFFFF : 0xFF909090);
+            String label = n.maxRank() == 0 ? "★" : font.width(r + "/" + n.maxRank()) <= BOX - 2 ? r + "/" + n.maxRank() : String.valueOf(r);
+            g.drawCenteredString(font, label, x + BOX / 2, y + BOX / 2 - 3, r > 0 ? 0xFFFFFFFF : 0xFF909090);
             if (mx >= x && mx < x + BOX && my >= y && my < y + BOX) hover = n;
         }
         super.render(g, mx, my, pt);

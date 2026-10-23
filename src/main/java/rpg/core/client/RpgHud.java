@@ -60,12 +60,29 @@ public final class RpgHud {
         g.drawString(font, t3, w / 2 - font.width(t3) / 2, 72, alpha | 0xA0E0A0, true);
     }
 
+    /**
+     * 스킬바 위치 {x0, y0}: 기본 = 오른쪽 아래 (Epic Fight 스태미나 왼쪽).
+     * 화면이 좁아(GUI 크기 큼) HP·MP·EXP 바와 겹치면 → 바 오른쪽 끝 바깥에 붙이고 위로 올려 EF 표시도 피함.
+     */
+    static int[] skillPos(Font font, int w, int h) {
+        int bw = 3 * (SIZE + GAP);
+        int x0 = w - EF_RIGHT - bw;
+        int y0 = h - 2 * (SIZE + GAP) - 4;
+        int barsRight = w / 2 + 91 + 4 + font.width("100.00%") + 6;   // EXP % 글자 끝
+        if (x0 < barsRight) {
+            x0 = Math.min(w - bw - 2, barsRight);
+            y0 = h - 2 * (SIZE + GAP) - 4 - 36;
+        }
+        return new int[]{x0, y0};
+    }
+
     /** 획득 알림: 스킬바 위, 오른쪽 정렬, 3초 */
     private static void notes(GuiGraphics g, Font font, int w, int h) {
         long now = System.currentTimeMillis();
         NOTES.removeIf(n -> now - n.time() > 3000);
-        int right = w - EF_RIGHT;
-        int ny = h - 2 * (SIZE + GAP) - 4 - 12;
+        int[] sp = skillPos(font, w, h);
+        int right = sp[0] + 3 * (SIZE + GAP);
+        int ny = sp[1] - 12;
         for (int i = NOTES.size() - 1; i >= 0; i--) {
             Note n = NOTES.get(i);
             long age = now - n.time();
@@ -118,8 +135,8 @@ public final class RpgHud {
     /** 스킬바: 화면 오른쪽 아래 3칸 × 2줄 (Q E R / F Z X) + 구르기 */
     private static void skillBar(GuiGraphics g, Font font, int w, int h) {
         int size = SIZE, gap = GAP;
-        int x0 = w - EF_RIGHT - 3 * (size + gap);
-        int y0 = h - 2 * (size + gap) - 4;
+        int[] sp = skillPos(font, w, h);
+        int x0 = sp[0], y0 = sp[1];
         for (int i = 0; i < 6; i++) {
             int x = x0 + (i % 3) * (size + gap), y = y0 + (i / 3) * (size + gap);
             g.fill(x, y, x + size, y + size, 0xB0101018);

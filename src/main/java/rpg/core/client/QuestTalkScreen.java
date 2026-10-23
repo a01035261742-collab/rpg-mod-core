@@ -20,7 +20,7 @@ import rpg.core.quest.Quests;
  * 처음: 인사 + 이 NPC 퀘스트 목록 → 고르면 대사를 한 줄씩(다음) → 마지막에 [수락]/[거절] 또는 [완료]
  */
 public class QuestTalkScreen extends Screen {
-    private static final int W = 340, H = 150;
+    private static final int W = 340, H = 176;
     private final int entity;
     private final String npc;
     private int x, y;
@@ -57,22 +57,22 @@ public class QuestTalkScreen extends Screen {
 
     @Override
     protected void init() {
-        x = width / 2 - W / 2;
-        y = height - H - 40;
+        x = Ui.cx(width, W);
+        y = Math.max(Ui.MARGIN, height - H - 40);
         rebuild();
     }
 
     private void rebuild() {
         clearWidgets();
-        int by = y + H - 24;
+        int by = y + H - Ui.FOOT;
         if (sel == null) {
             List<Entry> es = entries();
             int i = 0;
             for (Entry en : es) {
                 if (i >= 5) break;
-                int ry = y + 46 + i * 17;
+                int ry = y + 44 + i * 17;   // 5개: y+44 ~ y+129 (버튼줄 y+152 위)
                 String prefix = switch (en.kind()) { case 2 -> "§6? "; case 1 -> "§e! "; case 3 -> "§7… "; default -> "§8Lv." + en.q().minLevel() + " "; };
-                Button b = Button.builder(Component.literal(prefix + en.q().name()), btn -> pick(en))
+                Button b = Button.builder(Component.literal(Ui.cut(font, prefix + en.q().name(), W - 30)), btn -> pick(en))
                         .bounds(x + 10, ry, W - 20, 15).build();
                 b.active = en.kind() != 4;
                 addRenderableWidget(b);
@@ -117,10 +117,8 @@ public class QuestTalkScreen extends Screen {
 
     @Override
     public void render(GuiGraphics g, int mx, int my, float pt) {
-        g.fill(x, y, x + W, y + H, 0xF0101820);
-        g.fill(x, y, x + W, y + 1, 0xFF60E060);
-        g.fill(x, y + H - 1, x + W, y + H, 0xFF305030);
-        g.drawString(font, title.getString(), x + 10, y + 8, 0xFF70F070, true);
+        Ui.frame(g, font, x, y, W, H, 0xFF70F070, title.getString(), "", 0);
+        Ui.footLine(g, x, y, W, H);
 
         if (sel == null) {
             var n = Quests.NPCS.get(npc);
@@ -129,18 +127,18 @@ public class QuestTalkScreen extends Screen {
             if (entries().isEmpty()) g.drawString(font, "지금은 부탁할 일이 없어요.", x + 10, y + 50, 0xFF909090, false);
         } else {
             String head = switch (mode) { case 0 -> "§e! "; case 2 -> "§6? "; default -> "§7… "; };
-            g.drawString(font, head + sel.name(), x + 10, y + 22, 0xFFFFE070, true);
+            g.drawString(font, Ui.cut(font, head + sel.name(), W - 20), x + 10, y + 22, 0xFFFFE070, true);
             drawWrapped(g, lines.isEmpty() ? "" : lines.get(Math.min(page, lines.size() - 1)), x + 10, y + 38, W - 20, 0xFFFFFFFF, 4);
             if (page >= lines.size() - 1) detail(g);
             String pg = (page + 1) + "/" + Math.max(1, lines.size());
-            g.drawString(font, pg, x + 40, y + H - 19, 0xFF707070, false);
+            g.drawString(font, pg, x + 40, y + H - Ui.FOOT + 5, 0xFF707070, false);
         }
         super.render(g, mx, my, pt);
     }
 
     /** 마지막 장: 목표·보상 */
     private void detail(GuiGraphics g) {
-        int ty = y + 84;
+        int ty = y + 86;   // 대사 4줄 아래 · 목표 2줄 · 보상 2줄 (버튼줄 위)
         if (!sel.goals().isEmpty()) {
             StringBuilder sb = new StringBuilder("목표: ");
             for (int i = 0; i < sel.goals().size(); i++) {
@@ -148,11 +146,9 @@ public class QuestTalkScreen extends Screen {
                 boolean ok = ClientQuests.current(sel, i) >= sel.goals().get(i).count();
                 sb.append(ok ? "§a" : "§f").append(ClientQuests.goalText(sel, i)).append("§r");
             }
-            g.drawString(font, sb.toString(), x + 10, ty, 0xFFC0C0C0, false);
-            ty += 12;
+            ty = Ui.wrap(g, font, sb.toString(), x + 10, ty, W - 20, 0xFFC0C0C0, 2) + 2;
         } else if (!sel.turnIn().equals(sel.npc())) {
-            g.drawString(font, "목표: " + Quests.npcName(sel.turnIn()) + "에게 말 걸기", x + 10, ty, 0xFFC0C0C0, false);
-            ty += 12;
+            ty = Ui.wrap(g, font, "목표: " + Quests.npcName(sel.turnIn()) + "에게 말 걸기", x + 10, ty, W - 20, 0xFFC0C0C0, 2) + 2;
         }
         if (mode != 1) {
             StringBuilder r = new StringBuilder("보상: ");
@@ -165,7 +161,7 @@ public class QuestTalkScreen extends Screen {
                 if (!it[1].equals("1")) r.append(" x").append(it[1]);
                 r.append("  ");
             }
-            g.drawString(font, r.toString(), x + 10, ty, 0xFFC0C0C0, false);
+            Ui.wrap(g, font, r.toString(), x + 10, ty, W - 20, 0xFFC0C0C0, 2);
         }
     }
 

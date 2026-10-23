@@ -17,7 +17,8 @@ import rpg.core.net.Net;
 
 /** 제작 창: 위 탭 · 왼쪽 레시피 목록 · 오른쪽 재료(가진 수/필요 수)·골드·[제작] */
 public class CraftScreen extends Screen {
-    private static final int W = 340, H = 222, ROW = 20, ROWS = 8;
+    private static final int W = 340, ROW = 20, ROWS = 8;
+    private int H = 260, off;
     private final int npc;
     private final String name;
     private final List<String> tabs;
@@ -52,18 +53,23 @@ public class CraftScreen extends Screen {
 
     @Override
     protected void init() {
-        x = width / 2 - W / 2;
-        y = height / 2 - H / 2;
-        int tx = x + 8;
-        for (int i = 0; i < tabs.size(); i++) {
+        List<String> labels = new ArrayList<>();
+        for (String t : tabs) labels.add(t.isEmpty() ? "전체" : t);
+        int[][] fl = Ui.flow(font, labels, 0, 0, W - 16, 14, 3, 18);
+        off = (Math.max(1, Ui.rows(fl, 18)) - 1) * 18;
+        H = 260 + off;
+        x = Ui.cx(width, W);
+        y = Ui.cy(height, H);
+        for (int i = 0; i < labels.size(); i++) {
             final int k = i;
-            String t = tabs.get(i).isEmpty() ? "전체" : tabs.get(i);
-            int w = font.width(t) + 14;
-            addRenderableWidget(Button.builder(Component.literal(t), b -> { tab = k; filter(); }).bounds(tx, y + 20, w, 16).build());
-            tx += w + 3;
+            addRenderableWidget(Button.builder(Component.literal(labels.get(i)), b -> { tab = k; filter(); rebuildWidgets(); })
+                    .bounds(x + 8 + fl[i][0], y + 20 + fl[i][1], fl[i][2], 16).build()).active = tab != i;
         }
-        craft1 = addRenderableWidget(Button.builder(Component.literal("제작"), b -> send(1)).bounds(x + 182, y + H - 28, 70, 18).build());
-        craft10 = addRenderableWidget(Button.builder(Component.literal("10번 제작"), b -> send(10)).bounds(x + 256, y + H - 28, 76, 18).build());
+        // 제작 버튼: 오른쪽 칸 아래 (버튼줄 위) · [닫기]: 버튼줄
+        int cy = y + H - Ui.FOOT - 26;
+        craft1 = addRenderableWidget(Button.builder(Component.literal("제작"), b -> send(1)).bounds(x + 182, cy, 70, Ui.BTN_H).build());
+        craft10 = addRenderableWidget(Button.builder(Component.literal("10번 제작"), b -> send(10)).bounds(x + 256, cy, 76, Ui.BTN_H).build());
+        addRenderableWidget(Ui.close(x, y, W, H, this::onClose));
         if (shown.isEmpty() && sel < 0) filter();
     }
 
@@ -89,15 +95,12 @@ public class CraftScreen extends Screen {
     @Override
     public void render(GuiGraphics g, int mx, int my, float pt) {
         renderBackground(g);
-        g.fill(x, y, x + W, y + H, 0xF0141420);
-        g.fill(x, y, x + W, y + 1, 0xFFFFAA30);
-        g.drawString(font, name, x + 8, y + 7, 0xFFFFAA30, true);
-        String gold = String.format("%,d", ClientData.gold) + " G";
-        g.drawString(font, gold, x + W - 8 - font.width(gold), y + 7, 0xFFFFD24A, true);
+        Ui.frame(g, font, x, y, W, H, 0xFFFFAA30, name, String.format("%,d", ClientData.gold) + " G", Ui.GOLD);
+        Ui.footLine(g, x, y, W, H);
 
         List<Component> tip = null;
         // 목록
-        int top = y + 42;
+        int top = y + 42 + off;
         for (int r = 0; r < ROWS; r++) {
             int k = r + scroll;
             if (k >= shown.size()) break;
@@ -166,7 +169,7 @@ public class CraftScreen extends Screen {
     @Override
     public boolean mouseClicked(double mx, double my, int button) {
         if (super.mouseClicked(mx, my, button)) return true;
-        int top = y + 42;
+        int top = y + 42 + off;
         for (int r = 0; r < ROWS; r++) {
             int k = r + scroll;
             if (k >= shown.size()) break;

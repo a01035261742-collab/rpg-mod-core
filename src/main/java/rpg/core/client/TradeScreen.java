@@ -67,9 +67,10 @@ public class TradeScreen extends AbstractContainerScreen<Trade.TradeMenu> {
     protected void renderLabels(GuiGraphics g, int mx, int my) {
         g.drawString(font, title, 8, 5, 0xFF404040, false);
         String mg = String.format("%,d G", menu.myGold()), tg = String.format("%,d G", menu.theirGold());
-        g.drawString(font, "나", 8, 16, 0xFF404040, false);
-        g.drawString(font, mg, 62, 16, 0xFF8A6A00, false);
-        g.drawString(font, "상대 " + tg, 116, 16, 0xFF8A6A00, false);
+        // 내 골드 = 왼쪽, 상대 골드 = 오른쪽 끝 정렬 (겹치지 않게)
+        String me = Ui.cut(font, "나 " + mg, 84), them = Ui.cut(font, "상대 " + tg, 84);
+        g.drawString(font, me, 8, 16, 0xFF8A6A00, false);
+        g.drawString(font, them, imageWidth - 8 - font.width(them), 16, 0xFF8A6A00, false);
         if (menu.data.get(7) == 1) g.drawString(font, "상대 거래✔", 62, 86, 0xFF208020, false);
     }
 

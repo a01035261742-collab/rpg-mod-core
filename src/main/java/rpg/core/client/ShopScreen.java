@@ -17,7 +17,8 @@ import rpg.core.net.Net;
 
 /** 상점 창: 왼쪽 사기 목록 (클릭 1개 / Shift 10개), 오른쪽 내 인벤 (클릭 1개 팔기 / Shift 한 묶음) */
 public class ShopScreen extends Screen {
-    private static final int W = 330, H = 228, ROW = 20, ROWS = 8, CELL = 18;
+    private static final int W = 330, ROW = 20, ROWS = 8, CELL = 18;
+    private int H = 250, off;   // off = 탭이 2줄 이상이면 내용이 내려가는 만큼
     private final int npc;
     private final String name;
     private final List<ItemStack> offers = new ArrayList<>();
@@ -62,25 +63,30 @@ public class ShopScreen extends Screen {
 
     @Override
     protected void init() {
-        x = width / 2 - W / 2;
-        y = height / 2 - H / 2;
         tabs.clear();
-        int tx = x + 8;
+        List<String> labels = new ArrayList<>();
         for (String[] c : CATS) {
             boolean any = false;
             for (ItemStack o : offers) if (cat(o).equals(c[0])) { any = true; break; }
             if (!any) continue;
-            final int k = tabs.size();
             tabs.add(c[0]);
-            int w = font.width(c[1]) + 10;
-            addRenderableWidget(Button.builder(Component.literal(c[1]), b -> { tab = k; filter(); }).bounds(tx, y + 19, w, 14).build());
-            tx += w + 2;
+            labels.add(c[1]);
+        }
+        int[][] fl = Ui.flow(font, labels, 0, 0, W - 16, 10, 2, 16);
+        off = (Math.max(1, Ui.rows(fl, 16)) - 1) * 16;
+        H = 250 + off;
+        x = Ui.cx(width, W);
+        y = Ui.cy(height, H);
+        for (int i = 0; i < labels.size(); i++) {
+            final int k = i;
+            addRenderableWidget(Button.builder(Component.literal(labels.get(i)), b -> { tab = k; filter(); rebuildWidgets(); })
+                    .bounds(x + 8 + fl[i][0], y + 19 + fl[i][1], fl[i][2], 14).build()).active = tab != i;
         }
         tab = Math.min(tab, Math.max(0, tabs.size() - 1));
         filter();
         addRenderableWidget(Button.builder(Component.literal("재료 전부 팔기"), b ->
-                Net.CH.sendToServer(new Net.ShopAction(npc, 2, 0, 0))).bounds(x + 168, y + H - 26, 100, 18).build());
-        addRenderableWidget(Button.builder(Component.literal("닫기"), b -> onClose()).bounds(x + W - 56, y + H - 26, 48, 18).build());
+                Net.CH.sendToServer(new Net.ShopAction(npc, 2, 0, 0))).bounds(x + W - 156, y + H - Ui.FOOT, 100, Ui.BTN_H).build());
+        addRenderableWidget(Ui.close(x, y, W, H, this::onClose));
     }
 
     private long sellPrice(ItemStack s) {
@@ -95,24 +101,21 @@ public class ShopScreen extends Screen {
 
     /** 인벤 칸 i 의 화면 위치: 위 3줄 = 9~35, 아래 1줄 = 핫바 0~8 */
     private int cellX(int i) { return x + 168 + (i % 9) * CELL; }
-    private int cellY(int i) { return i < 9 ? y + 50 + 3 * CELL + 6 : y + 50 + (i / 9 - 1) * CELL; }
+    private int cellY(int i) { return i < 9 ? y + 50 + off + 3 * CELL + 6 : y + 50 + off + (i / 9 - 1) * CELL; }
 
     @Override
     public void render(GuiGraphics g, int mx, int my, float pt) {
         renderBackground(g);
-        g.fill(x, y, x + W, y + H, 0xF0141420);
-        g.fill(x, y, x + W, y + 1, 0xFF55FFFF);
-        g.drawString(font, name, x + 8, y + 7, 0xFF55FFFF, true);
-        String gold = String.format("%,d", ClientData.gold) + " G";
-        g.drawString(font, gold, x + W - 8 - font.width(gold), y + 7, 0xFFFFD24A, true);
+        Ui.frame(g, font, x, y, W, H, 0xFF55FFFF, name, String.format("%,d", ClientData.gold) + " G", Ui.GOLD);
+        Ui.footLine(g, x, y, W, H);
 
         // 사기
-        g.drawString(font, "사기", x + 8, y + 38, 0xFFA0A0A0, false);
+        g.drawString(font, "사기", x + 8, y + 38 + off, 0xFFA0A0A0, false);
         List<Component> tip = null;
         for (int r = 0; r < ROWS; r++) {
             if (r + scroll >= shown.size()) break;
             int i = shown.get(r + scroll);
-            int ry = y + 50 + r * ROW;
+            int ry = y + 50 + off + r * ROW;
             boolean hover = mx >= x + 6 && mx < x + 160 && my >= ry && my < ry + ROW - 2;
             g.fill(x + 6, ry, x + 160, ry + ROW - 2, hover ? 0x60FFFFFF : 0x30FFFFFF);
             ItemStack s = offers.get(i);
@@ -130,10 +133,10 @@ public class ShopScreen extends Screen {
             }
         }
         if (shown.size() > ROWS) g.drawString(font, "휠로 스크롤 (" + (scroll + 1) + "-" + Math.min(shown.size(), scroll + ROWS) + "/" + shown.size() + ")",
-                x + 8, y + 50 + ROWS * ROW + 2, 0xFF808080, false);   // 목록 바로 아래 (겹치지 않게)
+                x + 8, y + 50 + off + ROWS * ROW + 2, 0xFF808080, false);   // 목록 바로 아래 (겹치지 않게)
 
         // 팔기
-        g.drawString(font, "팔기 (내 인벤)", x + 168, y + 38, 0xFFA0A0A0, false);
+        g.drawString(font, "팔기 (내 인벤)", x + 168, y + 38 + off, 0xFFA0A0A0, false);
         for (int i = 0; i < 36; i++) {
             int cx = cellX(i), cy = cellY(i);
             ItemStack s = inv(i);
@@ -152,7 +155,7 @@ public class ShopScreen extends Screen {
                 }
             }
         }
-        g.drawString(font, "초록 = 팔 수 있음", x + 168, y + 50 + 4 * CELL + 10, 0xFF60A060, false);
+        g.drawString(font, "초록 = 팔 수 있음", x + 168, y + 50 + off + 4 * CELL + 10, 0xFF60A060, false);
         super.render(g, mx, my, pt);
         if (tip != null) g.renderComponentTooltip(font, tip, mx, my);
     }
@@ -164,7 +167,7 @@ public class ShopScreen extends Screen {
         for (int r = 0; r < ROWS; r++) {
             if (r + scroll >= shown.size()) break;
             int i = shown.get(r + scroll);
-            int ry = y + 50 + r * ROW;
+            int ry = y + 50 + off + r * ROW;
             if (mx >= x + 6 && mx < x + 160 && my >= ry && my < ry + ROW - 2) {
                 Net.CH.sendToServer(new Net.ShopAction(npc, 0, i, shift ? 10 : 1));
                 return true;

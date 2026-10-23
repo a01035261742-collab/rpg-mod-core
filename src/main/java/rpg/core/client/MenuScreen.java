@@ -36,9 +36,9 @@ public class MenuScreen extends Screen {
     @Override
     protected void init() {
         int rows = (ITEMS.length + 1) / 2;
-        h = 28 + rows * (BH + GAP) + 26;
-        x = width / 2 - W / 2;
-        y = height / 2 - h / 2;
+        h = 28 + rows * (BH + GAP) + 30;
+        x = Ui.cx(width, W);
+        y = Ui.cy(height, h);
         int bw = (W - 16 - GAP) / 2;
         for (int i = 0; i < ITEMS.length; i++) {
             final int k = i;
@@ -46,7 +46,7 @@ public class MenuScreen extends Screen {
             int bx = x + 8 + (i % 2) * (bw + GAP), by = y + 24 + (i / 2) * (BH + GAP);
             addRenderableWidget(Button.builder(Component.literal(label), b -> open(k)).bounds(bx, by, bw, BH).build());
         }
-        addRenderableWidget(Button.builder(Component.literal("닫기"), b -> onClose()).bounds(x + W - 54, y + h - 24, 46, 18).build());
+        addRenderableWidget(Ui.close(x, y, W, h, this::onClose));
     }
 
     private void open(int k) {
@@ -67,9 +67,8 @@ public class MenuScreen extends Screen {
     @Override
     public void render(GuiGraphics g, int mx, int my, float pt) {
         renderBackground(g);
-        g.fill(x, y, x + W, y + h, 0xF0141420);
-        g.fill(x, y, x + W, y + 1, 0xFF55FFFF);
-        g.drawString(font, "메뉴", x + 8, y + 8, 0xFF55FFFF, true);
+        Ui.frame(g, font, x, y, W, h, 0xFF55FFFF, "메뉴 (M)", String.format("%,d G", ClientData.gold), Ui.GOLD);
+        Ui.footLine(g, x, y, W, h);
         super.render(g, mx, my, pt);
     }
 

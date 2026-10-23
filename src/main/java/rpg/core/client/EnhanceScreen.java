@@ -93,8 +93,8 @@ public class EnhanceScreen extends Screen {
 
     @Override
     protected void init() {
-        x = width / 2 - W / 2;
-        y = height / 2 - H / 2;
+        x = Ui.cx(width, W);
+        y = Ui.cy(height, H);
         String[] names = {"스타포스", "주문서", "조각", "잠재능력", "추가옵션"};
         int[] order = {0, 1, 3, 4, 2};   // 조각은 맨 뒤
         int tx = x + 158;
@@ -106,8 +106,8 @@ public class EnhanceScreen extends Screen {
             addRenderableWidget(b);
             tx += w + 2;
         }
-        addRenderableWidget(Button.builder(Component.literal("메뉴"), b -> Minecraft.getInstance().setScreen(new MenuScreen())).bounds(x + 6, y + H - 24, 40, 18).build());
-        addRenderableWidget(Button.builder(Component.literal("닫기"), b -> onClose()).bounds(x + W - 52, y + H - 24, 46, 18).build());
+        addRenderableWidget(Ui.menu(x, y, H));
+        addRenderableWidget(Ui.close(x, y, W, H, this::onClose));
 
         ItemStack s = cur();
         GearDefs.GearDef d = Gear.def(s);
@@ -183,11 +183,8 @@ public class EnhanceScreen extends Screen {
     @Override
     public void render(GuiGraphics g, int mx, int my, float pt) {
         renderBackground(g);
-        g.fill(x, y, x + W, y + H, 0xF0141420);
-        g.fill(x, y, x + W, y + 1, 0xFFFFD24A);
-        g.drawString(font, "장비 강화", x + 8, y + 7, 0xFFFFD24A, true);
-        String gold = "전투력 " + String.format("%,d", extra.get(9)) + "   " + String.format("%,d", ClientData.gold) + " G";
-        g.drawString(font, gold, x + W - 8 - font.width(gold), y + 7, 0xFFFFD24A, true);
+        Ui.frame(g, font, x, y, W, H, Ui.GOLD, "장비 강화", "전투력 " + String.format("%,d", extra.get(9)) + "   " + String.format("%,d", ClientData.gold) + " G", Ui.GOLD);
+        Ui.footLine(g, x, y, W, H);
 
         // 왼쪽: 장비 목록
         List<Component> tip = null;
