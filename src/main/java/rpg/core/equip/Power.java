@@ -1,0 +1,51 @@
+package rpg.core.equip;
+
+import java.util.HashMap;
+import java.util.Map;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
+import rpg.core.combat.Combat;
+import rpg.core.data.PlayerData;
+import rpg.core.data.RpgData;
+
+/**
+ * 전투력 (메이플식, 공격만): 스공 × (1 + 보스%) × (1 + 크리확률 × (크리뎀 - 1)).
+ * 스공에 데미지%(atkPct)가 이미 들어 있음. 버프는 빼고 계산.
+ */
+public final class Power {
+    private Power() {}
+
+    private static long calc(ServerPlayer p, PlayerData d) {
+        double base = (Combat.mainStat(d) * 4.0 + Combat.subStat(d)) * Combat.weaponAtk(p, d) / 100.0 * (1 + d.bonus("atkPct") / 100.0);
+        double crit = Math.max(0, Math.min(100, d.crit())) / 100.0;
+        return Math.round(base * (1 + d.bonus("bossPct") / 100.0) * (1 + crit * (d.critDamage() - 1)));
+    }
+
+    /** 지금 장비 그대로 */
+    public static long of(ServerPlayer p) {
+        PlayerData d = RpgData.get(p);
+        Map<String, Double> keep = new HashMap<>(d.equip);
+        double hp = d.hp, mp = d.mp;
+        d.equip.clear();
+        d.equip.putAll(PlayerEquip.get(p).sum(p));
+        d.recalc();
+        long v = calc(p, d);
+        d.equip.clear();
+        d.equip.putAll(keep);
+        d.recalc();
+        d.hp = Math.min(hp, d.maxHp); d.mp = Math.min(mp, d.maxMp);
+        return v;
+    }
+
+    /** 장비 s 의 NBT 칸 key 를 alt 로 바꿨을 때 전투력 차이 (착용 안 한 장비면 0) */
+    public static long delta(ServerPlayer p, ItemStack s, String key, CompoundTag alt) {
+        long now = of(p);
+        CompoundTag tag = s.getOrCreateTag();
+        CompoundTag old = tag.contains(key) ? tag.getCompound(key).copy() : null;
+        tag.put(key, alt);
+        long after = of(p);
+        if (old != null) tag.put(key, old); else tag.remove(key);
+        return after - now;
+    }
+}

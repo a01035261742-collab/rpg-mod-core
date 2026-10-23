@@ -175,7 +175,16 @@ public final class Net {
     public static void sendEnhance(ServerPlayer p, boolean open) {
         java.util.List<Integer> locs = rpg.core.equip.Enhance.gearLocs(p);
         java.util.List<net.minecraft.world.item.ItemStack> gear = new java.util.ArrayList<>();
-        for (int l : locs) gear.add(rpg.core.equip.Enhance.at(p, l).copy());
+        for (int l : locs) {
+            var orig = rpg.core.equip.Enhance.at(p, l);
+            var cp = orig.copy();
+            // 전투력 변화 (클라 표시용 임시 태그)
+            if (rpg.core.equip.Potential.pending(orig))
+                cp.getOrCreateTag().putLong("rpgPowPot", rpg.core.equip.Power.delta(p, orig, "rpgPot", orig.getTag().getCompound("rpgPot").getCompound("new").copy()));
+            if (rpg.core.equip.Flame.pending(orig))
+                cp.getOrCreateTag().putLong("rpgPowFlame", rpg.core.equip.Power.delta(p, orig, "rpgOpts", rpg.core.equip.Flame.pendingTag(orig).getCompound("o").copy()));
+            gear.add(cp);
+        }
         java.util.List<Integer> slots = new java.util.ArrayList<>();
         java.util.List<net.minecraft.world.item.ItemStack> scrolls = new java.util.ArrayList<>();
         for (int i = 0; i < 36; i++) {
@@ -188,7 +197,7 @@ public final class Net {
                 rpg.core.equip.Enhance.count(p, rpg.core.item.ModItems.POTENTIAL_SCROLL.get()),
                 rpg.core.equip.Enhance.count(p, rpg.core.item.ModItems.EPIC_POTENTIAL_SCROLL.get()), ce[0], ce[1], ce[2],
                 rpg.core.equip.Enhance.count(p, rpg.core.item.ModItems.POWERFUL_FLAME.get()), rpg.core.equip.Enhance.count(p, rpg.core.item.ModItems.ETERNAL_FLAME.get()),
-                rpg.core.equip.Enhance.count(p, rpg.core.item.ModItems.BLACK_FLAME.get()));
+                rpg.core.equip.Enhance.count(p, rpg.core.item.ModItems.BLACK_FLAME.get()), (int) Math.min(Integer.MAX_VALUE, rpg.core.equip.Power.of(p)));
         CH.send(PacketDistributor.PLAYER.with(() -> p), new OpenEnhance(open, locs, gear, slots, scrolls, frags, extra));
     }
 
@@ -234,6 +243,7 @@ public final class Net {
                     case 9 -> rpg.core.equip.Potential.choose(p, rpg.core.equip.Enhance.at(p, loc), true);
                     case 10 -> rpg.core.equip.Flame.use(p, rpg.core.equip.Enhance.at(p, loc), arg == 1 ? "eternal" : arg == 2 ? "black" : "powerful");
                     case 11 -> rpg.core.equip.Flame.choose(p, rpg.core.equip.Enhance.at(p, loc), arg == 1);
+                    case 12 -> rpg.core.equip.Potential.unlock(p, rpg.core.equip.Enhance.at(p, loc));
                     default -> {}
                 }
                 rpg.core.equip.PlayerEquip.get(p).dirty = true;   // 능력치 다시 계산

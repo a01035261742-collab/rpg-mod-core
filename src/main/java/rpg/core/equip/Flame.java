@@ -227,8 +227,11 @@ public final class Flame {
             s.getOrCreateTag().put("rpgOptNew", nw);
             msg(p, "새 옵션이 나왔어요 — 이전 / 새 옵션 중 고르세요", ChatFormatting.LIGHT_PURPLE);
         } else {
+            long before = Power.of(p);
             apply(s, nw);
-            msg(p, "추가 옵션이 바뀌었어요!", ChatFormatting.GREEN);
+            long after = Power.of(p), dif = after - before;
+            msg(p, "추가 옵션 변경! 전투력 " + String.format("%,d → %,d", before, after) + (dif == 0 ? "" : String.format(" (%+,d)", dif)),
+                    dif > 0 ? ChatFormatting.GREEN : dif < 0 ? ChatFormatting.RED : ChatFormatting.GRAY);
         }
         p.level().playSound(null, p.blockPosition(), SoundEvents.FIRECHARGE_USE, SoundSource.PLAYERS, 0.8f, 1.2f);
     }

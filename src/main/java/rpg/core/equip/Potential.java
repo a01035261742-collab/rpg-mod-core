@@ -241,6 +241,7 @@ public final class Potential {
         GearDefs.GearDef d = Gear.def(s);
         if (d == null || !has(s)) return;
         if (pending(s)) { msg(p, "먼저 새 옵션 / 기존 유지를 골라주세요", ChatFormatting.RED); return; }
+        if (locked(s)) { msg(p, "등급이 올라서 잠겨 있어요 — [잠금 해제]를 눌러주세요", ChatFormatting.RED); return; }
         int g = grade(s);
         if (cube) {
             if (!take(p, ModItems.CUBE.get())) { msg(p, "수상한 큐브가 없어요", ChatFormatting.RED); return; }
@@ -260,10 +261,22 @@ public final class Potential {
             saveCeil(p, c);
         }
         s.getOrCreateTag().getCompound("rpgPot").put("new", roll(d, ng));
+        if (ng > g) s.getOrCreateTag().putBoolean("rpgPotLock", true);   // 등급업: 실수로 다시 못 돌리게 잠금
         if (ng > g) {
             msg(p, "등급 상승! " + GRADE[ng], ChatFormatting.GOLD);
             p.level().playSound(null, p.blockPosition(), SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundSource.PLAYERS, 0.8f, 1.2f);
         } else p.level().playSound(null, p.blockPosition(), SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.PLAYERS, 1f, 1.0f);
+    }
+
+    /** 등급업 잠금 */
+    public static boolean locked(ItemStack s) {
+        return s.hasTag() && s.getTag().getBoolean("rpgPotLock");
+    }
+
+    public static void unlock(ServerPlayer p, ItemStack s) {
+        if (!locked(s)) return;
+        s.getTag().remove("rpgPotLock");
+        msg(p, "잠금 해제 — 다시 재설정할 수 있어요", ChatFormatting.YELLOW);
     }
 
     /** 새 옵션 적용 (keep=false) 또는 기존 유지 (keep=true) */
@@ -271,7 +284,7 @@ public final class Potential {
         if (!pending(s)) return;
         CompoundTag pt = s.getOrCreateTag().getCompound("rpgPot");
         CompoundTag nw = pt.getCompound("new");
-        if (keep) pt.remove("new");
+        if (keep) { pt.remove("new"); s.getOrCreateTag().remove("rpgPotLock"); }
         else s.getOrCreateTag().put("rpgPot", nw);
         msg(p, keep ? "기존 옵션을 유지했어요" : "새 옵션을 적용했어요", ChatFormatting.GREEN);
     }

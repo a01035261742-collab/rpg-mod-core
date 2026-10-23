@@ -24,7 +24,7 @@ public class EnhanceScreen extends Screen {
     private List<Integer> slots;
     private List<ItemStack> scrolls;
     private int frags;
-    private List<Integer> extra = List.of(0, 0, 0, 0, 0, 0, 0, 0, 0);
+    private List<Integer> extra = List.of(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     private int x, y, scroll, tab, sel = -1, selScroll = -1;
     private boolean guard;
     private static int lastTab;
@@ -37,7 +37,7 @@ public class EnhanceScreen extends Screen {
     }
 
     private void set(List<Integer> locs, List<ItemStack> gear, List<Integer> slots, List<ItemStack> scrolls, int frags, List<Integer> extra) {
-        this.extra = extra.size() >= 9 ? extra : List.of(0, 0, 0, 0, 0, 0, 0, 0, 0);
+        this.extra = extra.size() >= 10 ? extra : List.of(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         this.locs = locs;
         this.gear = gear;
         this.slots = slots;
@@ -96,8 +96,9 @@ public class EnhanceScreen extends Screen {
         x = width / 2 - W / 2;
         y = height / 2 - H / 2;
         String[] names = {"스타포스", "주문서", "조각", "잠재능력", "추가옵션"};
+        int[] order = {0, 1, 3, 4, 2};   // 조각은 맨 뒤
         int tx = x + 158;
-        for (int i = 0; i < names.length; i++) {
+        for (int i : order) {
             final int k = i;
             int w = font.width(names[i]) + 8;
             Button b = Button.builder(Component.literal(names[i]), bt -> { tab = k; lastTab = k; rebuildWidgets(); }).bounds(tx, y + 19, w, 14).build();
@@ -145,6 +146,8 @@ public class EnhanceScreen extends Screen {
             } else if (rpg.core.equip.Potential.pending(s)) {
                 addRenderableWidget(Button.builder(Component.literal("새 옵션 적용"), bt -> Net.CH.sendToServer(new Net.EnhanceAction(8, curLoc(), 0))).bounds(bx, by, 86, 18).build());
                 addRenderableWidget(Button.builder(Component.literal("기존 유지"), bt -> Net.CH.sendToServer(new Net.EnhanceAction(9, curLoc(), 0))).bounds(bx + 90, by, 86, 18).build());
+            } else if (rpg.core.equip.Potential.locked(s)) {
+                addRenderableWidget(Button.builder(Component.literal("잠금 해제"), bt -> Net.CH.sendToServer(new Net.EnhanceAction(12, curLoc(), 0))).bounds(bx, by, 86, 18).build());
             } else {
                 long c = rpg.core.equip.Potential.cost(d, rpg.core.equip.Potential.grade(s));
                 Button b1 = Button.builder(Component.literal(String.format("%,d G", c)), bt -> Net.CH.sendToServer(new Net.EnhanceAction(6, curLoc(), 0))).bounds(bx, by, 86, 18).build();
@@ -183,7 +186,7 @@ public class EnhanceScreen extends Screen {
         g.fill(x, y, x + W, y + H, 0xF0141420);
         g.fill(x, y, x + W, y + 1, 0xFFFFD24A);
         g.drawString(font, "장비 강화", x + 8, y + 7, 0xFFFFD24A, true);
-        String gold = String.format("%,d", ClientData.gold) + " G";
+        String gold = "전투력 " + String.format("%,d", extra.get(9)) + "   " + String.format("%,d", ClientData.gold) + " G";
         g.drawString(font, gold, x + W - 8 - font.width(gold), y + 7, 0xFFFFD24A, true);
 
         // 왼쪽: 장비 목록
@@ -321,6 +324,9 @@ public class EnhanceScreen extends Screen {
             g.drawString(font, "새 옵션 [" + rpg.core.equip.Potential.GRADE[ng] + "]" + (ng > gr ? " ▲" : ""), px, yy, 0xFF000000 | rpg.core.equip.Potential.COLOR[ng], false);
             yy += 10;
             for (var c : rpg.core.equip.Potential.lines(nw)) { g.drawString(font, c, px, yy, 0xFFFFFFFF, false); yy += 10; }
+            powLine(g, s, "rpgPowPot", px, yy + 2);
+        } else if (rpg.core.equip.Potential.locked(s)) {
+            g.drawString(font, "등급 상승! 실수 방지로 재설정 잠김", px, yy + 4, 0xFFFFD24A, false);
         } else if (gr < 3) {
             yy += 4;
             g.drawString(font, "등급 상승 " + fmt(rpg.core.equip.Potential.upChance[gr]) + "% · 천장 " + extra.get(3 + gr) + " / " + rpg.core.equip.Potential.ceiling[gr], px, yy, 0xFFA0A0A0, false);
@@ -338,12 +344,22 @@ public class EnhanceScreen extends Screen {
         if (pend) {
             var nw = rpg.core.equip.Flame.pendingTag(s);
             g.drawString(font, "새 옵션", px, yy + 2, 0xFFB070FF, false);
-            flameLines(g, nw.getCompound("o"), nw.getCompound("t"), px, yy + 12);
+            int ny = flameLines(g, nw.getCompound("o"), nw.getCompound("t"), px, yy + 12);
+            powLine(g, s, "rpgPowFlame", px, ny + 2);
         } else {
             long c = rpg.core.equip.Flame.cost(d);
             g.drawString(font, "강력한 3~6단계 · 영원한 4~7 · 검은 4~7 (선택)", px, y + H - 76, 0xFFA0A0A0, false);
             g.drawString(font, "비용: 불꽃 1개 + " + String.format("%,d", c) + " G", px, y + H - 66, ClientData.gold >= c ? 0xFFFFD24A : 0xFFFF5555, false);
         }
+    }
+
+    /** 전투력 변화 (서버가 계산해서 장비 복사본에 붙여 보냄) */
+    private void powLine(GuiGraphics g, ItemStack s, String key, int px, int yy) {
+        String w = where(curLoc());
+        if (!w.equals("착용") && !(curLoc() >= 0 && curLoc() < 9)) { g.drawString(font, "전투력: 착용하면 표시", px, yy, 0xFF808080, false); return; }
+        long dlt = s.hasTag() ? s.getTag().getLong(key) : 0;
+        String t = dlt == 0 ? "전투력 변화 없음" : String.format("전투력 %+,d %s", dlt, dlt > 0 ? "▲" : "▼");
+        g.drawString(font, t, px, yy, dlt > 0 ? 0xFF55FF55 : dlt < 0 ? 0xFFFF5555 : 0xFFA0A0A0, false);
     }
 
     private int flameLines(GuiGraphics g, net.minecraft.nbt.CompoundTag o, net.minecraft.nbt.CompoundTag t, int px, int yy) {
