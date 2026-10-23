@@ -1623,6 +1623,45 @@
    },
    "title": "부자",
    "titleColor": "#FFE066"
+  },
+  "forest_lord_belt": {
+   "slot": "belt",
+   "job": 0,
+   "level": 20,
+   "stats": {
+    "hp": 80,
+    "def": 5,
+    "str": 2,
+    "dex": 2,
+    "int": 2,
+    "luk": 2
+   }
+  },
+  "guardian_pendant": {
+   "slot": "pendant",
+   "job": 0,
+   "level": 35,
+   "stats": {
+    "hp": 140,
+    "mp": 100,
+    "str": 4,
+    "dex": 4,
+    "int": 4,
+    "luk": 4
+   }
+  },
+  "guardian_cape": {
+   "slot": "cape",
+   "job": 0,
+   "level": 35,
+   "stats": {
+    "def": 12,
+    "hp": 60,
+    "str": 3,
+    "dex": 3,
+    "int": 3,
+    "luk": 3
+   }
   }
  },
  "options": {
@@ -1643,7 +1682,10 @@
   "weaponAtkPct": 3,
   "bossItems": [
    "forest_lord_ring",
-   "guardian_ring"
+   "guardian_ring",
+   "forest_lord_belt",
+   "guardian_pendant",
+   "guardian_cape"
   ],
   "flames": {
    "powerful": {
@@ -2253,5 +2295,521 @@
    ]
   },
   "ignoreChance": 20
+ },
+ "sets": {
+  "_설명": "세트 효과. items = 세트 아이템 (서로 다른 아이템 착용 수), bonus = {부위 수: 효과} 그 수 이하 단계 전부 적용. 키는 장비 스탯 (str·atk·hp…, atkPct=데미지%, bossPct, critChance, critDmg, cdPct, speedPct, defPct, hpPct)",
+  "common_10": {
+   "name": "Lv10 모험가 세트",
+   "items": [
+    "hat_10",
+    "top_10",
+    "bottom_10",
+    "shoes_10"
+   ],
+   "bonus": {
+    "2": {
+     "str": 2,
+     "dex": 2,
+     "int": 2,
+     "luk": 2
+    },
+    "3": {
+     "hpPct": 3
+    },
+    "4": {
+     "atkPct": 2
+    }
+   }
+  },
+  "common_20": {
+   "name": "Lv20 모험가 세트",
+   "items": [
+    "hat_20",
+    "top_20",
+    "bottom_20",
+    "shoes_20"
+   ],
+   "bonus": {
+    "2": {
+     "str": 4,
+     "dex": 4,
+     "int": 4,
+     "luk": 4
+    },
+    "3": {
+     "hpPct": 4
+    },
+    "4": {
+     "atkPct": 3
+    }
+   }
+  },
+  "common_30": {
+   "name": "Lv30 모험가 세트",
+   "items": [
+    "hat_30",
+    "top_30",
+    "bottom_30",
+    "shoes_30"
+   ],
+   "bonus": {
+    "2": {
+     "str": 6,
+     "dex": 6,
+     "int": 6,
+     "luk": 6
+    },
+    "3": {
+     "atkPct": 4
+    },
+    "4": {
+     "bossPct": 8
+    }
+   }
+  },
+  "common_40": {
+   "name": "Lv40 모험가 세트",
+   "items": [
+    "hat_40",
+    "top_40",
+    "bottom_40",
+    "shoes_40"
+   ],
+   "bonus": {
+    "2": {
+     "str": 9,
+     "dex": 9,
+     "int": 9,
+     "luk": 9
+    },
+    "3": {
+     "atkPct": 6
+    },
+    "4": {
+     "bossPct": 12
+    }
+   }
+  },
+  "warrior_10": {
+   "name": "Lv10 전사 세트",
+   "items": [
+    "warrior_hat_10",
+    "warrior_top_10",
+    "warrior_bottom_10",
+    "warrior_shoes_10"
+   ],
+   "bonus": {
+    "2": {
+     "str": 4
+    },
+    "3": {
+     "hpPct": 4
+    },
+    "4": {
+     "defPct": 8
+    }
+   }
+  },
+  "warrior_20": {
+   "name": "Lv20 전사 세트",
+   "items": [
+    "warrior_hat_20",
+    "warrior_top_20",
+    "warrior_bottom_20",
+    "warrior_shoes_20"
+   ],
+   "bonus": {
+    "2": {
+     "str": 6
+    },
+    "3": {
+     "atkPct": 4
+    },
+    "4": {
+     "hpPct": 8
+    }
+   }
+  },
+  "warrior_30": {
+   "name": "Lv30 전사 세트",
+   "items": [
+    "warrior_hat_30",
+    "warrior_top_30",
+    "warrior_bottom_30",
+    "warrior_shoes_30"
+   ],
+   "bonus": {
+    "2": {
+     "str": 9
+    },
+    "3": {
+     "atkPct": 6
+    },
+    "4": {
+     "bossPct": 8,
+     "defPct": 8
+    }
+   }
+  },
+  "warrior_40": {
+   "name": "Lv40 전사 세트",
+   "items": [
+    "warrior_hat_40",
+    "warrior_top_40",
+    "warrior_bottom_40",
+    "warrior_shoes_40"
+   ],
+   "bonus": {
+    "2": {
+     "str": 12
+    },
+    "3": {
+     "atkPct": 8
+    },
+    "4": {
+     "bossPct": 12,
+     "hpPct": 12
+    }
+   }
+  },
+  "archer_10": {
+   "name": "Lv10 궁수 세트",
+   "items": [
+    "archer_hat_10",
+    "archer_top_10",
+    "archer_bottom_10",
+    "archer_shoes_10"
+   ],
+   "bonus": {
+    "2": {
+     "dex": 4
+    },
+    "3": {
+     "hpPct": 4
+    },
+    "4": {
+     "speedPct": 4
+    }
+   }
+  },
+  "archer_20": {
+   "name": "Lv20 궁수 세트",
+   "items": [
+    "archer_hat_20",
+    "archer_top_20",
+    "archer_bottom_20",
+    "archer_shoes_20"
+   ],
+   "bonus": {
+    "2": {
+     "dex": 6
+    },
+    "3": {
+     "atkPct": 4
+    },
+    "4": {
+     "critDmg": 8
+    }
+   }
+  },
+  "archer_30": {
+   "name": "Lv30 궁수 세트",
+   "items": [
+    "archer_hat_30",
+    "archer_top_30",
+    "archer_bottom_30",
+    "archer_shoes_30"
+   ],
+   "bonus": {
+    "2": {
+     "dex": 9
+    },
+    "3": {
+     "atkPct": 6
+    },
+    "4": {
+     "bossPct": 8,
+     "critDmg": 8
+    }
+   }
+  },
+  "archer_40": {
+   "name": "Lv40 궁수 세트",
+   "items": [
+    "archer_hat_40",
+    "archer_top_40",
+    "archer_bottom_40",
+    "archer_shoes_40"
+   ],
+   "bonus": {
+    "2": {
+     "dex": 12
+    },
+    "3": {
+     "atkPct": 8
+    },
+    "4": {
+     "bossPct": 12,
+     "critDmg": 12
+    }
+   }
+  },
+  "mage_10": {
+   "name": "Lv10 마법사 세트",
+   "items": [
+    "mage_hat_10",
+    "mage_top_10",
+    "mage_bottom_10",
+    "mage_shoes_10"
+   ],
+   "bonus": {
+    "2": {
+     "int": 4
+    },
+    "3": {
+     "hpPct": 4
+    },
+    "4": {
+     "cdPct": 2
+    }
+   }
+  },
+  "mage_20": {
+   "name": "Lv20 마법사 세트",
+   "items": [
+    "mage_hat_20",
+    "mage_top_20",
+    "mage_bottom_20",
+    "mage_shoes_20"
+   ],
+   "bonus": {
+    "2": {
+     "int": 6
+    },
+    "3": {
+     "atkPct": 4
+    },
+    "4": {
+     "cdPct": 4
+    }
+   }
+  },
+  "mage_30": {
+   "name": "Lv30 마법사 세트",
+   "items": [
+    "mage_hat_30",
+    "mage_top_30",
+    "mage_bottom_30",
+    "mage_shoes_30"
+   ],
+   "bonus": {
+    "2": {
+     "int": 9
+    },
+    "3": {
+     "atkPct": 6
+    },
+    "4": {
+     "bossPct": 8,
+     "cdPct": 4
+    }
+   }
+  },
+  "mage_40": {
+   "name": "Lv40 마법사 세트",
+   "items": [
+    "mage_hat_40",
+    "mage_top_40",
+    "mage_bottom_40",
+    "mage_shoes_40"
+   ],
+   "bonus": {
+    "2": {
+     "int": 12
+    },
+    "3": {
+     "atkPct": 8
+    },
+    "4": {
+     "bossPct": 12,
+     "cdPct": 6
+    }
+   }
+  },
+  "thief_10": {
+   "name": "Lv10 도적 세트",
+   "items": [
+    "thief_hat_10",
+    "thief_top_10",
+    "thief_bottom_10",
+    "thief_shoes_10"
+   ],
+   "bonus": {
+    "2": {
+     "luk": 4
+    },
+    "3": {
+     "hpPct": 4
+    },
+    "4": {
+     "critChance": 2
+    }
+   }
+  },
+  "thief_20": {
+   "name": "Lv20 도적 세트",
+   "items": [
+    "thief_hat_20",
+    "thief_top_20",
+    "thief_bottom_20",
+    "thief_shoes_20"
+   ],
+   "bonus": {
+    "2": {
+     "luk": 6
+    },
+    "3": {
+     "atkPct": 4
+    },
+    "4": {
+     "critChance": 4
+    }
+   }
+  },
+  "thief_30": {
+   "name": "Lv30 도적 세트",
+   "items": [
+    "thief_hat_30",
+    "thief_top_30",
+    "thief_bottom_30",
+    "thief_shoes_30"
+   ],
+   "bonus": {
+    "2": {
+     "luk": 9
+    },
+    "3": {
+     "atkPct": 6
+    },
+    "4": {
+     "bossPct": 8,
+     "critChance": 4
+    }
+   }
+  },
+  "thief_40": {
+   "name": "Lv40 도적 세트",
+   "items": [
+    "thief_hat_40",
+    "thief_top_40",
+    "thief_bottom_40",
+    "thief_shoes_40"
+   ],
+   "bonus": {
+    "2": {
+     "luk": 12
+    },
+    "3": {
+     "atkPct": 8
+    },
+    "4": {
+     "bossPct": 12,
+     "critDmg": 12
+    }
+   }
+  },
+  "drop_acc": {
+   "name": "드롭 장신구 세트",
+   "items": [
+    "pig_snout_pendant",
+    "cow_horn_earring",
+    "slime_ring",
+    "rat_tail_belt",
+    "dog_fang_earring",
+    "bee_cape",
+    "tusk_gloves",
+    "bear_belt",
+    "spirit_pendant",
+    "mushroom_ring",
+    "soldier_gloves",
+    "fairy_cape",
+    "gland_earring",
+    "witch_pendant",
+    "dark_eye_ring",
+    "beast_belt"
+   ],
+   "max": 8,
+   "bonus": {
+    "3": {
+     "str": 3,
+     "dex": 3,
+     "int": 3,
+     "luk": 3,
+     "hpPct": 3
+    },
+    "5": {
+     "atk": 5,
+     "matk": 5
+    },
+    "7": {
+     "str": 6,
+     "dex": 6,
+     "int": 6,
+     "luk": 6,
+     "bossPct": 5
+    },
+    "8": {
+     "atk": 5,
+     "matk": 5,
+     "critDmg": 5
+    }
+   }
+  },
+  "boss_acc": {
+   "name": "보스 장신구 세트",
+   "items": [
+    "forest_lord_ring",
+    "forest_lord_belt",
+    "guardian_ring",
+    "guardian_pendant",
+    "guardian_cape"
+   ],
+   "max": 8,
+   "bonus": {
+    "2": {
+     "str": 5,
+     "dex": 5,
+     "int": 5,
+     "luk": 5
+    },
+    "3": {
+     "atk": 5,
+     "matk": 5
+    },
+    "4": {
+     "bossPct": 5,
+     "hpPct": 3
+    },
+    "5": {
+     "str": 5,
+     "dex": 5,
+     "int": 5,
+     "luk": 5,
+     "critDmg": 5
+    },
+    "6": {
+     "atk": 5,
+     "matk": 5,
+     "bossPct": 5
+    },
+    "7": {
+     "atkPct": 5
+    },
+    "8": {
+     "bossPct": 10,
+     "critDmg": 5
+    }
+   }
+  }
  }
 }

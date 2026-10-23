@@ -126,6 +126,9 @@ public final class Gear {
         }
         if (Flame.pending(s)) tip.add(Component.literal("검은 불꽃 선택 대기 중 (메뉴 → 강화 → 추가옵션)").withStyle(ChatFormatting.DARK_GRAY));
         if (d.speed() > 0) tip.add(Component.literal("공격 속도 " + d.speed()).withStyle(ChatFormatting.DARK_GRAY));
+        Player viewer = net.minecraftforge.fml.DistExecutor.unsafeCallWhenOn(net.minecraftforge.api.distmarker.Dist.CLIENT,
+                () -> () -> net.minecraft.client.Minecraft.getInstance().player);
+        Sets.tooltip(s, d, viewer, tip);   // 세트 효과
         if (Potential.has(s)) {   // 잠재능력
             CompoundTag pt = Potential.pot(s);
             int g = Math.max(0, Math.min(3, pt.getInt("g")));

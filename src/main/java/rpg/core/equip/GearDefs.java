@@ -94,6 +94,7 @@ public final class GearDefs {
             Enhance.parse(o.has("enhance") ? o.getAsJsonObject("enhance") : null);
             Potential.parse(o.has("potential") ? o.getAsJsonObject("potential") : null);
             Flame.parse(o.has("options") ? o.getAsJsonObject("options") : null);
+            Sets.parse(o.has("sets") ? o.getAsJsonObject("sets") : null);
             if (o.has("options")) {
                 JsonObject op = o.getAsJsonObject("options");
                 fixedLines = op.has("lines") ? op.get("lines").getAsInt() : -1;

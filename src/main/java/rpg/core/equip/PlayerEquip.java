@@ -58,6 +58,7 @@ public class PlayerEquip {
         for (EquipmentSlot es : new EquipmentSlot[]{EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET}) {
             add(p, p.getItemBySlot(es), m);
         }
+        Sets.addBonus(p, m);   // 세트 효과
         return m;
     }
 

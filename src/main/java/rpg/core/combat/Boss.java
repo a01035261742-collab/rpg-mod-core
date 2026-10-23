@@ -86,6 +86,12 @@ public final class Boss {
                 JsonArray a = x.getAsJsonArray();
                 mats.add(new Mats(a.get(0).getAsString(), a.get(1).getAsInt()));
             }
+            List<String[]> ex = new ArrayList<>();   // 추가 보스 장신구 [아이템, 확률%]
+            if (rw.has("extras")) for (var x : rw.getAsJsonArray("extras")) {
+                JsonArray a = x.getAsJsonArray();
+                ex.add(new String[]{a.get(0).getAsString(), a.get(1).getAsString()});
+            }
+            EXTRAS.put(key, ex);
             DEFS.put(key, new Def(key, d(o, "arena", 24), (int) d(o, "respawnSec", 600), (int) d(o, "resetSec", 30), d(o, "phase2", 50),
                     pair(o, "wait1", 2, 4), pair(o, "wait2", 1.5, 3), d(o, "penaltyPerLevel", 5), d(o, "maxPenalty", 90), ps,
                     s(rw, "sure", ""), (int) d(rw, "fragments", 0), d(rw, "scrollChance", 0), s(rw, "ring", ""), d(rw, "ringChance", 0), mats,
@@ -109,6 +115,9 @@ public final class Boss {
         JsonArray x = o.getAsJsonArray(k);
         return new double[]{x.get(0).getAsDouble(), x.get(1).getAsDouble()};
     }
+
+    /** 보스별 추가 장신구 드롭 */
+    public static final Map<String, List<String[]>> EXTRAS = new HashMap<>();
 
     public static boolean isBoss(MobData m) { return m != null && DEFS.containsKey(m.key); }
 
@@ -891,6 +900,15 @@ public final class Boss {
                 out.add(new ItemStack(rpg.core.item.ModItems.ETERNAL_FLAME.get()));
             if (r.nextDouble() * 100 < def.rx().getOrDefault("blackFlameChance", 0.0) * mul)
                 out.add(new ItemStack(rpg.core.item.ModItems.BLACK_FLAME.get()));
+            for (String[] ex : EXTRAS.getOrDefault(def.key(), List.of())) {
+                if (r.nextDouble() * 100 >= Double.parseDouble(ex[1]) * mul) continue;
+                ItemStack g = rpg.core.item.ItemIds.stack(RpgCore.MODID + ":" + ex[0], 1);
+                if (g.isEmpty()) continue;
+                rpg.core.equip.Gear.roll(g);
+                out.add(g);
+                for (ServerPlayer p : part.keySet())
+                    p.sendSystemMessage(Component.literal("✦ " + g.getHoverName().getString() + " 이(가) 떨어졌어요!").withStyle(ChatFormatting.LIGHT_PURPLE));
+            }
             if (!def.ring().isEmpty() && r.nextDouble() * 100 < def.ringChance() * mul) {
                 ItemStack g = rpg.core.item.ItemIds.stack(RpgCore.MODID + ":" + def.ring(), 1);
                 rpg.core.equip.Gear.roll(g);

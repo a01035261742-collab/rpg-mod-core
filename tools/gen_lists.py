@@ -65,6 +65,7 @@ for mk, mv in mobs.items():
     if rw.get('sure'): src[rw['sure']].append(f'보스 {bn} 확정')
     if rw.get('ring'): src[rw['ring']].append(f'보스 {bn} {rw.get("ringChance", 0):g}%')
     if rw.get('first'): src[rw['first']].append(f'보스 {bn} 첫 처치')
+    for ex in rw.get('extras', []): src[ex[0]].append(f'보스 {bn} {ex[1]:g}%')
     if rw.get('eternalFlameChance'): src['eternal_flame'].append(f'보스 {bn} {rw["eternalFlameChance"]:g}%')
     if rw.get('blackFlameChance'): src['black_flame'].append(f'보스 {bn} {rw["blackFlameChance"]:g}%')
     if rw.get('fragments'): src['scroll_fragment'].append(f'보스 {bn} ×{rw["fragments"]}')

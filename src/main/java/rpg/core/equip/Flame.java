@@ -50,7 +50,7 @@ public final class Flame {
         lineChances = new int[]{25, 25, 25, 25};
         dropTiers = new int[]{25, 25, 25, 25};
         costMul = 50; weaponAtkPct = 3;
-        BOSS.addAll(List.of("forest_lord_ring", "guardian_ring"));
+        BOSS.addAll(List.of("forest_lord_ring", "guardian_ring", "forest_lord_belt", "guardian_pendant", "guardian_cape"));
         List<String> common = new ArrayList<>(List.of("str", "dex", "int", "luk", "vit",
                 "str+dex", "str+int", "str+luk", "dex+int", "dex+luk", "int+luk", "hp", "mp", "def", "atk", "matk", "reqLv", "allPct"));
         List<String> w = new ArrayList<>(common); w.add("bossPct"); w.add("atkPct");
