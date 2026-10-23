@@ -92,6 +92,7 @@ public final class ClientEvents {
         @SubscribeEvent
         public static void setup(net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent e) {
             e.enqueueWork(() -> net.minecraft.client.gui.screens.MenuScreens.register(rpg.core.equip.EquipMenu.TYPE.get(), EquipScreen::new));
+            e.enqueueWork(() -> net.minecraft.client.gui.screens.MenuScreens.register(rpg.core.shop.Trade.TYPE.get(), TradeScreen::new));
         }
 
         @SubscribeEvent

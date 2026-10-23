@@ -5,6 +5,10 @@
    "name": "잡화 상인",
    "items": [
     [
+     "return_scroll",
+     50
+    ],
+    [
      "red_potion",
      45
     ],
@@ -220,6 +224,10 @@
    "name": "물약 상인",
    "items": [
     [
+     "return_scroll",
+     50
+    ],
+    [
      "red_potion",
      45
     ],
@@ -397,6 +405,7 @@
   "scroll#g3": 2000,
   "scroll#white": 3000,
   "forest_lord_claw": 1000,
-  "guardian_heart": 3000
+  "guardian_heart": 3000,
+  "return_scroll": 10
  }
 }

@@ -116,6 +116,9 @@ public final class ModItems {
         MATERIALS.add(SCROLL_FRAGMENT);
     }
 
+    /** 귀환 주문서: 3초 뒤 가장 가까운 마을로 */
+    public static final RegistryObject<Item> RETURN_SCROLL = ITEMS.register("return_scroll", () -> new ReturnScroll(new Item.Properties().stacksTo(64)));
+
     /** 주문서 (종류·등급은 NBT) */
     public static final RegistryObject<Item> SCROLL = ITEMS.register("scroll", () -> new Scroll(new Item.Properties()));
 
@@ -127,6 +130,7 @@ public final class ModItems {
             .icon(() -> STAT_RESET_SCROLL.get().getDefaultInstance())
             .displayItems((params, out) -> {
                 out.accept(STAT_RESET_SCROLL.get());
+                out.accept(RETURN_SCROLL.get());
                 for (String k : Scroll.KINDS) for (int g = 0; g < 4; g++) out.accept(Scroll.make(k, g));
                 out.accept(Scroll.make("white", 0));
                 for (var po : new RegistryObject[]{RED_POTION, ORANGE_POTION, WHITE_POTION, BLUE_POTION, DEEP_BLUE_POTION, MANA_ELIXIR, ELIXIR, POWER_ELIXIR})

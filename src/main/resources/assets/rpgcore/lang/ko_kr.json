@@ -240,5 +240,6 @@
   "item.rpgcore.guardian_ring": "수호자의 반지",
   "entity.rpgcore.mush_guardian": "거대버섯 수호자",
   "item.rpgcore.forest_hunter_medal": "숲의 사냥꾼 훈장",
-  "item.rpgcore.mush_hunter_medal": "버섯 사냥꾼 훈장"
+  "item.rpgcore.mush_hunter_medal": "버섯 사냥꾼 훈장",
+  "item.rpgcore.return_scroll": "귀환 주문서"
 }

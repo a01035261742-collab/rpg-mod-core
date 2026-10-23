@@ -41,12 +41,39 @@ import rpg.core.zone.ZoneWand;
  *  /rpg quest point add|remove <지점>          퀘스트 지점(두고 오기·가져오기) 위치 정하기 / 지우기
  *  /rpg quest check                           NPC·지점 배치 점검 (안 세운 것 빨간색)
  *  /rpg job <0~4>                             직업 바로 바꾸기 (테스트용)
+ *  /rpg town add <이름> · remove <이름> · list     마을 등록 (귀환 주문서 도착지)
+ *  /rpg npc storage                           창고지기 세우기
  *  /rpg potions                               물약 받기 (빨강·파랑 30개, 나머지 10개씩)
  *  /rpg boss point add <보스> [반경] · remove · list   보스 경기장 (발밑이 중앙), /rpg boss spawn <보스> 테스트 소환, /rpg boss respawn
  *  /rpg scrolls                               강화 테스트 (주문서 전 종류·순백·조각·골드 10만)
  */
 public final class ZoneCommand {
     private ZoneCommand() {}
+
+    private static final String[] HELP = {
+            "§e── 키 ──",
+            "§fK 스탯 · L 스킬 · N 패시브 · J 퀘스트 · P 파티 · M 메뉴(강화 등) · Tab 장비 · Q E R F Z X 스킬 · Alt 구르기",
+            "§e── 상호작용 ──",
+            "§fNPC 우클릭: 상점·제작·퀘스트·전직·창고 (창고지기 Shift+우클릭 두 번 = 확장)",
+            "§f다른 플레이어 Shift+우클릭: 거래 요청 (상대도 나를 Shift+우클릭하면 거래창)",
+            "§f귀환 주문서 우클릭: 3초 뒤 가장 가까운 마을",
+            "§e── 명령어 ──",
+            "§f/rpg info  내 능력치 · /rpg help  이 도움말"};
+    private static final String[] HELP_ADMIN = {
+            "§c── 관리자 ──",
+            "§f/rpg level|exp|sp|gold|heal|damage|reset|resetscroll  캐릭터 조작",
+            "§f/rpg zone ...  사냥터 · /rpg wand  사냥터 지팡이 · /rpg ground <번호>  사냥터 프리셋 · /rpg spawn|spawnelite <몹>  · /rpg mobs",
+            "§f/rpg npc job|shop|craft|quest|storage  NPC 세우기",
+            "§f/rpg town add|remove|list  마을 (귀환 도착지)",
+            "§f/rpg boss point add|remove|list · /rpg boss spawn <보스> · /rpg boss respawn",
+            "§f/rpg trial point add  시련장 · /rpg quest ...  퀘스트 테스트",
+            "§f/rpg gear <레벨> · /rpg potions · /rpg scrolls  테스트 아이템"};
+
+    private static int help(CommandContext<CommandSourceStack> c, boolean admin) {
+        for (String l : admin ? HELP_ADMIN : HELP) c.getSource().sendSystemMessage(Component.literal(l));
+        if (!admin && c.getSource().hasPermission(2)) c.getSource().sendSystemMessage(Component.literal("§7관리자 명령어: /rpg help admin"));
+        return 1;
+    }
 
     private static int bossAdd(com.mojang.brigadier.context.CommandContext<CommandSourceStack> c, String key, int radius) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
         var def = rpg.core.combat.Boss.DEFS.get(key);
@@ -86,7 +113,38 @@ public final class ZoneCommand {
                     }
                     return ok(c, "Lv." + lv + " 테스트 장비 " + n + "개 지급 (추가 옵션 무작위)");
                 })));
+        // ── 도움말 ──
+        root.then(Commands.literal("help").executes(c -> help(c, false))
+                .then(Commands.literal("admin").requires(s -> s.hasPermission(2)).executes(c -> help(c, true))));
+        // ── 마을 (귀환 주문서 도착지) ──
+        root.then(Commands.literal("town").requires(s -> s.hasPermission(2))
+                .then(Commands.literal("add").then(Commands.argument("name", StringArgumentType.greedyString()).executes(c -> {
+                    String n = StringArgumentType.getString(c, "name");
+                    var t = rpg.core.town.Towns.get(c.getSource().getLevel());
+                    t.towns.put(n, c.getSource().getPlayerOrException().blockPosition());
+                    t.setDirty();
+                    return ok(c, "마을 등록: " + n + " (지금 위치 = 귀환 주문서 도착 지점)");
+                })))
+                .then(Commands.literal("remove").then(Commands.argument("name", StringArgumentType.greedyString())
+                        .suggests((c, b) -> SharedSuggestionProvider.suggest(rpg.core.town.Towns.get(c.getSource().getLevel()).towns.keySet(), b)).executes(c -> {
+                    String n = StringArgumentType.getString(c, "name");
+                    var t = rpg.core.town.Towns.get(c.getSource().getLevel());
+                    boolean had = t.towns.remove(n) != null;
+                    t.setDirty();
+                    return ok(c, had ? "마을 삭제: " + n : "없는 마을: " + n);
+                })))
+                .then(Commands.literal("list").executes(c -> {
+                    var t = rpg.core.town.Towns.get(c.getSource().getLevel());
+                    if (t.towns.isEmpty()) return ok(c, "등록된 마을 없음");
+                    StringBuilder sb = new StringBuilder("마을: ");
+                    t.towns.forEach((k, v) -> sb.append(k).append(" (").append(v.toShortString()).append(")  "));
+                    return ok(c, sb.toString());
+                })));
         root.then(Commands.literal("npc").requires(s -> s.hasPermission(2))
+                .then(Commands.literal("storage").executes(c -> {
+                    rpg.core.shop.Storage.spawn(c.getSource().getPlayerOrException());
+                    return ok(c, "창고지기를 세웠어요");
+                }))
                 .then(Commands.literal("job").then(Commands.argument("family", IntegerArgumentType.integer(1, 4)).executes(c -> {
                     int f = IntegerArgumentType.getInteger(c, "family");
                     rpg.core.job.JobEvents.spawn(c.getSource().getPlayerOrException(), f);

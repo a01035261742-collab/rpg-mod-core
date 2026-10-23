@@ -41,6 +41,8 @@ public final class Drops {
     public static double gearChance = 2;
     public static int gearLevelRange = 10;
     public static double enhanceChance = 1.5;
+    /** 귀환 주문서 드롭 확률 % (drops.json returnScroll) */
+    public static double returnChance = 0.5;
     public static final Map<String, Double> ENHANCE = new LinkedHashMap<>();
     public static final Map<String, MobDrops> MOBS = new HashMap<>();
 
@@ -50,6 +52,7 @@ public final class Drops {
         try {
             JsonObject o = JsonParser.parseString(text).getAsJsonObject();
             ownerSeconds = d(o, "ownerSeconds", 30);
+            returnChance = d(o, "returnScroll", 0.5);
             goldChance = d(o, "goldChance", 100);
             if (o.has("potion")) {
                 JsonObject p = o.getAsJsonObject("potion"); potionChance = d(p, "chance", 8); potionRed = d(p, "redRatio", 70);
@@ -115,6 +118,7 @@ public final class Drops {
         int rolls = m.elite ? 2 : 1;   // 엘리트는 재료 두 번 굴림
         for (int k = 0; k < rolls; k++) if (md != null) for (Entry e : md.items()) if (hit(r, e.chance() * mul)) add(out, e.item());
 
+        if (returnChance > 0 && hit(r, returnChance * mul)) out.add(new ItemStack(ModItems.RETURN_SCROLL.get()));
         double pc = md != null && md.potion() >= 0 ? md.potion() : potionChance;
         if (hit(r, pc * mul)) out.add(new ItemStack(potionFor(m.level, r.nextDouble() * 100 < potionRed)));
 

@@ -29,6 +29,7 @@ public class RpgCore {
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
         ModItems.ITEMS.register(modBus);
         ModItems.TABS.register(modBus);
+        rpg.core.shop.Trade.init();   // 거래창 메뉴 등록 (MENUS 에 붙임)
         rpg.core.equip.EquipMenu.MENUS.register(modBus);
         rpg.core.craft.GoldShapedRecipe.SERIALIZERS.register(modBus);
         rpg.core.entity.ModEntities.TYPES.register(modBus);
