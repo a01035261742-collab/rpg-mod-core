@@ -11,15 +11,15 @@ import rpg.core.data.RpgData;
 
 /**
  * 전투력 (메이플식, 공격만): 스공 × (1 + 보스%) × (1 + 크리확률 × (크리뎀 - 1)).
- * 스공에 데미지%(atkPct)가 이미 들어 있음. 버프는 빼고 계산.
+ * 전투력 = 공격력×(1+공%) 스탯 공식 × (1 + 데미지% + 보스%) × 크리 기대값. 버프는 빼고 계산.
  */
 public final class Power {
     private Power() {}
 
     private static long calc(ServerPlayer p, PlayerData d) {
-        double base = (Combat.mainStat(d) * 4.0 + Combat.subStat(d)) * Combat.weaponAtk(p, d) / 100.0 * (1 + d.bonus("atkPct") / 100.0);
+        double base = (Combat.mainStat(d) * 4.0 + Combat.subStat(d)) * Combat.weaponAtk(p, d) * (1 + d.bonus("atkPct") / 100.0) / 100.0;
         double crit = Math.max(0, Math.min(100, d.crit())) / 100.0;
-        return Math.round(base * (1 + d.bonus("bossPct") / 100.0) * (1 + crit * (d.critDamage() - 1)));
+        return Math.round(base * (1 + (d.bonus("dmgPct") + d.bonus("bossPct")) / 100.0) * (1 + crit * (d.critDamage() - 1)));
     }
 
     /** 지금 장비 그대로 */

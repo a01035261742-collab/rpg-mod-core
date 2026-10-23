@@ -89,7 +89,9 @@ public final class Defs {
 
     public static String statLabel(String stat) {
         return switch (stat) {
-            case "atkPct" -> "스공 +%s%%";
+            case "atkPct" -> "공격력 +%s%%";
+            case "dmgPct" -> "데미지 +%s%%";
+            case "bossPct" -> "보스 데미지 +%s%%";
             case "critDmg" -> "치명타 피해 +%s%%";
             case "critChance" -> "치명타 확률 +%s%%";
             case "hpPct" -> "최대 HP +%s%%";

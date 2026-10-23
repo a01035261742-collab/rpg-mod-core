@@ -1740,7 +1740,7 @@
     "reqLv",
     "allPct",
     "bossPct",
-    "atkPct"
+    "dmgPct"
    ],
    "armor": [
     "str",
@@ -1841,11 +1841,11 @@
     2,
     0
    ],
-   "atkPct": [
+   "speedPct": [
     1,
     0
    ],
-   "speedPct": [
+   "dmgPct": [
     1,
     0
    ]
@@ -2803,7 +2803,7 @@
      "bossPct": 5
     },
     "7": {
-     "atkPct": 5
+     "dmgPct": 5
     },
     "8": {
      "bossPct": 10,

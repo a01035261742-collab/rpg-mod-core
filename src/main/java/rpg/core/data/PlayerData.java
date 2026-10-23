@@ -90,7 +90,7 @@ public class PlayerData {
 
     private static final String[] STAT_KEYS = {"vit", "str", "dex", "int", "luk", "sta"};
     /** 장비 합계에서 bonus 로 옮기는 % 옵션 (잠재능력) */
-    private static final String[] EQUIP_BONUS = {"atkPct", "hpPct", "critChance", "goldPct", "dropPct", "speedPct", "bossPct", "critDmg", "cdPct"};
+    private static final String[] EQUIP_BONUS = {"atkPct", "dmgPct", "hpPct", "critChance", "goldPct", "dropPct", "speedPct", "bossPct", "critDmg", "cdPct"};
     /** 피격 시 확률 무적 (잠재능력): 이 시각까지 피해 없음 */
     public transient long invulUntil;
     /** 마지막으로 나를 때린 것 (사망 메시지용) */

@@ -1,5 +1,5 @@
 {
-  "_설명": "공용 패시브 트리. 4방향 × 작은 코어 3칸(여러 번 찍기) + 끝에 큰 코어 1칸(1번만, 강한 효과). x,y = 칸 위치(가운데 0,0). requires = 먼저 1 이상 찍어야 하는 칸. stat: atkPct critDmg critChance hpPct def hpRegenPct speedPct mpRegenPct bossDmg reviveTime stamina healPct",
+  "_설명": "공용 패시브 트리. 4방향 × 작은 코어 3칸(여러 번 찍기) + 끝에 큰 코어 1칸(1번만, 강한 효과). x,y = 칸 위치(가운데 0,0). requires = 먼저 1 이상 찍어야 하는 칸. stat: dmgPct critDmg critChance hpPct def hpRegenPct speedPct mpRegenPct bossPct reviveTime stamina healPct",
   "nodes": [
     {"id": "start", "name": "시작", "x": 0, "y": 0, "maxRank": 0, "stat": "", "perRank": 0, "requires": []},
 
@@ -8,10 +8,10 @@
     {"id": "crit_dmg_2", "name": "급소 강타", "x": 0, "y": -3, "maxRank": 3, "stat": "critDmg", "perRank": 3, "requires": ["crit_rate_1"]},
     {"id": "crit_master", "name": "치명 극의", "x": 0, "y": -4, "maxRank": 1, "stat": "critDmg", "perRank": 10, "requires": ["crit_dmg_2"], "special": true},
 
-    {"id": "atk_1", "name": "공격 수련", "x": -1, "y": 0, "maxRank": 5, "stat": "atkPct", "perRank": 1, "requires": ["start"]},
-    {"id": "atk_2", "name": "공격 숙련", "x": -2, "y": 0, "maxRank": 3, "stat": "atkPct", "perRank": 2, "requires": ["atk_1"]},
-    {"id": "boss_1", "name": "거인 사냥", "x": -3, "y": 0, "maxRank": 3, "stat": "bossDmg", "perRank": 3, "requires": ["atk_2"]},
-    {"id": "boss_slayer", "name": "보스 사냥꾼", "x": -4, "y": 0, "maxRank": 1, "stat": "bossDmg", "perRank": 10, "requires": ["boss_1"], "special": true},
+    {"id": "atk_1", "name": "공격 수련", "x": -1, "y": 0, "maxRank": 5, "stat": "dmgPct", "perRank": 1, "requires": ["start"]},
+    {"id": "atk_2", "name": "공격 숙련", "x": -2, "y": 0, "maxRank": 3, "stat": "dmgPct", "perRank": 2, "requires": ["atk_1"]},
+    {"id": "boss_1", "name": "거인 사냥", "x": -3, "y": 0, "maxRank": 3, "stat": "bossPct", "perRank": 3, "requires": ["atk_2"]},
+    {"id": "boss_slayer", "name": "보스 사냥꾼", "x": -4, "y": 0, "maxRank": 1, "stat": "bossPct", "perRank": 10, "requires": ["boss_1"], "special": true},
 
     {"id": "hp_1", "name": "강인한 몸", "x": 1, "y": 0, "maxRank": 5, "stat": "hpPct", "perRank": 2, "requires": ["start"]},
     {"id": "def_1", "name": "단단한 피부", "x": 2, "y": 0, "maxRank": 3, "stat": "def", "perRank": 5, "requires": ["hp_1"]},

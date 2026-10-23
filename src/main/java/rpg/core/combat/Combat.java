@@ -60,7 +60,13 @@ public final class Combat {
     }
 
     public static double statAttack(Player p, PlayerData d) {
-        return (mainStat(d) * 4.0 + subStat(d)) * weaponAtk(p, d) / 100.0 * (1 + (d.bonus("atkPct") + d.buffV("berserk", d.clock)) / 100.0);   // 광폭화: 스공 %
+        // 메이플식 (C안): 공격력 × (1 + 공%) → 스탯 공식 → × (1 + 데미지%). 보스% 는 보스한테 데미지%와 더해짐 (Boss.onHurt)
+        return (mainStat(d) * 4.0 + subStat(d)) * weaponAtk(p, d) * (1 + d.bonus("atkPct") / 100.0) / 100.0 * (1 + dmgPct(d) / 100.0);
+    }
+
+    /** 데미지% 합: 장비·패시브 데미지% + 광폭화 */
+    public static double dmgPct(PlayerData d) {
+        return d.bonus("dmgPct") + d.buffV("berserk", d.clock);
     }
 
     public static Hit roll(Player p, PlayerData d, double mult) {
