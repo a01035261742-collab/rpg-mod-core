@@ -131,6 +131,41 @@ public final class EpicFightCompat {
         return playOne(p, field);
     }
 
+    /** 모션 재생 속도 배수 (클라에서 보이는 속도): 회전 모션이 느려서 빠르게 */
+    public static final java.util.Map<String, Float> SPEED = new java.util.HashMap<>(java.util.Map.of(
+            "STEEL_WHIRLWIND", 1.7f, "GIANT_WHIRLWIND", 1.7f));
+    private static boolean speedDone;
+
+    /** EF 모션에 재생 속도 배수 붙이기 (한 번만, 서버·클라 둘 다 — 화면은 클라 쪽이 중요) */
+    public static void applySpeeds() {
+        if (speedDone) return;
+        speedDone = true;
+        try {
+            Class<?> animsCls = Class.forName("yesman.epicfight.gameasset.Animations");
+            Class<?> propCls = Class.forName("yesman.epicfight.api.animation.property.AnimationProperty$StaticAnimationProperty");
+            Class<?> modCls = Class.forName("yesman.epicfight.api.animation.property.AnimationProperty$PlaybackSpeedModifier");
+            Object prop = propCls.getField("PLAY_SPEED_MODIFIER").get(null);
+            for (var e : SPEED.entrySet()) {
+                Object anim;
+                try { anim = animsCls.getField(e.getKey()).get(null); } catch (NoSuchFieldException nf) { continue; }
+                if (anim == null) continue;
+                final float mul = e.getValue();
+                Object modifier = java.lang.reflect.Proxy.newProxyInstance(modCls.getClassLoader(), new Class<?>[]{modCls}, (px, m, a) -> {
+                    if (m.getName().equals("modify") && a != null && a.length >= 3 && a[2] instanceof Float sp) return sp * mul;
+                    if (m.getName().equals("hashCode")) return System.identityHashCode(px);
+                    if (m.getName().equals("equals")) return px == a[0];
+                    if (m.getName().equals("toString")) return "rpgcore speed x" + mul;
+                    return null;
+                });
+                for (var m : anim.getClass().getMethods()) {
+                    if (m.getName().equals("addProperty") && m.getParameterCount() == 2) { m.invoke(anim, prop, modifier); break; }
+                }
+            }
+        } catch (Throwable ex) {
+            RpgCore.LOG.debug("[rpgcore] EF 모션 속도 설정 실패: {}", ex.toString());
+        }
+    }
+
     /** 스킬용: 바꿔 끼운 이름이 있으면 그것, 없으면 기본 후보들 */
     public static boolean playSkill(ServerPlayer p, String skill, String defaults) {
         String o = OVERRIDE.get(skill);
@@ -151,6 +186,7 @@ public final class EpicFightCompat {
     }
 
     private static boolean playOne(ServerPlayer p, String field) {
+        applySpeeds();
         try {
             if (!animLookedUp) {
                 animLookedUp = true;

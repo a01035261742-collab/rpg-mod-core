@@ -58,17 +58,37 @@ public final class WarriorSkills {
         }
         Vec3 end = p.position().add(dir.scale(dist));
         Vec3 pile = end.add(dir.scale(1.5));   // 끝 지점 앞 1.5칸
+        // 몹마다 모일 자리: 한 점에 겹치면 서로 밀어서 흩어지니 작은 원으로 나눠 세움
+        List<Vec3> spot = new ArrayList<>();
+        for (int i = 0; i < caught.size(); i++) {
+            Mob m = caught.get(i);
+            double r = i == 0 ? 0 : 0.5 + m.getBbWidth() * 0.6 + 0.15 * (i / 6);
+            double a = i * 2.39996;   // 황금각: 고르게 퍼짐
+            spot.add(pile.add(Math.cos(a) * r, 0, Math.sin(a) * r));
+        }
+        long now0 = l.getGameTime();
         double step = dist / 5.0;
         BranchSkills.task(p, t -> {
-            // 잡힌 몹: 매 틱 모이는 곳으로 끌려감
-            for (Mob m : caught) {
+            // 잡힌 몹: 매 틱 자기 자리로 끌려감, 도착하면 멈춤
+            for (int i = 0; i < caught.size(); i++) {
+                Mob m = caught.get(i);
                 if (!m.isAlive()) continue;
-                Vec3 v = pile.subtract(m.position());
+                Vec3 v = spot.get(i).subtract(m.position());
                 double len = Math.sqrt(v.x * v.x + v.z * v.z);
-                if (len > 0.6) m.setDeltaMovement(v.x / len * Math.min(len, 1.4), 0.1, v.z / len * Math.min(len, 1.4));
+                if (len > 0.15) m.setDeltaMovement(v.x / len * Math.min(len, 1.4), m.getDeltaMovement().y, v.z / len * Math.min(len, 1.4));
+                else m.setDeltaMovement(0, m.getDeltaMovement().y, 0);
+                m.getNavigation().stop();
                 m.hurtMarked = true;
             }
             if (t >= 6) {
+                // 끝: 그 자리에 1초 멈춰 세움 (몹 AI·밀치기로 다시 흩어지지 않게)
+                for (Mob m : caught) {
+                    if (!m.isAlive()) continue;
+                    m.setDeltaMovement(0, m.getDeltaMovement().y, 0);
+                    m.hurtMarked = true;
+                    MobData md = Combat.mob(m);
+                    if (md != null) md.stunUntil = Math.max(md.stunUntil, now0 + 6 + 20);
+                }
                 Vec3 v = p.getDeltaMovement();
                 p.setDeltaMovement(v.x * 0.3, v.y, v.z * 0.3);
                 p.hurtMarked = true;
