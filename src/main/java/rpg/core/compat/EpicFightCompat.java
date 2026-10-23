@@ -132,8 +132,8 @@ public final class EpicFightCompat {
     }
 
     /** 모션 재생 속도 배수 (클라에서 보이는 속도): 회전 모션이 느려서 빠르게 */
-    public static final java.util.Map<String, Float> SPEED = new java.util.HashMap<>(java.util.Map.of(
-            "STEEL_WHIRLWIND", 2.5f, "GIANT_WHIRLWIND", 2.5f));
+    /** (EF 20.14 에선 공격 모션 속도가 안 바뀜 — 비워 둠, 진단용으로만 남김) */
+    public static final java.util.Map<String, Float> SPEED = new java.util.HashMap<>();
     private static boolean speedDone;
     /** 진단: 속도 설정 결과 · 마지막으로 재생한 모션 */
     public static String speedStatus = "아직 안 함";

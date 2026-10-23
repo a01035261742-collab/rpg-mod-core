@@ -33,7 +33,7 @@ public final class WarriorSkills {
 
     /** 스킬별 기본 모션 후보 */
     public static final String ANIM_RUSH = "GREATSWORD_DASH|LONGSWORD_DASH|SWORD_DASH";
-    public static final String ANIM_SPIN = "STEEL_WHIRLWIND|GIANT_WHIRLWIND|GREATSWORD_AUTO2";
+    public static final String ANIM_SPIN = "DANCING_EDGE|STEEL_WHIRLWIND|GREATSWORD_AUTO2";   // 쌍검 회전 연타 (빠름)
     public static final String[] ANIM_COMBO = {"GREATSWORD_AUTO1", "GREATSWORD_AUTO2", "GREATSWORD_AIR_SLASH|GREATSWORD_DASH|GREATSWORD_AUTO1"};
 
     private static void anim(ServerPlayer p, String skill, String defaults) {
