@@ -100,7 +100,7 @@ public final class Sets {
         for (var e : m.entrySet()) {
             String k = e.getKey();
             String label = switch (k) {
-                case "atkPct" -> "공격력"; case "dmgPct" -> "데미지"; case "hpPct" -> "최대 HP"; case "bossPct" -> "보스 데미지"; case "critChance" -> "크리 확률";
+                case "atkPct" -> "데미지"; case "hpPct" -> "최대 HP"; case "bossPct" -> "보스 데미지"; case "critChance" -> "크리 확률";
                 case "critDmg" -> "크리 데미지"; case "cdPct" -> "쿨타임 감소"; case "speedPct" -> "이동속도"; case "defPct" -> "방어";
                 default -> GearDefs.label(k);
             };

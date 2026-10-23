@@ -116,7 +116,7 @@ public final class Gear {
             }
             tip.add(line);
         }
-        for (String k : new String[]{"bossPct", "dmgPct", "speedPct"})   // 추가 옵션 전용 % 줄
+        for (String k : new String[]{"bossPct", "atkPct", "speedPct"})   // 추가 옵션 전용 % 줄
             if (ox.containsKey(k)) tip.add(Component.literal(GearDefs.label(k) + " +" + ox.get(k) + "%").withStyle(ChatFormatting.GREEN));
         if (!o.isEmpty()) {   // 추가 옵션 단계
             CompoundTag tt = Flame.tiers(s);

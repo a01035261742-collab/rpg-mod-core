@@ -71,7 +71,7 @@ public final class JobSkills {
     public static void releaseCharge(ServerPlayer p, PlayerData d, Defs.SkillDef s, int lv, long held) {
         double minT = 6, maxT = 30;   // 0.3초 ~ 1.5초
         double ratio = Math.max(0, Math.min(1, (held - minT) / (maxT - minT)));
-        double pct = s.value(lv) * (1 + (0.5 + d.bonus("gsMaster") / 100.0) * ratio);   // 최소 value%, 가득 차면 1.5배 (대검 달인 2배)
+        double pct = s.value(lv) * (1 + 0.5 * ratio);   // 최소 value%, 가득 차면 1.5배
         ServerLevel l = p.serverLevel();
         Vec3 look = flatAim(p);
         double range = 4.5;

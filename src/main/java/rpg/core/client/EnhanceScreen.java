@@ -353,7 +353,8 @@ public class EnhanceScreen extends Screen {
     /** 전투력 변화 (서버가 계산해서 장비 복사본에 붙여 보냄) */
     private void powLine(GuiGraphics g, ItemStack s, String key, int px, int yy) {
         String w = where(curLoc());
-        if (!w.equals("착용") && !(curLoc() >= 0 && curLoc() < 9)) { g.drawString(font, "전투력: 착용하면 표시", px, yy, 0xFF808080, false); return; }
+        boolean weapon = "weapon".equals(Gear.slotOf(s));   // 무기는 손에 없어도 든 걸로 계산
+        if (!w.equals("착용") && !weapon) { g.drawString(font, "전투력: 착용하면 표시", px, yy, 0xFF808080, false); return; }
         long dlt = s.hasTag() ? s.getTag().getLong(key) : 0;
         String t = dlt == 0 ? "전투력 변화 없음" : String.format("전투력 %+,d %s", dlt, dlt > 0 ? "▲" : "▼");
         g.drawString(font, t, px, yy, dlt > 0 ? 0xFF55FF55 : dlt < 0 ? 0xFFFF5555 : 0xFFA0A0A0, false);

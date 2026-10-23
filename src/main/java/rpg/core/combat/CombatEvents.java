@@ -253,7 +253,6 @@ public final class CombatEvents {
             long now = sp.level().getGameTime();
             dmg *= 1 - Math.min(90, d.buffV("iron_wall", now)) / 100.0;           // 철벽: 받는 피해 감소
             dmg *= 1 + d.buffV2("berserk", now) / 100.0;                           // 광폭화: 받는 피해 증가
-            if (d.bonus("lowHpGuard") > 0 && d.hp < d.maxHp * 0.3) dmg *= 1 - Math.min(80, d.bonus("lowHpGuard")) / 100.0;   // 불굴
             double guard = d.buffV("magic_guard", now);                            // 매직 가드: 일부를 MP로
             if (guard > 0 && src != null) {
                 double toMp = Math.min(d.mp, dmg * Math.min(90, guard) / 100.0);

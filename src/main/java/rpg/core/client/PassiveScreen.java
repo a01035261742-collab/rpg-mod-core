@@ -22,7 +22,7 @@ public class PassiveScreen extends Screen {
     protected void init() {
         // 트리 크기 (칸 좌표 범위) → 화면에 맞게 칸 크기 정함
         int minX = 0, maxX = 0, minY = 0, maxY = 0;
-        for (Defs.Node n : nodes()) {
+        for (Defs.Node n : Defs.NODES.values()) {
             minX = Math.min(minX, n.x()); maxX = Math.max(maxX, n.x());
             minY = Math.min(minY, n.y()); maxY = Math.max(maxY, n.y());
         }
@@ -40,13 +40,6 @@ public class PassiveScreen extends Screen {
         addRenderableWidget(Ui.button(Component.literal("스킬 (L)"), b -> minecraft.setScreen(new SkillScreen()))
                 .bounds(px + 50, py + ph - Ui.FOOT, 60, Ui.BTN_H).build());
         addRenderableWidget(Ui.close(px, py, pw, ph, this::onClose));
-    }
-
-    /** 내 트리 칸만 (직업 전용 트리 · 갈래 칸) */
-    private static java.util.List<Defs.Node> nodes() {
-        java.util.List<Defs.Node> l = new java.util.ArrayList<>();
-        for (Defs.Node n : nodes()) if (Defs.inTree(n, ClientData.job, ClientData.branch)) l.add(n);
-        return l;
     }
 
     private int nx(Defs.Node n) { return cx + n.x() * CELL; }
@@ -70,21 +63,20 @@ public class PassiveScreen extends Screen {
         Ui.frame(g, font, px, py, pw, ph, Ui.GOLD, "패시브 트리 (N)", "패시브 포인트: " + ClientData.passivePoints,
                 ClientData.passivePoints > 0 ? 0xFF80FF80 : 0xFFA0A0A0);
         g.drawString(font, "칸 클릭 = 1포인트", px + 8, py + 18, 0xFF808080, false);
-        if (nodes().isEmpty()) g.drawCenteredString(font, "1차 전직(Lv.10) 후 열려요 · 포인트는 모아둬요", px + pw / 2, py + ph / 2 - 4, 0xFFA0A0A0);
         Ui.footLine(g, px, py, pw, ph);
 
         // 연결선
-        for (Defs.Node n : nodes()) {
+        for (Defs.Node n : Defs.NODES.values()) {
             for (String r : n.requires()) {
                 Defs.Node p = Defs.NODES.get(r);
-                if (p == null || !Defs.inTree(p, ClientData.job, ClientData.branch)) continue;
+                if (p == null) continue;
                 int col = rank(n) > 0 ? 0xFFFFD24A : 0xFF404050;
                 line(g, nx(p), ny(p), nx(n), ny(n), col);
             }
         }
         // 칸
         Defs.Node hover = null;
-        for (Defs.Node n : nodes()) {
+        for (Defs.Node n : Defs.NODES.values()) {
             int x = nx(n) - BOX / 2, y = ny(n) - BOX / 2;
             int r = rank(n);
             boolean can = unlocked(n) && r < n.maxRank();
@@ -121,7 +113,7 @@ public class PassiveScreen extends Screen {
 
     @Override
     public boolean mouseClicked(double mx, double my, int button) {
-        for (Defs.Node n : nodes()) {
+        for (Defs.Node n : Defs.NODES.values()) {
             int x = nx(n) - BOX / 2, y = ny(n) - BOX / 2;
             if (mx >= x && mx < x + BOX && my >= y && my < y + BOX && n.maxRank() > 0) {
                 Net.CH.sendToServer(new Net.Learn(1, n.id()));

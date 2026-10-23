@@ -53,7 +53,7 @@ public final class Flame {
         BOSS.addAll(List.of("forest_lord_ring", "guardian_ring", "forest_lord_belt", "guardian_pendant", "guardian_cape"));
         List<String> common = new ArrayList<>(List.of("str", "dex", "int", "luk", "vit",
                 "str+dex", "str+int", "str+luk", "dex+int", "dex+luk", "int+luk", "hp", "mp", "def", "atk", "matk", "reqLv", "allPct"));
-        List<String> w = new ArrayList<>(common); w.add("bossPct"); w.add("dmgPct");
+        List<String> w = new ArrayList<>(common); w.add("bossPct"); w.add("atkPct");
         List<String> a = new ArrayList<>(common); a.add("speedPct");
         POOLS.put("weapon", w); POOLS.put("armor", a);
         for (String s : new String[]{"str", "dex", "int", "luk", "vit"}) VALUES.put(s, new double[]{0.5, 0.025});
@@ -66,7 +66,7 @@ public final class Flame {
         VALUES.put("reqLv", new double[]{1, 0});
         VALUES.put("allPct", new double[]{1, 0});
         VALUES.put("bossPct", new double[]{2, 0});
-        VALUES.put("dmgPct", new double[]{1, 0});
+        VALUES.put("atkPct", new double[]{1, 0});
         VALUES.put("speedPct", new double[]{1, 0});
     }
 

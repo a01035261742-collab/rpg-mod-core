@@ -90,7 +90,7 @@ public class PlayerData {
 
     private static final String[] STAT_KEYS = {"vit", "str", "dex", "int", "luk", "sta"};
     /** 장비 합계에서 bonus 로 옮기는 % 옵션 (잠재능력) */
-    private static final String[] EQUIP_BONUS = {"atkPct", "dmgPct", "hpPct", "critChance", "goldPct", "dropPct", "speedPct", "bossPct", "critDmg", "cdPct"};
+    private static final String[] EQUIP_BONUS = {"atkPct", "hpPct", "critChance", "goldPct", "dropPct", "speedPct", "bossPct", "critDmg", "cdPct"};
     /** 피격 시 확률 무적 (잠재능력): 이 시각까지 피해 없음 */
     public transient long invulUntil;
     /** 마지막으로 나를 때린 것 (사망 메시지용) */
@@ -138,7 +138,7 @@ public class PlayerData {
         bonus.clear();
         for (var e : passives.entrySet()) {
             Defs.Node n = Defs.NODES.get(e.getKey());
-            if (n == null || n.stat().isEmpty() || !Defs.inTree(n, job, branch)) continue;   // 지금 트리 칸만
+            if (n == null || n.stat().isEmpty()) continue;
             bonus.merge(n.stat(), n.perRank() * e.getValue(), Double::sum);
         }
         // 스킬 창 패시브 (배운 레벨만큼 항상 켜짐)
@@ -158,17 +158,6 @@ public class PlayerData {
         if (hp > maxHp) { hp = maxHp; changed = true; }
         if (mp > maxMp) { mp = maxMp; changed = true; }
         return changed;
-    }
-
-    /** 직업 개편: 스킬·패시브 포인트를 전부 돌려받고 칸 비우기 */
-    public void refundSkillsAndPassives() {
-        int sp = 0, pp = 0;
-        for (int v : skills.values()) sp += v;
-        for (int v : passives.values()) pp += v;
-        skills.clear(); passives.clear();
-        for (int i = 0; i < slots.length; i++) slots[i] = null;
-        skillPoints += sp; passivePoints += pp;
-        recalc();
     }
 
     /** 찍은 스탯을 전부 돌려받기 (초기화 주문서) */
