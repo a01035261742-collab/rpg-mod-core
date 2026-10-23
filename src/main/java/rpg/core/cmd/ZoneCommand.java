@@ -66,9 +66,15 @@ public final class ZoneCommand {
             "§f/rpg zone ...  사냥터 · /rpg wand  사냥터 지팡이 · /rpg ground <번호>  사냥터 프리셋 · /rpg spawn|spawnelite <몹>  · /rpg mobs",
             "§f/rpg npc job|shop|craft|quest|storage  NPC 세우기",
             "§f/rpg town add|remove|list  마을 (귀환 도착지)",
+            "§f/rpg daily reset|complete [플레이어]  일일 퀘스트 새로 뽑기 · 진행도 채우기",
             "§f/rpg boss point add|remove|list · /rpg boss spawn <보스> · /rpg boss respawn",
             "§f/rpg trial point add  시련장 · /rpg quest ...  퀘스트 테스트",
             "§f/rpg gear <레벨> · /rpg potions · /rpg scrolls  테스트 아이템"};
+
+    private static int daily(CommandContext<CommandSourceStack> c, ServerPlayer p, boolean fill) {
+        if (fill) rpg.core.quest.Dailies.fill(p); else rpg.core.quest.Dailies.reset(p);
+        return ok(c, p.getGameProfile().getName() + " 일일 퀘스트 " + (fill ? "진행도 채움 (M → 일일 퀘스트에서 완료)" : "새로 뽑음"));
+    }
 
     private static int help(CommandContext<CommandSourceStack> c, boolean admin) {
         for (String l : admin ? HELP_ADMIN : HELP) c.getSource().sendSystemMessage(Component.literal(l));
@@ -114,6 +120,14 @@ public final class ZoneCommand {
                     }
                     return ok(c, "Lv." + lv + " 테스트 장비 " + n + "개 지급 (추가 옵션 무작위)");
                 })));
+        // ── 일일 퀘스트 (관리자 테스트) ──
+        root.then(Commands.literal("daily").requires(s -> s.hasPermission(2))
+                .then(Commands.literal("reset").executes(c -> daily(c, c.getSource().getPlayerOrException(), false))
+                        .then(Commands.argument("player", net.minecraft.commands.arguments.EntityArgument.player())
+                                .executes(c -> daily(c, net.minecraft.commands.arguments.EntityArgument.getPlayer(c, "player"), false))))
+                .then(Commands.literal("complete").executes(c -> daily(c, c.getSource().getPlayerOrException(), true))
+                        .then(Commands.argument("player", net.minecraft.commands.arguments.EntityArgument.player())
+                                .executes(c -> daily(c, net.minecraft.commands.arguments.EntityArgument.getPlayer(c, "player"), true)))));
         // ── 도움말 ──
         root.then(Commands.literal("help").executes(c -> help(c, false))
                 .then(Commands.literal("admin").requires(s -> s.hasPermission(2)).executes(c -> help(c, true))));

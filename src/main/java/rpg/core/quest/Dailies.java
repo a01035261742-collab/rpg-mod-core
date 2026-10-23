@@ -219,6 +219,28 @@ public final class Dailies {
         }
     }
 
+    // ───────── 관리자 (테스트) ─────────
+    /** 오늘 일일 퀘스트를 지우고 새로 뽑기 */
+    public static void reset(ServerPlayer p) {
+        save(p, new CompoundTag());
+        ensure(p);
+    }
+
+    /** 진행도 전부 채우기 (납품은 재료를 넣어줌) */
+    public static void fill(ServerPlayer p) {
+        CompoundTag d = ensure(p);
+        ListTag list = d.getList("list", Tag.TAG_COMPOUND);
+        for (int i = 0; i < list.size(); i++) {
+            CompoundTag q = list.getCompound(i);
+            if (q.getBoolean("done")) continue;
+            if (q.getString("k").equals("collect")) {
+                int lack = q.getInt("need") - progress(p, q);
+                if (lack > 0) give(p, ItemIds.stack(q.getList("t", Tag.TAG_STRING).getString(0), lack));
+            } else q.putInt("prog", q.getInt("need"));
+        }
+        save(p, d);
+    }
+
     // ───────── 창 · 완료 · 다시 뽑기 ─────────
     public static void sync(ServerPlayer p) {
         CompoundTag d = ensure(p);

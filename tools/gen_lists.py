@@ -57,6 +57,16 @@ for job, w in re.findall(r'case (\d) -> "(\w+_10)"', open(f'{J}/job/Jobs.java').
     src[w].append('1차 전직 보상')
 for k, v in drops.get('enhance', {}).get('items', {}).items():
     src[k].append(f'드롭 모든 몹 {drops["enhance"]["chance"]:g}% (그중 {v}%)')
+# 보스 보상 (mobs.json boss.reward)
+for mk, mv in mobs.items():
+    if mk.startswith('_') or not isinstance(mv, dict) or 'boss' not in mv: continue
+    rw = mv['boss'].get('reward', {})
+    bn = mv.get('name', mk)
+    if rw.get('sure'): src[rw['sure']].append(f'보스 {bn} 확정')
+    if rw.get('ring'): src[rw['ring']].append(f'보스 {bn} {rw.get("ringChance", 0):g}%')
+    if rw.get('first'): src[rw['first']].append(f'보스 {bn} 첫 처치')
+    if rw.get('fragments'): src['scroll_fragment'].append(f'보스 {bn} ×{rw["fragments"]}')
+    if rw.get('scrollChance'): src['scroll'].append(f'보스 {bn} {rw["scrollChance"]:g}%')
 sell = {short(k): v for k, v in shops.get('sell', {}).items() if not k.startswith('_')}
 used_in = collections.defaultdict(list)
 for r in crafts['recipes']:
