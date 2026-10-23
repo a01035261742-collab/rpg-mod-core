@@ -109,7 +109,7 @@ public final class WarriorSkills {
     }
 
     /** 피의 회전 타 간격 (틱): 5틱 × 5타 = 약 1초, 모션 한 번에 맞춤 */
-    public static int SPIN_GAP = 5, SPIN_FIRST = 2;
+    public static int SPIN_GAP = 3, SPIN_FIRST = 1;
 
     // ───────── 피의 회전: 약 1초 동안 5타 (이동 가능) ─────────
     static boolean bloodSpin(ServerPlayer p, Defs.SkillDef s, int lv) {

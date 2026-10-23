@@ -70,7 +70,7 @@ public final class ZoneCommand {
             "§f/rpg boss point add|remove|list · /rpg boss spawn <보스> · /rpg boss respawn",
             "§f/rpg trial point add  시련장 · /rpg quest ...  퀘스트 테스트",
             "§f/rpg gear <레벨> · /rpg potions · /rpg scrolls  테스트 아이템",
-            "§f/rpg anim list [글자] · /rpg anim play <모션> · /rpg anim set <스킬> <모션|NONE|reset> · /rpg anim spin <간격틱> <첫타틱>  EF 모션 테스트"};
+            "§f/rpg anim list [글자] · /rpg anim play <모션> · /rpg anim set <스킬> <모션|NONE|reset> · /rpg anim spin <간격틱> <첫타틱> · /rpg anim speed <배수>  EF 모션 테스트"};
 
     private static int daily(CommandContext<CommandSourceStack> c, ServerPlayer p, boolean fill) {
         if (fill) rpg.core.quest.Dailies.fill(p); else rpg.core.quest.Dailies.reset(p);
@@ -148,6 +148,12 @@ public final class ZoneCommand {
                             boolean ok = rpg.core.compat.EpicFightCompat.playAnim(c.getSource().getPlayerOrException(), n);
                             return ok(c, ok ? "모션 재생: " + n : "없는 모션: " + n);
                         })))
+                .then(Commands.literal("speed").then(Commands.argument("mul", com.mojang.brigadier.arguments.FloatArgumentType.floatArg(0.5f, 5f)).executes(c -> {
+                    float mul = com.mojang.brigadier.arguments.FloatArgumentType.getFloat(c, "mul");
+                    rpg.core.compat.EpicFightCompat.SPEED.put("STEEL_WHIRLWIND", mul);
+                    rpg.core.compat.EpicFightCompat.SPEED.put("GIANT_WHIRLWIND", mul);
+                    return ok(c, "회전 모션 속도 ×" + mul + " (싱글에서 바로 적용, 마음에 들면 알려주세요)");
+                })))
                 .then(Commands.literal("spin").then(Commands.argument("gap", IntegerArgumentType.integer(1, 20))
                         .then(Commands.argument("first", IntegerArgumentType.integer(0, 20)).executes(c -> {
                             rpg.core.skill.WarriorSkills.SPIN_GAP = IntegerArgumentType.getInteger(c, "gap");

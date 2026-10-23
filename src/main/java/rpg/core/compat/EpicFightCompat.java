@@ -133,7 +133,7 @@ public final class EpicFightCompat {
 
     /** 모션 재생 속도 배수 (클라에서 보이는 속도): 회전 모션이 느려서 빠르게 */
     public static final java.util.Map<String, Float> SPEED = new java.util.HashMap<>(java.util.Map.of(
-            "STEEL_WHIRLWIND", 1.7f, "GIANT_WHIRLWIND", 1.7f));
+            "STEEL_WHIRLWIND", 2.5f, "GIANT_WHIRLWIND", 2.5f));
     private static boolean speedDone;
 
     /** EF 모션에 재생 속도 배수 붙이기 (한 번만, 서버·클라 둘 다 — 화면은 클라 쪽이 중요) */
@@ -149,12 +149,12 @@ public final class EpicFightCompat {
                 Object anim;
                 try { anim = animsCls.getField(e.getKey()).get(null); } catch (NoSuchFieldException nf) { continue; }
                 if (anim == null) continue;
-                final float mul = e.getValue();
+                final String key = e.getKey();   // 재생할 때마다 SPEED 에서 읽음 (/rpg anim speed 로 바로 바꿔보기)
                 Object modifier = java.lang.reflect.Proxy.newProxyInstance(modCls.getClassLoader(), new Class<?>[]{modCls}, (px, m, a) -> {
-                    if (m.getName().equals("modify") && a != null && a.length >= 3 && a[2] instanceof Float sp) return sp * mul;
+                    if (m.getName().equals("modify") && a != null && a.length >= 3 && a[2] instanceof Float sp) return sp * SPEED.getOrDefault(key, 1f);
                     if (m.getName().equals("hashCode")) return System.identityHashCode(px);
                     if (m.getName().equals("equals")) return px == a[0];
-                    if (m.getName().equals("toString")) return "rpgcore speed x" + mul;
+                    if (m.getName().equals("toString")) return "rpgcore speed " + key;
                     return null;
                 });
                 for (var m : anim.getClass().getMethods()) {
