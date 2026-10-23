@@ -1690,7 +1690,7 @@
     "first": "forest_hunter_medal",
     "cubeChance": 20,
     "cubes": 1,
-    "epicScrollChance": 5
+    "epicScrollChance": 5, "eternalFlameChance": 30, "blackFlameChance": 5
    },
    "melee": {
     "name": "앞발",
@@ -1822,7 +1822,7 @@
     "first": "mush_hunter_medal",
     "cubeChance": 30,
     "cubes": 3,
-    "epicScrollChance": 10
+    "epicScrollChance": 10, "eternalFlameChance": 30, "blackFlameChance": 5
    }
   }
  },

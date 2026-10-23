@@ -66,7 +66,7 @@ public class PlayerEquip {
         if (d == null || !Gear.canEquip(p, s)) return;
         d.stats().forEach((k, v) -> m.merge(k, v, Double::sum));
         CompoundTag o = Gear.opts(s);
-        for (String k : o.getAllKeys()) m.merge(k, (double) o.getInt(k), Double::sum);
+        Flame.expand(o).forEach((k, v) -> m.merge(k, (double) v, Double::sum));   // 이중 스탯은 양쪽에
         Enhance.addBonus(s, m);   // 주문서 + 스타포스
         Potential.addBonus(s, m); // 잠재능력
     }

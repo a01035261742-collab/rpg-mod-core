@@ -39,6 +39,16 @@ public final class GearDefs {
             case "mp" -> "최대 MP";
             case "def" -> "방어";
             case "allPct" -> "올스탯%";
+            case "bossPct" -> "보스 데미지";
+            case "atkPct" -> "데미지";
+            case "speedPct" -> "이동속도";
+            case "reqLv" -> "착용 레벨 감소";
+            case "str+dex" -> "힘+민첩";
+            case "str+int" -> "힘+지력";
+            case "str+luk" -> "힘+운";
+            case "dex+int" -> "민첩+지력";
+            case "dex+luk" -> "민첩+운";
+            case "int+luk" -> "지력+운";
             default -> k;
         };
     }
@@ -83,6 +93,7 @@ public final class GearDefs {
             }
             Enhance.parse(o.has("enhance") ? o.getAsJsonObject("enhance") : null);
             Potential.parse(o.has("potential") ? o.getAsJsonObject("potential") : null);
+            Flame.parse(o.has("options") ? o.getAsJsonObject("options") : null);
             if (o.has("options")) {
                 JsonObject op = o.getAsJsonObject("options");
                 fixedLines = op.has("lines") ? op.get("lines").getAsInt() : -1;

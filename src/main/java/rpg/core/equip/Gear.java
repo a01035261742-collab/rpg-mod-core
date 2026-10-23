@@ -46,29 +46,8 @@ public final class Gear {
     public static void roll(ItemStack s) {
         GearDefs.GearDef d = def(s);
         if (d == null || rolled(s)) return;
-        ThreadLocalRandom r = ThreadLocalRandom.current();
-        int lines = GearDefs.fixedLines;
-        if (lines < 0) {   // fixedLines 가 없으면 예전 방식 (lineChances 확률)
-            int total = 0, pick;
-            for (int c : GearDefs.lineChances) total += c;
-            pick = r.nextInt(Math.max(1, total));
-            for (int i = 0; i < GearDefs.lineChances.length; i++) {
-                pick -= GearDefs.lineChances[i];
-                if (pick < 0) { lines = i; break; }
-            }
-            lines = Math.max(0, lines);
-        }
-        List<String> pool = new ArrayList<>(GearDefs.POOLS.getOrDefault(d.slot(), List.of()));
-        CompoundTag opts = new CompoundTag();
-        for (int i = 0; i < lines && !pool.isEmpty(); i++) {
-            String k = pool.remove(r.nextInt(pool.size()));
-            double[] rg = GearDefs.RANGES.getOrDefault(k, new double[]{1, 0, 2, 0});
-            int lo = (int) Math.max(1, Math.floor(rg[0] + rg[1] * d.level()));
-            int hi = (int) Math.max(lo, Math.floor(rg[2] + rg[3] * d.level()));
-            opts.putInt(k, lo + r.nextInt(hi - lo + 1));
-        }
-        s.getOrCreateTag().put("rpgOpts", opts);
-        s.getOrCreateTag().putBoolean("rpgRolled", true);
+        if (!Flame.can(d)) { rollPlain(s); return; }
+        Flame.apply(s, Flame.roll(d, d.id(), 1, Flame.dropTiers));
     }
 
     public static CompoundTag opts(ItemStack s) {
@@ -82,7 +61,7 @@ public final class Gear {
         int level, job;
         if (p.level().isClientSide) { level = ClientData.level; job = ClientData.job; }
         else { PlayerData pd = RpgData.get(p); level = pd.level; job = pd.job; }
-        if (level < d.level()) return false;
+        if (level < d.level() - Flame.reqLv(s)) return false;
         if (d.job() == 0) return true;
         if (job == d.job()) return true;
         return job == 0 && d.level() < 10;   // 초보자는 Lv10 미만 직업 무기 사용 가능
@@ -93,7 +72,7 @@ public final class Gear {
         GearDefs.GearDef d = def(s);
         if (d == null || !"weapon".equals(d.slot()) || canEquip(p, s)) return null;
         int level = p.level().isClientSide ? ClientData.level : RpgData.get(p).level;
-        if (level < d.level()) return "Lv." + d.level() + "부터 쓸 수 있는 무기예요";
+        if (level < d.level() - Flame.reqLv(s)) return "Lv." + (d.level() - Flame.reqLv(s)) + "부터 쓸 수 있는 무기예요";
         String job = switch (d.job()) { case 1 -> "전사"; case 2 -> "궁수"; case 3 -> "마법사"; case 4 -> "도적"; default -> ""; };
         return job + " 전용 무기라 쓸 수 없어요";
     }
@@ -109,7 +88,8 @@ public final class Gear {
             case 4 -> "도적";
             default -> "모든 직업";
         };
-        tip.add(Component.literal(GearDefs.slotName(d.slot()) + " · 착용 Lv." + d.level() + " · " + job).withStyle(ChatFormatting.GRAY));
+        int rq = Flame.reqLv(s);
+        tip.add(Component.literal(GearDefs.slotName(d.slot()) + " · 착용 Lv." + (d.level() - rq) + (rq > 0 ? " (" + d.level() + " -" + rq + ")" : "") + " · " + job).withStyle(ChatFormatting.GRAY));
         if (!d.title().isEmpty()) tip.add(Component.literal("칭호 《" + d.title() + "》 (훈장 칸에 끼면 머리 위에 표시)").withStyle(s2 -> s2.withColor(d.titleColor())));
         if (Enhance.broken(s)) tip.add(Component.literal("파괴된 장비 (능력치 없음) · 메뉴(M) → 강화에서 복구").withStyle(ChatFormatting.DARK_RED));
         int max = Enhance.maxStar(d), st = Enhance.star(s);
@@ -121,11 +101,10 @@ public final class Gear {
         CompoundTag o = opts(s);
         Map<String, Integer> sf = Enhance.starStats(s);
         java.util.LinkedHashSet<String> keys = new java.util.LinkedHashSet<>(d.stats().keySet());
-        for (String k : GearDefs.STAT_KEYS) if (sc.contains(k) || sf.containsKey(k) || o.contains(k)) keys.add(k);
-        keys.addAll(o.getAllKeys());
+        for (String k : GearDefs.STAT_KEYS) if (sc.contains(k) || sf.containsKey(k) || ox.containsKey(k)) keys.add(k);
         for (String k : keys) {
             double base = d.stats().getOrDefault(k, 0.0);
-            int a = sc.getInt(k), b = sf.getOrDefault(k, 0), c = o.getInt(k);
+            int a = sc.getInt(k), b = sf.getOrDefault(k, 0), c = ox.getOrDefault(k, 0);
             var line = Component.literal(GearDefs.label(k) + " +" + fmt(base + a + b + c, k)).withStyle(ChatFormatting.WHITE);
             if (a != 0 || b != 0 || c != 0) {
                 line.append(Component.literal(" (" + fmt(base, k)).withStyle(ChatFormatting.GRAY));
@@ -136,6 +115,15 @@ public final class Gear {
             }
             tip.add(line);
         }
+        for (String k : new String[]{"bossPct", "atkPct", "speedPct"})   // 추가 옵션 전용 % 줄
+            if (ox.containsKey(k)) tip.add(Component.literal(GearDefs.label(k) + " +" + ox.get(k) + "%").withStyle(ChatFormatting.GREEN));
+        if (!o.isEmpty()) {   // 추가 옵션 단계
+            CompoundTag tt = Flame.tiers(s);
+            StringBuilder sb = new StringBuilder();
+            for (String k : o.getAllKeys()) { if (sb.length() > 0) sb.append(" · "); sb.append(Flame.text(k, o.getInt(k), tt.getInt(k))); }
+            tip.add(Component.literal("추가 옵션: " + sb).withStyle(ChatFormatting.DARK_GREEN));
+        }
+        if (Flame.pending(s)) tip.add(Component.literal("검은 불꽃 선택 대기 중 (메뉴 → 강화 → 추가옵션)").withStyle(ChatFormatting.DARK_GRAY));
         if (d.speed() > 0) tip.add(Component.literal("공격 속도 " + d.speed()).withStyle(ChatFormatting.DARK_GRAY));
         if (Potential.has(s)) {   // 잠재능력
             CompoundTag pt = Potential.pot(s);

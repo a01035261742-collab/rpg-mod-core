@@ -18,13 +18,13 @@ import rpg.core.net.Net;
 
 /** 강화 창 (메뉴 M → 강화): 왼쪽 장비 목록, 위 탭 [스타포스] [주문서] [조각 합성] */
 public class EnhanceScreen extends Screen {
-    private static final int W = 340, H = 236, ROW = 20, ROWS = 8, CELL = 18;
+    private static final int W = 370, H = 236, ROW = 20, ROWS = 8, CELL = 18;
     private List<Integer> locs;
     private List<ItemStack> gear;
     private List<Integer> slots;
     private List<ItemStack> scrolls;
     private int frags;
-    private List<Integer> extra = List.of(0, 0, 0, 0, 0, 0);
+    private List<Integer> extra = List.of(0, 0, 0, 0, 0, 0, 0, 0, 0);
     private int x, y, scroll, tab, sel = -1, selScroll = -1;
     private boolean guard;
     private static int lastTab;
@@ -37,7 +37,7 @@ public class EnhanceScreen extends Screen {
     }
 
     private void set(List<Integer> locs, List<ItemStack> gear, List<Integer> slots, List<ItemStack> scrolls, int frags, List<Integer> extra) {
-        this.extra = extra.size() >= 6 ? extra : List.of(0, 0, 0, 0, 0, 0);
+        this.extra = extra.size() >= 9 ? extra : List.of(0, 0, 0, 0, 0, 0, 0, 0, 0);
         this.locs = locs;
         this.gear = gear;
         this.slots = slots;
@@ -95,7 +95,7 @@ public class EnhanceScreen extends Screen {
     protected void init() {
         x = width / 2 - W / 2;
         y = height / 2 - H / 2;
-        String[] names = {"스타포스", "주문서", "조각", "잠재능력"};
+        String[] names = {"스타포스", "주문서", "조각", "잠재능력", "추가옵션"};
         int tx = x + 158;
         for (int i = 0; i < names.length; i++) {
             final int k = i;
@@ -154,6 +154,21 @@ public class EnhanceScreen extends Screen {
                 b2.active = extra.get(0) > 0;
                 addRenderableWidget(b2);
             }
+        } else if (tab == 4 && d != null && rpg.core.equip.Flame.can(d) && !Enhance.broken(s)) {
+            if (rpg.core.equip.Flame.pending(s)) {
+                addRenderableWidget(Button.builder(Component.literal("새 옵션 적용"), bt -> Net.CH.sendToServer(new Net.EnhanceAction(11, curLoc(), 0))).bounds(bx, by, 100, 18).build());
+                addRenderableWidget(Button.builder(Component.literal("이전 유지"), bt -> Net.CH.sendToServer(new Net.EnhanceAction(11, curLoc(), 1))).bounds(bx + 104, by, 100, 18).build());
+            } else {
+                String[] nm = {"강력한", "영원한", "검은"};
+                long c = rpg.core.equip.Flame.cost(d);
+                for (int i = 0; i < 3; i++) {
+                    final int k = i;
+                    Button b = Button.builder(Component.literal(nm[i] + " (" + extra.get(6 + i) + ")"), bt -> Net.CH.sendToServer(new Net.EnhanceAction(10, curLoc(), k)))
+                            .bounds(bx + i * 70, by, 66, 18).build();
+                    b.active = extra.get(6 + i) > 0 && ClientData.gold >= c;
+                    addRenderableWidget(b);
+                }
+            }
         } else if (tab == 2) {
             Button b = Button.builder(Component.literal("합성 (조각 " + Enhance.fragments + "개)"), bt ->
                     Net.CH.sendToServer(new Net.EnhanceAction(4, 0, 0))).bounds(bx, by, 130, 18).build();
@@ -207,6 +222,8 @@ public class EnhanceScreen extends Screen {
             g.drawString(font, "왼쪽에서 장비를 고르세요", px, py, 0xFF808080, false);
         } else if (tab == 3) {
             renderPot(g, s, d, px, py);
+        } else if (tab == 4) {
+            renderFlame(g, s, d, px, py);
         } else if (tab == 0) {
             renderStar(g, s, d, px, py);
         } else {
@@ -308,6 +325,34 @@ public class EnhanceScreen extends Screen {
             yy += 4;
             g.drawString(font, "등급 상승 " + fmt(rpg.core.equip.Potential.upChance[gr]) + "% · 천장 " + extra.get(3 + gr) + " / " + rpg.core.equip.Potential.ceiling[gr], px, yy, 0xFFA0A0A0, false);
         }
+    }
+
+    private void renderFlame(GuiGraphics g, ItemStack s, GearDefs.GearDef d, int px, int py) {
+        g.drawString(font, s.getHoverName(), px, py, 0xFFFFFFFF, false);
+        if (!rpg.core.equip.Flame.can(d)) { g.drawString(font, "추가 옵션 불가 (훈장)", px, py + 14, 0xFFFF5555, false); return; }
+        if (Enhance.broken(s)) { g.drawString(font, "파괴된 장비예요", px, py + 14, 0xFFFF5555, false); return; }
+        int yy = py + 13;
+        boolean pend = rpg.core.equip.Flame.pending(s);
+        g.drawString(font, pend ? "이전 옵션" : "지금 옵션", px, yy, 0xFF55FF55, false);
+        yy = flameLines(g, Gear.opts(s), rpg.core.equip.Flame.tiers(s), px, yy + 10);
+        if (pend) {
+            var nw = rpg.core.equip.Flame.pendingTag(s);
+            g.drawString(font, "새 옵션", px, yy + 2, 0xFFB070FF, false);
+            flameLines(g, nw.getCompound("o"), nw.getCompound("t"), px, yy + 12);
+        } else {
+            long c = rpg.core.equip.Flame.cost(d);
+            g.drawString(font, "강력한 3~6단계 · 영원한 4~7 · 검은 4~7 (선택)", px, y + H - 76, 0xFFA0A0A0, false);
+            g.drawString(font, "비용: 불꽃 1개 + " + String.format("%,d", c) + " G", px, y + H - 66, ClientData.gold >= c ? 0xFFFFD24A : 0xFFFF5555, false);
+        }
+    }
+
+    private int flameLines(GuiGraphics g, net.minecraft.nbt.CompoundTag o, net.minecraft.nbt.CompoundTag t, int px, int yy) {
+        if (o.isEmpty()) { g.drawString(font, " 없음", px, yy, 0xFF808080, false); return yy + 10; }
+        for (String k : o.getAllKeys()) {
+            g.drawString(font, " " + rpg.core.equip.Flame.text(k, o.getInt(k), t.getInt(k)), px, yy, 0xFFFFFFFF, false);
+            yy += 10;
+        }
+        return yy;
     }
 
     private static String fmt(double v) {

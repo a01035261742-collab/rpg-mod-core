@@ -31,6 +31,7 @@
  "bonus": {
   "fragments": 5,
   "potions": 10,
-  "returnScroll": 1
+  "returnScroll": 1,
+  "flames": 1
  }
 }

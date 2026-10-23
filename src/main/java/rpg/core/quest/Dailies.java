@@ -44,7 +44,7 @@ public final class Dailies {
     public static final Map<String, Kind> KINDS = new LinkedHashMap<>();
     public static int resetHour = 6, count = 3, rerolls = 1;
     public static double expPct = 15, goldMobs = 30, bossMul = 2;
-    public static int fragments = 3, bonusFragments = 5, bonusPotions = 10, bonusReturn = 1;
+    public static int fragments = 3, bonusFragments = 5, bonusPotions = 10, bonusReturn = 1, bonusFlames = 1;
 
     public static void parse(String text) {
         KINDS.clear();
@@ -70,6 +70,7 @@ public final class Dailies {
                 bonusFragments = b.has("fragments") ? b.get("fragments").getAsInt() : bonusFragments;
                 bonusPotions = b.has("potions") ? b.get("potions").getAsInt() : bonusPotions;
                 bonusReturn = b.has("returnScroll") ? b.get("returnScroll").getAsInt() : bonusReturn;
+                bonusFlames = b.has("flames") ? b.get("flames").getAsInt() : bonusFlames;
             }
         } catch (Exception ex) {
             RpgCore.LOG.warn("[rpgcore] dailies.json 읽기 실패: {}", ex.toString());
@@ -311,8 +312,9 @@ public final class Dailies {
             Item pot = pd.level >= 35 ? ModItems.WHITE_POTION.get() : pd.level >= 20 ? ModItems.ORANGE_POTION.get() : ModItems.RED_POTION.get();
             give(p, new ItemStack(pot, bonusPotions));
             if (bonusReturn > 0) give(p, new ItemStack(ModItems.RETURN_SCROLL.get(), bonusReturn));
+            if (bonusFlames > 0) give(p, new ItemStack(ModItems.POWERFUL_FLAME.get(), bonusFlames));
             p.sendSystemMessage(Component.literal("[일일] 오늘 일일 퀘스트를 다 했어요! 보너스: 주문서 조각 " + bonusFragments + " · 물약 " + bonusPotions
-                    + (bonusReturn > 0 ? " · 귀환 주문서 " + bonusReturn : "")).withStyle(ChatFormatting.GOLD));
+                    + (bonusReturn > 0 ? " · 귀환 주문서 " + bonusReturn : "") + (bonusFlames > 0 ? " · 강력한 환생의 불꽃 " + bonusFlames : "")).withStyle(ChatFormatting.GOLD));
         }
         save(p, d);
         RpgData.sync(p);

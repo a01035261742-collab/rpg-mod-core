@@ -186,11 +186,13 @@ public final class Net {
         int[] ce = rpg.core.equip.Potential.ceilCounts(p);
         java.util.List<Integer> extra = java.util.List.of(rpg.core.equip.Enhance.count(p, rpg.core.item.ModItems.CUBE.get()),
                 rpg.core.equip.Enhance.count(p, rpg.core.item.ModItems.POTENTIAL_SCROLL.get()),
-                rpg.core.equip.Enhance.count(p, rpg.core.item.ModItems.EPIC_POTENTIAL_SCROLL.get()), ce[0], ce[1], ce[2]);
+                rpg.core.equip.Enhance.count(p, rpg.core.item.ModItems.EPIC_POTENTIAL_SCROLL.get()), ce[0], ce[1], ce[2],
+                rpg.core.equip.Enhance.count(p, rpg.core.item.ModItems.POWERFUL_FLAME.get()), rpg.core.equip.Enhance.count(p, rpg.core.item.ModItems.ETERNAL_FLAME.get()),
+                rpg.core.equip.Enhance.count(p, rpg.core.item.ModItems.BLACK_FLAME.get()));
         CH.send(PacketDistributor.PLAYER.with(() -> p), new OpenEnhance(open, locs, gear, slots, scrolls, frags, extra));
     }
 
-    /** extra: 큐브 · 부여 주문서 · 에픽 부여 주문서 · 천장 카운트 레어·에픽·유니크 */
+    /** extra: 큐브 · 부여 주문서 · 에픽 부여 주문서 · 천장 카운트 레어·에픽·유니크 · 강력한·영원한·검은 불꽃 */
     public record OpenEnhance(boolean open, java.util.List<Integer> locs, java.util.List<net.minecraft.world.item.ItemStack> gear,
                               java.util.List<Integer> slots, java.util.List<net.minecraft.world.item.ItemStack> scrolls, int frags,
                               java.util.List<Integer> extra) {
@@ -230,6 +232,8 @@ public final class Net {
                     case 7 -> rpg.core.equip.Potential.reset(p, rpg.core.equip.Enhance.at(p, loc), true);
                     case 8 -> rpg.core.equip.Potential.choose(p, rpg.core.equip.Enhance.at(p, loc), false);
                     case 9 -> rpg.core.equip.Potential.choose(p, rpg.core.equip.Enhance.at(p, loc), true);
+                    case 10 -> rpg.core.equip.Flame.use(p, rpg.core.equip.Enhance.at(p, loc), arg == 1 ? "eternal" : arg == 2 ? "black" : "powerful");
+                    case 11 -> rpg.core.equip.Flame.choose(p, rpg.core.equip.Enhance.at(p, loc), arg == 1);
                     default -> {}
                 }
                 rpg.core.equip.PlayerEquip.get(p).dirty = true;   // 능력치 다시 계산

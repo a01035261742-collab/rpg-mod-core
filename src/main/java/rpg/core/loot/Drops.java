@@ -45,6 +45,8 @@ public final class Drops {
     public static double returnChance = 0.5;
     /** 잠재능력 부여 주문서 드롭 확률 % (drops.json potentialScroll) */
     public static double potentialChance = 0.2;
+    /** 환생의 불꽃 드롭 % (drops.json flame: powerful = 모든 몹, eliteEternal = 엘리트 영원한) */
+    public static double flameChance = 0.5, eliteEternalChance = 2;
     public static final Map<String, Double> ENHANCE = new LinkedHashMap<>();
     public static final Map<String, MobDrops> MOBS = new HashMap<>();
 
@@ -57,6 +59,7 @@ public final class Drops {
             returnChance = d(o, "returnScroll", 0.5);
             potentialChance = d(o, "potentialScroll", 0.2);
             goldChance = d(o, "goldChance", 100);
+            if (o.has("flame")) { JsonObject f = o.getAsJsonObject("flame"); flameChance = d(f, "powerful", 0.5); eliteEternalChance = d(f, "eliteEternal", 2); }
             if (o.has("potion")) {
                 JsonObject p = o.getAsJsonObject("potion"); potionChance = d(p, "chance", 8); potionRed = d(p, "redRatio", 70);
                 POTION_TIERS.clear();
@@ -123,6 +126,8 @@ public final class Drops {
 
         if (returnChance > 0 && hit(r, returnChance * mul)) out.add(new ItemStack(ModItems.RETURN_SCROLL.get()));
         if (potentialChance > 0 && hit(r, potentialChance * mul)) out.add(new ItemStack(ModItems.POTENTIAL_SCROLL.get()));
+        if (flameChance > 0 && hit(r, flameChance * mul)) out.add(new ItemStack(ModItems.POWERFUL_FLAME.get()));
+        if (m.elite && eliteEternalChance > 0 && hit(r, eliteEternalChance * mul)) out.add(new ItemStack(ModItems.ETERNAL_FLAME.get()));
         double pc = md != null && md.potion() >= 0 ? md.potion() : potionChance;
         if (hit(r, pc * mul)) out.add(new ItemStack(potionFor(m.level, r.nextDouble() * 100 < potionRed)));
 

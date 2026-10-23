@@ -65,8 +65,14 @@ for mk, mv in mobs.items():
     if rw.get('sure'): src[rw['sure']].append(f'보스 {bn} 확정')
     if rw.get('ring'): src[rw['ring']].append(f'보스 {bn} {rw.get("ringChance", 0):g}%')
     if rw.get('first'): src[rw['first']].append(f'보스 {bn} 첫 처치')
+    if rw.get('eternalFlameChance'): src['eternal_flame'].append(f'보스 {bn} {rw["eternalFlameChance"]:g}%')
+    if rw.get('blackFlameChance'): src['black_flame'].append(f'보스 {bn} {rw["blackFlameChance"]:g}%')
     if rw.get('fragments'): src['scroll_fragment'].append(f'보스 {bn} ×{rw["fragments"]}')
     if rw.get('scrollChance'): src['scroll'].append(f'보스 {bn} {rw["scrollChance"]:g}%')
+_fl = drops.get('flame', {})
+if _fl.get('powerful'): src['powerful_flame'].append(f'드롭 모든 몹 {_fl["powerful"]:g}%')
+if _fl.get('eliteEternal'): src['eternal_flame'].append(f'드롭 엘리트 {_fl["eliteEternal"]:g}%')
+src['powerful_flame'].append('일일 퀘스트 전부 완료 보너스')
 # 업적 훈장 (achievements.json)
 _tn = {'level': '레벨', 'kills': '처치', 'star': '★', 'destroy': '파괴', 'bossKinds': '보스 종류', 'gold': '보유 골드'}
 for ak, av in load('achievements').items():

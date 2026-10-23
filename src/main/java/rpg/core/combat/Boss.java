@@ -886,6 +886,11 @@ public final class Boss {
                 out.add(new ItemStack(rpg.core.item.ModItems.CUBE.get(), (int) Math.max(1, def.rx().getOrDefault("cubes", 1.0))));
             if (r.nextDouble() * 100 < def.rx().getOrDefault("epicScrollChance", 0.0) * mul)
                 out.add(new ItemStack(rpg.core.item.ModItems.EPIC_POTENTIAL_SCROLL.get()));
+            // 환생의 불꽃
+            if (r.nextDouble() * 100 < def.rx().getOrDefault("eternalFlameChance", 0.0) * mul)
+                out.add(new ItemStack(rpg.core.item.ModItems.ETERNAL_FLAME.get()));
+            if (r.nextDouble() * 100 < def.rx().getOrDefault("blackFlameChance", 0.0) * mul)
+                out.add(new ItemStack(rpg.core.item.ModItems.BLACK_FLAME.get()));
             if (!def.ring().isEmpty() && r.nextDouble() * 100 < def.ringChance() * mul) {
                 ItemStack g = rpg.core.item.ItemIds.stack(RpgCore.MODID + ":" + def.ring(), 1);
                 rpg.core.equip.Gear.roll(g);

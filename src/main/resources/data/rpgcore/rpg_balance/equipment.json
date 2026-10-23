@@ -1626,199 +1626,186 @@
   }
  },
  "options": {
-  "_설명": "추가 옵션. lines = 줄 수 고정 (제작·드롭·보상 장비, 상점 일반 장비는 없음). 없으면 lineChances 확률(0~4줄). 부위별로 나올 수 있는 옵션, 옵션 수치 = 무작위(min + minPerLevel×레벨 ~ max + maxPerLevel×레벨)",
-  "lines": 4,
+  "_설명": "추가 옵션 (메이플 환생의 불꽃식). 수치 = 단계 × (values[0] + values[1] × 장비 레벨) 내림 최소 1, 무기 공/마 = 기본 공격력 × weaponAtkPct% × 단계. 줄 수 lineChances(1~4줄), bossItems 는 4줄. 처음 얻을 때 dropTiers (1~4단계). flames: min 단계부터 w 비중. 비용 = 불꽃 + (장비 레벨+10) × costMul G",
   "lineChances": [
-   20,
-   30,
    25,
-   15,
-   10
+   25,
+   25,
+   25
   ],
+  "dropTiers": [
+   25,
+   25,
+   25,
+   25
+  ],
+  "costMul": 50,
+  "weaponAtkPct": 3,
+  "bossItems": [
+   "forest_lord_ring",
+   "guardian_ring"
+  ],
+  "flames": {
+   "powerful": {
+    "item": "powerful_flame",
+    "min": 3,
+    "w": [
+     20,
+     30,
+     36,
+     14
+    ]
+   },
+   "eternal": {
+    "item": "eternal_flame",
+    "min": 4,
+    "w": [
+     29,
+     45,
+     25,
+     1
+    ]
+   },
+   "black": {
+    "item": "black_flame",
+    "min": 4,
+    "w": [
+     29,
+     45,
+     25,
+     1
+    ]
+   }
+  },
   "pools": {
    "weapon": [
     "str",
     "dex",
     "int",
     "luk",
+    "vit",
+    "str+dex",
+    "str+int",
+    "str+luk",
+    "dex+int",
+    "dex+luk",
+    "int+luk",
+    "hp",
+    "mp",
+    "def",
     "atk",
     "matk",
-    "allPct"
+    "reqLv",
+    "allPct",
+    "bossPct",
+    "atkPct"
    ],
-   "hat": [
+   "armor": [
     "str",
     "dex",
     "int",
     "luk",
     "vit",
+    "str+dex",
+    "str+int",
+    "str+luk",
+    "dex+int",
+    "dex+luk",
+    "int+luk",
     "hp",
     "mp",
-    "def"
-   ],
-   "top": [
-    "str",
-    "dex",
-    "int",
-    "luk",
-    "vit",
-    "hp",
-    "mp",
-    "def"
-   ],
-   "bottom": [
-    "str",
-    "dex",
-    "int",
-    "luk",
-    "vit",
-    "hp",
-    "mp",
-    "def"
-   ],
-   "shoes": [
-    "str",
-    "dex",
-    "int",
-    "luk",
-    "vit",
-    "hp",
-    "mp",
-    "def"
-   ],
-   "gloves": [
-    "str",
-    "dex",
-    "int",
-    "luk",
+    "def",
     "atk",
     "matk",
-    "def"
-   ],
-   "cape": [
-    "str",
-    "dex",
-    "int",
-    "luk",
-    "vit",
-    "hp",
-    "def"
-   ],
-   "belt": [
-    "str",
-    "dex",
-    "int",
-    "luk",
-    "vit",
-    "hp",
-    "def"
-   ],
-   "earring": [
-    "str",
-    "dex",
-    "int",
-    "luk",
-    "vit",
-    "hp",
-    "mp",
-    "allPct"
-   ],
-   "ring": [
-    "str",
-    "dex",
-    "int",
-    "luk",
-    "vit",
-    "hp",
-    "mp",
-    "allPct"
-   ],
-   "pendant": [
-    "str",
-    "dex",
-    "int",
-    "luk",
-    "vit",
-    "hp",
-    "mp",
-    "allPct"
-   ],
-   "medal": [
-    "str",
-    "dex",
-    "int",
-    "luk",
-    "vit",
-    "hp",
-    "mp",
-    "allPct"
+    "reqLv",
+    "allPct",
+    "speedPct"
    ]
   },
-  "ranges": {
+  "values": {
    "str": [
-    1,
-    0.1,
-    3,
-    0.3
+    0.5,
+    0.025
    ],
    "dex": [
-    1,
-    0.1,
-    3,
-    0.3
+    0.5,
+    0.025
    ],
    "int": [
-    1,
-    0.1,
-    3,
-    0.3
+    0.5,
+    0.025
    ],
    "luk": [
-    1,
-    0.1,
-    3,
-    0.3
+    0.5,
+    0.025
    ],
    "vit": [
-    1,
-    0.1,
-    3,
-    0.3
+    0.5,
+    0.025
    ],
-   "atk": [
-    1,
-    0.05,
-    2,
-    0.15
+   "str+dex": [
+    0.25,
+    0.0125
    ],
-   "matk": [
-    1,
-    0.05,
-    2,
-    0.15
+   "str+int": [
+    0.25,
+    0.0125
+   ],
+   "str+luk": [
+    0.25,
+    0.0125
+   ],
+   "dex+int": [
+    0.25,
+    0.0125
+   ],
+   "dex+luk": [
+    0.25,
+    0.0125
+   ],
+   "int+luk": [
+    0.25,
+    0.0125
    ],
    "hp": [
-    5,
-    1,
-    15,
-    3
+    2,
+    0.5
    ],
    "mp": [
-    3,
-    0.5,
-    10,
-    2
+    1,
+    0.25
    ],
    "def": [
+    0.5,
+    0.05
+   ],
+   "atk": [
+    0.6,
+    0
+   ],
+   "matk": [
+    0.6,
+    0
+   ],
+   "reqLv": [
     1,
-    0.2,
-    3,
-    0.5
+    0
    ],
    "allPct": [
     1,
-    0,
+    0
+   ],
+   "bossPct": [
     2,
-    0.05
+    0
+   ],
+   "atkPct": [
+    1,
+    0
+   ],
+   "speedPct": [
+    1,
+    0
    ]
   }
  },
