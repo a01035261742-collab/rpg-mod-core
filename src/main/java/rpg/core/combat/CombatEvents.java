@@ -86,6 +86,13 @@ public final class CombatEvents {
         if (MobAI.edge(m, p) > RpgMeleeGoal.REACH + 0.6) e.setCanceled(true);
     }
 
+    /** PvP 끔: 플레이어(또는 플레이어가 쏜 것)가 다른 플레이어를 때리면 막음 */
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public static void noPvp(net.minecraftforge.event.entity.living.LivingAttackEvent e) {
+        if (!(e.getEntity() instanceof net.minecraft.world.entity.player.Player victim)) return;
+        if (e.getSource().getEntity() instanceof net.minecraft.world.entity.player.Player a && a != victim) e.setCanceled(true);
+    }
+
     /** 다른 직업(또는 레벨 부족) 무기로는 근접 공격이 안 들어감 */
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void wrongWeapon(net.minecraftforge.event.entity.living.LivingAttackEvent e) {
