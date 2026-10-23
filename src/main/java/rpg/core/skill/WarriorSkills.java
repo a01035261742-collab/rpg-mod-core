@@ -88,7 +88,10 @@ public final class WarriorSkills {
         return true;
     }
 
-    // ───────── 피의 회전: 2초 동안 5타 (이동 가능) ─────────
+    /** 피의 회전 타 간격 (틱): 5틱 × 5타 = 약 1초, 모션 한 번에 맞춤 */
+    public static int SPIN_GAP = 5, SPIN_FIRST = 2;
+
+    // ───────── 피의 회전: 약 1초 동안 5타 (이동 가능) ─────────
     static boolean bloodSpin(ServerPlayer p, Defs.SkillDef s, int lv) {
         double pct = s.value(lv);
         int hits = s.hits(lv);
@@ -102,9 +105,8 @@ public final class WarriorSkills {
                 l.sendParticles(ParticleTypes.SWEEP_ATTACK, p.getX(), p.getY() + 1, p.getZ(), 6, 1.6, 0.2, 1.6, 0);
                 l.sendParticles(ParticleTypes.DAMAGE_INDICATOR, p.getX(), p.getY() + 1, p.getZ(), 5, 1.2, 0.3, 1.2, 0.1);
                 l.playSound(null, p.blockPosition(), SoundEvents.PLAYER_ATTACK_SWEEP, SoundSource.PLAYERS, 0.8f, 0.6f + k * 0.08f);
-                if (k > 0 && k % 2 == 0) anim(p, "blood_spin", ANIM_SPIN);   // 2초 동안 계속 도는 모션
             };
-            if (i == 0) hit.run(); else JobSkills.later(p, i * 8, hit);
+            JobSkills.later(p, SPIN_FIRST + i * SPIN_GAP, hit);   // 모션은 처음 한 번, 타는 모션 도는 동안 고르게
         }
         return true;
     }

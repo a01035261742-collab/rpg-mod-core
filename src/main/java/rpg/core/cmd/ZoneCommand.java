@@ -70,7 +70,7 @@ public final class ZoneCommand {
             "§f/rpg boss point add|remove|list · /rpg boss spawn <보스> · /rpg boss respawn",
             "§f/rpg trial point add  시련장 · /rpg quest ...  퀘스트 테스트",
             "§f/rpg gear <레벨> · /rpg potions · /rpg scrolls  테스트 아이템",
-            "§f/rpg anim list [글자] · /rpg anim play <모션> · /rpg anim set <스킬> <모션|NONE|reset>  EF 모션 테스트"};
+            "§f/rpg anim list [글자] · /rpg anim play <모션> · /rpg anim set <스킬> <모션|NONE|reset> · /rpg anim spin <간격틱> <첫타틱>  EF 모션 테스트"};
 
     private static int daily(CommandContext<CommandSourceStack> c, ServerPlayer p, boolean fill) {
         if (fill) rpg.core.quest.Dailies.fill(p); else rpg.core.quest.Dailies.reset(p);
@@ -148,6 +148,12 @@ public final class ZoneCommand {
                             boolean ok = rpg.core.compat.EpicFightCompat.playAnim(c.getSource().getPlayerOrException(), n);
                             return ok(c, ok ? "모션 재생: " + n : "없는 모션: " + n);
                         })))
+                .then(Commands.literal("spin").then(Commands.argument("gap", IntegerArgumentType.integer(1, 20))
+                        .then(Commands.argument("first", IntegerArgumentType.integer(0, 20)).executes(c -> {
+                            rpg.core.skill.WarriorSkills.SPIN_GAP = IntegerArgumentType.getInteger(c, "gap");
+                            rpg.core.skill.WarriorSkills.SPIN_FIRST = IntegerArgumentType.getInteger(c, "first");
+                            return ok(c, "피의 회전 타이밍: 첫 타 " + rpg.core.skill.WarriorSkills.SPIN_FIRST + "틱 뒤, 간격 " + rpg.core.skill.WarriorSkills.SPIN_GAP + "틱 (20틱 = 1초)");
+                        }))))
                 .then(Commands.literal("set").then(Commands.argument("skill", com.mojang.brigadier.arguments.StringArgumentType.word())
                         .suggests((c, b) -> SharedSuggestionProvider.suggest(new String[]{"power_strike", "charge_rush", "leap_slam", "blood_spin", "combo_slash_1", "combo_slash_2", "combo_slash_3"}, b))
                         .then(Commands.argument("name", com.mojang.brigadier.arguments.StringArgumentType.word())
