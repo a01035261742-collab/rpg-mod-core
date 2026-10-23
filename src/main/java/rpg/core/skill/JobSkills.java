@@ -44,7 +44,10 @@ public final class JobSkills {
     /** 스킬 효과 실행. false = 안 씀 (MP·쿨 안 깎음) */
     public static boolean use(ServerPlayer p, PlayerData d, Defs.SkillDef s, int lv, long now) {
         return switch (s.id()) {
-            case "iron_body" -> buff(p, d, s, lv, now, ParticleTypes.CRIT, SoundEvents.ANVIL_PLACE);
+            case "iron_body" -> {
+                WarriorSkills.burst(p, ParticleTypes.CRIT, SoundEvents.ARMOR_EQUIP_IRON, 0.7f);
+                yield buff(p, d, s, lv, now, ParticleTypes.CRIT, SoundEvents.ANVIL_PLACE);
+            }
             case "magic_guard" -> buff(p, d, s, lv, now, ParticleTypes.ENCHANT, SoundEvents.ENCHANTMENT_TABLE_USE);
             case "haste" -> haste(p, s, lv, now);
             case "stealth" -> stealth(p, d, s, lv, now);
@@ -90,7 +93,7 @@ public final class JobSkills {
         if (ratio >= 1) l.sendParticles(ParticleTypes.EXPLOSION, c.x, p.getY() + 0.5, c.z, 1, 0, 0, 0, 0);
         l.playSound(null, p.blockPosition(), ratio >= 1 ? SoundEvents.PLAYER_ATTACK_CRIT : SoundEvents.PLAYER_ATTACK_SWEEP,
                 SoundSource.PLAYERS, 1.0f, 0.8f + (float) ratio * 0.3f);
-        if (!rpg.core.compat.EpicFightCompat.playAnim(p, "GREATSWORD_AUTO1"))   // 대검 내려찍기
+        if (!rpg.core.compat.EpicFightCompat.playSkill(p, "power_strike", "GREATSWORD_AUTO1"))   // 대검 내려찍기
             p.swing(net.minecraft.world.InteractionHand.MAIN_HAND, true);
     }
 

@@ -69,11 +69,19 @@ public final class ZoneCommand {
             "§f/rpg daily reset|complete [플레이어]  일일 퀘스트 새로 뽑기 · 진행도 채우기",
             "§f/rpg boss point add|remove|list · /rpg boss spawn <보스> · /rpg boss respawn",
             "§f/rpg trial point add  시련장 · /rpg quest ...  퀘스트 테스트",
-            "§f/rpg gear <레벨> · /rpg potions · /rpg scrolls  테스트 아이템"};
+            "§f/rpg gear <레벨> · /rpg potions · /rpg scrolls  테스트 아이템",
+            "§f/rpg anim list [글자] · /rpg anim play <모션> · /rpg anim set <스킬> <모션|NONE|reset>  EF 모션 테스트"};
 
     private static int daily(CommandContext<CommandSourceStack> c, ServerPlayer p, boolean fill) {
         if (fill) rpg.core.quest.Dailies.fill(p); else rpg.core.quest.Dailies.reset(p);
         return ok(c, p.getGameProfile().getName() + " 일일 퀘스트 " + (fill ? "진행도 채움 (M → 일일 퀘스트에서 완료)" : "새로 뽑음"));
+    }
+
+    private static int animList(CommandContext<CommandSourceStack> c, String filter) {
+        var names = rpg.core.compat.EpicFightCompat.animNames(filter);
+        if (names.isEmpty()) return ok(c, "모션 없음 (Epic Fight 없음 또는 필터 결과 없음)");
+        c.getSource().sendSystemMessage(Component.literal("§e모션 " + names.size() + "개: §f" + String.join(", ", names)));
+        return 1;
     }
 
     private static int help(CommandContext<CommandSourceStack> c, boolean admin) {
@@ -128,6 +136,29 @@ public final class ZoneCommand {
                 .then(Commands.literal("complete").executes(c -> daily(c, c.getSource().getPlayerOrException(), true))
                         .then(Commands.argument("player", net.minecraft.commands.arguments.EntityArgument.player())
                                 .executes(c -> daily(c, net.minecraft.commands.arguments.EntityArgument.getPlayer(c, "player"), true)))));
+        // ── EF 모션 테스트 (관리자): 목록 · 재생 · 스킬에 바꿔 끼우기 ──
+        root.then(Commands.literal("anim").requires(s -> s.hasPermission(2))
+                .then(Commands.literal("list").executes(c -> animList(c, ""))
+                        .then(Commands.argument("filter", com.mojang.brigadier.arguments.StringArgumentType.word())
+                                .executes(c -> animList(c, com.mojang.brigadier.arguments.StringArgumentType.getString(c, "filter")))))
+                .then(Commands.literal("play").then(Commands.argument("name", com.mojang.brigadier.arguments.StringArgumentType.word())
+                        .suggests((c, b) -> SharedSuggestionProvider.suggest(rpg.core.compat.EpicFightCompat.animNames(""), b))
+                        .executes(c -> {
+                            String n = com.mojang.brigadier.arguments.StringArgumentType.getString(c, "name");
+                            boolean ok = rpg.core.compat.EpicFightCompat.playAnim(c.getSource().getPlayerOrException(), n);
+                            return ok(c, ok ? "모션 재생: " + n : "없는 모션: " + n);
+                        })))
+                .then(Commands.literal("set").then(Commands.argument("skill", com.mojang.brigadier.arguments.StringArgumentType.word())
+                        .suggests((c, b) -> SharedSuggestionProvider.suggest(new String[]{"power_strike", "charge_rush", "leap_slam", "blood_spin", "combo_slash_1", "combo_slash_2", "combo_slash_3"}, b))
+                        .then(Commands.argument("name", com.mojang.brigadier.arguments.StringArgumentType.word())
+                                .suggests((c, b) -> SharedSuggestionProvider.suggest(rpg.core.compat.EpicFightCompat.animNames(""), b))
+                                .executes(c -> {
+                                    String sk = com.mojang.brigadier.arguments.StringArgumentType.getString(c, "skill");
+                                    String n = com.mojang.brigadier.arguments.StringArgumentType.getString(c, "name");
+                                    if (n.equalsIgnoreCase("reset")) rpg.core.compat.EpicFightCompat.OVERRIDE.remove(sk);
+                                    else rpg.core.compat.EpicFightCompat.OVERRIDE.put(sk, n);
+                                    return ok(c, sk + " 모션 → " + n + " (서버 끄면 초기화, 마음에 들면 알려주세요)");
+                                })))));
         // ── 업적 ──
         root.then(Commands.literal("ach").executes(c -> { rpg.core.quest.Achievements.show(c.getSource().getPlayerOrException()); return 1; }));
         // ── 도움말 ──

@@ -93,6 +93,9 @@ public class PlayerData {
     private static final String[] EQUIP_BONUS = {"atkPct", "dmgPct", "hpPct", "critChance", "goldPct", "dropPct", "speedPct", "bossPct", "critDmg", "cdPct"};
     /** 피격 시 확률 무적 (잠재능력): 이 시각까지 피해 없음 */
     public transient long invulUntil;
+    /** 연속 베기: 다음 타 (0~2), 이어서 누를 수 있는 시각 */
+    public transient int comboStep;
+    public transient long comboUntil;
     /** 마지막으로 나를 때린 것 (사망 메시지용) */
     public transient String lastHitBy = "";
     public transient long lastHitAt;
@@ -158,6 +161,16 @@ public class PlayerData {
         if (hp > maxHp) { hp = maxHp; changed = true; }
         if (mp > maxMp) { mp = maxMp; changed = true; }
         return changed;
+    }
+
+    /** 직업 개편: 스킬 포인트 전부 돌려받고 스킬 칸 비우기 */
+    public void refundSkills() {
+        int sp = 0;
+        for (int v : skills.values()) sp += v;
+        skills.clear();
+        for (int i = 0; i < slots.length; i++) slots[i] = null;
+        skillPoints += sp;
+        recalc();
     }
 
     /** 찍은 스탯을 전부 돌려받기 (초기화 주문서) */

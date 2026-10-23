@@ -48,8 +48,14 @@ public final class BranchSkills {
     public static boolean use(ServerPlayer p, PlayerData d, Defs.SkillDef s, int lv, long now) {
         return switch (s.id()) {
             case "taunt" -> taunt(p, s, lv);
-            case "iron_wall" -> buff(p, d, "iron_wall", s.value2(lv), s.value(lv), 0, ParticleTypes.CRIT, SoundEvents.SHIELD_BLOCK);
+            case "iron_wall" -> {
+                WarriorSkills.burst(p, ParticleTypes.END_ROD, SoundEvents.SHIELD_BLOCK, 0.6f);
+                yield buff(p, d, "iron_wall", s.value2(lv), s.value(lv), 0, ParticleTypes.CRIT, SoundEvents.SHIELD_BLOCK);
+            }
             case "berserk" -> berserk(p, d, s, lv);
+            case "charge_rush" -> WarriorSkills.rush(p, s, lv);
+            case "blood_spin" -> WarriorSkills.bloodSpin(p, s, lv);
+            case "combo_slash" -> WarriorSkills.combo(p, d, s, lv);
             case "leap_slam" -> leapSlam(p, s, lv);
             case "focus" -> buff(p, d, "focus", s.duration(), s.value(lv), 0, ParticleTypes.END_ROD, SoundEvents.BEACON_ACTIVATE);
             case "explosive_shot" -> explosiveShot(p, s, lv);
@@ -79,7 +85,7 @@ public final class BranchSkills {
     }
 
     // ───────── 공통: 범위 안 RPG 몹 ─────────
-    static List<Mob> mobsAround(ServerLevel l, Vec3 c, double r) {
+    public static List<Mob> mobsAround(ServerLevel l, Vec3 c, double r) {
         List<Mob> out = new ArrayList<>();
         for (Mob m : l.getEntitiesOfClass(Mob.class, new AABB(c, c).inflate(r + 2, 3, r + 2))) {
             if (!m.isAlive() || !Combat.isRpgMob(m)) continue;
@@ -90,7 +96,7 @@ public final class BranchSkills {
         return out;
     }
 
-    private static Vec3 flatLook(ServerPlayer p) {
+    static Vec3 flatLook(ServerPlayer p) {
         return JobSkills.flatAim(p);
     }
 
@@ -111,6 +117,7 @@ public final class BranchSkills {
     // ═════════ 버서커 ═════════
     private static boolean berserk(ServerPlayer p, PlayerData d, Defs.SkillDef s, int lv) {
         d.berserkExt = 0;
+        WarriorSkills.burst(p, ParticleTypes.LAVA, SoundEvents.RAVAGER_ROAR, 0.8f);
         return buff(p, d, "berserk", s.duration(), s.value(lv), s.value2(lv), ParticleTypes.LAVA, SoundEvents.RAVAGER_ROAR);
     }
 
@@ -153,7 +160,7 @@ public final class BranchSkills {
             l.sendParticles(ParticleTypes.EXPLOSION, p.getX(), p.getY() + 0.2, p.getZ(), 4, 1, 0.1, 1, 0);
             l.sendParticles(ParticleTypes.CLOUD, p.getX(), p.getY() + 0.1, p.getZ(), 20, 1.4, 0.05, 1.4, 0.05);
             l.playSound(null, p.blockPosition(), SoundEvents.GENERIC_EXPLODE, SoundSource.PLAYERS, 0.6f, 1.3f);
-            if (!rpg.core.compat.EpicFightCompat.playAnim(p, "GREATSWORD_AUTO1"))
+            if (!rpg.core.compat.EpicFightCompat.playSkill(p, "leap_slam", "GREATSWORD_AIR_SLASH|GREATSWORD_AUTO1"))
                 p.swing(net.minecraft.world.InteractionHand.MAIN_HAND, true);
             return true;
         });
@@ -405,7 +412,7 @@ public final class BranchSkills {
     private record Task(ServerPlayer p, long start, java.util.function.IntPredicate step) {}
     private static final List<Task> TASKS = new ArrayList<>();
 
-    private static void task(ServerPlayer p, java.util.function.IntPredicate step) {
+    static void task(ServerPlayer p, java.util.function.IntPredicate step) {
         TASKS.add(new Task(p, p.level().getGameTime(), step));
     }
 

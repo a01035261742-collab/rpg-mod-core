@@ -51,6 +51,17 @@ public final class PlayerEvents {
         if (!(e.getEntity() instanceof ServerPlayer sp)) return;
         PlayerData d = RpgData.get(sp);
         if (d.isNew()) d.init();
+        // 전사 스킬 개편 (한 번만): 전사는 스킬 포인트 전부 돌려받음
+        var keep = sp.getPersistentData().getCompound(net.minecraft.world.entity.player.Player.PERSISTED_NBT_TAG);
+        if (keep.getInt("rpgWarriorReset") < 1) {
+            if (d.job == 1) {
+                d.refundSkills();
+                sp.sendSystemMessage(net.minecraft.network.chat.Component.literal("[전사 개편] 스킬 포인트를 전부 돌려받았어요. 스킬 창(L)에서 다시 찍어주세요")
+                        .withStyle(net.minecraft.ChatFormatting.GOLD));
+            }
+            keep.putInt("rpgWarriorReset", 1);
+            sp.getPersistentData().put(net.minecraft.world.entity.player.Player.PERSISTED_NBT_TAG, keep);
+        }
         d.recalc();
         rpg.core.net.Net.defsTo(sp);
         RpgData.sync(sp);

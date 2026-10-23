@@ -117,8 +117,40 @@ public final class EpicFightCompat {
     private static Class<?> livingPatchClass;
     private static boolean animLookedUp;
 
-    /** Animations.<field> 모션을 나와 주변 사람 화면에 재생. 실패하면 false */
+    /** 모션 이름 바꿔 끼우기 (/rpg anim set 스킬 이름) — 게임에서 보고 고른 이름 */
+    public static final java.util.Map<String, String> OVERRIDE = new java.util.HashMap<>();
+
+    /**
+     * 모션 재생. field = "A|B|C" 면 앞에서부터 되는 것 하나. 스킬 키("skill:id")면 OVERRIDE 먼저.
+     */
     public static boolean playAnim(ServerPlayer p, String field) {
+        if (field.contains("|")) {
+            for (String f : field.split("\\|")) if (playOne(p, f.trim())) return true;
+            return false;
+        }
+        return playOne(p, field);
+    }
+
+    /** 스킬용: 바꿔 끼운 이름이 있으면 그것, 없으면 기본 후보들 */
+    public static boolean playSkill(ServerPlayer p, String skill, String defaults) {
+        String o = OVERRIDE.get(skill);
+        if (o != null) return o.equals("NONE") || playAnim(p, o);
+        return playAnim(p, defaults);
+    }
+
+    /** Animations 클래스의 모션 이름 목록 (filter 포함하는 것만) */
+    public static java.util.List<String> animNames(String filter) {
+        java.util.List<String> out = new java.util.ArrayList<>();
+        try {
+            for (var f : Class.forName("yesman.epicfight.gameasset.Animations").getFields())
+                if (java.lang.reflect.Modifier.isStatic(f.getModifiers()) && (filter.isEmpty() || f.getName().contains(filter.toUpperCase())))
+                    out.add(f.getName());
+        } catch (Throwable ignored) {}
+        java.util.Collections.sort(out);
+        return out;
+    }
+
+    private static boolean playOne(ServerPlayer p, String field) {
         try {
             if (!animLookedUp) {
                 animLookedUp = true;

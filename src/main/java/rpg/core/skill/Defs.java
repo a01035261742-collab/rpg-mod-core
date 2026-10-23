@@ -38,7 +38,9 @@ public final class Defs {
 
         public String describe(int level) {
             int lv = Math.max(1, level);
-            return desc.replace("{n}", String.valueOf(hits(lv))).replace("{v}", fmt(value(lv))).replace("{v2}", fmt(value2(lv))).replace("{d}", fmt(duration));
+            double[] v3 = V3.get(id);
+            String d3 = v3 == null ? "" : fmt(snap(v3[0] + v3[1] * Math.max(0, lv - 1), step));
+            return desc.replace("{v3}", d3).replace("{n}", String.valueOf(hits(lv))).replace("{v}", fmt(value(lv))).replace("{v2}", fmt(value2(lv))).replace("{d}", fmt(duration));
         }
     }
 
@@ -46,6 +48,15 @@ public final class Defs {
                        List<String> requires, boolean special) {}
 
     public static final Map<String, SkillDef> SKILLS = new LinkedHashMap<>();
+    /** 3번째 계수 (연속 베기 3타 등): id → {value3, value3PerLevel} */
+    public static final Map<String, double[]> V3 = new java.util.HashMap<>();
+
+    public static double value3(SkillDef s, int level) {
+        double[] v = V3.get(s.id());
+        if (v == null) return 0;
+        double x = v[0] + v[1] * Math.max(0, level - 1);
+        return s.step() > 0 ? Math.round(x / s.step()) * s.step() : x;
+    }
     public static final Map<String, Node> NODES = new LinkedHashMap<>();
     public static String skillsJson = "{}", passivesJson = "{}";
 
@@ -53,6 +64,7 @@ public final class Defs {
         skillsJson = skillsText == null ? "{}" : skillsText;
         passivesJson = passivesText == null ? "{}" : passivesText;
         SKILLS.clear();
+        V3.clear();
         NODES.clear();
         try {
             JsonObject s = JsonParser.parseString(skillsJson).getAsJsonObject();
@@ -65,6 +77,7 @@ public final class Defs {
                         (int) num(o, "job", 0), num(o, "value2", 0), num(o, "value2PerLevel", 0), num(o, "mpPerLevel", 0),
                         (int) num(o, "branch", 0), str(o, "stat", ""), str(o, "stat2", ""), num(o, "cooldownPerLevel", 0),
                         num(o, "hits", 1), num(o, "hitsPerLevel", 0), num(o, "step", 0), num(o, "step2", 0)));
+                if (o.has("value3")) V3.put(e.getKey(), new double[]{num(o, "value3", 0), num(o, "value3PerLevel", 0)});
             }
         } catch (Exception ex) {
             rpg.core.RpgCore.LOG.error("[rpgcore] skills.json 읽기 실패", ex);

@@ -297,7 +297,8 @@ public final class CombatEvents {
                 if (sk != null) ratio = sk / 100.0;                                    // 스킬
                 else if (direct != null && direct.getPersistentData().contains("rpgSkillPct"))
                     ratio = direct.getPersistentData().getDouble("rpgSkillPct") / 100.0;   // 스킬 화살
-                else if (direct == ap) ratio = mr == null ? 1.0 : mr;                  // 근접 (Epic Fight 모션 배율)
+                else if (direct == ap) ratio = (mr == null ? 1.0 : mr)                 // 근접 (Epic Fight 모션 배율) × 직업 평타 계수
+                        * rpg.core.balance.Balance.basicAttackPct[Math.max(0, Math.min(4, ad.job))] / 100.0;
                 else if (direct != null && direct.getPersistentData().contains("rpgPower"))
                     ratio = Math.max(0.1, direct.getPersistentData().getFloat("rpgPower"));  // 활: 당긴 정도
                 else ratio = 1.0;
