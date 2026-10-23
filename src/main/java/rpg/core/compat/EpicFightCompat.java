@@ -158,6 +158,17 @@ public final class EpicFightCompat {
         speedDone = ok;   // 모션이 아직 안 불러와졌으면 다음에 다시 시도
     }
 
+    /** 클라 쪽 (화면에 그리는 모션은 클라 인스턴스일 수 있어서 따로): 클라 틱에서 몇 번 다시 넣음 */
+    private static int clientTries;
+    public static String clientSpeedStatus = "아직 안 함";
+
+    public static void applySpeedsClient() {
+        if (clientTries > 200 || clientTries++ % 20 != 0) return;   // 1초마다, 10번
+        StringBuilder st = new StringBuilder();
+        for (var e : SPEED.entrySet()) st.append(setSpeed(e.getKey(), e.getValue())).append(" · ");
+        clientSpeedStatus = st.toString();
+    }
+
     /** 무기 기준 공속 (전사 대검) */
     public static float BASE_ATTACK_SPEED = 1.6f;
     private static int speedTries;
@@ -198,7 +209,7 @@ public final class EpicFightCompat {
             if (props == null) return field + " 속성 맵 없음 (" + anim.getClass().getSimpleName() + ")";
             props.put(basis, BASE_ATTACK_SPEED / mul);
             props.put(factor, 1.0f);
-            return field + " ×" + mul + " 적용 [" + found + "]";
+            return field + " ×" + mul + " 적용 [" + found + " @" + Integer.toHexString(System.identityHashCode(anim)) + "]";
         } catch (Throwable ex) {
             return field + " 실패: " + ex.getClass().getSimpleName();
         }

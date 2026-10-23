@@ -180,7 +180,7 @@ public final class ClientEvents {
             Minecraft mc = Minecraft.getInstance();
             if (!keysMoved) { keysMoved = true; moveVanillaKeys(mc); }
             if (mc.player != null && mc.player.tickCount % 100 == 1) killInnateKey(mc);
-            if (mc.player != null) rpg.core.compat.EpicFightCompat.applySpeeds();   // 회전 모션 빠르게 (한 번만)
+            if (mc.player != null) rpg.core.compat.EpicFightCompat.applySpeedsClient();   // 회전 모션 빠르게 (클라 인스턴스에)
             boolean free = mc.player != null && mc.screen == null;
             // 스킬 쓴 직후·차지 중: 캐릭터가 조준점을 보게 (숄더 시점에서 뒤로 걸으며 써도 앞으로 나가게)
             boolean anyCharge = false;

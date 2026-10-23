@@ -152,7 +152,8 @@ public final class ZoneCommand {
                     var x = rpg.core.compat.EpicFightCompat.class;
                     c.getSource().sendSystemMessage(Component.literal("§e버전 §f" + net.minecraftforge.fml.ModList.get().getModContainerById(rpg.core.RpgCore.MODID)
                             .map(m -> m.getModInfo().getVersion().toString()).orElse("?")
-                            + " §e속도 §f" + rpg.core.compat.EpicFightCompat.speedStatus
+                            + " §e속도(서버) §f" + rpg.core.compat.EpicFightCompat.speedStatus
+                            + " §e속도(클라) §f" + rpg.core.compat.EpicFightCompat.clientSpeedStatus
                             + " §e마지막 재생 §f" + rpg.core.compat.EpicFightCompat.LAST.getOrDefault("played", "-")
                             + " §7(시도 " + rpg.core.compat.EpicFightCompat.LAST.getOrDefault("try", "-") + ")"
                             + " §e회전 간격 §f" + rpg.core.skill.WarriorSkills.SPIN_GAP + "틱"));
