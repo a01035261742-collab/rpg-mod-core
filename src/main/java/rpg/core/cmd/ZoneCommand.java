@@ -54,9 +54,10 @@ public final class ZoneCommand {
             "§e── 키 ──",
             "§fK 스탯 · L 스킬 · N 패시브 · J 퀘스트 · P 파티 · M 메뉴(강화 등) · Tab 장비 · Q E R F Z X 스킬 · Alt 구르기",
             "§e── 상호작용 ──",
-            "§fNPC 우클릭: 상점·제작·퀘스트·전직·창고 (창고지기 Shift+우클릭 두 번 = 확장)",
+            "§fNPC 우클릭: 상점·제작·퀘스트·전직·창고 (창고 창 위 탭으로 넘기기, [확장] 두 번 = 창고 추가)",
             "§f다른 플레이어 Shift+우클릭: 거래 요청 (상대도 나를 Shift+우클릭하면 거래창)",
             "§f귀환 주문서 우클릭: 3초 뒤 가장 가까운 마을",
+            "§f일일 퀘스트: M 메뉴 → 일일 퀘스트 (매일 오전 6시 초기화)",
             "§e── 명령어 ──",
             "§f/rpg info  내 능력치 · /rpg help  이 도움말"};
     private static final String[] HELP_ADMIN = {

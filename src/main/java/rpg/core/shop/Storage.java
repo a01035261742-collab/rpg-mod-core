@@ -40,10 +40,14 @@ public final class Storage {
     private Storage() {}
 
     public static final String NPC_TAG = "rpgStorage";
-    public static final int BASE = 18, MAX = 54;
-    /** 확장 비용: 18→27, 27→36, 36→45, 45→54 */
-    public static final long[] COST = {5000, 20000, 50000, 100000};
-    private static final Map<UUID, Long> CONFIRM = new HashMap<>();
+    /** 창고 1개 = 상자 1개 (27칸), 최대 5개 */
+    public static final int PAGE = 27, MAX_PAGES = 5;
+    /** 2·3·4·5번째 창고 비용 */
+    public static final long[] COST = {10000, 50000, 100000, 300000};
+    public static final net.minecraftforge.registries.RegistryObject<MenuType<StorageMenu>> TYPE = rpg.core.equip.EquipMenu.MENUS.register("storage",
+            () -> net.minecraftforge.common.extensions.IForgeMenuType.create((id, inv, buf) -> new StorageMenu(id, inv, null)));
+
+    public static void init() {}
 
     public static void spawn(ServerPlayer p) {
         Villager v = new Villager(EntityType.VILLAGER, p.level());
@@ -73,9 +77,11 @@ public final class Storage {
         p.getPersistentData().put(Player.PERSISTED_NBT_TAG, keep);
     }
 
-    public static int size(Player p) {
-        int s = data(p).getInt("size");
-        return s <= 0 ? BASE : Math.min(MAX, s);
+    public static int pages(Player p) {
+        CompoundTag d = data(p);
+        int n = d.getInt("pages");
+        if (n <= 0) n = 1;   // 예전 18칸 창고도 1번 창고로
+        return Math.min(MAX_PAGES, n);
     }
 
     @SubscribeEvent(priority = EventPriority.HIGH)
@@ -83,8 +89,7 @@ public final class Storage {
         if (!isNpc(e.getTarget())) return;
         e.setCanceled(true);
         if (e.getHand() != InteractionHand.MAIN_HAND || !(e.getEntity() instanceof ServerPlayer sp)) return;
-        if (sp.isShiftKeyDown()) expand(sp);
-        else open(sp);
+        open(sp);
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
@@ -92,65 +97,114 @@ public final class Storage {
         if (isNpc(e.getEntity())) e.setCanceled(true);
     }
 
-    /** 확장: Shift+우클릭 한 번 = 안내, 5초 안에 한 번 더 = 결제 */
-    private static void expand(ServerPlayer sp) {
-        int size = size(sp);
-        if (size >= MAX) { sp.sendSystemMessage(Component.literal("[창고] 이미 최대 " + MAX + "칸이에요").withStyle(ChatFormatting.GRAY)); return; }
-        long cost = COST[Math.min(COST.length - 1, (size - BASE) / 9)];
-        long now = sp.level().getGameTime();
-        Long until = CONFIRM.get(sp.getUUID());
-        if (until == null || now > until) {
-            CONFIRM.put(sp.getUUID(), now + 100);
-            sp.sendSystemMessage(Component.literal("[창고] " + size + "칸 → " + (size + 9) + "칸 확장: " + String.format("%,d", cost)
-                    + " G. 5초 안에 다시 Shift+우클릭하면 확장해요").withStyle(ChatFormatting.YELLOW));
-            return;
-        }
-        CONFIRM.remove(sp.getUUID());
-        PlayerData d = RpgData.get(sp);
-        if (d.gold < cost) { sp.sendSystemMessage(Component.literal("[창고] 골드가 부족해요 (" + String.format("%,d", cost) + " G 필요)").withStyle(ChatFormatting.RED)); return; }
-        d.gold -= cost;
-        CompoundTag dt = data(sp);
-        dt.putInt("size", size + 9);
-        saveData(sp, dt);
-        RpgData.sync(sp);
-        sp.level().playSound(null, sp.blockPosition(), SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS, 0.6f, 1.4f);
-        sp.sendSystemMessage(Component.literal("[창고] " + (size + 9) + "칸으로 늘었어요 (-" + String.format("%,d", cost) + " G)").withStyle(ChatFormatting.GOLD));
+    public static void open(ServerPlayer sp) {
+        sp.openMenu(new SimpleMenuProvider((id, inv, pl) -> new StorageMenu(id, inv, sp), Component.literal("창고")));
+        sp.level().playSound(null, sp.blockPosition(), SoundEvents.CHEST_OPEN, SoundSource.PLAYERS, 0.5f, 1.0f);
     }
 
-    /** 창고 열기: 저장된 아이템을 상자 창에 넣고, 닫을 때 다시 저장 */
-    public static void open(ServerPlayer sp) {
-        int size = size(sp);
-        int rows = size / 9;
-        SimpleContainer box = new SimpleContainer(size) {
-            @Override
-            public void stopOpen(Player p) {
-                super.stopOpen(p);
-                CompoundTag dt = data(p);
-                ListTag list = new ListTag();
-                for (int i = 0; i < getContainerSize(); i++) {
-                    ItemStack s = getItem(i);
-                    if (s.isEmpty()) continue;
-                    CompoundTag t = s.save(new CompoundTag());
-                    t.putByte("Slot", (byte) i);
-                    list.add(t);
-                }
-                dt.put("items", list);
-                dt.putInt("size", getContainerSize());
-                saveData(p, dt);
-            }
-        };
-        ListTag list = data(sp).getList("items", Tag.TAG_COMPOUND);
+    /** 모든 창고 아이템 (칸 번호 = 창고 번호 × 27 + 칸) */
+    static ItemStack[] loadAll(Player p) {
+        ItemStack[] all = new ItemStack[PAGE * MAX_PAGES];
+        java.util.Arrays.fill(all, ItemStack.EMPTY);
+        ListTag list = data(p).getList("items", Tag.TAG_COMPOUND);
         for (int i = 0; i < list.size(); i++) {
             CompoundTag t = list.getCompound(i);
-            int slot = t.getByte("Slot") & 255;
-            if (slot < size) box.setItem(slot, ItemStack.of(t));
+            int slot = t.contains("S") ? t.getInt("S") : t.getByte("Slot") & 255;
+            if (slot >= 0 && slot < all.length) all[slot] = ItemStack.of(t);
         }
-        MenuType<ChestMenu> type = switch (rows) {
-            case 1 -> MenuType.GENERIC_9x1; case 2 -> MenuType.GENERIC_9x2; case 3 -> MenuType.GENERIC_9x3;
-            case 4 -> MenuType.GENERIC_9x4; case 5 -> MenuType.GENERIC_9x5; default -> MenuType.GENERIC_9x6;
-        };
-        sp.openMenu(new SimpleMenuProvider((id, inv, pl) -> new ChestMenu(type, id, inv, box, rows),
-                Component.literal("창고 (" + size + "/" + MAX + "칸) · Shift+우클릭으로 확장")));
-        sp.level().playSound(null, sp.blockPosition(), SoundEvents.CHEST_OPEN, SoundSource.PLAYERS, 0.5f, 1.0f);
+        return all;
+    }
+
+    static void saveAll(Player p, ItemStack[] all, int pages) {
+        CompoundTag d = data(p);
+        ListTag list = new ListTag();
+        for (int i = 0; i < all.length; i++) {
+            if (all[i].isEmpty()) continue;
+            CompoundTag t = all[i].save(new CompoundTag());
+            t.putInt("S", i);
+            list.add(t);
+        }
+        d.put("items", list);
+        d.putInt("pages", pages);
+        d.remove("size");
+        saveData(p, d);
+    }
+
+    /** 창고 창: 27칸 (한 번에 창고 하나), 버튼 0~4 = 창고 번호, 9 = 확장 (두 번 눌러야) */
+    public static class StorageMenu extends ChestMenu {
+        final ServerPlayer owner;
+        final SimpleContainer box;
+        final ItemStack[] all;
+        int page, pages;
+        long confirmUntil;
+        /** 0 지금 창고 · 1 창고 수 · 2 확장 확인 대기(1) */
+        public final net.minecraft.world.inventory.ContainerData info;
+
+        public StorageMenu(int id, net.minecraft.world.entity.player.Inventory inv, ServerPlayer owner) {
+            this(id, inv, owner, new SimpleContainer(PAGE));
+        }
+
+        private StorageMenu(int id, net.minecraft.world.entity.player.Inventory inv, ServerPlayer owner, SimpleContainer box) {
+            super(TYPE.get(), id, inv, box, 3);
+            this.owner = owner;
+            this.box = box;
+            this.all = owner == null ? null : loadAll(owner);
+            this.pages = owner == null ? 1 : pages(owner);
+            if (owner != null) show(0);
+            info = owner == null ? new net.minecraft.world.inventory.SimpleContainerData(3) : new net.minecraft.world.inventory.ContainerData() {
+                @Override public int get(int i) { return i == 0 ? page : i == 1 ? pages : (owner.level().getGameTime() <= confirmUntil ? 1 : 0); }
+                @Override public void set(int i, int v) {}
+                @Override public int getCount() { return 3; }
+            };
+            addDataSlots(info);
+        }
+
+        private void keep() {   // 지금 창고 내용을 전체 배열에 반영
+            for (int i = 0; i < PAGE; i++) all[page * PAGE + i] = box.getItem(i).copy();
+        }
+
+        private void show(int p) {
+            page = p;
+            for (int i = 0; i < PAGE; i++) box.setItem(i, all[p * PAGE + i].copy());
+        }
+
+        @Override
+        public boolean clickMenuButton(Player p, int id) {
+            if (owner == null || p != owner) return false;
+            if (id >= 0 && id < pages) {
+                keep();
+                show(id);
+                saveAll(owner, all, pages);
+                return true;
+            }
+            if (id == 9) {
+                if (pages >= MAX_PAGES) return true;
+                long cost = COST[pages - 1];
+                long now = owner.level().getGameTime();
+                if (now > confirmUntil) {
+                    confirmUntil = now + 100;
+                    owner.displayClientMessage(Component.literal("[창고] " + (pages + 1) + "번째 창고: " + String.format("%,d", cost) + " G — 5초 안에 한 번 더 누르면 확장").withStyle(ChatFormatting.YELLOW), true);
+                    return true;
+                }
+                confirmUntil = 0;
+                PlayerData d = RpgData.get(owner);
+                if (d.gold < cost) { owner.displayClientMessage(Component.literal("[창고] 골드가 부족해요 (" + String.format("%,d", cost) + " G)").withStyle(ChatFormatting.RED), true); return true; }
+                d.gold -= cost;
+                pages++;
+                keep();
+                saveAll(owner, all, pages);
+                RpgData.sync(owner);
+                owner.level().playSound(null, owner.blockPosition(), SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS, 0.6f, 1.4f);
+                owner.displayClientMessage(Component.literal("[창고] " + pages + "번째 창고가 생겼어요").withStyle(ChatFormatting.GOLD), true);
+                return true;
+            }
+            return false;
+        }
+
+        @Override
+        public void removed(Player p) {
+            super.removed(p);
+            if (owner != null && p == owner) { keep(); saveAll(owner, all, pages); }
+        }
     }
 }

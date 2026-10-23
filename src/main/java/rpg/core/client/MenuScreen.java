@@ -12,7 +12,7 @@ public class MenuScreen extends Screen {
     private static final int W = 180, BH = 20, GAP = 4;
     private static final String[][] ITEMS = {
             {"스탯", "K"}, {"스킬", "L"}, {"패시브", "N"}, {"장비", "Tab"},
-            {"파티", "P"}, {"퀘스트", "J"}, {"강화", ""}};
+            {"파티", "P"}, {"퀘스트", "J"}, {"강화", ""}, {"일일 퀘스트", ""}};
     private int x, y, h;
 
     public MenuScreen() {
@@ -45,6 +45,7 @@ public class MenuScreen extends Screen {
             case 4 -> mc.setScreen(new PartyScreen());
             case 5 -> mc.setScreen(new QuestScreen());
             case 6 -> EnhanceScreen.request();
+            case 7 -> DailyScreen.request();
             default -> {}
         }
     }

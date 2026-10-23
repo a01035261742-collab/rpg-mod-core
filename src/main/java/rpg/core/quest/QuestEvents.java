@@ -233,6 +233,7 @@ public final class QuestEvents {
     // ───────── 처치 (근처 파티원 모두) ─────────
     public static void onKill(List<ServerPlayer> members, MobData m) {
         if (m == null || m.key.isEmpty()) return;
+        Dailies.onKill(members, m);   // 일일 퀘스트
         for (ServerPlayer p : members) {
             PlayerData d = RpgData.get(p);
             boolean changed = false;

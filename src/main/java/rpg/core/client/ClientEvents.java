@@ -78,6 +78,13 @@ public final class ClientEvents {
 
     @Mod.EventBusSubscriber(modid = RpgCore.MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
     public static final class ModBus {
+        /** 창고 창: 바닐라 상자 화면(ContainerScreen)을 상속해서 제네릭이 안 맞음 → 원시 타입으로 등록 */
+        @SuppressWarnings({"unchecked", "rawtypes"})
+        private static void registerStorage() {
+            net.minecraft.client.gui.screens.MenuScreens.register((net.minecraft.world.inventory.MenuType) rpg.core.shop.Storage.TYPE.get(),
+                    (net.minecraft.client.gui.screens.MenuScreens.ScreenConstructor) (m, inv, t) -> new StorageScreen((rpg.core.shop.Storage.StorageMenu) m, inv, t));
+        }
+
         @SubscribeEvent
         public static void keys(RegisterKeyMappingsEvent e) {
             e.register(STAT_KEY);
@@ -93,6 +100,7 @@ public final class ClientEvents {
         public static void setup(net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent e) {
             e.enqueueWork(() -> net.minecraft.client.gui.screens.MenuScreens.register(rpg.core.equip.EquipMenu.TYPE.get(), EquipScreen::new));
             e.enqueueWork(() -> net.minecraft.client.gui.screens.MenuScreens.register(rpg.core.shop.Trade.TYPE.get(), TradeScreen::new));
+            e.enqueueWork(() -> registerStorage());
         }
 
         @SubscribeEvent

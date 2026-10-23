@@ -106,6 +106,38 @@ public final class Net {
                 .encoder(Track::encode).decoder(Track::new).consumerMainThread(Track::handle).add();
         CH.messageBuilder(TitleSync.class, id++, NetworkDirection.PLAY_TO_CLIENT)
                 .encoder(TitleSync::encode).decoder(TitleSync::new).consumerMainThread(TitleSync::handle).add();
+        CH.messageBuilder(DailySync.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(DailySync::encode).decoder(DailySync::new).consumerMainThread(DailySync::handle).add();
+        CH.messageBuilder(DailyAction.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(DailyAction::encode).decoder(DailyAction::new).consumerMainThread(DailyAction::handle).add();
+    }
+
+    // ───────── 일일 퀘스트 ─────────
+    public record DailyRow(String label, int prog, int need, boolean done) {}
+
+    public record DailySync(java.util.List<DailyRow> rows, int rerolls, boolean bonus, int minutes) {
+        DailySync(FriendlyByteBuf b) {
+            this(b.readList(x -> new DailyRow(x.readUtf(), x.readVarInt(), x.readVarInt(), x.readBoolean())), b.readVarInt(), b.readBoolean(), b.readVarInt());
+        }
+        void encode(FriendlyByteBuf b) {
+            b.writeCollection(rows, (x, r) -> { x.writeUtf(r.label()); x.writeVarInt(r.prog()); x.writeVarInt(r.need()); x.writeBoolean(r.done()); });
+            b.writeVarInt(rerolls); b.writeBoolean(bonus); b.writeVarInt(minutes);
+        }
+        void handle(Supplier<NetworkEvent.Context> ctx) {
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> rpg.core.client.DailyScreen.receive(this));
+            ctx.get().setPacketHandled(true);
+        }
+    }
+
+    /** op 0 열기 · 1 완료(idx) · 2 다시 뽑기(idx) */
+    public record DailyAction(int op, int idx) {
+        DailyAction(FriendlyByteBuf b) { this(b.readVarInt(), b.readVarInt()); }
+        void encode(FriendlyByteBuf b) { b.writeVarInt(op); b.writeVarInt(idx); }
+        void handle(Supplier<NetworkEvent.Context> ctx) {
+            ServerPlayer p = ctx.get().getSender();
+            if (p != null) rpg.core.quest.Dailies.action(p, op, idx);
+            ctx.get().setPacketHandled(true);
+        }
     }
 
     // ───────── 서버 → 클라: 플레이어 칭호 (빈 문자열 = 없음) ─────────

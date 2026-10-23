@@ -1,0 +1,36 @@
+{
+ "_설명": "일일 퀘스트. 매일 resetHour시(한국 시간) 초기화, 하루 count개, rerolls = 무료 다시 뽑기 횟수. 대상은 내 레벨 사냥터(mobs.json _grounds). kinds: kill(그 사냥터 몹 need마리) · collect(그 사냥터 일반 재료 need개 납품) · elite(엘리트 need마리) · boss(아무 보스 need번, minLevel 이상, 하루 최대 1개). weight = 뽑힐 비중. 보상은 임시값 (나중에 밸런스): expPct = 내 레벨 필요 경험치 %, goldMobs = 그 사냥터 몹 골드 × 마리 수, fragments = 주문서 조각, bossMul = 보스 일일 배수, bonus = 3개 다 하면",
+ "resetHour": 6,
+ "count": 3,
+ "rerolls": 1,
+ "kinds": {
+  "kill": {
+   "need": 40,
+   "weight": 50
+  },
+  "collect": {
+   "need": 15,
+   "weight": 30
+  },
+  "elite": {
+   "need": 2,
+   "weight": 15
+  },
+  "boss": {
+   "need": 1,
+   "weight": 5,
+   "minLevel": 20
+  }
+ },
+ "reward": {
+  "expPct": 15,
+  "goldMobs": 30,
+  "fragments": 3,
+  "bossMul": 2
+ },
+ "bonus": {
+  "fragments": 5,
+  "potions": 10,
+  "returnScroll": 1
+ }
+}
