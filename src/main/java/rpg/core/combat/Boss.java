@@ -856,6 +856,7 @@ public final class Boss {
                     + " · " + String.format("%,d", gold) + " G").withStyle(ChatFormatting.GOLD));
         }
         rpg.core.quest.QuestEvents.onKill(new ArrayList<>(part.keySet()), m);
+        for (ServerPlayer p : part.keySet()) rpg.core.quest.Achievements.onBoss(p, m.key);   // 업적: 잡은 보스 종류
         // 첫 처치 훈장: 사람마다 보스별 한 번 (죽어도 남는 저장 칸)
         if (!def.firstMedal().isEmpty()) for (ServerPlayer p : part.keySet()) {
             var keep = p.getPersistentData().getCompound(Player.PERSISTED_NBT_TAG);

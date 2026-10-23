@@ -244,5 +244,11 @@
   "item.rpgcore.return_scroll": "Return Scroll",
   "item.rpgcore.potential_scroll": "Potential Scroll",
   "item.rpgcore.epic_potential_scroll": "Epic Potential Scroll",
-  "item.rpgcore.cube": "Suspicious Cube"
+  "item.rpgcore.cube": "Suspicious Cube",
+  "item.rpgcore.hunter_medal": "Hunter Medal",
+  "item.rpgcore.slayer_medal": "Slayer Medal",
+  "item.rpgcore.enhancer_medal": "Master Enhancer Medal",
+  "item.rpgcore.unlucky_medal": "Unlucky Smith Medal",
+  "item.rpgcore.boss_hunter_medal": "Boss Hunter Medal",
+  "item.rpgcore.rich_medal": "Rich Medal"
 }

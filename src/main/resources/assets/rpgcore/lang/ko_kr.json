@@ -244,5 +244,11 @@
   "item.rpgcore.return_scroll": "귀환 주문서",
   "item.rpgcore.potential_scroll": "잠재능력 부여 주문서",
   "item.rpgcore.epic_potential_scroll": "에픽 잠재능력 부여 주문서",
-  "item.rpgcore.cube": "수상한 큐브"
+  "item.rpgcore.cube": "수상한 큐브",
+  "item.rpgcore.hunter_medal": "사냥꾼 훈장",
+  "item.rpgcore.slayer_medal": "학살자 훈장",
+  "item.rpgcore.enhancer_medal": "강화의 달인 훈장",
+  "item.rpgcore.unlucky_medal": "불운한 대장장이 훈장",
+  "item.rpgcore.boss_hunter_medal": "보스 헌터 훈장",
+  "item.rpgcore.rich_medal": "부자 훈장"
 }

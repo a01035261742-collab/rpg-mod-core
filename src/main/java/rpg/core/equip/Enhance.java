@@ -235,10 +235,12 @@ public final class Enhance {
         if (roll < rate(st)) {
             s.getOrCreateTag().putInt("rpgStar", st + 1);
             msg(p, "강화 성공! ★" + (st + 1), ChatFormatting.GOLD);
+            rpg.core.quest.Achievements.onStar(p, st + 1);
             sound(p, SoundEvents.PLAYER_LEVELUP, 1.4f);
         } else if (!guard && roll < rate(st) + destroyRate(st)) {
             s.getOrCreateTag().putBoolean("rpgBroken", true);
             msg(p, "장비가 파괴됐어요… (같은 장비로 복구 가능)", ChatFormatting.DARK_RED);
+            rpg.core.quest.Achievements.onDestroy(p);
             sound(p, SoundEvents.ITEM_BREAK, 0.8f);
         } else {
             msg(p, "강화 실패 (★" + st + " 유지)", ChatFormatting.GRAY);

@@ -47,7 +47,7 @@ public final class ModItems {
             {0x5A5A5A, 0x3C3C46, 0x5A3C5A, 0x1E1E24}};
 
     /** 몹 전용 장신구 16종 (drops.json uniques) */
-    public static final String[] UNIQUE = {"pig_snout_pendant", "cow_horn_earring", "slime_ring", "rat_tail_belt", "dog_fang_earring", "bee_cape", "tusk_gloves", "bear_belt", "spirit_pendant", "mushroom_ring", "soldier_gloves", "fairy_cape", "gland_earring", "witch_pendant", "dark_eye_ring", "beast_belt", "forest_lord_ring", "guardian_ring", "forest_hunter_medal", "mush_hunter_medal"};   // + 보스 장신구
+    public static final String[] UNIQUE = {"pig_snout_pendant", "cow_horn_earring", "slime_ring", "rat_tail_belt", "dog_fang_earring", "bee_cape", "tusk_gloves", "bear_belt", "spirit_pendant", "mushroom_ring", "soldier_gloves", "fairy_cape", "gland_earring", "witch_pendant", "dark_eye_ring", "beast_belt", "forest_lord_ring", "guardian_ring", "forest_hunter_medal", "mush_hunter_medal", "hunter_medal", "slayer_medal", "enhancer_medal", "unlucky_medal", "boss_hunter_medal", "rich_medal"};   // + 보스 장신구
 
     static {
         java.util.List<String> all = new java.util.ArrayList<>(java.util.List.of(BASIC));

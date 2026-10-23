@@ -1,0 +1,10 @@
+{
+  "_doc": "업적: type = level|kills|star|destroy|bossKinds|gold, need = 목표, gold = 골드 보상, medal = 훈장 아이템 (한 번만)",
+  "first_step":  {"name": "첫 걸음",       "type": "level",     "need": 10,      "gold": 1000},
+  "hunter":      {"name": "사냥꾼",        "type": "kills",     "need": 1000,    "medal": "hunter_medal"},
+  "slayer":      {"name": "학살자",        "type": "kills",     "need": 10000,   "medal": "slayer_medal"},
+  "enhancer":    {"name": "강화의 달인",   "type": "star",      "need": 10,      "medal": "enhancer_medal"},
+  "unlucky":     {"name": "불운한 대장장이","type": "destroy",   "need": 3,       "medal": "unlucky_medal"},
+  "boss_hunter": {"name": "보스 헌터",     "type": "bossKinds", "need": 2,       "medal": "boss_hunter_medal"},
+  "rich":        {"name": "부자",          "type": "gold",      "need": 1000000, "medal": "rich_medal"}
+}

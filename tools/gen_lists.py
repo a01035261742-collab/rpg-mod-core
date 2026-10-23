@@ -67,6 +67,11 @@ for mk, mv in mobs.items():
     if rw.get('first'): src[rw['first']].append(f'보스 {bn} 첫 처치')
     if rw.get('fragments'): src['scroll_fragment'].append(f'보스 {bn} ×{rw["fragments"]}')
     if rw.get('scrollChance'): src['scroll'].append(f'보스 {bn} {rw["scrollChance"]:g}%')
+# 업적 훈장 (achievements.json)
+_tn = {'level': '레벨', 'kills': '처치', 'star': '★', 'destroy': '파괴', 'bossKinds': '보스 종류', 'gold': '보유 골드'}
+for ak, av in load('achievements').items():
+    if ak.startswith('_') or not av.get('medal'): continue
+    src[av['medal']].append(f'업적 "{av["name"]}" ({_tn.get(av["type"], av["type"])} {av["need"]:,})')
 sell = {short(k): v for k, v in shops.get('sell', {}).items() if not k.startswith('_')}
 used_in = collections.defaultdict(list)
 for r in crafts['recipes']:

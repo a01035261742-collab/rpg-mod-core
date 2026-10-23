@@ -59,7 +59,7 @@ public final class ZoneCommand {
             "§f귀환 주문서 우클릭: 3초 뒤 가장 가까운 마을",
             "§f일일 퀘스트: M 메뉴 → 일일 퀘스트 (매일 오전 6시 초기화)",
             "§e── 명령어 ──",
-            "§f/rpg info  내 능력치 · /rpg help  이 도움말"};
+            "§f/rpg info  내 능력치 · /rpg ach  업적 진행도 · /rpg help  이 도움말"};
     private static final String[] HELP_ADMIN = {
             "§c── 관리자 ──",
             "§f/rpg level|exp|sp|gold|heal|damage|reset|resetscroll  캐릭터 조작",
@@ -128,6 +128,8 @@ public final class ZoneCommand {
                 .then(Commands.literal("complete").executes(c -> daily(c, c.getSource().getPlayerOrException(), true))
                         .then(Commands.argument("player", net.minecraft.commands.arguments.EntityArgument.player())
                                 .executes(c -> daily(c, net.minecraft.commands.arguments.EntityArgument.getPlayer(c, "player"), true)))));
+        // ── 업적 ──
+        root.then(Commands.literal("ach").executes(c -> { rpg.core.quest.Achievements.show(c.getSource().getPlayerOrException()); return 1; }));
         // ── 도움말 ──
         root.then(Commands.literal("help").executes(c -> help(c, false))
                 .then(Commands.literal("admin").requires(s -> s.hasPermission(2)).executes(c -> help(c, true))));

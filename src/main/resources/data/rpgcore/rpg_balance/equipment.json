@@ -1545,6 +1545,84 @@
    },
    "title": "버섯 사냥꾼",
    "titleColor": "#D27FFF"
+  },
+  "hunter_medal": {
+   "slot": "medal",
+   "job": 0,
+   "level": 1,
+   "stats": {
+    "str": 1,
+    "dex": 1,
+    "int": 1,
+    "luk": 1
+   },
+   "title": "사냥꾼",
+   "titleColor": "#B0C4A0"
+  },
+  "slayer_medal": {
+   "slot": "medal",
+   "job": 0,
+   "level": 1,
+   "stats": {
+    "str": 3,
+    "dex": 3,
+    "int": 3,
+    "luk": 3
+   },
+   "title": "학살자",
+   "titleColor": "#FF5555"
+  },
+  "enhancer_medal": {
+   "slot": "medal",
+   "job": 0,
+   "level": 1,
+   "stats": {
+    "str": 2,
+    "dex": 2,
+    "int": 2,
+    "luk": 2
+   },
+   "title": "강화의 달인",
+   "titleColor": "#FFD24A"
+  },
+  "unlucky_medal": {
+   "slot": "medal",
+   "job": 0,
+   "level": 1,
+   "stats": {
+    "str": 1,
+    "dex": 1,
+    "int": 1,
+    "luk": 1
+   },
+   "title": "불운한 대장장이",
+   "titleColor": "#8A8A8A"
+  },
+  "boss_hunter_medal": {
+   "slot": "medal",
+   "job": 0,
+   "level": 1,
+   "stats": {
+    "str": 3,
+    "dex": 3,
+    "int": 3,
+    "luk": 3
+   },
+   "title": "보스 헌터",
+   "titleColor": "#FF8040"
+  },
+  "rich_medal": {
+   "slot": "medal",
+   "job": 0,
+   "level": 1,
+   "stats": {
+    "str": 2,
+    "dex": 2,
+    "int": 2,
+    "luk": 2
+   },
+   "title": "부자",
+   "titleColor": "#FFE066"
   }
  },
  "options": {
