@@ -233,6 +233,7 @@ public final class CombatEvents {
             PlayerData d = RpgData.get(sp);
             long tnow = sp.level().getGameTime();
             if (tnow < d.invulUntil) { e.setCanceled(true); return; }   // 잠재능력: 확률 무적 중
+            if (src instanceof Mob hm) { d.lastHitBy = isRpg(hm) ? Combat.mob(hm).name : hm.getName().getString(); d.lastHitAt = tnow; }   // 사망 메시지용
             double dmg;
             Double mx = MAXHP_PCT.get(sp.getId());
             if (mx != null) dmg = d.maxHp * mx / 100.0;   // 최대 HP 비율 피해

@@ -37,6 +37,8 @@ public class EquipScreen extends AbstractContainerScreen<EquipMenu> {
         g.fill(x + 24, y + 6, x + 77, y + 79, 0xFF4A5274);
         g.fill(x + 25, y + 7, x + 76, y + 78, 0xFF0A0A12);
         InventoryScreen.renderEntityInInventoryFollowsMouse(g, x + 51, y + 75, 30, (float) (x + 51 - mx), (float) (y + 25 - my), minecraft.player);
+        // 2×2 제작: 화살표
+        g.drawString(font, "→", x + 138, y + 32, 0xFF8A90B0, false);
         // 칸 테두리
         for (var s : menu.slots) slotFrame(g, x + s.x, y + s.y);
         // 장비 칸 이름 (빈 칸일 때)
@@ -55,6 +57,7 @@ public class EquipScreen extends AbstractContainerScreen<EquipMenu> {
     @Override
     protected void renderLabels(GuiGraphics g, int mx, int my) {
         g.drawString(font, "장비", 192, 130, 0xFFFFD24A, false);
+        g.drawString(font, "제작", 98, 6, 0xFF8A90B0, false);
         // 인벤토리 글자는 칸이랑 겹쳐서 뺌
     }
 

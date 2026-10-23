@@ -47,31 +47,27 @@ public class TradeScreen extends AbstractContainerScreen<Trade.TradeMenu> {
     @Override
     protected void renderBg(GuiGraphics g, float pt, int mx, int my) {
         int x = leftPos, y = topPos;
-        g.fill(x, y, x + imageWidth, y + imageHeight, 0xFFC6C6C6);
-        g.fill(x, y, x + imageWidth, y + 1, 0xFFFFFFFF);
-        g.fill(x + imageWidth - 1, y, x + imageWidth, y + imageHeight, 0xFF555555);
-        g.fill(x, y + imageHeight - 1, x + imageWidth, y + imageHeight, 0xFF555555);
+        Ui.panel(g, x, y, imageWidth, imageHeight, Ui.GOLD);
         // 확인 상태 테두리 (초록)
-        int mine = menu.data.get(4) == 1 ? 0xFF30C030 : 0xFF707070, theirs = menu.data.get(5) == 1 ? 0xFF30C030 : 0xFF707070;
+        int mine = menu.data.get(4) == 1 ? 0xFF30C030 : 0xFF3A4260, theirs = menu.data.get(5) == 1 ? 0xFF30C030 : 0xFF3A4260;
         g.fill(x + 5, y + 25, x + 61, y + 81, mine);
         g.fill(x + 113, y + 25, x + 169, y + 81, theirs);
         for (var s : menu.slots) {
             int sx = x + s.x, sy = y + s.y;
-            g.fill(sx - 1, sy - 1, sx + 17, sy + 17, 0xFF373737);
-            g.fill(sx, sy, sx + 17, sy + 17, 0xFFFFFFFF);
-            g.fill(sx, sy, sx + 16, sy + 16, 0xFF8B8B8B);
+            g.fill(sx - 1, sy - 1, sx + 17, sy + 17, 0xFF3A4260);
+            g.fill(sx, sy, sx + 16, sy + 16, 0xFF1C2132);
         }
     }
 
     @Override
     protected void renderLabels(GuiGraphics g, int mx, int my) {
-        g.drawString(font, title, 8, 5, 0xFF404040, false);
+        g.drawString(font, title, 8, 5, Ui.GOLD, false);
         String mg = String.format("%,d G", menu.myGold()), tg = String.format("%,d G", menu.theirGold());
         // 내 골드 = 왼쪽, 상대 골드 = 오른쪽 끝 정렬 (겹치지 않게)
         String me = Ui.cut(font, "나 " + mg, 84), them = Ui.cut(font, "상대 " + tg, 84);
-        g.drawString(font, me, 8, 16, 0xFF8A6A00, false);
-        g.drawString(font, them, imageWidth - 8 - font.width(them), 16, 0xFF8A6A00, false);
-        if (menu.data.get(7) == 1) g.drawString(font, "상대 거래✔", 62, 86, 0xFF208020, false);
+        g.drawString(font, me, 8, 16, 0xFFFFD24A, false);
+        g.drawString(font, them, imageWidth - 8 - font.width(them), 16, 0xFFFFD24A, false);
+        if (menu.data.get(7) == 1) g.drawString(font, "상대 거래✔", 62, 86, 0xFF55FF55, false);
     }
 
     @Override

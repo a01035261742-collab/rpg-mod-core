@@ -38,13 +38,37 @@ public final class PartyEvents {
             goDown(sp, d);
             return;
         }
+        boolean fromDown = d.forceDie;
         d.forceDie = false;
         d.downEnd = 0;
         d.reviver = null;
+        deathMessage(sp, d, fromDown);
         long loss = Math.round(Balance.expNeed(d.level) * Balance.deathExpLossPct / 100.0);
         long lost = Math.min(d.exp, loss);
         d.exp -= lost;
         if (lost > 0) sp.sendSystemMessage(Component.literal("사망: 경험치 " + String.format("%,d", lost) + " 잃음").withStyle(ChatFormatting.RED));
+    }
+
+    /**
+     * 사망 메시지 (바닐라 메시지 대신, 모두에게): 최근 30초 안에 때린 몹이 있으면 그 몹 이름.
+     * 바닐라 메시지는 서버 시작 때 showDeathMessages 를 꺼서 안 나옴.
+     */
+    private static void deathMessage(ServerPlayer sp, PlayerData d, boolean fromDown) {
+        if (sp.getServer() == null) return;
+        String name = sp.getGameProfile().getName();
+        boolean recent = !d.lastHitBy.isEmpty() && sp.level().getGameTime() - d.lastHitAt < 600;
+        Component msg;
+        if (recent) msg = Component.literal("☠ " + name + "님이 " + d.lastHitBy + (fromDown ? "에게 쓰러진 뒤 부활하지 못했어요" : "에게 쓰러졌어요"));
+        else if (fromDown) msg = Component.literal("☠ " + name + "님이 쓰러진 뒤 부활하지 못했어요");
+        else msg = Component.literal("☠ ").append(sp.getCombatTracker().getDeathMessage());   // 낙사·용암 등은 바닐라 문구
+        sp.getServer().getPlayerList().broadcastSystemMessage(msg.copy().withStyle(ChatFormatting.RED), false);
+        d.lastHitBy = "";
+    }
+
+    /** 바닐라 사망 메시지 끄기 (위 메시지로 대신) */
+    @SubscribeEvent
+    public static void serverStarted(net.minecraftforge.event.server.ServerStartedEvent e) {
+        e.getServer().getGameRules().getRule(net.minecraft.world.level.GameRules.RULE_SHOWDEATHMESSAGES).set(false, e.getServer());
     }
 
     /** 다운될 수 있나: 설정상 다운이 켜져 있고, 근처에 살아있는(다운 아닌) 파티원이 있을 때 */
