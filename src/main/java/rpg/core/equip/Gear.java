@@ -137,7 +137,7 @@ public final class Gear {
         if (Potential.has(s)) {   // 잠재능력
             CompoundTag pt = Potential.pot(s);
             int g = Math.max(0, Math.min(3, pt.getInt("g")));
-            tip.add(Component.literal("[" + Potential.GRADE[g] + "] 잠재능력").withStyle(st -> st.withColor(Potential.COLOR[g])));
+            tip.add(Component.literal("[" + Potential.GRADE[g] + "] 잠재능력").withStyle(sty -> sty.withColor(Potential.COLOR[g])));
             tip.addAll(Potential.lines(pt));
             if (Potential.pending(s)) tip.add(Component.literal("새 옵션 선택 대기 중 (메뉴 → 강화 → 잠재능력)").withStyle(ChatFormatting.DARK_GRAY));
         }
