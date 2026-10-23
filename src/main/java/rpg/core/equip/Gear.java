@@ -99,6 +99,7 @@ public final class Gear {
         // 능력치 = 기본 + 주문서(파랑) + 스타포스(노랑) + 추가 옵션(초록)
         CompoundTag sc = Enhance.scr(s);
         CompoundTag o = opts(s);
+        Map<String, Integer> ox = Flame.expand(o);
         Map<String, Integer> sf = Enhance.starStats(s);
         java.util.LinkedHashSet<String> keys = new java.util.LinkedHashSet<>(d.stats().keySet());
         for (String k : GearDefs.STAT_KEYS) if (sc.contains(k) || sf.containsKey(k) || ox.containsKey(k)) keys.add(k);
