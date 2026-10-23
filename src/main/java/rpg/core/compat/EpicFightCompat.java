@@ -145,15 +145,22 @@ public final class EpicFightCompat {
      * → BASIS = 대검 공속(1.6) / 배수, FACTOR = 1 로 넣으면 그 배수만큼 빨라짐.
      */
     public static void applySpeeds() {
-        if (speedDone) return;
-        speedDone = true;
+        if (speedDone || speedTries > 40) return;
+        speedTries++;
         StringBuilder st = new StringBuilder();
-        for (var e : SPEED.entrySet()) st.append(setSpeed(e.getKey(), e.getValue())).append(" · ");
+        boolean ok = false;
+        for (var e : SPEED.entrySet()) {
+            String r = setSpeed(e.getKey(), e.getValue());
+            if (r.endsWith("적용")) ok = true;
+            st.append(r).append(" · ");
+        }
         speedStatus = st.toString();
+        speedDone = ok;   // 모션이 아직 안 불러와졌으면 다음에 다시 시도
     }
 
     /** 무기 기준 공속 (전사 대검) */
     public static float BASE_ATTACK_SPEED = 1.6f;
+    private static int speedTries;
 
     public static String setSpeed(String field, float mul) {
         SPEED.put(field, mul);
@@ -162,6 +169,15 @@ public final class EpicFightCompat {
             try { anim = Class.forName("yesman.epicfight.gameasset.Animations").getField(field).get(null); }
             catch (NoSuchFieldException nf) { return field + " 없음"; }
             if (anim == null) return field + " null";
+            // EF 20.x: Animations.X 는 AnimationAccessor (껍데기) → get() 으로 실제 모션 꺼내기
+            for (int i = 0; i < 3 && anim.getClass().getSimpleName().contains("Accessor"); i++) {
+                java.lang.reflect.Method g = null;
+                for (var m : anim.getClass().getMethods()) if (m.getName().equals("get") && m.getParameterCount() == 0) { g = m; break; }
+                if (g == null) break;
+                Object inner = g.invoke(anim);
+                if (inner == null || inner == anim) break;
+                anim = inner;
+            }
             Class<?> atkProp = Class.forName("yesman.epicfight.api.animation.property.AnimationProperty$AttackAnimationProperty");
             Object basis = atkProp.getField("BASIS_ATTACK_SPEED").get(null), factor = atkProp.getField("ATTACK_SPEED_FACTOR").get(null);
             java.lang.reflect.Method add = null;
