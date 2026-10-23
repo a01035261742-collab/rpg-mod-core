@@ -15,8 +15,22 @@ public class MenuScreen extends Screen {
             {"파티", "P"}, {"퀘스트", "J"}, {"강화", ""}, {"일일 퀘스트", ""}};
     private int x, y, h;
 
+    /** 인벤토리(장비 창)에서 열었으면 닫을 때 인벤토리로 돌아감 */
+    private final boolean fromInv;
+
     public MenuScreen() {
+        this(false);
+    }
+
+    public MenuScreen(boolean fromInv) {
         super(Component.literal("메뉴"));
+        this.fromInv = fromInv;
+    }
+
+    @Override
+    public void onClose() {
+        if (fromInv) { Minecraft.getInstance().setScreen(null); Net.CH.sendToServer(new Net.OpenEquip(0)); }
+        else super.onClose();
     }
 
     @Override
@@ -41,7 +55,7 @@ public class MenuScreen extends Screen {
             case 0 -> mc.setScreen(new StatScreen());
             case 1 -> mc.setScreen(new SkillScreen());
             case 2 -> mc.setScreen(new PassiveScreen());
-            case 3 -> { mc.setScreen(null); Net.CH.sendToServer(new Net.OpenEquip(0)); }
+            case 3 -> { mc.setScreen(null); Net.CH.sendToServer(new Net.OpenEquip(0)); }   // 장비 = 인벤토리
             case 4 -> mc.setScreen(new PartyScreen());
             case 5 -> mc.setScreen(new QuestScreen());
             case 6 -> EnhanceScreen.request();

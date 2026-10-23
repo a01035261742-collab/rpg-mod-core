@@ -98,10 +98,15 @@ public class PlayerData {
         return equip.getOrDefault(k, 0.0);
     }
 
-    /** 최종 스탯 = (찍은 스탯 + 장비) × (1 + 올스탯%) */
+    /**
+     * 최종 스탯 = (찍은 스탯 + 장비) × (1 + 올스탯% + 힘% 등) + % 미적용 스탯 (메이플식).
+     * % 미적용: 잠재 9레벨당 스탯 + 장비/패시브 "strFlat" 등 (나중에 심볼·하이퍼 같은 시스템용)
+     */
     public double total(int i) {
-        double perLv = eq(STAT_KEYS[i] + "PerLv") * Math.floor(level / 9.0);   // 잠재능력: 캐릭터 9레벨당 스탯
-        return (stats[i] + eq(STAT_KEYS[i]) + perLv) * (1 + (eq("allPct") + eq(STAT_KEYS[i] + "Pct")) / 100.0);   // 잠재능력 힘% 등
+        String k = STAT_KEYS[i];
+        double perLv = eq(k + "PerLv") * Math.floor(level / 9.0);   // 잠재능력: 캐릭터 9레벨당 스탯
+        double flat = perLv + eq(k + "Flat") + bonus(k + "Flat");
+        return (stats[i] + eq(k)) * (1 + (eq("allPct") + eq(k + "Pct")) / 100.0) + flat;
     }
 
     public boolean isNew() { return level <= 0; }

@@ -24,7 +24,7 @@ public class EquipScreen extends AbstractContainerScreen<EquipMenu> {
         super.init();
         // 메뉴(M) 바로가기: 장비 패널 아래
         addRenderableWidget(net.minecraft.client.gui.components.Button.builder(Component.literal("메뉴"),
-                b -> minecraft.setScreen(new MenuScreen())).bounds(leftPos + 178, topPos + 146, 50, 18).build());
+                b -> minecraft.setScreen(new MenuScreen(true))).bounds(leftPos + 178, topPos + 146, 50, 18).build());
     }
 
     @Override
