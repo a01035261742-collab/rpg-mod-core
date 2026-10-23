@@ -96,12 +96,6 @@
       "side": "both"
     },
     {
-      "modrinth": "chloride",
-      "version": "",
-      "optional": false,
-      "side": "client"
-    },
-    {
       "modrinth": "placebo",
       "version": "",
       "optional": false,
