@@ -1687,7 +1687,10 @@
     "scrollChance": 20,
     "ring": "forest_lord_ring",
     "ringChance": 5,
-    "first": "forest_hunter_medal"
+    "first": "forest_hunter_medal",
+    "cubeChance": 20,
+    "cubes": 1,
+    "epicScrollChance": 5
    },
    "melee": {
     "name": "앞발",
@@ -1816,7 +1819,10 @@
     "scrollChance": 25,
     "ring": "guardian_ring",
     "ringChance": 5,
-    "first": "mush_hunter_medal"
+    "first": "mush_hunter_medal",
+    "cubeChance": 30,
+    "cubes": 3,
+    "epicScrollChance": 10
    }
   }
  },

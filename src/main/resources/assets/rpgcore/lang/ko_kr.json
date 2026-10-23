@@ -241,5 +241,8 @@
   "entity.rpgcore.mush_guardian": "거대버섯 수호자",
   "item.rpgcore.forest_hunter_medal": "숲의 사냥꾼 훈장",
   "item.rpgcore.mush_hunter_medal": "버섯 사냥꾼 훈장",
-  "item.rpgcore.return_scroll": "귀환 주문서"
+  "item.rpgcore.return_scroll": "귀환 주문서",
+  "item.rpgcore.potential_scroll": "잠재능력 부여 주문서",
+  "item.rpgcore.epic_potential_scroll": "에픽 잠재능력 부여 주문서",
+  "item.rpgcore.cube": "수상한 큐브"
 }

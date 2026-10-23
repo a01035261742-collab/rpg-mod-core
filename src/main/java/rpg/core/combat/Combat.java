@@ -74,7 +74,7 @@ public final class Combat {
     }
 
     public static double defense(PlayerData d) {
-        return d.total(PlayerData.VIT) * Balance.defPerVit + d.bonus("def") + d.eq("def") + d.buffV("iron_body", d.clock);
+        return (d.total(PlayerData.VIT) * Balance.defPerVit + d.bonus("def") + d.eq("def") + d.buffV("iron_body", d.clock)) * (1 + d.eq("defPct") / 100.0);
     }
 
     /**

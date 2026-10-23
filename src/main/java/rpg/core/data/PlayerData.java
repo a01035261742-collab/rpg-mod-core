@@ -89,6 +89,8 @@ public class PlayerData {
     public final Map<String, Double> equip = new HashMap<>();   // 장비 합계 (str dex int luk vit atk matk hp mp def allPct)
 
     private static final String[] STAT_KEYS = {"vit", "str", "dex", "int", "luk", "sta"};
+    /** 장비 합계에서 bonus 로 옮기는 % 옵션 (잠재능력) */
+    private static final String[] EQUIP_BONUS = {"atkPct", "hpPct", "critChance", "goldPct", "dropPct", "speedPct", "bossPct"};
 
     public double eq(String k) {
         return equip.getOrDefault(k, 0.0);
@@ -96,7 +98,7 @@ public class PlayerData {
 
     /** 최종 스탯 = (찍은 스탯 + 장비) × (1 + 올스탯%) */
     public double total(int i) {
-        return (stats[i] + eq(STAT_KEYS[i])) * (1 + eq("allPct") / 100.0);
+        return (stats[i] + eq(STAT_KEYS[i])) * (1 + (eq("allPct") + eq(STAT_KEYS[i] + "Pct")) / 100.0);   // 잠재능력 힘% 등
     }
 
     public boolean isNew() { return level <= 0; }
@@ -135,6 +137,8 @@ public class PlayerData {
             if (!sd.stat().isEmpty()) bonus.merge(sd.stat(), sd.value(e.getValue()), Double::sum);
             if (!sd.stat2().isEmpty()) bonus.merge(sd.stat2(), sd.value2(e.getValue()), Double::sum);
         }
+        // 장비(잠재능력)의 % 옵션을 패시브 합계에 더함
+        for (String k : EQUIP_BONUS) { double v = eq(k); if (v != 0) bonus.merge(k, v, Double::sum); }
         double vitHp = Balance.hpPerVit * total(VIT) * (1 + bonus("vitHpPct") / 100.0);   // 단단한 피부
         double mh = (Balance.hpBase + Balance.hpPerLevel * level + vitHp + eq("hp")) * (1 + bonus("hpPct") / 100.0);
         double mm = (Balance.mpBase + Balance.mpPerLevel * level + Balance.mpPerInt * total(INT) + eq("mp")) * (1 + bonus("mpPct") / 100.0);

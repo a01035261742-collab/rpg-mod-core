@@ -183,14 +183,20 @@ public final class Net {
             if (!rpg.core.item.Scroll.kind(s).isEmpty()) { slots.add(i); scrolls.add(s.copy()); }
         }
         int frags = rpg.core.equip.Enhance.count(p, rpg.core.item.ModItems.SCROLL_FRAGMENT.get());
-        CH.send(PacketDistributor.PLAYER.with(() -> p), new OpenEnhance(open, locs, gear, slots, scrolls, frags));
+        int[] ce = rpg.core.equip.Potential.ceilCounts(p);
+        java.util.List<Integer> extra = java.util.List.of(rpg.core.equip.Enhance.count(p, rpg.core.item.ModItems.CUBE.get()),
+                rpg.core.equip.Enhance.count(p, rpg.core.item.ModItems.POTENTIAL_SCROLL.get()),
+                rpg.core.equip.Enhance.count(p, rpg.core.item.ModItems.EPIC_POTENTIAL_SCROLL.get()), ce[0], ce[1], ce[2]);
+        CH.send(PacketDistributor.PLAYER.with(() -> p), new OpenEnhance(open, locs, gear, slots, scrolls, frags, extra));
     }
 
+    /** extra: 큐브 · 부여 주문서 · 에픽 부여 주문서 · 천장 카운트 레어·에픽·유니크 */
     public record OpenEnhance(boolean open, java.util.List<Integer> locs, java.util.List<net.minecraft.world.item.ItemStack> gear,
-                              java.util.List<Integer> slots, java.util.List<net.minecraft.world.item.ItemStack> scrolls, int frags) {
+                              java.util.List<Integer> slots, java.util.List<net.minecraft.world.item.ItemStack> scrolls, int frags,
+                              java.util.List<Integer> extra) {
         OpenEnhance(FriendlyByteBuf b) {
             this(b.readBoolean(), b.readList(FriendlyByteBuf::readVarInt), b.readList(FriendlyByteBuf::readItem),
-                    b.readList(FriendlyByteBuf::readVarInt), b.readList(FriendlyByteBuf::readItem), b.readVarInt());
+                    b.readList(FriendlyByteBuf::readVarInt), b.readList(FriendlyByteBuf::readItem), b.readVarInt(), b.readList(FriendlyByteBuf::readVarInt));
         }
         void encode(FriendlyByteBuf b) {
             b.writeBoolean(open);
@@ -199,9 +205,10 @@ public final class Net {
             b.writeCollection(slots, FriendlyByteBuf::writeVarInt);
             b.writeCollection(scrolls, (x, s) -> x.writeItem(s));
             b.writeVarInt(frags);
+            b.writeCollection(extra, FriendlyByteBuf::writeVarInt);
         }
         void handle(Supplier<NetworkEvent.Context> ctx) {
-            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> rpg.core.client.EnhanceScreen.receive(open, locs, gear, slots, scrolls, frags));
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> rpg.core.client.EnhanceScreen.receive(open, locs, gear, slots, scrolls, frags, extra));
             ctx.get().setPacketHandled(true);
         }
     }
@@ -218,8 +225,15 @@ public final class Net {
                     case 2 -> rpg.core.equip.Enhance.applyScroll(p, loc, arg);
                     case 3 -> rpg.core.equip.Enhance.restore(p, loc, arg);
                     case 4 -> rpg.core.equip.Enhance.synth(p);
+                    case 5 -> rpg.core.equip.Potential.grant(p, rpg.core.equip.Enhance.at(p, loc), arg == 1);
+                    case 6 -> rpg.core.equip.Potential.reset(p, rpg.core.equip.Enhance.at(p, loc), false);
+                    case 7 -> rpg.core.equip.Potential.reset(p, rpg.core.equip.Enhance.at(p, loc), true);
+                    case 8 -> rpg.core.equip.Potential.choose(p, rpg.core.equip.Enhance.at(p, loc), false);
+                    case 9 -> rpg.core.equip.Potential.choose(p, rpg.core.equip.Enhance.at(p, loc), true);
                     default -> {}
                 }
+                rpg.core.equip.PlayerEquip.get(p).dirty = true;   // 능력치 다시 계산
+                p.getInventory().setChanged();
                 sendEnhance(p, op == 0);
             }
             ctx.get().setPacketHandled(true);

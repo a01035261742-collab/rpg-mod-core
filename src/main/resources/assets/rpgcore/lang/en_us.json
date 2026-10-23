@@ -241,5 +241,8 @@
   "entity.rpgcore.mush_guardian": "Mushroom Guardian",
   "item.rpgcore.forest_hunter_medal": "Forest Hunter Medal",
   "item.rpgcore.mush_hunter_medal": "Mushroom Hunter Medal",
-  "item.rpgcore.return_scroll": "Return Scroll"
+  "item.rpgcore.return_scroll": "Return Scroll",
+  "item.rpgcore.potential_scroll": "Potential Scroll",
+  "item.rpgcore.epic_potential_scroll": "Epic Potential Scroll",
+  "item.rpgcore.cube": "Suspicious Cube"
 }

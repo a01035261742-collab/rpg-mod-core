@@ -68,6 +68,7 @@ public class PlayerEquip {
         CompoundTag o = Gear.opts(s);
         for (String k : o.getAllKeys()) m.merge(k, (double) o.getInt(k), Double::sum);
         Enhance.addBonus(s, m);   // 주문서 + 스타포스
+        Potential.addBonus(s, m); // 잠재능력
     }
 
     public static class Provider implements ICapabilitySerializable<CompoundTag> {

@@ -119,6 +119,14 @@ public final class ModItems {
     /** 귀환 주문서: 3초 뒤 가장 가까운 마을로 */
     public static final RegistryObject<Item> RETURN_SCROLL = ITEMS.register("return_scroll", () -> new ReturnScroll(new Item.Properties().stacksTo(64)));
 
+    /** 잠재능력: 부여 주문서 (레어·에픽) · 수상한 큐브 (골드 대신 재설정) */
+    public static final RegistryObject<Item> POTENTIAL_SCROLL = ITEMS.register("potential_scroll",
+            () -> new Material(new Item.Properties().rarity(Rarity.RARE), "잠재능력이 없는 장비에 레어 잠재능력 부여 · 메뉴(M) → 강화 → 잠재능력", false));
+    public static final RegistryObject<Item> EPIC_POTENTIAL_SCROLL = ITEMS.register("epic_potential_scroll",
+            () -> new Material(new Item.Properties().rarity(Rarity.EPIC), "잠재능력이 없는 장비에 에픽 잠재능력 부여 · 메뉴(M) → 강화 → 잠재능력", false));
+    public static final RegistryObject<Item> CUBE = ITEMS.register("cube",
+            () -> new Material(new Item.Properties().rarity(Rarity.EPIC), "골드 대신 잠재능력 1번 재설정 · 메뉴(M) → 강화 → 잠재능력", false));
+
     /** 주문서 (종류·등급은 NBT) */
     public static final RegistryObject<Item> SCROLL = ITEMS.register("scroll", () -> new Scroll(new Item.Properties()));
 
@@ -131,6 +139,9 @@ public final class ModItems {
             .displayItems((params, out) -> {
                 out.accept(STAT_RESET_SCROLL.get());
                 out.accept(RETURN_SCROLL.get());
+                out.accept(POTENTIAL_SCROLL.get());
+                out.accept(EPIC_POTENTIAL_SCROLL.get());
+                out.accept(CUBE.get());
                 for (String k : Scroll.KINDS) for (int g = 0; g < 4; g++) out.accept(Scroll.make(k, g));
                 out.accept(Scroll.make("white", 0));
                 for (var po : new RegistryObject[]{RED_POTION, ORANGE_POTION, WHITE_POTION, BLUE_POTION, DEEP_BLUE_POTION, MANA_ELIXIR, ELIXIR, POWER_ELIXIR})

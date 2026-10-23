@@ -24,18 +24,20 @@ public class EnhanceScreen extends Screen {
     private List<Integer> slots;
     private List<ItemStack> scrolls;
     private int frags;
+    private List<Integer> extra = List.of(0, 0, 0, 0, 0, 0);
     private int x, y, scroll, tab, sel = -1, selScroll = -1;
     private boolean guard;
     private static int lastTab;
 
-    private EnhanceScreen(List<Integer> locs, List<ItemStack> gear, List<Integer> slots, List<ItemStack> scrolls, int frags) {
+    private EnhanceScreen(List<Integer> locs, List<ItemStack> gear, List<Integer> slots, List<ItemStack> scrolls, int frags, List<Integer> extra) {
         super(Component.literal("장비 강화"));
         this.tab = lastTab;
-        set(locs, gear, slots, scrolls, frags);
+        set(locs, gear, slots, scrolls, frags, extra);
         if (!gear.isEmpty()) sel = 0;
     }
 
-    private void set(List<Integer> locs, List<ItemStack> gear, List<Integer> slots, List<ItemStack> scrolls, int frags) {
+    private void set(List<Integer> locs, List<ItemStack> gear, List<Integer> slots, List<ItemStack> scrolls, int frags, List<Integer> extra) {
+        this.extra = extra.size() >= 6 ? extra : List.of(0, 0, 0, 0, 0, 0);
         this.locs = locs;
         this.gear = gear;
         this.slots = slots;
@@ -44,18 +46,18 @@ public class EnhanceScreen extends Screen {
     }
 
     /** 서버가 보낸 내용 받기: open 이면 새 창, 아니면 열린 창만 갱신 (선택 유지) */
-    public static void receive(boolean open, List<Integer> locs, List<ItemStack> gear, List<Integer> slots, List<ItemStack> scrolls, int frags) {
+    public static void receive(boolean open, List<Integer> locs, List<ItemStack> gear, List<Integer> slots, List<ItemStack> scrolls, int frags, List<Integer> extra) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.screen instanceof EnhanceScreen es) {
             int keepLoc = es.sel >= 0 && es.sel < es.locs.size() ? es.locs.get(es.sel) : -1;
             int keepSlot = es.selScroll >= 0 && es.selScroll < es.slots.size() ? es.slots.get(es.selScroll) : -1;
-            es.set(locs, gear, slots, scrolls, frags);
+            es.set(locs, gear, slots, scrolls, frags, extra);
             es.sel = locs.indexOf(keepLoc);
             if (es.sel < 0 && !gear.isEmpty()) es.sel = 0;
             es.selScroll = slots.indexOf(keepSlot);
             es.rebuildWidgets();
         } else if (open) {
-            mc.setScreen(new EnhanceScreen(locs, gear, slots, scrolls, frags));
+            mc.setScreen(new EnhanceScreen(locs, gear, slots, scrolls, frags, extra));
         }
     }
 
@@ -93,11 +95,11 @@ public class EnhanceScreen extends Screen {
     protected void init() {
         x = width / 2 - W / 2;
         y = height / 2 - H / 2;
-        String[] names = {"스타포스", "주문서", "조각 합성"};
+        String[] names = {"스타포스", "주문서", "조각", "잠재능력"};
         int tx = x + 158;
         for (int i = 0; i < names.length; i++) {
             final int k = i;
-            int w = font.width(names[i]) + 12;
+            int w = font.width(names[i]) + 8;
             Button b = Button.builder(Component.literal(names[i]), bt -> { tab = k; lastTab = k; rebuildWidgets(); }).bounds(tx, y + 19, w, 14).build();
             b.active = tab != i;
             addRenderableWidget(b);
@@ -132,6 +134,26 @@ public class EnhanceScreen extends Screen {
                     Net.CH.sendToServer(new Net.EnhanceAction(2, curLoc(), slots.get(selScroll)))).bounds(bx, by, 110, 18).build();
             b.active = selScroll >= 0 && selScroll < scrolls.size() && Enhance.scrollBlock(s, scrolls.get(selScroll)) == null;
             addRenderableWidget(b);
+        } else if (tab == 3 && d != null && rpg.core.equip.Potential.can(d)) {
+            if (!rpg.core.equip.Potential.has(s)) {
+                Button b1 = Button.builder(Component.literal("레어 부여 (" + extra.get(1) + ")"), bt -> Net.CH.sendToServer(new Net.EnhanceAction(5, curLoc(), 0))).bounds(bx, by, 86, 18).build();
+                b1.active = extra.get(1) > 0;
+                addRenderableWidget(b1);
+                Button b2 = Button.builder(Component.literal("에픽 부여 (" + extra.get(2) + ")"), bt -> Net.CH.sendToServer(new Net.EnhanceAction(5, curLoc(), 1))).bounds(bx + 90, by, 86, 18).build();
+                b2.active = extra.get(2) > 0;
+                addRenderableWidget(b2);
+            } else if (rpg.core.equip.Potential.pending(s)) {
+                addRenderableWidget(Button.builder(Component.literal("새 옵션 적용"), bt -> Net.CH.sendToServer(new Net.EnhanceAction(8, curLoc(), 0))).bounds(bx, by, 86, 18).build());
+                addRenderableWidget(Button.builder(Component.literal("기존 유지"), bt -> Net.CH.sendToServer(new Net.EnhanceAction(9, curLoc(), 0))).bounds(bx + 90, by, 86, 18).build());
+            } else {
+                long c = rpg.core.equip.Potential.cost(d, rpg.core.equip.Potential.grade(s));
+                Button b1 = Button.builder(Component.literal(String.format("%,d G", c)), bt -> Net.CH.sendToServer(new Net.EnhanceAction(6, curLoc(), 0))).bounds(bx, by, 86, 18).build();
+                b1.active = ClientData.gold >= c;
+                addRenderableWidget(b1);
+                Button b2 = Button.builder(Component.literal("큐브 (" + extra.get(0) + ")"), bt -> Net.CH.sendToServer(new Net.EnhanceAction(7, curLoc(), 0))).bounds(bx + 90, by, 86, 18).build();
+                b2.active = extra.get(0) > 0;
+                addRenderableWidget(b2);
+            }
         } else if (tab == 2) {
             Button b = Button.builder(Component.literal("합성 (조각 " + Enhance.fragments + "개)"), bt ->
                     Net.CH.sendToServer(new Net.EnhanceAction(4, 0, 0))).bounds(bx, by, 130, 18).build();
@@ -183,6 +205,8 @@ public class EnhanceScreen extends Screen {
             g.drawString(font, "가진 조각: " + frags + "개", px, py + 44, frags >= Enhance.fragments ? 0xFF55FF55 : 0xFFFF5555, false);
         } else if (d == null) {
             g.drawString(font, "왼쪽에서 장비를 고르세요", px, py, 0xFF808080, false);
+        } else if (tab == 3) {
+            renderPot(g, s, d, px, py);
         } else if (tab == 0) {
             renderStar(g, s, d, px, py);
         } else {
@@ -256,6 +280,34 @@ public class EnhanceScreen extends Screen {
             if (why != null) g.drawString(font, why, px, py + 108, 0xFFFF5555, false);
         }
         return tip;
+    }
+
+    private void renderPot(GuiGraphics g, ItemStack s, GearDefs.GearDef d, int px, int py) {
+        g.drawString(font, s.getHoverName(), px, py, 0xFFFFFFFF, false);
+        if (!rpg.core.equip.Potential.can(d)) { g.drawString(font, "잠재능력 불가", px, py + 14, 0xFFFF5555, false); return; }
+        if (!rpg.core.equip.Potential.has(s)) {
+            g.drawString(font, "잠재능력 없음", px, py + 14, 0xFFA0A0A0, false);
+            g.drawString(font, "부여 주문서로 처음 부여해요", px, py + 26, 0xFFA0A0A0, false);
+            return;
+        }
+        var pt = rpg.core.equip.Potential.pot(s);
+        int gr = Math.max(0, Math.min(3, pt.getInt("g")));
+        int y0 = py + 13;
+        boolean pend = rpg.core.equip.Potential.pending(s);
+        g.drawString(font, (pend ? "지금 " : "") + "[" + rpg.core.equip.Potential.GRADE[gr] + "]", px, y0, 0xFF000000 | rpg.core.equip.Potential.COLOR[gr], false);
+        int yy = y0 + 10;
+        for (var c : rpg.core.equip.Potential.lines(pt)) { g.drawString(font, c, px, yy, 0xFFFFFFFF, false); yy += 10; }
+        if (pend) {
+            var nw = pt.getCompound("new");
+            int ng = Math.max(0, Math.min(3, nw.getInt("g")));
+            yy += 2;
+            g.drawString(font, "새 옵션 [" + rpg.core.equip.Potential.GRADE[ng] + "]" + (ng > gr ? " ▲" : ""), px, yy, 0xFF000000 | rpg.core.equip.Potential.COLOR[ng], false);
+            yy += 10;
+            for (var c : rpg.core.equip.Potential.lines(nw)) { g.drawString(font, c, px, yy, 0xFFFFFFFF, false); yy += 10; }
+        } else if (gr < 3) {
+            yy += 4;
+            g.drawString(font, "등급 상승 " + fmt(rpg.core.equip.Potential.upChance[gr]) + "% · 천장 " + extra.get(3 + gr) + " / " + rpg.core.equip.Potential.ceiling[gr], px, yy, 0xFFA0A0A0, false);
+        }
     }
 
     private static String fmt(double v) {

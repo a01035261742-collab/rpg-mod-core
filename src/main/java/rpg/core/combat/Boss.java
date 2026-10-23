@@ -56,7 +56,7 @@ public final class Boss {
     public record Def(String key, double arena, int respawnSec, int resetSec, double phase2, double[] wait1, double[] wait2,
                       double penaltyPerLevel, double maxPenalty, List<Pattern> patterns,
                       String sure, int fragments, double scrollChance, String ring, double ringChance, List<Mats> mats, String bar,
-                      Pattern melee, double meleeCd, Map<String, Double> gim, String pillarKey, String firstMedal) {
+                      Pattern melee, double meleeCd, Map<String, Double> gim, String pillarKey, String firstMedal, Map<String, Double> rx) {
         public double g(String k, double def) { return gim.getOrDefault(k, def); }
     }
 
@@ -91,7 +91,7 @@ public final class Boss {
                     s(rw, "sure", ""), (int) d(rw, "fragments", 0), d(rw, "scrollChance", 0), s(rw, "ring", ""), d(rw, "ringChance", 0), mats,
                     s(o, "bar", ""), melee, o.has("melee") ? d(o.getAsJsonObject("melee"), "cd", 1.5) : 0,
                     o.has("gimmick") ? nums(o.getAsJsonObject("gimmick")) : new HashMap<>(),
-                    o.has("gimmick") ? s(o.getAsJsonObject("gimmick"), "pillar", "") : "", s(rw, "first", "")));
+                    o.has("gimmick") ? s(o.getAsJsonObject("gimmick"), "pillar", "") : "", s(rw, "first", ""), nums(rw)));
         } catch (Exception ex) {
             RpgCore.LOG.error("[rpgcore] 보스 {} 읽기 실패", key, ex);
         }
@@ -805,6 +805,7 @@ public final class Boss {
     public static double onHurt(Mob mob, MobData m, ServerPlayer p, double dmg) {
         Def def = DEFS.get(m.key);
         if (def == null) return dmg;
+        dmg *= 1 + RpgData.get(p).bonus("bossPct") / 100.0;   // 보스 공격 시 피해 (잠재능력)
         int diff = m.level - RpgData.get(p).level;
         if (diff > 0) dmg *= Math.max(1 - def.maxPenalty() / 100.0, 1 - def.penaltyPerLevel() * diff / 100.0);
         dmg = Math.max(1, Math.round(dmg));
@@ -879,6 +880,11 @@ public final class Boss {
             for (Mats mt : def.mats()) rpg.core.loot.Drops.rollMats(mt.mob(), mt.times(), mul, out);
             if (def.fragments() > 0) out.add(new ItemStack(rpg.core.item.ModItems.SCROLL_FRAGMENT.get(), def.fragments()));
             if (r.nextDouble() * 100 < def.scrollChance() * mul) out.add(rpg.core.equip.Enhance.randomScroll(m.level, r));
+            // 잠재능력: 수상한 큐브 · 에픽 부여 주문서
+            if (r.nextDouble() * 100 < def.rx().getOrDefault("cubeChance", 0.0) * mul)
+                out.add(new ItemStack(rpg.core.item.ModItems.CUBE.get(), (int) Math.max(1, def.rx().getOrDefault("cubes", 1.0))));
+            if (r.nextDouble() * 100 < def.rx().getOrDefault("epicScrollChance", 0.0) * mul)
+                out.add(new ItemStack(rpg.core.item.ModItems.EPIC_POTENTIAL_SCROLL.get()));
             if (!def.ring().isEmpty() && r.nextDouble() * 100 < def.ringChance() * mul) {
                 ItemStack g = rpg.core.item.ItemIds.stack(RpgCore.MODID + ":" + def.ring(), 1);
                 rpg.core.equip.Gear.roll(g);
