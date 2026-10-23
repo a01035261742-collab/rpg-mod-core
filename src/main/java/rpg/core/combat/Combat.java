@@ -60,7 +60,15 @@ public final class Combat {
     }
 
     public static double statAttack(Player p, PlayerData d) {
-        return (mainStat(d) * 4.0 + subStat(d)) * weaponAtk(p, d) / 100.0 * (1 + (d.bonus("atkPct") + d.buffV("berserk", d.clock)) / 100.0);   // 광폭화: 스공 %
+        // 메이플식 (C안): 공격력 × (1 + 공%) → 스탯 공식 → × (1 + 데미지%). 보스% 는 보스한테 데미지%와 더해짐 (Boss.onHurt)
+        return (mainStat(d) * 4.0 + subStat(d)) * weaponAtk(p, d) * (1 + d.bonus("atkPct") / 100.0) / 100.0 * (1 + dmgPct(d) / 100.0);
+    }
+
+    /** 데미지% 합: 장비·패시브 + 광폭화 + 광전사의 혼 (HP 50% 이하) */
+    public static double dmgPct(PlayerData d) {
+        double v = d.bonus("dmgPct") + d.buffV("berserk", d.clock);
+        if (d.bonus("lowHpDmg") > 0 && d.hp < d.maxHp * 0.5) v += d.bonus("lowHpDmg");
+        return v;
     }
 
     public static Hit roll(Player p, PlayerData d, double mult) {
@@ -74,7 +82,7 @@ public final class Combat {
     }
 
     public static double defense(PlayerData d) {
-        return (d.total(PlayerData.VIT) * Balance.defPerVit + d.bonus("def") + d.eq("def") + d.buffV("iron_body", d.clock)) * (1 + d.eq("defPct") / 100.0);
+        return (d.total(PlayerData.VIT) * Balance.defPerVit + d.bonus("def") + d.eq("def") + d.buffV("iron_body", d.clock)) * (1 + (d.eq("defPct") + d.bonus("defPct")) / 100.0);
     }
 
     /**

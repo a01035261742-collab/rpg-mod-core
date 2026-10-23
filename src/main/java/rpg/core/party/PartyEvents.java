@@ -82,7 +82,7 @@ public final class PartyEvents {
 
     private static void goDown(ServerPlayer sp, PlayerData d) {
         long now = sp.level().getGameTime();
-        d.downEnd = now + Math.round(Balance.downSeconds * 20);
+        d.downEnd = now + Math.round((Balance.downSeconds + d.bonus("downTime")) * 20);   // 재기: 다운 시간 증가
         d.reviver = null;
         d.hp = 1;
         sp.setHealth(1f);

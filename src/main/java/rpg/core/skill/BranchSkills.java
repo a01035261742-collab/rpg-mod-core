@@ -48,7 +48,13 @@ public final class BranchSkills {
     public static boolean use(ServerPlayer p, PlayerData d, Defs.SkillDef s, int lv, long now) {
         return switch (s.id()) {
             case "taunt" -> taunt(p, s, lv);
-            case "iron_wall" -> buff(p, d, "iron_wall", s.value2(lv), s.value(lv), 0, ParticleTypes.CRIT, SoundEvents.SHIELD_BLOCK);
+            case "iron_wall" -> buff(p, d, "iron_wall", s.value2(lv) + d.bonus("ironWallSec"), s.value(lv), 0, ParticleTypes.CRIT, SoundEvents.SHIELD_BLOCK);
+            case "dash_slash" -> WarriorSkills.dashSlash(p, s, lv);
+            case "whirl_slash" -> WarriorSkills.whirl(p, s, lv, 3, 0);
+            case "shield_bash" -> WarriorSkills.shieldBash(p, s, lv);
+            case "guardian_shout" -> WarriorSkills.guardianShout(p, s, lv);
+            case "blood_spin" -> WarriorSkills.whirl(p, s, lv, 5, 8);
+            case "execute" -> WarriorSkills.execute(p, s, lv);
             case "berserk" -> berserk(p, d, s, lv);
             case "leap_slam" -> leapSlam(p, s, lv);
             case "focus" -> buff(p, d, "focus", s.duration(), s.value(lv), 0, ParticleTypes.END_ROD, SoundEvents.BEACON_ACTIVATE);
@@ -79,7 +85,7 @@ public final class BranchSkills {
     }
 
     // ───────── 공통: 범위 안 RPG 몹 ─────────
-    static List<Mob> mobsAround(ServerLevel l, Vec3 c, double r) {
+    public static List<Mob> mobsAround(ServerLevel l, Vec3 c, double r) {
         List<Mob> out = new ArrayList<>();
         for (Mob m : l.getEntitiesOfClass(Mob.class, new AABB(c, c).inflate(r + 2, 3, r + 2))) {
             if (!m.isAlive() || !Combat.isRpgMob(m)) continue;
@@ -90,7 +96,7 @@ public final class BranchSkills {
         return out;
     }
 
-    private static Vec3 flatLook(ServerPlayer p) {
+    static Vec3 flatLook(ServerPlayer p) {
         return JobSkills.flatAim(p);
     }
 
@@ -405,7 +411,7 @@ public final class BranchSkills {
     private record Task(ServerPlayer p, long start, java.util.function.IntPredicate step) {}
     private static final List<Task> TASKS = new ArrayList<>();
 
-    private static void task(ServerPlayer p, java.util.function.IntPredicate step) {
+    static void task(ServerPlayer p, java.util.function.IntPredicate step) {
         TASKS.add(new Task(p, p.level().getGameTime(), step));
     }
 

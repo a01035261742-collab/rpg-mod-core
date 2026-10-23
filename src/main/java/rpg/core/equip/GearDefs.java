@@ -40,7 +40,8 @@ public final class GearDefs {
             case "def" -> "방어";
             case "allPct" -> "올스탯%";
             case "bossPct" -> "보스 데미지";
-            case "atkPct" -> "데미지";
+            case "atkPct" -> "공격력";
+            case "dmgPct" -> "데미지";
             case "speedPct" -> "이동속도";
             case "reqLv" -> "착용 레벨 감소";
             case "str+dex" -> "힘+민첩";

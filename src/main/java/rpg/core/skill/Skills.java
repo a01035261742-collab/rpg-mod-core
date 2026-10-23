@@ -59,7 +59,7 @@ public final class Skills {
     public static void passiveUp(ServerPlayer p, String nodeId) {
         PlayerData d = RpgData.get(p);
         Defs.Node n = Defs.NODES.get(nodeId);
-        if (n == null || n.maxRank() <= 0 || d.passivePoints <= 0) return;
+        if (n == null || n.maxRank() <= 0 || d.passivePoints <= 0 || !Defs.inTree(n, d.job, d.branch)) return;
         int rank = d.passives.getOrDefault(nodeId, 0);
         if (rank >= n.maxRank()) return;
         for (String req : n.requires()) {

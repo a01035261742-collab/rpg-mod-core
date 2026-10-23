@@ -136,7 +136,7 @@ public final class Potential {
     public static String label(String k) {
         return switch (k) {
             case "strPct" -> "힘"; case "dexPct" -> "민첩"; case "intPct" -> "지력"; case "lukPct" -> "운";
-            case "atkPct" -> "공격력/마력"; case "critChance" -> "치명타 확률"; case "bossPct" -> "보스 공격 시 피해";
+            case "atkPct" -> "공격력/마력"; case "dmgPct" -> "데미지"; case "critChance" -> "치명타 확률"; case "bossPct" -> "보스 공격 시 피해";
             case "hpPct" -> "최대 HP"; case "defPct" -> "방어력"; case "allPct" -> "올스탯";
             case "speedPct" -> "이동속도"; case "goldPct" -> "골드 획득"; case "dropPct" -> "아이템 드롭률";
             case "critDmg" -> "크리티컬 데미지"; case "cdPct" -> "모든 스킬 재사용 대기시간";

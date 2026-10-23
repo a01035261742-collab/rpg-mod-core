@@ -1,26 +1,479 @@
 {
-  "_설명": "공용 패시브 트리. 4방향 × 작은 코어 3칸(여러 번 찍기) + 끝에 큰 코어 1칸(1번만, 강한 효과). x,y = 칸 위치(가운데 0,0). requires = 먼저 1 이상 찍어야 하는 칸. stat: atkPct critDmg critChance hpPct def hpRegenPct speedPct mpRegenPct bossDmg reviveTime stamina healPct",
+  "_설명": "패시브 트리. job = 직업 전용 (0 = 공용: 아직 전용 트리가 없는 직업이 씀), branch = 2차 갈래 전용. x,y = 칸 위치(가운데 0,0). requires = 먼저 1 이상 찍어야 하는 칸. special = 큰 코어(1번만). stat: dmgPct critDmg critChance hpPct defPct vitHpPct bossPct thrillSpeed healPct kbResist cdPct speedPct mpRegenPct stamina reviveTime + 큰 코어 gsMaster lowHpGuard lowHpDmg downTime + 갈래 ironWallSec rageExtend",
   "nodes": [
-    {"id": "start", "name": "시작", "x": 0, "y": 0, "maxRank": 0, "stat": "", "perRank": 0, "requires": []},
-
-    {"id": "crit_dmg_1", "name": "급소 노리기", "x": 0, "y": -1, "maxRank": 5, "stat": "critDmg", "perRank": 2, "requires": ["start"]},
-    {"id": "crit_rate_1", "name": "날카로운 눈", "x": 0, "y": -2, "maxRank": 3, "stat": "critChance", "perRank": 1, "requires": ["crit_dmg_1"]},
-    {"id": "crit_dmg_2", "name": "급소 강타", "x": 0, "y": -3, "maxRank": 3, "stat": "critDmg", "perRank": 3, "requires": ["crit_rate_1"]},
-    {"id": "crit_master", "name": "치명 극의", "x": 0, "y": -4, "maxRank": 1, "stat": "critDmg", "perRank": 10, "requires": ["crit_dmg_2"], "special": true},
-
-    {"id": "atk_1", "name": "공격 수련", "x": -1, "y": 0, "maxRank": 5, "stat": "atkPct", "perRank": 1, "requires": ["start"]},
-    {"id": "atk_2", "name": "공격 숙련", "x": -2, "y": 0, "maxRank": 3, "stat": "atkPct", "perRank": 2, "requires": ["atk_1"]},
-    {"id": "boss_1", "name": "거인 사냥", "x": -3, "y": 0, "maxRank": 3, "stat": "bossDmg", "perRank": 3, "requires": ["atk_2"]},
-    {"id": "boss_slayer", "name": "보스 사냥꾼", "x": -4, "y": 0, "maxRank": 1, "stat": "bossDmg", "perRank": 10, "requires": ["boss_1"], "special": true},
-
-    {"id": "hp_1", "name": "강인한 몸", "x": 1, "y": 0, "maxRank": 5, "stat": "hpPct", "perRank": 2, "requires": ["start"]},
-    {"id": "def_1", "name": "단단한 피부", "x": 2, "y": 0, "maxRank": 3, "stat": "def", "perRank": 5, "requires": ["hp_1"]},
-    {"id": "regen_1", "name": "회복력", "x": 3, "y": 0, "maxRank": 3, "stat": "healPct", "perRank": 10, "requires": ["def_1"]},
-    {"id": "second_wind", "name": "재기", "x": 4, "y": 0, "maxRank": 1, "stat": "reviveTime", "perRank": 30, "requires": ["regen_1"], "special": true},
-
-    {"id": "speed_1", "name": "가벼운 발", "x": 0, "y": 1, "maxRank": 5, "stat": "speedPct", "perRank": 1, "requires": ["start"]},
-    {"id": "mp_regen_1", "name": "명상", "x": 0, "y": 2, "maxRank": 3, "stat": "mpRegenPct", "perRank": 5, "requires": ["speed_1"]},
-    {"id": "dodge_1", "name": "지구력", "x": 0, "y": 3, "maxRank": 3, "stat": "stamina", "perRank": 2, "requires": ["mp_regen_1"]},
-    {"id": "nimble", "name": "강철 체력", "x": 0, "y": 4, "maxRank": 1, "stat": "stamina", "perRank": 6, "requires": ["dodge_1"], "special": true}
+    {
+      "id": "start",
+      "name": "시작",
+      "x": 0,
+      "y": 0,
+      "maxRank": 0,
+      "stat": "",
+      "perRank": 0,
+      "requires": [],
+      "job": 0
+    },
+    {
+      "id": "crit_dmg_1",
+      "name": "급소 노리기",
+      "x": 0,
+      "y": -1,
+      "maxRank": 5,
+      "stat": "critDmg",
+      "perRank": 2,
+      "requires": [
+        "start"
+      ],
+      "job": 0
+    },
+    {
+      "id": "crit_rate_1",
+      "name": "날카로운 눈",
+      "x": 0,
+      "y": -2,
+      "maxRank": 3,
+      "stat": "critChance",
+      "perRank": 1,
+      "requires": [
+        "crit_dmg_1"
+      ],
+      "job": 0
+    },
+    {
+      "id": "crit_dmg_2",
+      "name": "급소 강타",
+      "x": 0,
+      "y": -3,
+      "maxRank": 3,
+      "stat": "critDmg",
+      "perRank": 3,
+      "requires": [
+        "crit_rate_1"
+      ],
+      "job": 0
+    },
+    {
+      "id": "crit_master",
+      "name": "치명 극의",
+      "x": 0,
+      "y": -4,
+      "maxRank": 1,
+      "stat": "critDmg",
+      "perRank": 10,
+      "requires": [
+        "crit_dmg_2"
+      ],
+      "special": true,
+      "job": 0
+    },
+    {
+      "id": "atk_1",
+      "name": "공격 수련",
+      "x": -1,
+      "y": 0,
+      "maxRank": 5,
+      "stat": "dmgPct",
+      "perRank": 1,
+      "requires": [
+        "start"
+      ],
+      "job": 0
+    },
+    {
+      "id": "atk_2",
+      "name": "공격 숙련",
+      "x": -2,
+      "y": 0,
+      "maxRank": 3,
+      "stat": "dmgPct",
+      "perRank": 2,
+      "requires": [
+        "atk_1"
+      ],
+      "job": 0
+    },
+    {
+      "id": "boss_1",
+      "name": "거인 사냥",
+      "x": -3,
+      "y": 0,
+      "maxRank": 3,
+      "stat": "bossPct",
+      "perRank": 3,
+      "requires": [
+        "atk_2"
+      ],
+      "job": 0
+    },
+    {
+      "id": "boss_slayer",
+      "name": "보스 사냥꾼",
+      "x": -4,
+      "y": 0,
+      "maxRank": 1,
+      "stat": "bossPct",
+      "perRank": 10,
+      "requires": [
+        "boss_1"
+      ],
+      "special": true,
+      "job": 0
+    },
+    {
+      "id": "hp_1",
+      "name": "강인한 몸",
+      "x": 1,
+      "y": 0,
+      "maxRank": 5,
+      "stat": "hpPct",
+      "perRank": 2,
+      "requires": [
+        "start"
+      ],
+      "job": 0
+    },
+    {
+      "id": "def_1",
+      "name": "단단한 피부",
+      "x": 2,
+      "y": 0,
+      "maxRank": 3,
+      "stat": "def",
+      "perRank": 5,
+      "requires": [
+        "hp_1"
+      ],
+      "job": 0
+    },
+    {
+      "id": "regen_1",
+      "name": "회복력",
+      "x": 3,
+      "y": 0,
+      "maxRank": 3,
+      "stat": "healPct",
+      "perRank": 10,
+      "requires": [
+        "def_1"
+      ],
+      "job": 0
+    },
+    {
+      "id": "second_wind",
+      "name": "재기",
+      "x": 4,
+      "y": 0,
+      "maxRank": 1,
+      "stat": "reviveTime",
+      "perRank": 30,
+      "requires": [
+        "regen_1"
+      ],
+      "special": true,
+      "job": 0
+    },
+    {
+      "id": "speed_1",
+      "name": "가벼운 발",
+      "x": 0,
+      "y": 1,
+      "maxRank": 5,
+      "stat": "speedPct",
+      "perRank": 1,
+      "requires": [
+        "start"
+      ],
+      "job": 0
+    },
+    {
+      "id": "mp_regen_1",
+      "name": "명상",
+      "x": 0,
+      "y": 2,
+      "maxRank": 3,
+      "stat": "mpRegenPct",
+      "perRank": 5,
+      "requires": [
+        "speed_1"
+      ],
+      "job": 0
+    },
+    {
+      "id": "dodge_1",
+      "name": "지구력",
+      "x": 0,
+      "y": 3,
+      "maxRank": 3,
+      "stat": "stamina",
+      "perRank": 2,
+      "requires": [
+        "mp_regen_1"
+      ],
+      "job": 0
+    },
+    {
+      "id": "nimble",
+      "name": "강철 체력",
+      "x": 0,
+      "y": 4,
+      "maxRank": 1,
+      "stat": "stamina",
+      "perRank": 6,
+      "requires": [
+        "dodge_1"
+      ],
+      "special": true,
+      "job": 0
+    },
+    {
+      "id": "w_start",
+      "name": "시작",
+      "x": 0,
+      "y": 0,
+      "maxRank": 0,
+      "stat": "",
+      "perRank": 0,
+      "requires": [],
+      "job": 1
+    },
+    {
+      "id": "w_dmg",
+      "name": "날카로운 칼날",
+      "x": 0,
+      "y": -1,
+      "maxRank": 5,
+      "stat": "dmgPct",
+      "perRank": 1,
+      "requires": [
+        "w_start"
+      ],
+      "job": 1
+    },
+    {
+      "id": "w_cdmg",
+      "name": "급소 베기",
+      "x": 0,
+      "y": -2,
+      "maxRank": 5,
+      "stat": "critDmg",
+      "perRank": 2,
+      "requires": [
+        "w_dmg"
+      ],
+      "job": 1
+    },
+    {
+      "id": "w_crit",
+      "name": "전장의 눈",
+      "x": 0,
+      "y": -3,
+      "maxRank": 3,
+      "stat": "critChance",
+      "perRank": 1,
+      "requires": [
+        "w_cdmg"
+      ],
+      "job": 1
+    },
+    {
+      "id": "w_gs",
+      "name": "대검 달인",
+      "x": 0,
+      "y": -4,
+      "maxRank": 1,
+      "stat": "gsMaster",
+      "perRank": 50,
+      "requires": [
+        "w_crit"
+      ],
+      "job": 1,
+      "special": true
+    },
+    {
+      "id": "w_hp",
+      "name": "강인한 몸",
+      "x": 1,
+      "y": 0,
+      "maxRank": 5,
+      "stat": "hpPct",
+      "perRank": 2,
+      "requires": [
+        "w_start"
+      ],
+      "job": 1
+    },
+    {
+      "id": "w_def",
+      "name": "강철 갑주",
+      "x": 2,
+      "y": 0,
+      "maxRank": 3,
+      "stat": "defPct",
+      "perRank": 3,
+      "requires": [
+        "w_hp"
+      ],
+      "job": 1
+    },
+    {
+      "id": "w_skin",
+      "name": "단단한 피부",
+      "x": 3,
+      "y": 0,
+      "maxRank": 3,
+      "stat": "vitHpPct",
+      "perRank": 5,
+      "requires": [
+        "w_def"
+      ],
+      "job": 1
+    },
+    {
+      "id": "w_unbreak",
+      "name": "불굴",
+      "x": 4,
+      "y": 0,
+      "maxRank": 1,
+      "stat": "lowHpGuard",
+      "perRank": 20,
+      "requires": [
+        "w_skin"
+      ],
+      "job": 1,
+      "special": true
+    },
+    {
+      "id": "w_boss",
+      "name": "거인 사냥",
+      "x": -1,
+      "y": 0,
+      "maxRank": 5,
+      "stat": "bossPct",
+      "perRank": 2,
+      "requires": [
+        "w_start"
+      ],
+      "job": 1
+    },
+    {
+      "id": "w_thrill",
+      "name": "전투 흥분",
+      "x": -2,
+      "y": 0,
+      "maxRank": 3,
+      "stat": "thrillSpeed",
+      "perRank": 2,
+      "requires": [
+        "w_boss"
+      ],
+      "job": 1
+    },
+    {
+      "id": "w_rage",
+      "name": "분노 폭발",
+      "x": -3,
+      "y": 0,
+      "maxRank": 3,
+      "stat": "dmgPct",
+      "perRank": 2,
+      "requires": [
+        "w_thrill"
+      ],
+      "job": 1
+    },
+    {
+      "id": "w_berserker",
+      "name": "광전사의 혼",
+      "x": -4,
+      "y": 0,
+      "maxRank": 1,
+      "stat": "lowHpDmg",
+      "perRank": 15,
+      "requires": [
+        "w_rage"
+      ],
+      "job": 1,
+      "special": true
+    },
+    {
+      "id": "w_heal",
+      "name": "전사의 회복력",
+      "x": 0,
+      "y": 1,
+      "maxRank": 3,
+      "stat": "healPct",
+      "perRank": 5,
+      "requires": [
+        "w_start"
+      ],
+      "job": 1
+    },
+    {
+      "id": "w_grav",
+      "name": "무게중심",
+      "x": 0,
+      "y": 2,
+      "maxRank": 3,
+      "stat": "kbResist",
+      "perRank": 10,
+      "requires": [
+        "w_heal"
+      ],
+      "job": 1
+    },
+    {
+      "id": "w_cd",
+      "name": "전투 감각",
+      "x": 0,
+      "y": 3,
+      "maxRank": 3,
+      "stat": "cdPct",
+      "perRank": 1,
+      "requires": [
+        "w_grav"
+      ],
+      "job": 1
+    },
+    {
+      "id": "w_second",
+      "name": "재기",
+      "x": 0,
+      "y": 4,
+      "maxRank": 1,
+      "stat": "downTime",
+      "perRank": 30,
+      "requires": [
+        "w_cd"
+      ],
+      "job": 1,
+      "special": true
+    },
+    {
+      "id": "w_wall",
+      "name": "철벽 수련",
+      "x": 1,
+      "y": 1,
+      "maxRank": 2,
+      "stat": "ironWallSec",
+      "perRank": 1,
+      "requires": [
+        "w_start"
+      ],
+      "job": 1,
+      "branch": 1
+    },
+    {
+      "id": "w_endless",
+      "name": "연속 분노",
+      "x": -1,
+      "y": 1,
+      "maxRank": 3,
+      "stat": "rageExtend",
+      "perRank": 1,
+      "requires": [
+        "w_start"
+      ],
+      "job": 1,
+      "branch": 2
+    }
   ]
 }

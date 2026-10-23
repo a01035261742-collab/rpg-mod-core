@@ -51,6 +51,15 @@ public final class PlayerEvents {
         if (!(e.getEntity() instanceof ServerPlayer sp)) return;
         PlayerData d = RpgData.get(sp);
         if (d.isNew()) d.init();
+        // 직업 개편 리셋 (한 번만): 스킬·패시브 포인트 전부 돌려줌
+        var keep = sp.getPersistentData().getCompound(net.minecraft.world.entity.player.Player.PERSISTED_NBT_TAG);
+        if (keep.getInt("rpgJobReset") < 1) {
+            d.refundSkillsAndPassives();
+            keep.putInt("rpgJobReset", 1);
+            sp.getPersistentData().put(net.minecraft.world.entity.player.Player.PERSISTED_NBT_TAG, keep);
+            if (d.level > 1) sp.sendSystemMessage(net.minecraft.network.chat.Component.literal("[직업 개편] 스킬·패시브 포인트를 전부 돌려받았어요. 다시 찍어주세요 (L · N)")
+                    .withStyle(net.minecraft.ChatFormatting.GOLD));
+        }
         d.recalc();
         rpg.core.net.Net.defsTo(sp);
         RpgData.sync(sp);

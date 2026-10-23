@@ -43,7 +43,19 @@ public final class Defs {
     }
 
     public record Node(String id, String name, int x, int y, int maxRank, String stat, double perRank,
-                       List<String> requires, boolean special) {}
+                       List<String> requires, boolean special, int job, int branch) {}
+
+    /** 이 직업이 쓰는 트리: 전용 트리가 있으면 그것, 없으면 공용(job 0). 초보자(0)는 트리 없음 */
+    public static int treeOf(int job) {
+        if (job <= 0) return -1;
+        for (Node n : NODES.values()) if (n.job() == job) return job;
+        return 0;
+    }
+
+    /** 이 칸이 이 플레이어 트리에 보이나 (갈래 칸은 그 갈래만) */
+    public static boolean inTree(Node n, int job, int branch) {
+        return n.job() == treeOf(job) && (n.branch() == 0 || n.branch() == branch);
+    }
 
     public static final Map<String, SkillDef> SKILLS = new LinkedHashMap<>();
     public static final Map<String, Node> NODES = new LinkedHashMap<>();
@@ -79,7 +91,7 @@ public final class Defs {
                     String id = str(o, "id", "?");
                     NODES.put(id, new Node(id, str(o, "name", id), (int) num(o, "x", 0), (int) num(o, "y", 0),
                             (int) num(o, "maxRank", 1), str(o, "stat", ""), num(o, "perRank", 0), req,
-                            o.has("special") && o.get("special").getAsBoolean()));
+                            o.has("special") && o.get("special").getAsBoolean(), (int) num(o, "job", 0), (int) num(o, "branch", 0)));
                 }
             }
         } catch (Exception ex) {
@@ -89,7 +101,19 @@ public final class Defs {
 
     public static String statLabel(String stat) {
         return switch (stat) {
-            case "atkPct" -> "스공 +%s%%";
+            case "atkPct" -> "공격력 +%s%%";
+            case "dmgPct" -> "데미지 +%s%%";
+            case "bossPct" -> "보스 데미지 +%s%%";
+            case "vitHpPct" -> "체력으로 얻는 HP +%s%%";
+            case "kbResist" -> "넉백 저항 +%s%%";
+            case "thrillSpeed" -> "때릴 때 이동속도 +%s%% (5중첩)";
+            case "rageExtend" -> "광폭화 중 처치 시 +%s초";
+            case "ironWallSec" -> "철벽 지속 +%s초";
+            case "cdPct" -> "쿨타임 감소 %s%%";
+            case "gsMaster" -> "강타 차지 풀차지 배율 +%s%%p";
+            case "lowHpGuard" -> "HP 30%% 이하일 때 받는 피해 -%s%%";
+            case "lowHpDmg" -> "HP 50%% 이하일 때 데미지 +%s%%";
+            case "downTime" -> "다운 시간 +%s초";
             case "critDmg" -> "치명타 피해 +%s%%";
             case "critChance" -> "치명타 확률 +%s%%";
             case "hpPct" -> "최대 HP +%s%%";
