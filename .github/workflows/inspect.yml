@@ -8,13 +8,10 @@ jobs:
         with: { distribution: temurin, java-version: '17' }
       - run: |
           curl -sL -o ef.jar https://cdn.modrinth.com/data/vu3NZ5Ma/versions/KEBfkBat/epic-fight-20.14.17-mc1.20.1-forge.jar
-          for C in AttackAnimation StaticAnimation DynamicAnimation ActionAnimation MainFrameAnimation; do
-            echo "== $C" >> out.txt
-            javap -p -cp ef.jar yesman.epicfight.api.animation.types.$C | grep -E "getPlaySpeed|addProperty|PlaySpeed" >> out.txt || true
-          done
-          javap -p -c -cp ef.jar yesman.epicfight.api.animation.types.AttackAnimation | awk '/ float getPlaySpeed\(/{f=1} f{print} f&&/^$/{exit}' | grep -E "getstatic|invoke|Method|Field|fconst|ldc|areturn|freturn" | head -60 >> out.txt || true
-          echo "== Static getPlaySpeed" >> out.txt
-          javap -p -c -cp ef.jar yesman.epicfight.api.animation.types.StaticAnimation | awk '/ float getPlaySpeed\(/{f=1} f{print} f&&/^$/{exit}' | grep -E "getstatic|invoke|Field|freturn" | head -30 >> out.txt || true
+          # 공격 모션 이름 + 종류 (회전·연타 후보 찾기)
+          javap -p -cp ef.jar yesman.epicfight.gameasset.Animations | grep "AnimationAccessor<" \
+            | sed -E 's/.*AnimationAccessor<yesman\.epicfight\.api\.animation\.types\.([A-Za-z]+)> ([A-Z0-9_]+);/\2:\1/' \
+            | grep -E ":(AttackAnimation|BasicAttackAnimation|DashAttackAnimation|AirSlashAnimation)" | tr '\n' ' ' > out.txt
           cat out.txt
           msg=$(sed ':a;N;$!ba;s/%/%25/g;s/\r//g;s/\n/%0A/g' out.txt | head -c 60000)
           echo "::notice title=ef::$msg"
