@@ -160,9 +160,9 @@ public final class ZoneCommand {
                 }))
                 .then(Commands.literal("speed").then(Commands.argument("mul", com.mojang.brigadier.arguments.FloatArgumentType.floatArg(0.5f, 5f)).executes(c -> {
                     float mul = com.mojang.brigadier.arguments.FloatArgumentType.getFloat(c, "mul");
-                    rpg.core.compat.EpicFightCompat.SPEED.put("STEEL_WHIRLWIND", mul);
-                    rpg.core.compat.EpicFightCompat.SPEED.put("GIANT_WHIRLWIND", mul);
-                    return ok(c, "회전 모션 속도 ×" + mul + " (싱글에서 바로 적용, 마음에 들면 알려주세요)");
+                    String r = rpg.core.compat.EpicFightCompat.setSpeed("STEEL_WHIRLWIND", mul) + " · " + rpg.core.compat.EpicFightCompat.setSpeed("GIANT_WHIRLWIND", mul);
+                    rpg.core.compat.EpicFightCompat.speedStatus = r;
+                    return ok(c, "회전 모션 속도: " + r + " (싱글에서 바로 적용, 마음에 들면 알려주세요)");
                 })))
                 .then(Commands.literal("spin").then(Commands.argument("gap", IntegerArgumentType.integer(1, 20))
                         .then(Commands.argument("first", IntegerArgumentType.integer(0, 20)).executes(c -> {

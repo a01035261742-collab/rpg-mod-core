@@ -139,38 +139,40 @@ public final class EpicFightCompat {
     public static String speedStatus = "아직 안 함";
     public static final java.util.Map<String, String> LAST = new java.util.concurrent.ConcurrentHashMap<>();
 
-    /** EF 모션에 재생 속도 배수 붙이기 (한 번만, 서버·클라 둘 다 — 화면은 클라 쪽이 중요) */
+    /**
+     * EF 모션에 재생 속도 배수 붙이기 (서버·클라 둘 다, 화면은 클라 쪽).
+     * 공격 모션(AttackAnimation)은 PLAY_SPEED_MODIFIER 를 안 보고 "플레이어 공격 속도 / BASIS_ATTACK_SPEED" 로 속도를 정함
+     * → BASIS = 대검 공속(1.6) / 배수, FACTOR = 1 로 넣으면 그 배수만큼 빨라짐.
+     */
     public static void applySpeeds() {
         if (speedDone) return;
         speedDone = true;
+        StringBuilder st = new StringBuilder();
+        for (var e : SPEED.entrySet()) st.append(setSpeed(e.getKey(), e.getValue())).append(" · ");
+        speedStatus = st.toString();
+    }
+
+    /** 무기 기준 공속 (전사 대검) */
+    public static float BASE_ATTACK_SPEED = 1.6f;
+
+    public static String setSpeed(String field, float mul) {
+        SPEED.put(field, mul);
         try {
-            Class<?> animsCls = Class.forName("yesman.epicfight.gameasset.Animations");
-            Class<?> propCls = Class.forName("yesman.epicfight.api.animation.property.AnimationProperty$StaticAnimationProperty");
-            Class<?> modCls = Class.forName("yesman.epicfight.api.animation.property.AnimationProperty$PlaybackSpeedModifier");
-            Object prop = propCls.getField("PLAY_SPEED_MODIFIER").get(null);
-            StringBuilder st = new StringBuilder();
-            for (var e : SPEED.entrySet()) {
-                Object anim;
-                try { anim = animsCls.getField(e.getKey()).get(null); } catch (NoSuchFieldException nf) { st.append(e.getKey()).append(" 없음 · "); continue; }
-                if (anim == null) { st.append(e.getKey()).append(" null · "); continue; }
-                final String key = e.getKey();   // 재생할 때마다 SPEED 에서 읽음 (/rpg anim speed 로 바로 바꿔보기)
-                Object modifier = java.lang.reflect.Proxy.newProxyInstance(modCls.getClassLoader(), new Class<?>[]{modCls}, (px, m, a) -> {
-                    if (m.getName().equals("modify") && a != null && a.length >= 3 && a[2] instanceof Float sp) return sp * SPEED.getOrDefault(key, 1f);
-                    if (m.getName().equals("hashCode")) return System.identityHashCode(px);
-                    if (m.getName().equals("equals")) return px == a[0];
-                    if (m.getName().equals("toString")) return "rpgcore speed " + key;
-                    return null;
-                });
-                boolean done = false;
-                for (var m : anim.getClass().getMethods()) {
-                    if (m.getName().equals("addProperty") && m.getParameterCount() == 2) { m.invoke(anim, prop, modifier); done = true; break; }
-                }
-                st.append(e.getKey()).append(done ? " 적용 (" + anim.getClass().getSimpleName() + ")" : " addProperty 없음").append(" · ");
-            }
-            speedStatus = st.toString();
+            Object anim;
+            try { anim = Class.forName("yesman.epicfight.gameasset.Animations").getField(field).get(null); }
+            catch (NoSuchFieldException nf) { return field + " 없음"; }
+            if (anim == null) return field + " null";
+            Class<?> atkProp = Class.forName("yesman.epicfight.api.animation.property.AnimationProperty$AttackAnimationProperty");
+            Object basis = atkProp.getField("BASIS_ATTACK_SPEED").get(null), factor = atkProp.getField("ATTACK_SPEED_FACTOR").get(null);
+            java.lang.reflect.Method add = null;
+            for (var m : anim.getClass().getMethods())
+                if (m.getName().equals("addProperty") && m.getParameterCount() == 2 && m.getParameterTypes()[0].isAssignableFrom(atkProp)) { add = m; break; }
+            if (add == null) return field + " 공격모션 아님 (" + anim.getClass().getSimpleName() + ")";
+            add.invoke(anim, basis, BASE_ATTACK_SPEED / mul);
+            add.invoke(anim, factor, 1.0f);
+            return field + " ×" + mul + " 적용";
         } catch (Throwable ex) {
-            speedStatus = "실패: " + ex;
-            RpgCore.LOG.debug("[rpgcore] EF 모션 속도 설정 실패: {}", ex.toString());
+            return field + " 실패: " + ex.getClass().getSimpleName();
         }
     }
 
