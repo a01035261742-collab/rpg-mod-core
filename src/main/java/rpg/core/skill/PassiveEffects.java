@@ -21,6 +21,7 @@ import rpg.core.data.RpgData;
  * 패시브 트리 특수 효과 (stat 이름으로 PlayerData.bonus 에 들어온 값을 여기서 씀).
  * 처치: killHeal huntSpeed slayer rageHeal · 피격: thorns crisisShield frenzy · 타격: shatter mobPct
  * 매초: bloodHeat·frenzy(공속) · guardInstinct · intimidate · tauntDmg · warcry · oath (주변 파티 오라)
+ * 궁수: farDmg moveDmg firstStrike rollDmg critPierce windVeil killMp quickShot · 스나 stillAtk lone · 헌터 chaseSpeed weakHunt poisonArrow domino trapMaster
  */
 @Mod.EventBusSubscriber(modid = RpgCore.MODID)
 public final class PassiveEffects {
@@ -40,16 +41,77 @@ public final class PassiveEffects {
         }
         if (d.bonus("rageHeal") > 0 && d.buff("berserk", now))   // 광폭 체질
             d.hp = Math.min(d.maxHp, d.hp + d.maxHp * d.bonus("rageHeal") / 100.0);
+        double mpPct = d.bonus("killMp") + d.buffV2("hunt_instinct", now);   // 사냥 회복 · 사냥 본능
+        if (mpPct > 0) d.mp = Math.min(d.maxMp, d.mp + d.maxMp * mpPct / 100.0);
+        if (d.bonus("chaseSpeed") > 0) { d.buffEnd.put("chase", now + 60); d.buffVal.put("chase", d.bonus("chaseSpeed")); }   // 추적자
+    }
+
+    /** 처치한 몹 자리: 도미노 (반경 2칸 폭발) */
+    public static void onKillMob(ServerPlayer p, PlayerData d, Mob dead) {
+        double pct = d.bonus("domino");
+        if (pct <= 0) return;
+        net.minecraft.world.phys.Vec3 at = dead.position();
+        JobSkills.later(p, 1, () -> {
+            ServerLevel l = p.serverLevel();
+            for (Mob m : BranchSkills.mobsAround(l, at, 2)) if (m != dead) CombatEvents.skillHit(p, m, pct);
+            l.sendParticles(ParticleTypes.EXPLOSION, at.x, at.y + 0.5, at.z, 1, 0, 0, 0, 0);
+            l.playSound(null, net.minecraft.core.BlockPos.containing(at), net.minecraft.sounds.SoundEvents.GENERIC_EXPLODE,
+                    net.minecraft.sounds.SoundSource.PLAYERS, 0.4f, 1.6f);
+        });
+    }
+
+    /** 구르기: 재빠른 회피 (2초 데미지 +) */
+    public static void onRoll(PlayerData d, long now) {
+        if (d.bonus("rollDmg") > 0) { d.buffEnd.put("roll_dmg", now + 40); d.buffVal.put("roll_dmg", d.bonus("rollDmg")); }
+    }
+
+    /** 평타 계수 (직업 평타% + 트리 평타%, 속사면 ×1.5) */
+    public static double basicMul(PlayerData d, long now) {
+        double v = (rpg.core.balance.Balance.basicAttackPct[Math.max(0, Math.min(4, d.job))] + d.bonus("basicPct")) / 100.0;
+        if (d.quickShotReady) v *= 1 + d.bonus("quickShot") / 100.0;
+        return v;
+    }
+
+    /** 피해 준 뒤: 속사 소모 · 독 바른 화살 · 꿰뚫기 · 표식 */
+    public static void afterDeal(ServerPlayer p, PlayerData d, Mob mob, MobData m, net.minecraft.world.entity.Entity direct, boolean basic, boolean crit) {
+        long now = p.level().getGameTime();
+        if (basic && d.quickShotReady) d.quickShotReady = false;
+        if (basic && d.bonus("poisonArrow") > 0 && direct != p)   // 독: 평타 화살
+            CombatEvents.dot(p, mob, "poison", Combat.statAttack(p, d) * d.bonus("poisonArrow") / 100.0, 60);
+        if (crit && d.bonus("critPierce") > 0 && direct instanceof net.minecraft.world.entity.projectile.AbstractArrow a)   // 꿰뚫기
+            a.setPierceLevel((byte) Math.min(10, a.getPierceLevel() + 1));
+        if (direct != null && direct.getPersistentData().contains("rpgMark")) {   // 표식 사격
+            var pd = mob.getPersistentData();
+            pd.putUUID("rpgMarkBy", p.getUUID());
+            pd.putLong("rpgMarkUntil", now + direct.getPersistentData().getInt("rpgMarkTicks"));
+            pd.putDouble("rpgMarkPct", direct.getPersistentData().getDouble("rpgMark"));
+            ((ServerLevel) mob.level()).sendParticles(ParticleTypes.ENCHANTED_HIT, mob.getX(), mob.getY() + mob.getBbHeight() + 0.3, mob.getZ(), 10, 0.2, 0.2, 0.2, 0.1);
+        }
+    }
+
+    /** 데미지%와 더해지는 추가% 배율 */
+    private static double add(PlayerData d, double pct) {
+        if (pct == 0) return 1;
+        double dp = Combat.dmgPct(d);
+        return (1 + (dp + pct) / 100.0) / (1 + dp / 100.0);
     }
 
     // ───────── 타격 (몹에게 준 피해 배율) ─────────
     /** 일반 몹 데미지: 데미지%와 더해짐 */
     public static double hitMul(ServerPlayer p, PlayerData d, Mob mob, MobData m, boolean crit) {
-        double mul = 1;
-        if (!Boss.isBoss(m) && d.bonus("mobPct") > 0) {
-            double dp = Combat.dmgPct(d);
-            mul *= (1 + (dp + d.bonus("mobPct")) / 100.0) / (1 + dp / 100.0);
-        }
+        long t = mob.level().getGameTime();
+        double extra = 0;
+        if (!Boss.isBoss(m)) extra += d.bonus("mobPct");
+        if (d.bonus("farDmg") > 0 && p.distanceToSqr(mob) > 100) extra += d.bonus("farDmg");        // 명궁: 10칸 넘게
+        if (d.moving) extra += d.bonus("moveDmg");                                                   // 질풍
+        if (d.bonus("firstStrike") > 0 && m.hp >= m.maxHp * 0.9) extra += d.bonus("firstStrike");   // 선제 사격
+        extra += d.buffV("roll_dmg", t);                                                             // 재빠른 회피
+        if (d.bonus("weakHunt") > 0 && (t < m.slowUntil && m.slowPct > 0 || mob.hasEffect(MobEffects.MOVEMENT_SLOWDOWN)))
+            extra += d.bonus("weakHunt");                                                            // 약점 사냥
+        double mul = add(d, extra);
+        var pd = mob.getPersistentData();   // 표식: 그 몹이 받는 내 피해 +%
+        if (pd.contains("rpgMarkBy") && t < pd.getLong("rpgMarkUntil") && p.getUUID().equals(pd.getUUID("rpgMarkBy")))
+            mul *= 1 + pd.getDouble("rpgMarkPct") / 100.0;
         // 분쇄: 크리 시 일반 몹 경직 0.3초 (같은 몹 1초에 1번)
         if (crit && d.bonus("shatter") > 0 && !Boss.isBoss(m)) {
             long now = mob.level().getGameTime();
@@ -79,6 +141,13 @@ public final class PassiveEffects {
             d.shieldEnd = now + 100;        // 5초
             p.serverLevel().sendParticles(ParticleTypes.TOTEM_OF_UNDYING, p.getX(), p.getY() + 1, p.getZ(), 20, 0.4, 0.6, 0.4, 0.1);
         }
+        if (d.bonus("windVeil") > 0 && d.hp > 0 && d.hp < d.maxHp * 0.3 && now >= d.windVeilReadyAt) {   // 바람의 장막
+            d.windVeilReadyAt = now + 1200;
+            d.invulUntil = Math.max(d.invulUntil, now + 10);
+            d.buffEnd.put("wind_veil", now + 60);
+            d.buffVal.put("wind_veil", 50.0);
+            p.serverLevel().sendParticles(ParticleTypes.CLOUD, p.getX(), p.getY() + 1, p.getZ(), 25, 0.5, 0.6, 0.5, 0.08);
+        }
     }
 
     // ───────── 매초: 공속 · 오라 ─────────
@@ -88,6 +157,15 @@ public final class PassiveEffects {
         PlayerData d = RpgData.get(p);
         long now = p.level().getGameTime();
         ServerLevel l = p.serverLevel();
+        // 움직이는 중 (질풍) · 냉정 · 고독한 저격수
+        double dx = p.getX() - d.lastX, dz = p.getZ() - d.lastZ;
+        d.moving = dx * dx + dz * dz > 0.01;
+        d.lastX = p.getX(); d.lastZ = p.getZ();
+        if (d.bonus("stillAtk") > 0) {
+            if (d.moving) d.stillStacks = 0;
+            else if (p.tickCount % 40 == 0) d.stillStacks = Math.min(5, d.stillStacks + 1);
+        } else d.stillStacks = 0;
+        d.loneOk = d.bonus("lone") > 0 && BranchSkills.mobsAround(l, p.position(), 6).isEmpty();
         // 공격 속도: 광란 + 피의 열기 (HP가 낮을수록)
         double hpR = d.maxHp <= 0 ? 1 : Math.max(0, Math.min(1, d.hp / d.maxHp));
         d.atkSpeedPct = d.bonus("frenzy") + d.bonus("bloodHeat") * (1 - hpR);
@@ -141,6 +219,21 @@ public final class PassiveEffects {
         v += Math.min(15, d.tauntCount * d.bonus("tauntDmg"));
         if (now < d.warcryUntil) v += d.warcryVal;
         return v;
+    }
+
+    /** 추가 공격력%: 냉정 (가만히 2초마다 +3%, 최대 5중첩) */
+    public static double extraAtk(PlayerData d) {
+        return d.stillStacks * d.bonus("stillAtk");
+    }
+
+    /** 추가 크리 피해%: 고독한 저격수 */
+    public static double extraCritDmg(PlayerData d) {
+        return d.loneOk ? 20 : 0;
+    }
+
+    /** 추가 보스%: 고독한 저격수 */
+    public static double extraBoss(PlayerData d) {
+        return d.loneOk ? 10 : 0;
     }
 
     /** 추가 방어%: 수호 본능 · 수호자의 맹세 */

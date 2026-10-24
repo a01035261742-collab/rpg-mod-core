@@ -61,12 +61,22 @@ public final class Combat {
 
     public static double statAttack(Player p, PlayerData d) {
         // 메이플식 (C안): 공격력 × (1 + 공%) → 스탯 공식 → × (1 + 데미지%). 보스% 는 보스한테 데미지%와 더해짐 (Boss.onHurt)
-        return (mainStat(d) * 4.0 + subStat(d)) * weaponAtk(p, d) * (1 + d.bonus("atkPct") / 100.0) / 100.0 * (1 + dmgPct(d) / 100.0);
+        return (mainStat(d) * 4.0 + subStat(d)) * weaponAtk(p, d) * (1 + (d.bonus("atkPct") + rpg.core.skill.PassiveEffects.extraAtk(d)) / 100.0) / 100.0 * (1 + dmgPct(d) / 100.0);
     }
 
     /** 데미지% 합: 장비·패시브 데미지% + 광폭화 */
     public static double dmgPct(PlayerData d) {
         return d.bonus("dmgPct") + d.buffV("berserk", d.clock) + rpg.core.skill.PassiveEffects.extraDmg(d);
+    }
+
+    /** 방어율 무시 % (장비 · 트리, 곱으로 쌓임, 최대 100 미만) */
+    public static double ignoreDef(PlayerData d) {
+        return rpg.core.equip.Potential.ignoreMul(Math.min(95, d.eq("ignoreDef")), Math.min(95, d.bonus("ignoreDef")));
+    }
+
+    /** 몹 방어율 적용 배율: 1 - 방어율 × (1 - 방무) */
+    public static double defMul(PlayerData d, MobData m) {
+        return Math.max(0, 1 - Math.max(0, m.defRate) / 100.0 * (1 - ignoreDef(d) / 100.0));
     }
 
     /** 숙련도 (최소 데미지 = 최대 × 숙련도): 직업 기본값 + 마스터리 스킬 (최대 95%) */

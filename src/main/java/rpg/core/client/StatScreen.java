@@ -71,6 +71,8 @@ public class StatScreen extends Screen {
             ry = line(g, dx, ry, "피해 감소 (같은 Lv 몹)", String.format("%.0f%%", ClientData.defPct / (ClientData.defPct + k) * 100));
             ry = line(g, dx, ry, "치명타 확률", String.format("%.1f%%", ClientData.crit));
             ry = line(g, dx, ry, "치명타 피해", String.format("%.0f%%", ClientData.critDmgPct));
+            ry = line(g, dx, ry, "보스 데미지", String.format("+%.0f%%", ClientData.bossPct));
+            ry = line(g, dx, ry, "방어율 무시", String.format("%.1f%%", ClientData.ignoreDef));
             ry = line(g, dx, ry, "회복량 증가", String.format("+%.1f%%", ClientData.healBonus));
             ry = line(g, dx, ry, "드롭률 증가", String.format("+%.1f%%", ClientData.dropBonus));
             ry = line(g, dx, ry, "골드 획득 증가", String.format("+%.1f%%", ClientData.goldBonus));

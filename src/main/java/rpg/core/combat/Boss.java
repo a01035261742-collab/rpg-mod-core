@@ -815,7 +815,7 @@ public final class Boss {
         Def def = DEFS.get(m.key);
         if (def == null) return dmg;
         { var pd = RpgData.get(p); double dp = Combat.dmgPct(pd);   // 보스%: 데미지%와 더해짐 (스공에 이미 × (1+데미지%) 들어 있음)
-          dmg *= (1 + (dp + pd.bonus("bossPct")) / 100.0) / (1 + dp / 100.0); }
+          dmg *= (1 + (dp + pd.bonus("bossPct") + rpg.core.skill.PassiveEffects.extraBoss(pd)) / 100.0) / (1 + dp / 100.0); }
         int diff = m.level - RpgData.get(p).level;
         if (diff > 0) dmg *= Math.max(1 - def.maxPenalty() / 100.0, 1 - def.penaltyPerLevel() * diff / 100.0);
         dmg = Math.max(1, Math.round(dmg));

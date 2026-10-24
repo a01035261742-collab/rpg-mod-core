@@ -77,6 +77,7 @@ public final class Mobs {
         MobData m = Combat.mob(mob);
         if (m == null) return;
         m.elite = true;
+        m.defRate = Math.max(m.defRate, 20);
         m.maxHp *= Balance.eliteHp; m.hp = m.maxHp;
         m.atk *= Balance.eliteAtk;
         m.exp = Math.round(m.exp * Balance.eliteReward);
@@ -91,6 +92,8 @@ public final class Mobs {
         Balance.MobStats s = def.at(lv);
         m.key = def.key(); m.name = def.name(); m.zone = zone == null ? "" : zone;
         m.level = lv; m.maxHp = Math.max(1, s.hp()); m.hp = m.maxHp; m.atk = s.atk(); m.exp = s.exp(); m.gold = s.gold();
+        Double dr = Balance.MOB_DEF.get(def.key());
+        m.defRate = dr != null ? dr : Boss.isBoss(m) ? 30 : Math.min(10, lv / 5.0);
         mob.setHealth(mob.getMaxHealth());
         // 넉백 90% 줄임 (Epic Fight 콤보가 안 끊기게)
         var kb = mob.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.KNOCKBACK_RESISTANCE);

@@ -103,6 +103,7 @@ public final class Skills {
 
     private static void spend(PlayerData d, Defs.SkillDef s, int lv, long now) {
         d.mp -= s.mp(lv);
+        if (d.bonus("quickShot") > 0 && !s.passive()) d.quickShotReady = true;   // 속사: 다음 평타 강화
         // 빠른 영창: 쿨타임 감소
         int cd = (int) Math.round(s.cooldown(lv) * 20 * Math.max(0.6, 1 - d.bonus("cdPct") / 100.0));   // 쿨타임 감소 최대 40%
         if ("combo_slash".equals(s.id()) && d.comboStep == 0)   // 연속 베기 3타 끝: 3초
@@ -166,6 +167,7 @@ public final class Skills {
         int cd = (int) Math.round(Balance.dodgeCooldown * 20 * Math.max(0.1, 1 - d.bonus("dodgeCd") / 100.0));
         d.dodgeEnd = now + cd;
         d.dodgeLen = cd;
+        PassiveEffects.onRoll(d, now);
         if (d.bonus("dodgeSpeed") > 0) {   // 회피 본능: 구른 뒤 2초 이동속도↑
             d.buffEnd.put("evasion_instinct", now + 40);
             d.buffVal.put("evasion_instinct", d.bonus("dodgeSpeed"));
@@ -179,6 +181,7 @@ public final class Skills {
     public static void rolled(ServerPlayer p) {
         PlayerData d = RpgData.get(p);
         long now = p.level().getGameTime();
+        if (!d.isDown()) PassiveEffects.onRoll(d, now);
         if (d.bonus("dodgeSpeed") <= 0 || d.isDown() || now - d.lastRoll < 10) return;
         d.lastRoll = now;
         d.buffEnd.put("evasion_instinct", now + 40);
@@ -210,7 +213,8 @@ public final class Skills {
             }
         }
         double pct = d.bonus("speedPct") + (now < d.sprintEnd ? d.sprintPct : 0) + d.buffV("haste", now)
-                + d.buffV("evasion_instinct", now) + d.buffV("battle_thrill", now) + d.buffV("hunt_speed", now)
+                + d.buffV("evasion_instinct", now) + d.buffV("battle_thrill", now) + d.buffV("hunt_speed", now) + d.buffV("hunt_instinct", now) + d.buffV("chase", now) + d.buffV("wind_veil", now)
+                - (now < d.aimUntil ? 50 : 0)
                 - (d.chargeSkill != null ? 50 : 0);
         AttributeInstance inst = p.getAttribute(Attributes.MOVEMENT_SPEED);
         if (inst == null) return;

@@ -19,7 +19,8 @@ public final class Power {
     private static long calc(ServerPlayer p, PlayerData d) {
         double base = (Combat.mainStat(d) * 4.0 + Combat.subStat(d)) * Combat.weaponAtk(p, d) * (1 + d.bonus("atkPct") / 100.0) / 100.0;
         double crit = Math.max(0, Math.min(100, d.crit())) / 100.0;
-        return Math.round(base * (1 + (d.bonus("dmgPct") + d.bonus("bossPct")) / 100.0) * (1 + crit * (d.critDamage() - 1)));
+        double ign = (1 - 0.3 * (1 - Combat.ignoreDef(d) / 100.0)) / 0.7;   // 방무: 방어율 30% 몹 기준 (방무 0이면 1배)
+        return Math.round(base * (1 + (d.bonus("dmgPct") + d.bonus("bossPct")) / 100.0) * (1 + crit * (d.critDamage() - 1)) * ign);
     }
 
     /** 지금 장비 그대로 */

@@ -57,7 +57,7 @@ public final class Potential {
         for (String s : new String[]{"strPct", "dexPct", "intPct", "lukPct"}) { w.put(s, pct); a.put(s, pct); c.put(s, pct); }
         for (String s : new String[]{"str", "dex", "int", "luk"}) w.put(s, new double[]{8, 0, 0, 0});
         w.put("atk", new double[]{6, 0, 0, 0}); w.put("matk", new double[]{6, 0, 0, 0});
-        w.put("atkPct", pct); w.put("critChance", new double[]{4, 6, 8, 10}); w.put("bossPct", new double[]{0, 0, 30, 40});
+        w.put("atkPct", pct); w.put("critChance", new double[]{4, 6, 8, 10}); w.put("bossPct", new double[]{0, 0, 30, 40}); w.put("ignoreDef", new double[]{0, 0, 30, 40});
         a.put("hpPct", pct); a.put("defPct", pct); a.put("allPct", new double[]{0, 3, 6, 9}); a.put("ignorePct", new double[]{0, 0, 20, 40});
         for (String s : new String[]{"strPerLv", "dexPerLv", "intPerLv", "lukPerLv"}) { a.put(s, new double[]{0, 0, 1, 2}); c.put(s, new double[]{0, 0, 1, 2}); }
         c.put("hpPct", pct); c.put("speedPct", new double[]{2, 4, 6, 8}); c.put("goldPct", new double[]{0, 5, 8, 12}); c.put("dropPct", new double[]{0, 5, 8, 12});
@@ -128,10 +128,14 @@ public final class Potential {
         ListTag l = pot(s).getList("l", Tag.TAG_COMPOUND);
         for (int i = 0; i < l.size(); i++) {
             CompoundTag x = l.getCompound(i);
-            m.merge(x.getString("k"), x.getDouble("v"), Double::sum);
+            if (x.getString("k").equals("ignoreDef")) m.merge("ignoreDef", x.getDouble("v"), Potential::ignoreMul);   // 방무: 곱으로 쌓임
+            else m.merge(x.getString("k"), x.getDouble("v"), Double::sum);
             if (x.contains("v2")) m.merge(x.getString("k") + "Sec", x.getDouble("v2"), Math::max);   // 확률 무적 시간: 가장 긴 것
         }
     }
+
+    /** 방무 합치기: 30% + 30% = 51% */
+    public static double ignoreMul(double a, double b) { return 100 - (100 - a) * (100 - b) / 100.0; }
 
     public static String label(String k) {
         return switch (k) {
@@ -139,7 +143,7 @@ public final class Potential {
             case "atkPct" -> "공격력/마력"; case "dmgPct" -> "데미지"; case "critChance" -> "치명타 확률"; case "bossPct" -> "보스 공격 시 피해";
             case "hpPct" -> "최대 HP"; case "defPct" -> "방어력"; case "allPct" -> "올스탯";
             case "speedPct" -> "이동속도"; case "goldPct" -> "골드 획득"; case "dropPct" -> "아이템 드롭률";
-            case "critDmg" -> "크리티컬 데미지"; case "cdPct" -> "모든 스킬 재사용 대기시간";
+            case "critDmg" -> "크리티컬 데미지"; case "cdPct" -> "모든 스킬 재사용 대기시간"; case "ignoreDef" -> "몬스터 방어율 무시";
             default -> k;
         };
     }

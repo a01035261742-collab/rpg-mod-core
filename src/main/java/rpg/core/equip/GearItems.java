@@ -120,7 +120,12 @@ public final class GearItems {
         @Override
         public void releaseUsing(ItemStack s, Level level, net.minecraft.world.entity.LivingEntity e, int timeLeft) {
             if (!(e instanceof net.minecraft.world.entity.player.Player p)) return;
-            float power = getPowerForTime(getUseDuration(s) - timeLeft);
+            int held = getUseDuration(s) - timeLeft;
+            if (p instanceof net.minecraft.server.level.ServerPlayer sp) {   // 부스터: 당기는 속도
+                var pd = rpg.core.data.RpgData.get(sp);
+                held = (int) Math.round(held * (1 + pd.buffV("booster", level.getGameTime()) / 100.0));
+            }
+            float power = getPowerForTime(held);
             if (power < 0.1f || level.isClientSide) return;
             var a = new rpg.core.item.RpgArrow(level, p);
             a.shootFromRotation(p, p.getXRot(), p.getYRot(), 0, 1.5f + power * 1.5f, 0.5f);   // 중력 없음: 덜 당겨도 똑바로

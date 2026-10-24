@@ -15,7 +15,7 @@ public final class ClientData {
     public static long gold;
     public static double hp, mp, maxHp = 1, maxMp = 1;
     public static double crit, healBonus, dropBonus, goldBonus, staminaBonus;
-    public static double atkMin, atkMax, defPct, critDmgPct;
+    public static double atkMin, atkMax, defPct, critDmgPct, ignoreDef, bossPct;
     public static int skillPoints, passivePoints;
     public static final java.util.Map<String, Integer> skills = new java.util.LinkedHashMap<>();
     public static final String[] slots = new String[6];
@@ -43,6 +43,7 @@ public final class ClientData {
         atkMin = b.readDouble(); atkMax = b.readDouble(); defPct = b.readDouble();
         critDmgPct = b.readDouble();
         staminaBonus = b.readDouble();
+        ignoreDef = b.readDouble(); bossPct = b.readDouble();
         skillPoints = b.readVarInt(); passivePoints = b.readVarInt();
         skills.clear();
         int n = b.readVarInt();

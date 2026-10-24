@@ -300,9 +300,10 @@ public final class CombatEvents {
                 else if (direct != null && direct.getPersistentData().contains("rpgSkillPct"))
                     ratio = direct.getPersistentData().getDouble("rpgSkillPct") / 100.0;   // 스킬 화살
                 else if (direct == ap) ratio = (mr == null ? 1.0 : mr)                 // 근접 (Epic Fight 모션 배율) × 직업 평타 계수
-                        * (rpg.core.balance.Balance.basicAttackPct[Math.max(0, Math.min(4, ad.job))] + ad.bonus("basicPct")) / 100.0;
+                        * rpg.core.skill.PassiveEffects.basicMul(ad, now);
                 else if (direct != null && direct.getPersistentData().contains("rpgPower"))
-                    ratio = Math.max(0.1, direct.getPersistentData().getFloat("rpgPower"));  // 활: 당긴 정도
+                    ratio = Math.max(0.1, direct.getPersistentData().getFloat("rpgPower"))   // 활: 당긴 정도 × 직업 평타 계수
+                            * rpg.core.skill.PassiveEffects.basicMul(ad, now);
                 else ratio = 1.0;
                 // 은신 중 첫 공격: 추가 피해 + 출혈, 은신 풀림
                 if (ad.buff("stealth", now)) {
@@ -318,10 +319,12 @@ public final class CombatEvents {
                 Combat.Hit h = Combat.roll(ap, ad, ratio);
                 dmg = h.amount();
                 crit = h.crit();
-                dmg = Math.max(1, Math.round(dmg * rpg.core.skill.PassiveEffects.hitMul(ap, ad, mob, m, crit)));   // 트리: 일반 몹% · 분쇄
+                dmg = Math.max(1, Math.round(dmg * rpg.core.skill.PassiveEffects.hitMul(ap, ad, mob, m, crit) * Combat.defMul(ad, m)));   // 트리 효과 · 몹 방어율 (방무)
                 if (crit && ad.bonus("backCritDmg") > 0 && behind(mob, ap))                                   // 급소: 뒤에서 치명타
                     dmg = Math.round(dmg * (ad.critDamage() + ad.bonus("backCritDmg") / 100.0) / ad.critDamage());
                 rpg.core.skill.JobSkills.onHit(ap, ad, now);                                                  // 전투 흥분 등
+                boolean basic = sk == null && (direct == ap || (direct != null && direct.getPersistentData().contains("rpgPower")));
+                rpg.core.skill.PassiveEffects.afterDeal(ap, ad, mob, m, direct, basic, crit);              // 트리: 독·관통·표식
                 // 경직 충격: 근접은 EF 모션 배율, 스킬은 배율, 화살은 당긴 정도 (출혈 등 고정 피해는 경직 없음)
                 double impact = Math.min(3.0, ratio * (crit ? 1.2 : 1.0));
                 MobAI.stun(mob, m, impact, ap);
@@ -382,6 +385,7 @@ public final class CombatEvents {
         MobData m = Combat.mob(mob);
         PlayerData d = RpgData.get(killer);
         rpg.core.skill.JobSkills.onKill(killer, d);   // 연속 분노
+        rpg.core.skill.PassiveEffects.onKillMob(killer, d, mob);   // 트리: 도미노
         if (rpg.core.job.Trials.isTrialMob(mob)) return;   // 시련 몹: 보상 없음 (통과는 Trials)
         if (Boss.isBoss(m)) { Boss.onDeath(mob, m, killer); return; }
         if (mob.getPersistentData().getBoolean("rpgPillar")) return;   // 보스 기둥: 보상 없음   // 보스: 기여도 분배 · 드롭 세트

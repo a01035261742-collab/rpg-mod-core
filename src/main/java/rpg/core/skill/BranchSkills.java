@@ -59,6 +59,12 @@ public final class BranchSkills {
             case "leap_slam" -> leapSlam(p, s, lv);
             case "focus" -> buff(p, d, "focus", s.duration(), s.value(lv), 0, ParticleTypes.END_ROD, SoundEvents.BEACON_ACTIVATE);
             case "explosive_shot" -> explosiveShot(p, s, lv);
+            case "sniping" -> ArcherSkills.sniping(p, d, s, lv, now);
+            case "mark_shot" -> ArcherSkills.markShot(p, s, lv);
+            case "hunt_instinct" -> {
+                WarriorSkills.burst(p, ParticleTypes.HAPPY_VILLAGER, SoundEvents.WOLF_HOWL, 1.3f);
+                yield buff(p, d, "hunt_instinct", s.duration(), s.value(lv), s.value2(lv), ParticleTypes.HAPPY_VILLAGER, SoundEvents.ARROW_HIT_PLAYER);
+            }
             case "trap" -> trap(p, d, s, lv, now);
             case "fireball" -> fireball(p, d, s, lv);
             case "teleport" -> teleport(p, s, lv);
@@ -186,7 +192,7 @@ public final class BranchSkills {
     private static boolean explosiveShot(ServerPlayer p, Defs.SkillDef s, int lv) {
         JobSkills.arrow(p, 0, 0, 3.0f, a -> {
             a.getPersistentData().putDouble("rpgExplode", s.value(lv));
-            a.getPersistentData().putDouble("rpgExplodeR", 3.25);
+            a.getPersistentData().putDouble("rpgExplodeR", 3.0);
         });
         p.serverLevel().playSound(null, p.blockPosition(), SoundEvents.CROSSBOW_SHOOT, SoundSource.PLAYERS, 1.0f, 0.9f);
         p.swing(net.minecraft.world.InteractionHand.MAIN_HAND, true);
@@ -206,7 +212,7 @@ public final class BranchSkills {
     }
 
     private static boolean trap(ServerPlayer p, PlayerData d, Defs.SkillDef s, int lv, long now) {
-        int max = 1 + (d.skills.getOrDefault("trap_mastery", 0) > 0 ? 1 : 0);   // 덫 숙련: 동시 +1
+        int max = 2 + (int) Math.round(d.bonus("trapMaster")) * 2;   // 기본 2개, 덫 장인 +2
         List<Field> mine = new ArrayList<>();
         for (Field f : FIELDS) if (f.owner == p && f.kind.equals("trap")) mine.add(f);
         while (mine.size() >= max) FIELDS.remove(mine.remove(0));   // 오래된 덫부터 사라짐
@@ -492,7 +498,13 @@ public final class BranchSkills {
                 if (now % 2 != 0) return false;
                 List<Mob> in = mobsAround(l, f.pos, f.r);
                 if (in.isEmpty()) return false;
-                for (Mob m : mobsAround(l, f.pos, 1.8)) {
+                boolean master = RpgData.get(f.owner).bonus("trapMaster") > 0;   // 덫 장인: 반경 넓고 끌어당김
+                for (Mob m : mobsAround(l, f.pos, master ? 3.0 : 1.8)) {
+                    if (master) {
+                        Vec3 v = f.pos.subtract(m.position());
+                        m.setDeltaMovement(v.x * 0.5, m.getDeltaMovement().y, v.z * 0.5);
+                        m.hurtMarked = true;
+                    }
                     CombatEvents.skillHit(f.owner, m, f.a);
                     MobData md = Combat.mob(m);
                     if (md != null) md.slow(100, now, now + (long) f.b);   // 속박

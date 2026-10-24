@@ -38,6 +38,8 @@ public class MobData {
     // 도발 (저장 안 함): 이 플레이어만 노림
     public transient java.util.UUID tauntBy;
     public transient long tauntUntil;
+    /** 방어율 % (방무로 깎임) */
+    public double defRate;
     // 둔화·속박 (덫·독안개): 이동속도 -slowPct% (100 = 못 움직임)
     public transient double slowPct;
     public transient long slowUntil;
@@ -57,6 +59,7 @@ public class MobData {
         t.putInt("level", level); t.putDouble("hp", hp); t.putDouble("maxHp", maxHp); t.putDouble("atk", atk);
         t.putLong("exp", exp); t.putLong("gold", gold);
         t.putBoolean("elite", elite);
+        t.putDouble("defRate", defRate);
         return t;
     }
 
@@ -65,6 +68,7 @@ public class MobData {
         level = t.getInt("level"); hp = t.getDouble("hp"); maxHp = t.getDouble("maxHp"); atk = t.getDouble("atk");
         exp = t.getLong("exp"); gold = t.getLong("gold");
         elite = t.getBoolean("elite");
+        defRate = t.contains("defRate") ? t.getDouble("defRate") : rpg.core.combat.Boss.isBoss(this) ? 30 : Math.min(10, level / 5.0);
     }
 
     public static class Provider implements ICapabilitySerializable<CompoundTag> {

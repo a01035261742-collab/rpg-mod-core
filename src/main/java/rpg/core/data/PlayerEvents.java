@@ -62,6 +62,18 @@ public final class PlayerEvents {
             keep.putInt("rpgWarriorReset", 1);
             sp.getPersistentData().put(net.minecraft.world.entity.player.Player.PERSISTED_NBT_TAG, keep);
         }
+        // 궁수 개편 (한 번만): 궁수는 스킬 포인트 + 패시브 포인트 전부 돌려받음
+        if (keep.getInt("rpgArcherReset") < 1) {
+            if (d.job == 2) {
+                d.refundSkills();
+                d.passives.clear();
+                d.passivePoints = Math.max(0, (d.level - 1) * rpg.core.balance.Balance.passivePointsPerLevel);
+                sp.sendSystemMessage(net.minecraft.network.chat.Component.literal("[궁수 개편] 스킬·패시브 포인트를 전부 돌려받았어요. 스킬 창(L)·패시브 창(N)에서 다시 찍어주세요")
+                        .withStyle(net.minecraft.ChatFormatting.GOLD));
+            }
+            keep.putInt("rpgArcherReset", 1);
+            sp.getPersistentData().put(net.minecraft.world.entity.player.Player.PERSISTED_NBT_TAG, keep);
+        }
         // 패시브 트리 개편 (한 번만): 패시브 초기화 + 레벨당 포인트 다시 계산 (레벨업당 2)
         if (keep.getInt("rpgTreeV1") < 1) {
             d.passives.clear();

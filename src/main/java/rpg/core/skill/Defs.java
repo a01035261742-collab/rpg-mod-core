@@ -156,6 +156,9 @@ public final class Defs {
             case "basicPct" -> "평타 계수 +%s%%p";
             case "mobPct" -> "일반 몹 데미지 +%s%%";
             case "str" -> "힘 +%s";
+            case "dex" -> "덱스 +%s";
+            case "mpPct" -> "최대 MP +%s%%";
+            case "ignoreDef" -> "방어율 무시 +%s%%";
             case "vit" -> "체력 +%s";
             case "defPct" -> "방어 +%s%%";
             case "kbResist" -> "넉백 저항 +%s%%";

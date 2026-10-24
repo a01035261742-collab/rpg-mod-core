@@ -53,6 +53,12 @@ public final class JobSkills {
             case "stealth" -> stealth(p, d, s, lv, now);
             case "double_shot" -> doubleShot(p, s, lv);
             case "retreat_shot" -> retreatShot(p, s, lv);
+            case "booster" -> {   // 부스터: value2초 동안 활 당기는 속도 +value%
+                d.buffEnd.put("booster", now + Math.round(s.value2(lv) * 20));
+                d.buffVal.put("booster", s.value(lv));
+                WarriorSkills.burst(p, ParticleTypes.CRIT, SoundEvents.BEACON_POWER_SELECT, 1.6f);
+                yield true;
+            }
             case "magic_bolt" -> magicBolt(p, s, lv);
             default -> BranchSkills.use(p, d, s, lv, now);   // 2차 전직 스킬
         };

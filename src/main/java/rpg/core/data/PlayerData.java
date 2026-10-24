@@ -96,6 +96,10 @@ public class PlayerData {
     public transient long crisisReadyAt, warcryUntil, oathUntil;
     public transient boolean guardNear;
     public transient int tauntCount;
+    public transient boolean quickShotReady, moving, loneOk;
+    public transient int stillStacks;
+    public transient long aimUntil, windVeilReadyAt;
+    public transient double lastX, lastZ;
     /** 피격 시 확률 무적 (잠재능력): 이 시각까지 피해 없음 */
     public transient long invulUntil;
     /** 연속 베기: 다음 타 (0~2), 이어서 누를 수 있는 시각 */
@@ -195,7 +199,7 @@ public class PlayerData {
 
     // ── 상세 능력치 (공식은 balance 파일) ──
     public double crit() { return Balance.critBase + Balance.critPerDex * total(DEX) + bonus("critChance") + buffV("focus", clock); }
-    public double critDamage() { return Balance.critDamage + bonus("critDmg") / 100.0; }
+    public double critDamage() { return Balance.critDamage + (bonus("critDmg") + rpg.core.skill.PassiveEffects.extraCritDmg(this)) / 100.0; }
     public double healBonus() { return bonus("healPct"); }   // 회복량 증가 (패시브·전사의 회복력). 지력은 이제 힐 스공으로 반영
     public double dropBonus() { return Balance.dropPerLuk * total(LUK) + bonus("dropPct"); }
     public double goldBonus() { return Balance.goldPerLuk * total(LUK) + bonus("goldPct"); }
@@ -272,6 +276,7 @@ public class PlayerData {
         b.writeDouble(atkMax * rpg.core.combat.Combat.mastery(this)); b.writeDouble(atkMax); b.writeDouble(defPct);
         b.writeDouble(critDamage() * 100.0);
         b.writeDouble(staminaBonus());
+        b.writeDouble(rpg.core.combat.Combat.ignoreDef(this)); b.writeDouble(bonus("bossPct") + rpg.core.skill.PassiveEffects.extraBoss(this));
         // 스킬
         b.writeVarInt(skillPoints); b.writeVarInt(passivePoints);
         b.writeVarInt(skills.size());
