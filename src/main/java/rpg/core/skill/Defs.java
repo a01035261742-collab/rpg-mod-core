@@ -44,8 +44,43 @@ public final class Defs {
         }
     }
 
+    /**
+     * 패시브 칸. kind: s 작은 칸 · n 노터블 · g 끝 보석 · k 키스톤 · start.
+     * 직업 트리(job>0)는 PoE식: requires 중 하나라도 찍혀 있으면 열림 (공용 트리는 전부).
+     */
     public record Node(String id, String name, int x, int y, int maxRank, String stat, double perRank,
-                       List<String> requires, boolean special) {}
+                       List<String> requires, boolean special, int job, int branch, String stat2, double perRank2, String kind, String desc) {
+        public boolean anyOf() { return job > 0; }
+    }
+
+    /** 이 직업이 쓰는 트리: 전용 트리가 있으면 그것, 없으면 공용(job 0). 초보자(0)는 트리 없음 */
+    public static int treeOf(int job) {
+        if (job <= 0) return -1;
+        for (Node n : NODES.values()) if (n.job() == job) return job;
+        return 0;
+    }
+
+    /** 이 칸이 이 직업 트리에 있나 (갈래 칸 포함) */
+    public static boolean inJobTree(Node n, int job) {
+        return n.job() == treeOf(job);
+    }
+
+    /** 이 칸이 이 플레이어가 쓸 수 있는 칸인가 (갈래 칸은 그 갈래만) */
+    public static boolean inTree(Node n, int job, int branch) {
+        return inJobTree(n, job) && (n.branch() == 0 || n.branch() == branch);
+    }
+
+    /** 찍을 수 있나 (앞 칸 조건): 시작 칸(maxRank 0)은 찍힌 걸로 봄 */
+    public static boolean unlocked(Node n, java.util.function.ToIntFunction<String> rank) {
+        if (n.requires().isEmpty()) return true;
+        boolean any = false, all = true;
+        for (String r : n.requires()) {
+            Node req = NODES.get(r);
+            boolean ok = req == null || req.maxRank() == 0 || rank.applyAsInt(r) > 0;
+            any |= ok; all &= ok;
+        }
+        return n.anyOf() ? any : all;
+    }
 
     public static final Map<String, SkillDef> SKILLS = new LinkedHashMap<>();
     /** 3번째 계수 (연속 베기 3타 등): id → {value3, value3PerLevel} */
@@ -92,7 +127,8 @@ public final class Defs {
                     String id = str(o, "id", "?");
                     NODES.put(id, new Node(id, str(o, "name", id), (int) num(o, "x", 0), (int) num(o, "y", 0),
                             (int) num(o, "maxRank", 1), str(o, "stat", ""), num(o, "perRank", 0), req,
-                            o.has("special") && o.get("special").getAsBoolean()));
+                            o.has("special") && o.get("special").getAsBoolean(), (int) num(o, "job", 0), (int) num(o, "branch", 0),
+                            str(o, "stat2", ""), num(o, "perRank2", 0), str(o, "kind", o.has("special") ? "k" : "s"), str(o, "desc", "")));
                 }
             }
         } catch (Exception ex) {
@@ -117,6 +153,18 @@ public final class Defs {
             case "dodgeCd" -> "구르기 쿨타임 -%s%%";
             case "stamina" -> "최대 스태미나 +%s";
             case "healPct" -> "물약·치유 회복량 +%s%%";
+            case "basicPct" -> "평타 계수 +%s%%p";
+            case "mobPct" -> "일반 몹 데미지 +%s%%";
+            case "str" -> "힘 +%s";
+            case "vit" -> "체력 +%s";
+            case "defPct" -> "방어 +%s%%";
+            case "kbResist" -> "넉백 저항 +%s%%";
+            case "vitHpPct" -> "체력의 HP 효율 +%s%%";
+            case "cdPct" -> "쿨타임 -%s%%";
+            case "mastery" -> "숙련도 +%s%%";
+            case "executePct" -> "HP 30%% 이하 몹 데미지 +%s%%";
+            case "lowHpDmg" -> "HP 50%% 이하일 때 데미지 +%s%%";
+            case "giantHp" -> "최대 HP ×(1+%s%%)";
             default -> "%s";
         };
     }

@@ -54,6 +54,20 @@
     "valuePerLevel": 2.1053,
     "desc": "{d}초 동안 방어력 +{v}"
   },
+  "greatsword_mastery": {
+    "name": "대검 마스터리",
+    "tier": 1,
+    "job": 1,
+    "maxLevel": 10,
+    "type": "passive",
+    "stat": "mastery",
+    "mp": 0,
+    "cooldown": 0,
+    "duration": 0,
+    "value": 2,
+    "valuePerLevel": 2,
+    "desc": "숙련도 +{v}% (최소 데미지가 올라감, 기본 40%)"
+  },
   "charge_rush": {
     "name": "돌진",
     "tier": 1,
@@ -121,6 +135,20 @@
     "value2": 20,
     "value2PerLevel": 0,
     "desc": "{d}초 동안 데미지 +{v}%, 받는 피해 +{v2}%"
+  },
+  "greatsword_expert": {
+    "name": "대검 엑스퍼트",
+    "tier": 2,
+    "job": 1,
+    "maxLevel": 20,
+    "type": "passive",
+    "stat": "mastery",
+    "mp": 0,
+    "cooldown": 0,
+    "duration": 0,
+    "value": 1.25,
+    "valuePerLevel": 1.25,
+    "desc": "숙련도 +{v}% (대검 마스터리와 합쳐 최대 85%)"
   },
   "blood_spin": {
     "name": "피의 회전",

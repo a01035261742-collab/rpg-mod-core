@@ -91,6 +91,11 @@ public class PlayerData {
     private static final String[] STAT_KEYS = {"vit", "str", "dex", "int", "luk", "sta"};
     /** 장비 합계에서 bonus 로 옮기는 % 옵션 (잠재능력) */
     private static final String[] EQUIP_BONUS = {"atkPct", "dmgPct", "hpPct", "critChance", "goldPct", "dropPct", "speedPct", "bossPct", "critDmg", "cdPct"};
+    /** 패시브 트리 상태 (저장 안 함) */
+    public transient double atkSpeedPct, warcryVal, oathVal;
+    public transient long crisisReadyAt, warcryUntil, oathUntil;
+    public transient boolean guardNear;
+    public transient int tauntCount;
     /** 피격 시 확률 무적 (잠재능력): 이 시각까지 피해 없음 */
     public transient long invulUntil;
     /** 연속 베기: 다음 타 (0~2), 이어서 누를 수 있는 시각 */
@@ -112,7 +117,7 @@ public class PlayerData {
         String k = STAT_KEYS[i];
         double perLv = eq(k + "PerLv") * Math.floor(level / 9.0);   // 잠재능력: 캐릭터 9레벨당 스탯
         double flat = perLv + eq(k + "Flat") + bonus(k + "Flat");
-        return (stats[i] + eq(k)) * (1 + (eq("allPct") + eq(k + "Pct")) / 100.0) + flat;
+        return (stats[i] + eq(k) + bonus(k)) * (1 + (eq("allPct") + eq(k + "Pct") + bonus(k + "Pct")) / 100.0) + flat;   // bonus(k) = 패시브 트리 힘 +3 등
     }
 
     public boolean isNew() { return level <= 0; }
@@ -141,8 +146,9 @@ public class PlayerData {
         bonus.clear();
         for (var e : passives.entrySet()) {
             Defs.Node n = Defs.NODES.get(e.getKey());
-            if (n == null || n.stat().isEmpty()) continue;
-            bonus.merge(n.stat(), n.perRank() * e.getValue(), Double::sum);
+            if (n == null || !Defs.inTree(n, job, branch)) continue;   // 지금 트리 칸만
+            if (!n.stat().isEmpty()) bonus.merge(n.stat(), n.perRank() * e.getValue(), Double::sum);
+            if (!n.stat2().isEmpty()) bonus.merge(n.stat2(), n.perRank2() * e.getValue(), Double::sum);
         }
         // 스킬 창 패시브 (배운 레벨만큼 항상 켜짐)
         for (var e : skills.entrySet()) {
@@ -154,7 +160,9 @@ public class PlayerData {
         // 장비(잠재능력)의 % 옵션을 패시브 합계에 더함
         for (String k : EQUIP_BONUS) { double v = eq(k); if (v != 0) bonus.merge(k, v, Double::sum); }
         double vitHp = Balance.hpPerVit * total(VIT) * (1 + bonus("vitHpPct") / 100.0);   // 단단한 피부
-        double mh = (Balance.hpBase + Balance.hpPerLevel * level + vitHp + eq("hp")) * (1 + bonus("hpPct") / 100.0);
+        double mh = (Balance.hpBase + Balance.hpPerLevel * level + vitHp + eq("hp")) * (1 + bonus("hpPct") / 100.0)
+                * (1 + bonus("giantHp") / 100.0)    // 거신: 최대 HP ×1.3
+                * (oathVal > 0 ? 1.05 : 1);          // 수호자의 맹세: +5%
         double mm = (Balance.mpBase + Balance.mpPerLevel * level + Balance.mpPerInt * total(INT) + eq("mp")) * (1 + bonus("mpPct") / 100.0);
         boolean changed = mh != maxHp || mm != maxMp;
         maxHp = Math.max(1, mh); maxMp = Math.max(0, mm);
@@ -261,7 +269,7 @@ public class PlayerData {
         b.writeVarInt(statPoints); b.writeVarInt(job); b.writeLong(gold);
         b.writeDouble(hp); b.writeDouble(mp); b.writeDouble(maxHp); b.writeDouble(maxMp);
         b.writeDouble(crit()); b.writeDouble(healBonus()); b.writeDouble(dropBonus()); b.writeDouble(goldBonus());
-        b.writeDouble(atkMax * Balance.mastery); b.writeDouble(atkMax); b.writeDouble(defPct);
+        b.writeDouble(atkMax * rpg.core.combat.Combat.mastery(this)); b.writeDouble(atkMax); b.writeDouble(defPct);
         b.writeDouble(critDamage() * 100.0);
         b.writeDouble(staminaBonus());
         // 스킬

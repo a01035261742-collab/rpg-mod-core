@@ -253,6 +253,7 @@ public final class CombatEvents {
             long now = sp.level().getGameTime();
             dmg *= 1 - Math.min(90, d.buffV("iron_wall", now)) / 100.0;           // 철벽: 받는 피해 감소
             dmg *= 1 + d.buffV2("berserk", now) / 100.0;                           // 광폭화: 받는 피해 증가
+            dmg *= rpg.core.skill.PassiveEffects.takenMul(d);                     // 트리: 광란
             double guard = d.buffV("magic_guard", now);                            // 매직 가드: 일부를 MP로
             if (guard > 0 && src != null) {
                 double toMp = Math.min(d.mp, dmg * Math.min(90, guard) / 100.0);
@@ -274,6 +275,7 @@ public final class CombatEvents {
             }
             d.hp = Math.max(0, d.hp - dmg);
             mirror(e, sp, d.hp, d.maxHp);
+            rpg.core.skill.PassiveEffects.afterHit(sp, d, src, e.getSource().getDirectEntity());   // 트리: 가시 갑옷 · 위기 회복
             if (d.eq("iframe") > 0) sp.invulnerableTime = 20 + (int) Math.round(Math.min(2, d.eq("iframe")) * 20);   // 피격 후 무적 시간 증가
             RpgData.sync(sp);
             return;
@@ -298,7 +300,7 @@ public final class CombatEvents {
                 else if (direct != null && direct.getPersistentData().contains("rpgSkillPct"))
                     ratio = direct.getPersistentData().getDouble("rpgSkillPct") / 100.0;   // 스킬 화살
                 else if (direct == ap) ratio = (mr == null ? 1.0 : mr)                 // 근접 (Epic Fight 모션 배율) × 직업 평타 계수
-                        * rpg.core.balance.Balance.basicAttackPct[Math.max(0, Math.min(4, ad.job))] / 100.0;
+                        * (rpg.core.balance.Balance.basicAttackPct[Math.max(0, Math.min(4, ad.job))] + ad.bonus("basicPct")) / 100.0;
                 else if (direct != null && direct.getPersistentData().contains("rpgPower"))
                     ratio = Math.max(0.1, direct.getPersistentData().getFloat("rpgPower"));  // 활: 당긴 정도
                 else ratio = 1.0;
@@ -316,6 +318,7 @@ public final class CombatEvents {
                 Combat.Hit h = Combat.roll(ap, ad, ratio);
                 dmg = h.amount();
                 crit = h.crit();
+                dmg = Math.max(1, Math.round(dmg * rpg.core.skill.PassiveEffects.hitMul(ap, ad, mob, m, crit)));   // 트리: 일반 몹% · 분쇄
                 if (crit && ad.bonus("backCritDmg") > 0 && behind(mob, ap))                                   // 급소: 뒤에서 치명타
                     dmg = Math.round(dmg * (ad.critDamage() + ad.bonus("backCritDmg") / 100.0) / ad.critDamage());
                 rpg.core.skill.JobSkills.onHit(ap, ad, now);                                                  // 전투 흥분 등

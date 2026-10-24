@@ -50,6 +50,8 @@ public final class Balance {
     public static int dodgeIframes = 8;
     /** 직업별 평타 계수 % (0 초보 1 전사 2 궁수 3 법사 4 도적) */
     public static double[] basicAttackPct = {100, 70, 100, 100, 100};
+    /** 직업별 기본 숙련도 (0~1). 전사 0.4 (마스터리 스킬로 올림), 나머지는 개편 전까지 0.8 */
+    public static double[] masteryByJob = {0.8, 0.4, 0.8, 0.8, 0.8};
     public static double mastery = 0.8, critDamage = 1.5, fistAttack = 5, defPerVit = 1.0, defBase = 50, defPerMobLevel = 10;
     public static java.util.Set<String> huntingDimensions = new java.util.HashSet<>();
 
@@ -144,6 +146,7 @@ public final class Balance {
             critBase = d(o, "critBase", critBase); critPerDex = d(o, "critPerDex", critPerDex);
             healPerInt = d(o, "healPerInt", healPerInt); dropPerLuk = d(o, "dropPerLuk", dropPerLuk); goldPerLuk = d(o, "goldPerLuk", goldPerLuk);
             expBase = d(o, "expBase", expBase); expPower = d(o, "expPower", expPower); expLinear = d(o, "expLinear", expLinear);
+            if (o.has("masteryByJob")) { var a = o.getAsJsonArray("masteryByJob"); for (int i = 0; i < Math.min(5, a.size()); i++) masteryByJob[i] = a.get(i).getAsDouble(); }
             if (o.has("basicAttackPct")) { var a = o.getAsJsonArray("basicAttackPct"); for (int i = 0; i < Math.min(5, a.size()); i++) basicAttackPct[i] = a.get(i).getAsDouble(); }
             mastery = d(o, "mastery", mastery); critDamage = d(o, "critDamage", critDamage); fistAttack = d(o, "fistAttack", fistAttack);
             skillPointsPerLevel = i(o, "skillPointsPerLevel", skillPointsPerLevel);

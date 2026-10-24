@@ -59,13 +59,10 @@ public final class Skills {
     public static void passiveUp(ServerPlayer p, String nodeId) {
         PlayerData d = RpgData.get(p);
         Defs.Node n = Defs.NODES.get(nodeId);
-        if (n == null || n.maxRank() <= 0 || d.passivePoints <= 0) return;
+        if (n == null || n.maxRank() <= 0 || d.passivePoints <= 0 || !Defs.inTree(n, d.job, d.branch)) return;
         int rank = d.passives.getOrDefault(nodeId, 0);
         if (rank >= n.maxRank()) return;
-        for (String req : n.requires()) {
-            Defs.Node r = Defs.NODES.get(req);
-            if (r != null && r.maxRank() > 0 && d.passives.getOrDefault(req, 0) <= 0) return;
-        }
+        if (!Defs.unlocked(n, k -> d.passives.getOrDefault(k, 0))) return;
         d.passivePoints--;
         d.passives.put(nodeId, rank + 1);
         d.recalc();
@@ -205,7 +202,7 @@ public final class Skills {
         if (d.shield > 0 && (now >= d.shieldEnd || d.isDown() || !p.isAlive())) d.shield = 0;
         AttributeInstance as = p.getAttribute(Attributes.ATTACK_SPEED);
         if (as != null) {
-            double wantA = 0;   // (헤이스트는 이제 점프력, 예전 공격 속도 보정 제거)
+            double wantA = d.atkSpeedPct / 100.0;   // 트리: 광란 · 피의 열기
             AttributeModifier ca = as.getModifier(ATK_SPEED_ID);
             if (ca == null || Math.abs(ca.getAmount() - wantA) > 1e-6) {
                 if (ca != null) as.removeModifier(ATK_SPEED_ID);
@@ -213,7 +210,7 @@ public final class Skills {
             }
         }
         double pct = d.bonus("speedPct") + (now < d.sprintEnd ? d.sprintPct : 0) + d.buffV("haste", now)
-                + d.buffV("evasion_instinct", now) + d.buffV("battle_thrill", now)
+                + d.buffV("evasion_instinct", now) + d.buffV("battle_thrill", now) + d.buffV("hunt_speed", now)
                 - (d.chargeSkill != null ? 50 : 0);
         AttributeInstance inst = p.getAttribute(Attributes.MOVEMENT_SPEED);
         if (inst == null) return;

@@ -62,6 +62,15 @@ public final class PlayerEvents {
             keep.putInt("rpgWarriorReset", 1);
             sp.getPersistentData().put(net.minecraft.world.entity.player.Player.PERSISTED_NBT_TAG, keep);
         }
+        // 패시브 트리 개편 (한 번만): 패시브 초기화 + 레벨당 포인트 다시 계산 (레벨업당 2)
+        if (keep.getInt("rpgTreeV1") < 1) {
+            d.passives.clear();
+            d.passivePoints = Math.max(0, (d.level - 1) * rpg.core.balance.Balance.passivePointsPerLevel);
+            if (d.level > 1) sp.sendSystemMessage(net.minecraft.network.chat.Component.literal("[패시브 개편] 패시브가 초기화되고 포인트를 다시 받았어요 (레벨업당 2). 패시브 창(N)에서 찍어주세요")
+                    .withStyle(net.minecraft.ChatFormatting.GOLD));
+            keep.putInt("rpgTreeV1", 1);
+            sp.getPersistentData().put(net.minecraft.world.entity.player.Player.PERSISTED_NBT_TAG, keep);
+        }
         d.recalc();
         rpg.core.net.Net.defsTo(sp);
         RpgData.sync(sp);

@@ -311,7 +311,7 @@ public final class JobSkills {
     public static void chargedShot(ServerPlayer p, PlayerData d, Defs.SkillDef s, int lv, long held) { BranchSkills.chargedShot(p, d, s, lv, held); }
     public static void heal(ServerPlayer caster, PlayerData cd, ServerPlayer target, PlayerData td, double amount) { BranchSkills.heal(caster, cd, target, td, amount); }
     public static void onHit(ServerPlayer p, PlayerData d, long now) { BranchSkills.onHit(p, d, now); }
-    public static void onKill(ServerPlayer p, PlayerData d) { BranchSkills.onKill(p, d); }
+    public static void onKill(ServerPlayer p, PlayerData d) { BranchSkills.onKill(p, d); PassiveEffects.onKill(p, d); }
 
     /** 그림자 발걸음 끝내기 (시간 끝 / 공격) */
     public static void breakShadow(ServerPlayer p, PlayerData d) {

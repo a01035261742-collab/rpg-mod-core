@@ -1,26 +1,1255 @@
 {
-  "_설명": "공용 패시브 트리. 4방향 × 작은 코어 3칸(여러 번 찍기) + 끝에 큰 코어 1칸(1번만, 강한 효과). x,y = 칸 위치(가운데 0,0). requires = 먼저 1 이상 찍어야 하는 칸. stat: dmgPct critDmg critChance hpPct def hpRegenPct speedPct mpRegenPct bossPct reviveTime stamina healPct",
-  "nodes": [
-    {"id": "start", "name": "시작", "x": 0, "y": 0, "maxRank": 0, "stat": "", "perRank": 0, "requires": []},
-
-    {"id": "crit_dmg_1", "name": "급소 노리기", "x": 0, "y": -1, "maxRank": 5, "stat": "critDmg", "perRank": 2, "requires": ["start"]},
-    {"id": "crit_rate_1", "name": "날카로운 눈", "x": 0, "y": -2, "maxRank": 3, "stat": "critChance", "perRank": 1, "requires": ["crit_dmg_1"]},
-    {"id": "crit_dmg_2", "name": "급소 강타", "x": 0, "y": -3, "maxRank": 3, "stat": "critDmg", "perRank": 3, "requires": ["crit_rate_1"]},
-    {"id": "crit_master", "name": "치명 극의", "x": 0, "y": -4, "maxRank": 1, "stat": "critDmg", "perRank": 10, "requires": ["crit_dmg_2"], "special": true},
-
-    {"id": "atk_1", "name": "공격 수련", "x": -1, "y": 0, "maxRank": 5, "stat": "dmgPct", "perRank": 1, "requires": ["start"]},
-    {"id": "atk_2", "name": "공격 숙련", "x": -2, "y": 0, "maxRank": 3, "stat": "dmgPct", "perRank": 2, "requires": ["atk_1"]},
-    {"id": "boss_1", "name": "거인 사냥", "x": -3, "y": 0, "maxRank": 3, "stat": "bossPct", "perRank": 3, "requires": ["atk_2"]},
-    {"id": "boss_slayer", "name": "보스 사냥꾼", "x": -4, "y": 0, "maxRank": 1, "stat": "bossPct", "perRank": 10, "requires": ["boss_1"], "special": true},
-
-    {"id": "hp_1", "name": "강인한 몸", "x": 1, "y": 0, "maxRank": 5, "stat": "hpPct", "perRank": 2, "requires": ["start"]},
-    {"id": "def_1", "name": "단단한 피부", "x": 2, "y": 0, "maxRank": 3, "stat": "def", "perRank": 5, "requires": ["hp_1"]},
-    {"id": "regen_1", "name": "회복력", "x": 3, "y": 0, "maxRank": 3, "stat": "healPct", "perRank": 10, "requires": ["def_1"]},
-    {"id": "second_wind", "name": "재기", "x": 4, "y": 0, "maxRank": 1, "stat": "reviveTime", "perRank": 30, "requires": ["regen_1"], "special": true},
-
-    {"id": "speed_1", "name": "가벼운 발", "x": 0, "y": 1, "maxRank": 5, "stat": "speedPct", "perRank": 1, "requires": ["start"]},
-    {"id": "mp_regen_1", "name": "명상", "x": 0, "y": 2, "maxRank": 3, "stat": "mpRegenPct", "perRank": 5, "requires": ["speed_1"]},
-    {"id": "dodge_1", "name": "지구력", "x": 0, "y": 3, "maxRank": 3, "stat": "stamina", "perRank": 2, "requires": ["mp_regen_1"]},
-    {"id": "nimble", "name": "강철 체력", "x": 0, "y": 4, "maxRank": 1, "stat": "stamina", "perRank": 6, "requires": ["dodge_1"], "special": true}
-  ]
+ "_설명": "패시브 트리. job = 직업 전용 트리 (0 = 공용: 전용 트리가 없는 직업이 씀, 초보자는 트리 없음). 직업 트리는 PoE식: requires 중 하나라도 찍혀 있으면 열림. branch = 2차 갈래 전용 (1 가디언/첫째 · 2 버서커/둘째). kind: s 작은 칸 · n 노터블 · g 끝 보석 · k 키스톤 · start. stat/stat2 + perRank/perRank2 = 찍은 수만큼 PlayerData.bonus 에 더함. desc = 툴팁 설명 (특수 효과)",
+ "nodes": [
+  {
+   "id": "start",
+   "name": "시작",
+   "x": 0,
+   "y": 0,
+   "maxRank": 0,
+   "stat": "",
+   "perRank": 0,
+   "requires": [],
+   "job": 0
+  },
+  {
+   "id": "crit_dmg_1",
+   "name": "급소 노리기",
+   "x": 0,
+   "y": -1,
+   "maxRank": 5,
+   "stat": "critDmg",
+   "perRank": 2,
+   "requires": [
+    "start"
+   ],
+   "job": 0
+  },
+  {
+   "id": "crit_rate_1",
+   "name": "날카로운 눈",
+   "x": 0,
+   "y": -2,
+   "maxRank": 3,
+   "stat": "critChance",
+   "perRank": 1,
+   "requires": [
+    "crit_dmg_1"
+   ],
+   "job": 0
+  },
+  {
+   "id": "crit_dmg_2",
+   "name": "급소 강타",
+   "x": 0,
+   "y": -3,
+   "maxRank": 3,
+   "stat": "critDmg",
+   "perRank": 3,
+   "requires": [
+    "crit_rate_1"
+   ],
+   "job": 0
+  },
+  {
+   "id": "crit_master",
+   "name": "치명 극의",
+   "x": 0,
+   "y": -4,
+   "maxRank": 1,
+   "stat": "critDmg",
+   "perRank": 10,
+   "requires": [
+    "crit_dmg_2"
+   ],
+   "special": true,
+   "job": 0
+  },
+  {
+   "id": "atk_1",
+   "name": "공격 수련",
+   "x": -1,
+   "y": 0,
+   "maxRank": 5,
+   "stat": "dmgPct",
+   "perRank": 1,
+   "requires": [
+    "start"
+   ],
+   "job": 0
+  },
+  {
+   "id": "atk_2",
+   "name": "공격 숙련",
+   "x": -2,
+   "y": 0,
+   "maxRank": 3,
+   "stat": "dmgPct",
+   "perRank": 2,
+   "requires": [
+    "atk_1"
+   ],
+   "job": 0
+  },
+  {
+   "id": "boss_1",
+   "name": "거인 사냥",
+   "x": -3,
+   "y": 0,
+   "maxRank": 3,
+   "stat": "bossPct",
+   "perRank": 3,
+   "requires": [
+    "atk_2"
+   ],
+   "job": 0
+  },
+  {
+   "id": "boss_slayer",
+   "name": "보스 사냥꾼",
+   "x": -4,
+   "y": 0,
+   "maxRank": 1,
+   "stat": "bossPct",
+   "perRank": 10,
+   "requires": [
+    "boss_1"
+   ],
+   "special": true,
+   "job": 0
+  },
+  {
+   "id": "hp_1",
+   "name": "강인한 몸",
+   "x": 1,
+   "y": 0,
+   "maxRank": 5,
+   "stat": "hpPct",
+   "perRank": 2,
+   "requires": [
+    "start"
+   ],
+   "job": 0
+  },
+  {
+   "id": "def_1",
+   "name": "단단한 피부",
+   "x": 2,
+   "y": 0,
+   "maxRank": 3,
+   "stat": "def",
+   "perRank": 5,
+   "requires": [
+    "hp_1"
+   ],
+   "job": 0
+  },
+  {
+   "id": "regen_1",
+   "name": "회복력",
+   "x": 3,
+   "y": 0,
+   "maxRank": 3,
+   "stat": "healPct",
+   "perRank": 10,
+   "requires": [
+    "def_1"
+   ],
+   "job": 0
+  },
+  {
+   "id": "second_wind",
+   "name": "재기",
+   "x": 4,
+   "y": 0,
+   "maxRank": 1,
+   "stat": "reviveTime",
+   "perRank": 30,
+   "requires": [
+    "regen_1"
+   ],
+   "special": true,
+   "job": 0
+  },
+  {
+   "id": "speed_1",
+   "name": "가벼운 발",
+   "x": 0,
+   "y": 1,
+   "maxRank": 5,
+   "stat": "speedPct",
+   "perRank": 1,
+   "requires": [
+    "start"
+   ],
+   "job": 0
+  },
+  {
+   "id": "mp_regen_1",
+   "name": "명상",
+   "x": 0,
+   "y": 2,
+   "maxRank": 3,
+   "stat": "mpRegenPct",
+   "perRank": 5,
+   "requires": [
+    "speed_1"
+   ],
+   "job": 0
+  },
+  {
+   "id": "dodge_1",
+   "name": "지구력",
+   "x": 0,
+   "y": 3,
+   "maxRank": 3,
+   "stat": "stamina",
+   "perRank": 2,
+   "requires": [
+    "mp_regen_1"
+   ],
+   "job": 0
+  },
+  {
+   "id": "nimble",
+   "name": "강철 체력",
+   "x": 0,
+   "y": 4,
+   "maxRank": 1,
+   "stat": "stamina",
+   "perRank": 6,
+   "requires": [
+    "dodge_1"
+   ],
+   "special": true,
+   "job": 0
+  },
+  {
+   "id": "w0",
+   "name": "시작",
+   "x": 0,
+   "y": 0,
+   "maxRank": 0,
+   "stat": "",
+   "perRank": 0,
+   "requires": [],
+   "job": 1,
+   "kind": "start"
+  },
+  {
+   "id": "wc_u",
+   "name": "데미지",
+   "x": 0,
+   "y": -1,
+   "maxRank": 3,
+   "stat": "dmgPct",
+   "perRank": 2,
+   "requires": [
+    "w0"
+   ],
+   "job": 1,
+   "kind": "s"
+  },
+  {
+   "id": "wc_l",
+   "name": "힘",
+   "x": -1,
+   "y": 0,
+   "maxRank": 3,
+   "stat": "str",
+   "perRank": 3,
+   "requires": [
+    "w0"
+   ],
+   "job": 1,
+   "kind": "s"
+  },
+  {
+   "id": "wc_r",
+   "name": "체력",
+   "x": 1,
+   "y": 0,
+   "maxRank": 3,
+   "stat": "vit",
+   "perRank": 3,
+   "requires": [
+    "w0"
+   ],
+   "job": 1,
+   "kind": "s"
+  },
+  {
+   "id": "wc_d",
+   "name": "이동속도",
+   "x": 0,
+   "y": 1,
+   "maxRank": 3,
+   "stat": "speedPct",
+   "perRank": 2,
+   "requires": [
+    "w0"
+   ],
+   "job": 1,
+   "kind": "s"
+  },
+  {
+   "id": "wu0",
+   "name": "공격력",
+   "x": 0,
+   "y": -2,
+   "maxRank": 3,
+   "stat": "atkPct",
+   "perRank": 1,
+   "requires": [
+    "wc_u"
+   ],
+   "job": 1,
+   "kind": "s"
+  },
+  {
+   "id": "wu1",
+   "name": "데미지",
+   "x": -1,
+   "y": -3,
+   "maxRank": 3,
+   "stat": "dmgPct",
+   "perRank": 2,
+   "requires": [
+    "wu0"
+   ],
+   "job": 1,
+   "kind": "s"
+  },
+  {
+   "id": "wu2",
+   "name": "평타 데미지",
+   "x": 1,
+   "y": -3,
+   "maxRank": 3,
+   "stat": "basicPct",
+   "perRank": 3,
+   "requires": [
+    "wu0"
+   ],
+   "job": 1,
+   "kind": "s"
+  },
+  {
+   "id": "wu3",
+   "name": "검술",
+   "x": 0,
+   "y": -4,
+   "maxRank": 1,
+   "stat": "dmgPct",
+   "perRank": 8,
+   "requires": [
+    "wu1",
+    "wu2"
+   ],
+   "job": 1,
+   "kind": "n",
+   "stat2": "atkPct",
+   "perRank2": 3,
+   "special": true
+  },
+  {
+   "id": "wu4",
+   "name": "평타 데미지",
+   "x": -1,
+   "y": -5,
+   "maxRank": 3,
+   "stat": "basicPct",
+   "perRank": 3,
+   "requires": [
+    "wu3"
+   ],
+   "job": 1,
+   "kind": "s"
+  },
+  {
+   "id": "wu5",
+   "name": "공격력",
+   "x": 1,
+   "y": -5,
+   "maxRank": 3,
+   "stat": "atkPct",
+   "perRank": 1,
+   "requires": [
+    "wu3"
+   ],
+   "job": 1,
+   "kind": "s"
+  },
+  {
+   "id": "wu6",
+   "name": "광전사의 혼",
+   "x": 0,
+   "y": -6,
+   "maxRank": 1,
+   "stat": "lowHpDmg",
+   "perRank": 20,
+   "requires": [
+    "wu4",
+    "wu5"
+   ],
+   "job": 1,
+   "kind": "k",
+   "special": true,
+   "desc": "HP 50% 이하일 때 데미지 +20%"
+  },
+  {
+   "id": "wd0",
+   "name": "쿨타임 감소",
+   "x": 0,
+   "y": 2,
+   "maxRank": 3,
+   "stat": "cdPct",
+   "perRank": 1,
+   "requires": [
+    "wc_d"
+   ],
+   "job": 1,
+   "kind": "s"
+  },
+  {
+   "id": "wd1",
+   "name": "이동속도",
+   "x": -1,
+   "y": 3,
+   "maxRank": 3,
+   "stat": "speedPct",
+   "perRank": 2,
+   "requires": [
+    "wd0"
+   ],
+   "job": 1,
+   "kind": "s"
+  },
+  {
+   "id": "wd2",
+   "name": "스태미나",
+   "x": 1,
+   "y": 3,
+   "maxRank": 3,
+   "stat": "stamina",
+   "perRank": 2,
+   "requires": [
+    "wd0"
+   ],
+   "job": 1,
+   "kind": "s"
+  },
+  {
+   "id": "wd3",
+   "name": "기동",
+   "x": 0,
+   "y": 4,
+   "maxRank": 1,
+   "stat": "speedPct",
+   "perRank": 5,
+   "requires": [
+    "wd1",
+    "wd2"
+   ],
+   "job": 1,
+   "kind": "n",
+   "stat2": "cdPct",
+   "perRank2": 3,
+   "special": true
+  },
+  {
+   "id": "wd4",
+   "name": "회복량",
+   "x": -1,
+   "y": 5,
+   "maxRank": 3,
+   "stat": "healPct",
+   "perRank": 5,
+   "requires": [
+    "wd3"
+   ],
+   "job": 1,
+   "kind": "s"
+  },
+  {
+   "id": "wd5",
+   "name": "자연 회복",
+   "x": 1,
+   "y": 5,
+   "maxRank": 3,
+   "stat": "hpRegenPct",
+   "perRank": 10,
+   "requires": [
+    "wd3"
+   ],
+   "job": 1,
+   "kind": "s"
+  },
+  {
+   "id": "wd6",
+   "name": "거신",
+   "x": 0,
+   "y": 6,
+   "maxRank": 1,
+   "stat": "giantHp",
+   "perRank": 30,
+   "requires": [
+    "wd4",
+    "wd5"
+   ],
+   "job": 1,
+   "kind": "k",
+   "stat2": "speedPct",
+   "perRank2": -10,
+   "special": true,
+   "desc": "최대 HP ×1.3, 이동속도 -10%"
+  },
+  {
+   "id": "w_crit0",
+   "name": "크리 확률",
+   "x": -2,
+   "y": -1,
+   "maxRank": 3,
+   "stat": "critChance",
+   "perRank": 1,
+   "requires": [
+    "wc_l"
+   ],
+   "job": 1,
+   "kind": "s"
+  },
+  {
+   "id": "w_crit1",
+   "name": "힘",
+   "x": -3,
+   "y": -2,
+   "maxRank": 3,
+   "stat": "str",
+   "perRank": 3,
+   "requires": [
+    "w_crit0"
+   ],
+   "job": 1,
+   "kind": "s"
+  },
+  {
+   "id": "w_crit2",
+   "name": "크리 데미지",
+   "x": -4,
+   "y": -3,
+   "maxRank": 3,
+   "stat": "critDmg",
+   "perRank": 3,
+   "requires": [
+    "w_crit1"
+   ],
+   "job": 1,
+   "kind": "s"
+  },
+  {
+   "id": "w_crit3",
+   "name": "크리 데미지",
+   "x": -5,
+   "y": -4,
+   "maxRank": 2,
+   "stat": "critDmg",
+   "perRank": 3,
+   "requires": [
+    "w_crit2"
+   ],
+   "job": 1,
+   "kind": "s"
+  },
+  {
+   "id": "w_crit4",
+   "name": "전투 흥분",
+   "x": -4,
+   "y": -5,
+   "maxRank": 1,
+   "stat": "thrillSpeed",
+   "perRank": 2,
+   "requires": [
+    "w_crit3"
+   ],
+   "job": 1,
+   "kind": "s"
+  },
+  {
+   "id": "w_crit5",
+   "name": "크리 확률",
+   "x": -6,
+   "y": -5,
+   "maxRank": 2,
+   "stat": "critChance",
+   "perRank": 1,
+   "requires": [
+    "w_crit3"
+   ],
+   "job": 1,
+   "kind": "s"
+  },
+  {
+   "id": "w_crit6",
+   "name": "급소 강타",
+   "x": -7,
+   "y": -6,
+   "maxRank": 1,
+   "stat": "critDmg",
+   "perRank": 15,
+   "requires": [
+    "w_crit5"
+   ],
+   "job": 1,
+   "kind": "g",
+   "stat2": "critChance",
+   "perRank2": 3,
+   "special": true
+  },
+  {
+   "id": "w_crit7",
+   "name": "힘",
+   "x": -6,
+   "y": -3,
+   "maxRank": 2,
+   "stat": "str",
+   "perRank": 3,
+   "requires": [
+    "w_crit2"
+   ],
+   "job": 1,
+   "kind": "s"
+  },
+  {
+   "id": "w_crit8",
+   "name": "크리 데미지",
+   "x": -7,
+   "y": -2,
+   "maxRank": 2,
+   "stat": "critDmg",
+   "perRank": 3,
+   "requires": [
+    "w_crit7"
+   ],
+   "job": 1,
+   "kind": "s"
+  },
+  {
+   "id": "w_crit9",
+   "name": "분쇄",
+   "x": -8,
+   "y": -1,
+   "maxRank": 1,
+   "stat": "shatter",
+   "perRank": 30,
+   "requires": [
+    "w_crit8"
+   ],
+   "job": 1,
+   "kind": "g",
+   "special": true,
+   "desc": "크리 시 일반 몹 경직 0.3초 (같은 몹 1초에 1번)"
+  },
+  {
+   "id": "w_boss0",
+   "name": "보스 데미지",
+   "x": -2,
+   "y": 1,
+   "maxRank": 3,
+   "stat": "bossPct",
+   "perRank": 3,
+   "requires": [
+    "wc_l"
+   ],
+   "job": 1,
+   "kind": "s"
+  },
+  {
+   "id": "w_boss1",
+   "name": "데미지",
+   "x": -3,
+   "y": 2,
+   "maxRank": 3,
+   "stat": "dmgPct",
+   "perRank": 2,
+   "requires": [
+    "w_boss0"
+   ],
+   "job": 1,
+   "kind": "s"
+  },
+  {
+   "id": "w_boss2",
+   "name": "일반 몹 데미지",
+   "x": -4,
+   "y": 3,
+   "maxRank": 3,
+   "stat": "mobPct",
+   "perRank": 3,
+   "requires": [
+    "w_boss1"
+   ],
+   "job": 1,
+   "kind": "s"
+  },
+  {
+   "id": "w_boss3",
+   "name": "보스 데미지",
+   "x": -5,
+   "y": 4,
+   "maxRank": 2,
+   "stat": "bossPct",
+   "perRank": 3,
+   "requires": [
+    "w_boss2"
+   ],
+   "job": 1,
+   "kind": "s"
+  },
+  {
+   "id": "w_boss4",
+   "name": "힘",
+   "x": -4,
+   "y": 5,
+   "maxRank": 2,
+   "stat": "str",
+   "perRank": 3,
+   "requires": [
+    "w_boss3"
+   ],
+   "job": 1,
+   "kind": "s"
+  },
+  {
+   "id": "w_boss5",
+   "name": "데미지",
+   "x": -6,
+   "y": 5,
+   "maxRank": 2,
+   "stat": "dmgPct",
+   "perRank": 2,
+   "requires": [
+    "w_boss3"
+   ],
+   "job": 1,
+   "kind": "s"
+  },
+  {
+   "id": "w_boss6",
+   "name": "거인 학살",
+   "x": -7,
+   "y": 6,
+   "maxRank": 1,
+   "stat": "bossPct",
+   "perRank": 12,
+   "requires": [
+    "w_boss5"
+   ],
+   "job": 1,
+   "kind": "g",
+   "special": true
+  },
+  {
+   "id": "w_boss7",
+   "name": "일반 몹 데미지",
+   "x": -6,
+   "y": 3,
+   "maxRank": 2,
+   "stat": "mobPct",
+   "perRank": 3,
+   "requires": [
+    "w_boss2"
+   ],
+   "job": 1,
+   "kind": "s"
+  },
+  {
+   "id": "w_boss8",
+   "name": "데미지",
+   "x": -7,
+   "y": 2,
+   "maxRank": 2,
+   "stat": "dmgPct",
+   "perRank": 2,
+   "requires": [
+    "w_boss7"
+   ],
+   "job": 1,
+   "kind": "s"
+  },
+  {
+   "id": "w_boss9",
+   "name": "처형인",
+   "x": -8,
+   "y": 1,
+   "maxRank": 1,
+   "stat": "executePct",
+   "perRank": 20,
+   "requires": [
+    "w_boss8"
+   ],
+   "job": 1,
+   "kind": "g",
+   "special": true,
+   "desc": "HP 30% 이하 몹에게 데미지 +20%"
+  },
+  {
+   "id": "w_def0",
+   "name": "방어",
+   "x": 2,
+   "y": -1,
+   "maxRank": 3,
+   "stat": "defPct",
+   "perRank": 4,
+   "requires": [
+    "wc_r"
+   ],
+   "job": 1,
+   "kind": "s"
+  },
+  {
+   "id": "w_def1",
+   "name": "체력",
+   "x": 3,
+   "y": -2,
+   "maxRank": 3,
+   "stat": "vit",
+   "perRank": 3,
+   "requires": [
+    "w_def0"
+   ],
+   "job": 1,
+   "kind": "s"
+  },
+  {
+   "id": "w_def2",
+   "name": "넉백 저항",
+   "x": 4,
+   "y": -3,
+   "maxRank": 3,
+   "stat": "kbResist",
+   "perRank": 10,
+   "requires": [
+    "w_def1"
+   ],
+   "job": 1,
+   "kind": "s"
+  },
+  {
+   "id": "w_def3",
+   "name": "방어",
+   "x": 5,
+   "y": -4,
+   "maxRank": 2,
+   "stat": "defPct",
+   "perRank": 4,
+   "requires": [
+    "w_def2"
+   ],
+   "job": 1,
+   "kind": "s"
+  },
+  {
+   "id": "w_def4",
+   "name": "체력",
+   "x": 4,
+   "y": -5,
+   "maxRank": 2,
+   "stat": "vit",
+   "perRank": 3,
+   "requires": [
+    "w_def3"
+   ],
+   "job": 1,
+   "kind": "s"
+  },
+  {
+   "id": "w_def5",
+   "name": "방어",
+   "x": 6,
+   "y": -5,
+   "maxRank": 2,
+   "stat": "defPct",
+   "perRank": 4,
+   "requires": [
+    "w_def3"
+   ],
+   "job": 1,
+   "kind": "s"
+  },
+  {
+   "id": "w_def6",
+   "name": "철갑",
+   "x": 7,
+   "y": -6,
+   "maxRank": 1,
+   "stat": "defPct",
+   "perRank": 15,
+   "requires": [
+    "w_def5"
+   ],
+   "job": 1,
+   "kind": "g",
+   "stat2": "kbResist",
+   "perRank2": 30,
+   "special": true
+  },
+  {
+   "id": "w_def7",
+   "name": "넉백 저항",
+   "x": 6,
+   "y": -3,
+   "maxRank": 2,
+   "stat": "kbResist",
+   "perRank": 10,
+   "requires": [
+    "w_def2"
+   ],
+   "job": 1,
+   "kind": "s"
+  },
+  {
+   "id": "w_def8",
+   "name": "방어",
+   "x": 7,
+   "y": -2,
+   "maxRank": 2,
+   "stat": "defPct",
+   "perRank": 4,
+   "requires": [
+    "w_def7"
+   ],
+   "job": 1,
+   "kind": "s"
+  },
+  {
+   "id": "w_def9",
+   "name": "가시 갑옷",
+   "x": 8,
+   "y": -1,
+   "maxRank": 1,
+   "stat": "thorns",
+   "perRank": 50,
+   "requires": [
+    "w_def8"
+   ],
+   "job": 1,
+   "kind": "g",
+   "special": true,
+   "desc": "근접으로 맞으면 내 방어의 50%만큼 되돌려줌"
+  },
+  {
+   "id": "w_hp0",
+   "name": "최대 HP",
+   "x": 2,
+   "y": 1,
+   "maxRank": 3,
+   "stat": "hpPct",
+   "perRank": 3,
+   "requires": [
+    "wc_r"
+   ],
+   "job": 1,
+   "kind": "s"
+  },
+  {
+   "id": "w_hp1",
+   "name": "체력으로 얻는 HP",
+   "x": 3,
+   "y": 2,
+   "maxRank": 3,
+   "stat": "vitHpPct",
+   "perRank": 5,
+   "requires": [
+    "w_hp0"
+   ],
+   "job": 1,
+   "kind": "s"
+  },
+  {
+   "id": "w_hp2",
+   "name": "회복량",
+   "x": 4,
+   "y": 3,
+   "maxRank": 3,
+   "stat": "healPct",
+   "perRank": 5,
+   "requires": [
+    "w_hp1"
+   ],
+   "job": 1,
+   "kind": "s"
+  },
+  {
+   "id": "w_hp3",
+   "name": "최대 HP",
+   "x": 5,
+   "y": 4,
+   "maxRank": 2,
+   "stat": "hpPct",
+   "perRank": 3,
+   "requires": [
+    "w_hp2"
+   ],
+   "job": 1,
+   "kind": "s"
+  },
+  {
+   "id": "w_hp4",
+   "name": "자연 회복",
+   "x": 4,
+   "y": 5,
+   "maxRank": 2,
+   "stat": "hpRegenPct",
+   "perRank": 10,
+   "requires": [
+    "w_hp3"
+   ],
+   "job": 1,
+   "kind": "s"
+  },
+  {
+   "id": "w_hp5",
+   "name": "체력으로 얻는 HP",
+   "x": 6,
+   "y": 5,
+   "maxRank": 2,
+   "stat": "vitHpPct",
+   "perRank": 5,
+   "requires": [
+    "w_hp3"
+   ],
+   "job": 1,
+   "kind": "s"
+  },
+  {
+   "id": "w_hp6",
+   "name": "전투 회복",
+   "x": 7,
+   "y": 6,
+   "maxRank": 1,
+   "stat": "killHeal",
+   "perRank": 3,
+   "requires": [
+    "w_hp5"
+   ],
+   "job": 1,
+   "kind": "g",
+   "special": true,
+   "desc": "몹 처치 시 최대 HP 3% 회복"
+  },
+  {
+   "id": "w_hp7",
+   "name": "회복량",
+   "x": 6,
+   "y": 3,
+   "maxRank": 2,
+   "stat": "healPct",
+   "perRank": 5,
+   "requires": [
+    "w_hp2"
+   ],
+   "job": 1,
+   "kind": "s"
+  },
+  {
+   "id": "w_hp8",
+   "name": "최대 HP",
+   "x": 7,
+   "y": 2,
+   "maxRank": 2,
+   "stat": "hpPct",
+   "perRank": 3,
+   "requires": [
+    "w_hp7"
+   ],
+   "job": 1,
+   "kind": "s"
+  },
+  {
+   "id": "w_hp9",
+   "name": "위기 회복",
+   "x": 8,
+   "y": 1,
+   "maxRank": 1,
+   "stat": "crisisShield",
+   "perRank": 20,
+   "requires": [
+    "w_hp8"
+   ],
+   "job": 1,
+   "kind": "g",
+   "special": true,
+   "desc": "HP 30% 이하로 떨어지면 5초 보호막 (최대 HP 20%), 60초에 1번"
+  },
+  {
+   "id": "wb0",
+   "name": "사냥 본능",
+   "x": -2,
+   "y": 0,
+   "maxRank": 1,
+   "stat": "huntSpeed",
+   "perRank": 10,
+   "requires": [
+    "wc_l"
+   ],
+   "job": 1,
+   "kind": "n",
+   "branch": 2,
+   "special": true,
+   "desc": "처치 시 이동속도 +10% (3초)"
+  },
+  {
+   "id": "wb1",
+   "name": "피의 열기",
+   "x": -3,
+   "y": 0,
+   "maxRank": 1,
+   "stat": "bloodHeat",
+   "perRank": 15,
+   "requires": [
+    "wb0"
+   ],
+   "job": 1,
+   "kind": "n",
+   "branch": 2,
+   "special": true,
+   "desc": "HP가 낮을수록 공격 속도 증가 (최대 +15%)"
+  },
+  {
+   "id": "wb2",
+   "name": "학살자",
+   "x": -4,
+   "y": 0,
+   "maxRank": 1,
+   "stat": "slayer",
+   "perRank": 5,
+   "requires": [
+    "wb1"
+   ],
+   "job": 1,
+   "kind": "n",
+   "branch": 2,
+   "special": true,
+   "desc": "처치 시 4초 동안 데미지 +5% (최대 3중첩)"
+  },
+  {
+   "id": "wb3",
+   "name": "광폭 체질",
+   "x": -5,
+   "y": 0,
+   "maxRank": 1,
+   "stat": "rageHeal",
+   "perRank": 2,
+   "requires": [
+    "wb2"
+   ],
+   "job": 1,
+   "kind": "n",
+   "branch": 2,
+   "special": true,
+   "desc": "광폭화 중 처치 시 최대 HP 2% 회복"
+  },
+  {
+   "id": "wb4",
+   "name": "광란",
+   "x": -6,
+   "y": 0,
+   "maxRank": 1,
+   "stat": "frenzy",
+   "perRank": 15,
+   "requires": [
+    "wb3"
+   ],
+   "job": 1,
+   "kind": "k",
+   "branch": 2,
+   "special": true,
+   "desc": "공격 속도 +15%, 받는 피해 +10%"
+  },
+  {
+   "id": "wg0",
+   "name": "수호 본능",
+   "x": 2,
+   "y": 0,
+   "maxRank": 1,
+   "stat": "guardInstinct",
+   "perRank": 10,
+   "requires": [
+    "wc_r"
+   ],
+   "job": 1,
+   "kind": "n",
+   "branch": 1,
+   "special": true,
+   "desc": "파티원이 근처(8칸)에 있으면 방어 +10%"
+  },
+  {
+   "id": "wg1",
+   "name": "위압",
+   "x": 3,
+   "y": 0,
+   "maxRank": 1,
+   "stat": "intimidate",
+   "perRank": 20,
+   "requires": [
+    "wg0"
+   ],
+   "job": 1,
+   "kind": "n",
+   "branch": 1,
+   "special": true,
+   "desc": "주변 4칸 일반 몹 이동속도 -20%"
+  },
+  {
+   "id": "wg2",
+   "name": "도발의 대가",
+   "x": 4,
+   "y": 0,
+   "maxRank": 1,
+   "stat": "tauntDmg",
+   "perRank": 3,
+   "requires": [
+    "wg1"
+   ],
+   "job": 1,
+   "kind": "n",
+   "branch": 1,
+   "special": true,
+   "desc": "도발 걸린 몹 1마리당 데미지 +3% (최대 +15%)"
+  },
+  {
+   "id": "wg3",
+   "name": "전장의 함성",
+   "x": 5,
+   "y": 0,
+   "maxRank": 1,
+   "stat": "warcry",
+   "perRank": 10,
+   "requires": [
+    "wg2"
+   ],
+   "job": 1,
+   "kind": "n",
+   "branch": 1,
+   "special": true,
+   "desc": "주변 8칸 파티원 데미지 +10% (중첩 안 됨)"
+  },
+  {
+   "id": "wg4",
+   "name": "수호자의 맹세",
+   "x": 6,
+   "y": 0,
+   "maxRank": 1,
+   "stat": "oath",
+   "perRank": 15,
+   "requires": [
+    "wg3"
+   ],
+   "job": 1,
+   "kind": "k",
+   "branch": 1,
+   "special": true,
+   "desc": "주변 8칸 파티원 방어 +15%, 최대 HP +5%"
+  }
+ ]
 }

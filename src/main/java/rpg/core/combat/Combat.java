@@ -66,13 +66,19 @@ public final class Combat {
 
     /** 데미지% 합: 장비·패시브 데미지% + 광폭화 */
     public static double dmgPct(PlayerData d) {
-        return d.bonus("dmgPct") + d.buffV("berserk", d.clock);
+        return d.bonus("dmgPct") + d.buffV("berserk", d.clock) + rpg.core.skill.PassiveEffects.extraDmg(d);
+    }
+
+    /** 숙련도 (최소 데미지 = 최대 × 숙련도): 직업 기본값 + 마스터리 스킬 (최대 95%) */
+    public static double mastery(PlayerData d) {
+        double base = Balance.masteryByJob[Math.max(0, Math.min(4, d.job))];
+        return Math.min(0.95, base + d.bonus("mastery") / 100.0);
     }
 
     public static Hit roll(Player p, PlayerData d, double mult) {
         ThreadLocalRandom r = ThreadLocalRandom.current();
         double max = statAttack(p, d);
-        double min = max * Balance.mastery;
+        double min = max * mastery(d);
         double dmg = (min + r.nextDouble() * (max - min)) * mult;
         boolean crit = r.nextDouble() * 100.0 < d.crit();
         if (crit) dmg *= d.critDamage();
@@ -80,7 +86,8 @@ public final class Combat {
     }
 
     public static double defense(PlayerData d) {
-        return (d.total(PlayerData.VIT) * Balance.defPerVit + d.bonus("def") + d.eq("def") + d.buffV("iron_body", d.clock)) * (1 + d.eq("defPct") / 100.0);
+        return (d.total(PlayerData.VIT) * Balance.defPerVit + d.bonus("def") + d.eq("def") + d.buffV("iron_body", d.clock))
+                * (1 + (d.eq("defPct") + d.bonus("defPct") + rpg.core.skill.PassiveEffects.extraDef(d)) / 100.0);
     }
 
     /**
