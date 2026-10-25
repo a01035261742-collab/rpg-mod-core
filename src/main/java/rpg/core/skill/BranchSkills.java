@@ -57,12 +57,13 @@ public final class BranchSkills {
             case "blood_spin" -> WarriorSkills.bloodSpin(p, s, lv);
             case "combo_slash" -> WarriorSkills.combo(p, d, s, lv);
             case "leap_slam" -> leapSlam(p, s, lv);
-            case "focus" -> buff(p, d, "focus", s.duration(), s.value(lv), 0, ParticleTypes.END_ROD, SoundEvents.BEACON_ACTIVATE);
+            case "focus" -> { ArcherSkills.anim(p, "focus", ArcherSkills.AIM); yield buff(p, d, "focus", s.duration(), s.value(lv), 0, ParticleTypes.END_ROD, SoundEvents.BEACON_ACTIVATE); }
             case "explosive_shot" -> explosiveShot(p, s, lv);
             case "sniping" -> ArcherSkills.sniping(p, d, s, lv, now);
             case "mark_shot" -> ArcherSkills.markShot(p, s, lv);
             case "hunt_instinct" -> {
                 WarriorSkills.burst(p, ParticleTypes.HAPPY_VILLAGER, SoundEvents.WOLF_HOWL, 1.3f);
+                ArcherSkills.anim(p, "hunt_instinct", ArcherSkills.AIM);
                 yield buff(p, d, "hunt_instinct", s.duration(), s.value(lv), s.value2(lv), ParticleTypes.HAPPY_VILLAGER, SoundEvents.ARROW_HIT_PLAYER);
             }
             case "trap" -> trap(p, d, s, lv, now);
@@ -195,7 +196,7 @@ public final class BranchSkills {
             a.getPersistentData().putDouble("rpgExplodeR", 3.0);
         });
         p.serverLevel().playSound(null, p.blockPosition(), SoundEvents.CROSSBOW_SHOOT, SoundSource.PLAYERS, 1.0f, 0.9f);
-        p.swing(net.minecraft.world.InteractionHand.MAIN_HAND, true);
+        ArcherSkills.anim(p, "explosive_shot", "BIPED_CROSSBOW_SHOT|" + ArcherSkills.SHOT);
         return true;
     }
 
@@ -219,6 +220,7 @@ public final class BranchSkills {
         int root = (int) Math.round((s.value2(lv) + d.bonus("trapRoot")) * 20);
         addField(p, "trap", p.position(), 1.2, (int) Math.round(s.duration() * 20), s.value(lv), root, 0);
         p.serverLevel().playSound(null, p.blockPosition(), SoundEvents.CHAIN_PLACE, SoundSource.PLAYERS, 1.0f, 0.8f);
+        ArcherSkills.anim(p, "trap", "BIPED_JAVELIN_THROW|" + ArcherSkills.SHOT);
         return true;
     }
 

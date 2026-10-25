@@ -12,6 +12,15 @@ import rpg.core.data.PlayerData;
 public final class ArcherSkills {
     private ArcherSkills() {}
 
+    /** 궁수 모션 (Epic Fight). /rpg anim set <스킬> <모션> 으로 바꿔 끼우기 가능 */
+    public static final String AIM = "BIPED_BOW_AIM", SHOT = "BIPED_BOW_SHOT";
+    public static final String BACKFLIP = "BIPED_PHANTOM_ASCENT_BACKWARD|BIPED_ROLL_BACKWARD";
+
+    /** 모션 재생 (안 되면 팔 휘두르기) */
+    public static void anim(ServerPlayer p, String skill, String defaults) {
+        if (!rpg.core.compat.EpicFightCompat.playSkill(p, skill, defaults)) p.swing(net.minecraft.world.InteractionHand.MAIN_HAND, true);
+    }
+
     // ───────── 스나이핑: duration초 조준 (이동 -50%) → 관통 화살 ─────────
     static boolean sniping(ServerPlayer p, PlayerData d, Defs.SkillDef s, int lv, long now) {
         int aim = (int) Math.max(1, Math.round(s.duration() * 20));
@@ -19,6 +28,7 @@ public final class ArcherSkills {
         double pct = s.value(lv);
         ServerLevel l = p.serverLevel();
         l.playSound(null, p.blockPosition(), SoundEvents.CROSSBOW_LOADING_START, SoundSource.PLAYERS, 1f, 0.8f);
+        anim(p, "sniping", AIM);   // 조준 모션
         BranchSkills.task(p, t -> {
             if (t < aim) {   // 조준선
                 if (t % 2 == 0) {
@@ -38,7 +48,7 @@ public final class ArcherSkills {
             });
             l.sendParticles(ParticleTypes.FIREWORK, p.getX(), p.getEyeY(), p.getZ(), 10, 0.2, 0.2, 0.2, 0.05);
             l.playSound(null, p.blockPosition(), SoundEvents.CROSSBOW_SHOOT, SoundSource.PLAYERS, 1.2f, 0.6f);
-            p.swing(net.minecraft.world.InteractionHand.MAIN_HAND, true);
+            anim(p, "sniping_shot", SHOT);
             return true;
         });
         return true;
@@ -51,7 +61,7 @@ public final class ArcherSkills {
             a.getPersistentData().putInt("rpgMarkTicks", (int) Math.round(s.duration() * 20));
         });
         p.serverLevel().playSound(null, p.blockPosition(), SoundEvents.ARROW_SHOOT, SoundSource.PLAYERS, 1f, 0.8f);
-        p.swing(net.minecraft.world.InteractionHand.MAIN_HAND, true);
+        anim(p, "mark_shot", "BIPED_CROSSBOW_SHOT|" + SHOT);
         return true;
     }
 }

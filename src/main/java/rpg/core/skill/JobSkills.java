@@ -57,6 +57,7 @@ public final class JobSkills {
                 d.buffEnd.put("booster", now + Math.round(s.value2(lv) * 20));
                 d.buffVal.put("booster", s.value(lv));
                 WarriorSkills.burst(p, ParticleTypes.CRIT, SoundEvents.BEACON_POWER_SELECT, 1.6f);
+                ArcherSkills.anim(p, "booster", ArcherSkills.AIM);
                 yield true;
             }
             case "magic_bolt" -> magicBolt(p, s, lv);
@@ -144,9 +145,10 @@ public final class JobSkills {
         double pct = s.value(lv);
         arrow(p, pct, 0);
         p.serverLevel().playSound(null, p.blockPosition(), SoundEvents.ARROW_SHOOT, SoundSource.PLAYERS, 1.0f, 1.3f);
-        p.swing(net.minecraft.world.InteractionHand.MAIN_HAND, true);
+        ArcherSkills.anim(p, "double_shot", ArcherSkills.SHOT);
         later(p, 5, () -> {   // 0.25초 뒤 두 번째 화살 (그때 바라보는 방향)
             arrow(p, pct, 0);
+            ArcherSkills.anim(p, "double_shot", ArcherSkills.SHOT);
             p.serverLevel().playSound(null, p.blockPosition(), SoundEvents.ARROW_SHOOT, SoundSource.PLAYERS, 1.0f, 1.5f);
         });
         return true;
@@ -162,6 +164,7 @@ public final class JobSkills {
         ServerLevel l = p.serverLevel();
         l.sendParticles(ParticleTypes.CLOUD, p.getX(), p.getY() + 0.2, p.getZ(), 8, 0.3, 0.05, 0.3, 0.03);
         l.playSound(null, p.blockPosition(), SoundEvents.ARROW_SHOOT, SoundSource.PLAYERS, 1.0f, 0.9f);
+        ArcherSkills.anim(p, "retreat_shot", ArcherSkills.BACKFLIP);   // 뒤로 공중제비
         return true;
     }
 
