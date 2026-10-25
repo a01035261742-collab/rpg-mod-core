@@ -8,9 +8,9 @@ jobs:
         with: { distribution: temurin, java-version: '17' }
       - run: |
           curl -sL -o ef.jar https://cdn.modrinth.com/data/vu3NZ5Ma/versions/KEBfkBat/epic-fight-20.14.17-mc1.20.1-forge.jar
-          # 공격 모션 이름 + 종류 (회전·연타 후보 찾기)
+          # 활·석궁·투척 관련 모션
           javap -p -cp ef.jar yesman.epicfight.gameasset.Animations > all.txt
-          sed -n 's/.*types\.\([A-Za-z]*\)> \([A-Z0-9_]*\);.*/\2:\1/p' all.txt | grep -E "Attack|Slash" | grep -v -E "BIPED_MOB|_AUTO|DASH|AIR_?SLASH|ENDERMAN|SPIDER|GOLEM|HOGLIN|VINDICATOR|RAVAGER|VEX|WITHER|ZOMBIE|DRAGON|MOUNT|WITCH|PIGLIN|ILLAGER|EVOKER|BLAZE" | tr '\n' ' ' > out.txt
+          sed -n 's/.* \([A-Z0-9_]*\);.*/\1/p' all.txt | grep -E "BOW|CROSSBOW|THROW|SHOOT|AIM|DODGE|ROLL|STEP|JUMP|KICK|DASH|BACK" | tr '\n' ' ' > out.txt
           wc -l all.txt >> out.txt
           cat out.txt
           msg=$(sed ':a;N;$!ba;s/%/%25/g;s/\r//g;s/\n/%0A/g' out.txt | head -c 60000)
