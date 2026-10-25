@@ -239,8 +239,8 @@ public final class Net {
                     case 5 -> rpg.core.equip.Potential.grant(p, rpg.core.equip.Enhance.at(p, loc), arg == 1);
                     case 6 -> rpg.core.equip.Potential.reset(p, rpg.core.equip.Enhance.at(p, loc), false);
                     case 7 -> rpg.core.equip.Potential.reset(p, rpg.core.equip.Enhance.at(p, loc), true);
-                    case 8 -> rpg.core.equip.Potential.choose(p, rpg.core.equip.Enhance.at(p, loc), false);
-                    case 9 -> rpg.core.equip.Potential.choose(p, rpg.core.equip.Enhance.at(p, loc), true);
+                    case 8 -> rpg.core.equip.Potential.choose(p, rpg.core.equip.Enhance.at(p, loc), false, false);
+                    case 9 -> rpg.core.equip.Potential.choose(p, rpg.core.equip.Enhance.at(p, loc), true, arg == 1);
                     case 10 -> rpg.core.equip.Flame.use(p, rpg.core.equip.Enhance.at(p, loc), arg == 1 ? "eternal" : arg == 2 ? "black" : "powerful");
                     case 11 -> rpg.core.equip.Flame.choose(p, rpg.core.equip.Enhance.at(p, loc), arg == 1);
                     case 12 -> rpg.core.equip.Potential.unlock(p, rpg.core.equip.Enhance.at(p, loc));

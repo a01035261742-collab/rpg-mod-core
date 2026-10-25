@@ -245,7 +245,6 @@ public final class Potential {
         GearDefs.GearDef d = Gear.def(s);
         if (d == null || !has(s)) return;
         if (pending(s)) { msg(p, "먼저 새 옵션 / 기존 유지를 골라주세요", ChatFormatting.RED); return; }
-        if (locked(s)) { msg(p, "등급이 올라서 잠겨 있어요 — [잠금 해제]를 눌러주세요", ChatFormatting.RED); return; }
         int g = grade(s);
         if (cube) {
             if (!take(p, ModItems.CUBE.get())) { msg(p, "수상한 큐브가 없어요", ChatFormatting.RED); return; }
@@ -265,7 +264,7 @@ public final class Potential {
             saveCeil(p, c);
         }
         s.getOrCreateTag().getCompound("rpgPot").put("new", roll(d, ng));
-        if (ng > g) s.getOrCreateTag().putBoolean("rpgPotLock", true);   // 등급업: 실수로 다시 못 돌리게 잠금
+        if (s.hasTag()) s.getTag().remove("rpgPotLock");   // (예전 잠금 기능 삭제)
         if (ng > g) {
             msg(p, "등급 상승! " + GRADE[ng], ChatFormatting.GOLD);
             p.level().playSound(null, p.blockPosition(), SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundSource.PLAYERS, 0.8f, 1.2f);
@@ -283,9 +282,15 @@ public final class Potential {
         msg(p, "잠금 해제 — 다시 재설정할 수 있어요", ChatFormatting.YELLOW);
     }
 
-    /** 새 옵션 적용 (keep=false) 또는 기존 유지 (keep=true) */
-    public static void choose(ServerPlayer p, ItemStack s, boolean keep) {
+    /** 새 옵션 등급이 지금보다 높나 */
+    public static boolean pendingUp(ItemStack s) {
+        return pending(s) && pot(s).getCompound("new").getInt("g") > grade(s);
+    }
+
+    /** 새 옵션 적용 (keep=false) 또는 기존 유지 (keep=true). 등급업인데 기존 유지는 확인(confirm) 있어야만 */
+    public static void choose(ServerPlayer p, ItemStack s, boolean keep, boolean confirm) {
         if (!pending(s)) return;
+        if (keep && pendingUp(s) && !confirm) return;   // 실수 방지: 확인 창 거친 것만
         CompoundTag pt = s.getOrCreateTag().getCompound("rpgPot");
         CompoundTag nw = pt.getCompound("new");
         if (keep) { pt.remove("new"); s.getOrCreateTag().remove("rpgPotLock"); }

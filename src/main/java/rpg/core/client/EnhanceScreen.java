@@ -27,6 +27,10 @@ public class EnhanceScreen extends Screen {
     private List<Integer> extra = List.of(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     private int x, y, scroll, tab, sel = -1, selScroll = -1;
     private boolean guard;
+    /** 잠재 결과: 0.7초 동안 고르기 버튼 막기 · 등급업 기존 유지 확인 창 */
+    private long readyAt;
+    private String pendKey = "";
+    private boolean waiting, confirmKeep;
     private static int lastTab;
 
     private EnhanceScreen(List<Integer> locs, List<ItemStack> gear, List<Integer> slots, List<ItemStack> scrolls, int frags, List<Integer> extra) {
@@ -144,10 +148,26 @@ public class EnhanceScreen extends Screen {
                 b2.active = extra.get(2) > 0;
                 addRenderableWidget(b2);
             } else if (rpg.core.equip.Potential.pending(s)) {
-                addRenderableWidget(Ui.button(Component.literal("새 옵션 적용"), bt -> Net.CH.sendToServer(new Net.EnhanceAction(8, curLoc(), 0))).bounds(bx, by, 86, 18).build());
-                addRenderableWidget(Ui.button(Component.literal("기존 유지"), bt -> Net.CH.sendToServer(new Net.EnhanceAction(9, curLoc(), 0))).bounds(bx + 90, by, 86, 18).build());
-            } else if (rpg.core.equip.Potential.locked(s)) {
-                addRenderableWidget(Ui.button(Component.literal("잠금 해제"), bt -> Net.CH.sendToServer(new Net.EnhanceAction(12, curLoc(), 0))).bounds(bx, by, 86, 18).build());
+                String key = curLoc() + ":" + rpg.core.equip.Potential.pot(s).getCompound("new");
+                if (!key.equals(pendKey)) { pendKey = key; readyAt = System.currentTimeMillis() + 700; confirmKeep = false; }
+                waiting = System.currentTimeMillis() < readyAt;
+                boolean up = rpg.core.equip.Potential.pendingUp(s);
+                // 등급업이면 버튼을 아래 줄 가운데로 (재설정 버튼 자리 연타해도 안 눌리게)
+                int ax = up ? x + 170 : bx, ay = up ? y + H - Ui.FOOT : by;
+                Button b1, b2;
+                if (up && confirmKeep) {
+                    b1 = Ui.button(Component.literal("유지할게요"), bt -> { confirmKeep = false; Net.CH.sendToServer(new Net.EnhanceAction(9, curLoc(), 1)); }).bounds(ax, ay, 70, 18).build();
+                    b2 = Ui.button(Component.literal("취소"), bt -> { confirmKeep = false; rebuildWidgets(); }).bounds(ax + 74, ay, 66, 18).build();
+                } else {
+                    b1 = Ui.button(Component.literal(up ? "새 옵션 적용 ▲" : "새 옵션 적용"), bt -> Net.CH.sendToServer(new Net.EnhanceAction(8, curLoc(), 0))).bounds(ax, ay, up ? 70 : 86, 18).build();
+                    b2 = Ui.button(Component.literal("기존 유지"), bt -> {
+                        if (up) { confirmKeep = true; readyAt = System.currentTimeMillis() + 700; rebuildWidgets(); }
+                        else Net.CH.sendToServer(new Net.EnhanceAction(9, curLoc(), 0));
+                    }).bounds(up ? ax + 74 : bx + 90, ay, up ? 66 : 86, 18).build();
+                }
+                b1.active = b2.active = !waiting;
+                addRenderableWidget(b1);
+                addRenderableWidget(b2);
             } else {
                 long c = rpg.core.equip.Potential.cost(d, rpg.core.equip.Potential.grade(s));
                 Button b1 = Ui.button(Component.literal(String.format("%,d G", c)), bt -> Net.CH.sendToServer(new Net.EnhanceAction(6, curLoc(), 0))).bounds(bx, by, 86, 18).build();
@@ -178,6 +198,12 @@ public class EnhanceScreen extends Screen {
             b.active = frags >= Enhance.fragments;
             addRenderableWidget(b);
         }
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+        if (waiting && System.currentTimeMillis() >= readyAt) { waiting = false; rebuildWidgets(); }   // 0.7초 지나면 버튼 켜기
     }
 
     @Override
@@ -322,8 +348,10 @@ public class EnhanceScreen extends Screen {
             yy += 10;
             for (var c : rpg.core.equip.Potential.lines(nw)) { g.drawString(font, c, px, yy, 0xFFFFFFFF, false); yy += 10; }
             powLine(g, s, "rpgPowPot", px, yy + 2);
-        } else if (rpg.core.equip.Potential.locked(s)) {
-            g.drawString(font, "등급 상승! 실수 방지로 재설정 잠김", px, yy + 4, 0xFFFFD24A, false);
+            if (confirmKeep && ng > gr) {
+                g.drawString(font, "등급이 올랐어요 (" + rpg.core.equip.Potential.GRADE[gr] + " → " + rpg.core.equip.Potential.GRADE[ng] + ")", px, y + H - 60, 0xFFFF8040, false);
+                g.drawString(font, "정말 이전 옵션 유지? 오른 등급은 사라져요", px, y + H - 48, 0xFFFF8040, false);
+            }
         } else if (gr < 3) {
             yy += 4;
             g.drawString(font, "등급 상승 " + fmt(rpg.core.equip.Potential.upChance[gr]) + "% · 천장 " + extra.get(3 + gr) + " / " + rpg.core.equip.Potential.ceiling[gr], px, yy, 0xFFA0A0A0, false);
