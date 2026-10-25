@@ -196,7 +196,7 @@ public final class BranchSkills {
             a.getPersistentData().putDouble("rpgExplodeR", 3.0);
         });
         p.serverLevel().playSound(null, p.blockPosition(), SoundEvents.CROSSBOW_SHOOT, SoundSource.PLAYERS, 1.0f, 0.9f);
-        ArcherSkills.anim(p, "explosive_shot", "BIPED_CROSSBOW_SHOT|" + ArcherSkills.SHOT);
+        ArcherSkills.anim(p, "explosive_shot", ArcherSkills.SHOT);
         return true;
     }
 

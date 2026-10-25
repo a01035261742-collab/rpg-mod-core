@@ -61,7 +61,7 @@ public final class ArcherSkills {
             a.getPersistentData().putInt("rpgMarkTicks", (int) Math.round(s.duration() * 20));
         });
         p.serverLevel().playSound(null, p.blockPosition(), SoundEvents.ARROW_SHOOT, SoundSource.PLAYERS, 1f, 0.8f);
-        anim(p, "mark_shot", "BIPED_CROSSBOW_SHOT|" + SHOT);
+        anim(p, "mark_shot", SHOT);
         return true;
     }
 }
