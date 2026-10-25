@@ -48,6 +48,11 @@ public final class PassiveEffects {
 
     /** 처치한 몹 자리: 도미노 (반경 2칸 폭발) */
     public static void onKillMob(ServerPlayer p, PlayerData d, Mob dead) {
+        double burn = CombatEvents.dotDmg(dead, "burn");
+        if (burn > 0 && d.bonus("burnSpread") > 0) {   // 불길 번짐
+            for (Mob m : BranchSkills.mobsAround(p.serverLevel(), dead.position(), 3)) if (m != dead) CombatEvents.dot(p, m, "burn", burn, 60);
+            p.serverLevel().sendParticles(ParticleTypes.FLAME, dead.getX(), dead.getY() + 0.5, dead.getZ(), 20, 1.2, 0.3, 1.2, 0.03);
+        }
         double pct = d.bonus("domino");
         if (pct <= 0) return;
         net.minecraft.world.phys.Vec3 at = dead.position();
@@ -75,7 +80,10 @@ public final class PassiveEffects {
     /** 피해 준 뒤: 속사 소모 · 독 바른 화살 · 꿰뚫기 · 표식 */
     public static void afterDeal(ServerPlayer p, PlayerData d, Mob mob, MobData m, net.minecraft.world.entity.Entity direct, boolean basic, boolean crit) {
         long now = p.level().getGameTime();
+        d.lastAttack = now;
         if (basic && d.quickShotReady) d.quickShotReady = false;
+        if (crit && d.bonus("burnOnCrit") > 0)   // 원소 공명
+            CombatEvents.dot(p, mob, "burn", Combat.statAttack(p, d) * d.bonus("burnOnCrit") / 100.0, 60);
         if (basic && d.bonus("poisonArrow") > 0 && direct != p)   // 독: 평타 화살
             CombatEvents.dot(p, mob, "poison", Combat.statAttack(p, d) * d.bonus("poisonArrow") / 100.0, 60);
         if (crit && d.bonus("critPierce") > 0 && direct instanceof net.minecraft.world.entity.projectile.AbstractArrow a)   // 꿰뚫기
@@ -108,6 +116,7 @@ public final class PassiveEffects {
         extra += d.buffV("roll_dmg", t);                                                             // 재빠른 회피
         if (d.bonus("weakHunt") > 0 && (t < m.slowUntil && m.slowPct > 0 || mob.hasEffect(MobEffects.MOVEMENT_SLOWDOWN)))
             extra += d.bonus("weakHunt");                                                            // 약점 사냥
+        if (d.bonus("burnDmg") > 0 && CombatEvents.dotDmg(mob, "burn") > 0) extra += d.bonus("burnDmg");   // 원소의 화신
         double mul = add(d, extra);
         var pd = mob.getPersistentData();   // 표식: 그 몹이 받는 내 피해 +%
         if (pd.contains("rpgMarkBy") && t < pd.getLong("rpgMarkUntil") && p.getUUID().equals(pd.getUUID("rpgMarkBy")))
@@ -205,6 +214,17 @@ public final class PassiveEffects {
                 }
             }
         }
+        double holy = d.bonus("holyAura");   // 신성 영역: 주변 8칸 파티원 최대 HP +%
+        if (holy > 0) {
+            for (ServerPlayer m : rpg.core.party.Parties.nearby(p)) {
+                if (m.distanceToSqr(p) > 64) continue;
+                PlayerData md = RpgData.get(m);
+                boolean was = now < md.holyUntil;
+                md.holyUntil = now + 30;
+                if (!was || md.holyVal < holy) { md.holyVal = Math.max(md.holyVal, holy); md.recalc(); RpgData.sync(m); }
+            }
+        }
+        if (d.holyVal > 0 && now >= d.holyUntil) { d.holyVal = 0; d.recalc(); RpgData.sync(p); }
         // 맹세가 끝나면 최대 HP 원래대로
         if (d.oathVal > 0 && now >= d.oathUntil) { d.oathVal = 0; d.recalc(); RpgData.sync(p); }
         if (now >= d.warcryUntil) d.warcryVal = 0;
@@ -218,7 +238,17 @@ public final class PassiveEffects {
         v += d.buffV("slayer", now);
         v += Math.min(15, d.tauntCount * d.bonus("tauntDmg"));
         if (now < d.warcryUntil) v += d.warcryVal;
+        v += overload(d);                       // 마력 과부하
+        v += d.buffV("tp_dmg", now);           // 순간 영창
+        v += d.buffV("blessed_hand", now);     // 축복받은 손
         return v;
+    }
+
+    /** 마력 과부하: 추가 MP 100당 +2% (최대 +25%) */
+    public static double overload(PlayerData d) {
+        double per = d.bonus("overloadMp");
+        if (per <= 0) return 0;
+        return Math.min(25, Math.max(0, d.maxMp - d.baseMp) / 100.0 * per);
     }
 
     /** 추가 공격력%: 냉정 (가만히 2초마다 +3%, 최대 5중첩) */

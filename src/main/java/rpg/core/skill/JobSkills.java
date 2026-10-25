@@ -48,7 +48,14 @@ public final class JobSkills {
                 WarriorSkills.burst(p, ParticleTypes.CRIT, SoundEvents.ARMOR_EQUIP_IRON, 0.7f);
                 yield buff(p, d, s, lv, now, ParticleTypes.CRIT, SoundEvents.ANVIL_PLACE);
             }
-            case "magic_guard" -> buff(p, d, s, lv, now, ParticleTypes.ENCHANT, SoundEvents.ENCHANTMENT_TABLE_USE);
+            case "magic_guard" -> {   // value2초 동안 (지속 연장 적용)
+                d.buffEnd.put("magic_guard", now + MageSkills.dur(d, s.value2(lv)));
+                d.buffVal.put("magic_guard", s.value(lv));
+                WarriorSkills.burst(p, ParticleTypes.ENCHANT, SoundEvents.ENCHANTMENT_TABLE_USE, 1.2f);
+                MageSkills.anim(p, "magic_guard");
+                yield true;
+            }
+            case "magic_claw" -> MageSkills.magicClaw(p, s, lv);
             case "haste" -> haste(p, s, lv, now);
             case "stealth" -> stealth(p, d, s, lv, now);
             case "double_shot" -> doubleShot(p, s, lv);
@@ -67,7 +74,7 @@ public final class JobSkills {
 
     private static boolean buff(ServerPlayer p, PlayerData d, Defs.SkillDef s, int lv, long now,
                                 net.minecraft.core.particles.SimpleParticleType fx, net.minecraft.sounds.SoundEvent snd) {
-        d.buffEnd.put(s.id(), now + Math.round(s.duration() * 20));
+        d.buffEnd.put(s.id(), now + MageSkills.dur(d, s.duration()));
         d.buffVal.put(s.id(), s.value(lv));
         d.buffVal2.put(s.id(), s.value2(lv));
         ServerLevel l = p.serverLevel();

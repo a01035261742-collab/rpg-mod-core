@@ -63,7 +63,7 @@ public class StatScreen extends Screen {
             int dx = x + W + 4;
             Ui.frame(g, font, dx, y, DW, H, Ui.GOLD, "상세 능력치", "", 0);
             int ry = y + 24;
-            ry = line(g, dx, ry, "스공", String.format("%,.0f ~ %,.0f", ClientData.atkMin, ClientData.atkMax));
+            ry = line(g, dx, ry, ClientData.job == 3 ? "마력 스공" : "스공", String.format("%,.0f ~ %,.0f", ClientData.atkMin, ClientData.atkMax));
             ry = line(g, dx, ry, "최대 HP", String.format("%,.0f", ClientData.maxHp));
             ry = line(g, dx, ry, "최대 MP", String.format("%,.0f", ClientData.maxMp));
             ry = line(g, dx, ry, "방어력", String.format("%,.0f", ClientData.defPct));
@@ -73,6 +73,7 @@ public class StatScreen extends Screen {
             ry = line(g, dx, ry, "치명타 피해", String.format("%.0f%%", ClientData.critDmgPct));
             ry = line(g, dx, ry, "보스 데미지", String.format("+%.0f%%", ClientData.bossPct));
             ry = line(g, dx, ry, "방어율 무시", String.format("%.1f%%", ClientData.ignoreDef));
+            if (ClientData.overloadPct > 0) ry = line(g, dx, ry, "마력 과부하", String.format("+%.1f%%", ClientData.overloadPct));
             ry = line(g, dx, ry, "회복량 증가", String.format("+%.1f%%", ClientData.healBonus));
             ry = line(g, dx, ry, "드롭률 증가", String.format("+%.1f%%", ClientData.dropBonus));
             ry = line(g, dx, ry, "골드 획득 증가", String.format("+%.1f%%", ClientData.goldBonus));

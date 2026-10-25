@@ -66,7 +66,8 @@ public final class Combat {
 
     /** 데미지% 합: 장비·패시브 데미지% + 광폭화 */
     public static double dmgPct(PlayerData d) {
-        return d.bonus("dmgPct") + d.buffV("berserk", d.clock) + rpg.core.skill.PassiveEffects.extraDmg(d);
+        return d.bonus("dmgPct") + d.buffV("berserk", d.clock) + d.buffV("elemental_amp", d.clock) + d.buffV("bless", d.clock)
+                + rpg.core.skill.PassiveEffects.extraDmg(d);
     }
 
     /** 방어율 무시 % (장비 · 트리, 곱으로 쌓임, 최대 100 미만) */

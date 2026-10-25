@@ -139,6 +139,12 @@ public final class CombatEvents {
     private record Dot(ServerPlayer owner, int mob, String kind, double dmg, long end) {}
     private static final Map<String, Dot> DOTS = new java.util.HashMap<>();
 
+    /** 이 몹에 걸린 지속 피해 (초당, 없으면 0) */
+    public static double dotDmg(Mob m, String kind) {
+        Dot b = DOTS.get(m.getId() + ":" + kind);
+        return b == null || m.level().getGameTime() > b.end() ? 0 : b.dmg();
+    }
+
     /** 지속 피해 걸기 (같은 종류는 새로 덮어씀). kind: bleed 출혈 / burn 화상 / poison 독 */
     public static void dot(ServerPlayer owner, Mob m, String kind, double perSecond, int ticks) {
         if (perSecond <= 0 || ticks <= 0) return;

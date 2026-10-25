@@ -157,6 +157,8 @@ public final class Defs {
             case "mobPct" -> "일반 몹 데미지 +%s%%";
             case "str" -> "힘 +%s";
             case "dex" -> "덱스 +%s";
+            case "int" -> "지력 +%s";
+            case "mpCost" -> "MP 소모 -%s%%";
             case "mpPct" -> "최대 MP +%s%%";
             case "ignoreDef" -> "방어율 무시 +%s%%";
             case "vit" -> "체력 +%s";

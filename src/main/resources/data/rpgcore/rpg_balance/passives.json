@@ -2255,6 +2255,1011 @@
    "kind": "k",
    "desc": "덫 최대 개수 +2, 덫이 터지면 반경 3칸 몹을 끌어당기며 같이 맞힘",
    "branch": 2
+  },
+  {
+   "id": "m0",
+   "name": "시작",
+   "x": 0,
+   "y": 0,
+   "maxRank": 0,
+   "stat": "",
+   "perRank": 0,
+   "requires": [],
+   "job": 3,
+   "kind": "start"
+  },
+  {
+   "id": "mc_u",
+   "name": "지력",
+   "x": 0,
+   "y": -1,
+   "maxRank": 3,
+   "stat": "int",
+   "perRank": 3,
+   "requires": [
+    "m0"
+   ],
+   "job": 3,
+   "kind": "s"
+  },
+  {
+   "id": "mc_l",
+   "name": "지력",
+   "x": -1,
+   "y": 0,
+   "maxRank": 3,
+   "stat": "int",
+   "perRank": 3,
+   "requires": [
+    "m0"
+   ],
+   "job": 3,
+   "kind": "s"
+  },
+  {
+   "id": "mc_r",
+   "name": "지력",
+   "x": 1,
+   "y": 0,
+   "maxRank": 3,
+   "stat": "int",
+   "perRank": 3,
+   "requires": [
+    "m0"
+   ],
+   "job": 3,
+   "kind": "s"
+  },
+  {
+   "id": "mc_d",
+   "name": "지력",
+   "x": 0,
+   "y": 1,
+   "maxRank": 3,
+   "stat": "int",
+   "perRank": 3,
+   "requires": [
+    "m0"
+   ],
+   "job": 3,
+   "kind": "s"
+  },
+  {
+   "id": "mu0",
+   "name": "마력",
+   "x": 0,
+   "y": -2,
+   "maxRank": 3,
+   "stat": "atkPct",
+   "perRank": 1,
+   "requires": [
+    "mc_u"
+   ],
+   "job": 3,
+   "kind": "s"
+  },
+  {
+   "id": "mu1",
+   "name": "지력",
+   "x": -1,
+   "y": -3,
+   "maxRank": 3,
+   "stat": "int",
+   "perRank": 3,
+   "requires": [
+    "mu0"
+   ],
+   "job": 3,
+   "kind": "s"
+  },
+  {
+   "id": "mu2",
+   "name": "마력",
+   "x": 1,
+   "y": -3,
+   "maxRank": 3,
+   "stat": "atkPct",
+   "perRank": 1,
+   "requires": [
+    "mu0"
+   ],
+   "job": 3,
+   "kind": "s"
+  },
+  {
+   "id": "mu3",
+   "name": "마력 해방",
+   "x": 0,
+   "y": -4,
+   "maxRank": 1,
+   "stat": "dmgPct",
+   "perRank": 8,
+   "requires": [
+    "mu1",
+    "mu2"
+   ],
+   "job": 3,
+   "stat2": "atkPct",
+   "perRank2": 3,
+   "kind": "n"
+  },
+  {
+   "id": "mu4",
+   "name": "지력",
+   "x": -1,
+   "y": -5,
+   "maxRank": 3,
+   "stat": "int",
+   "perRank": 3,
+   "requires": [
+    "mu3"
+   ],
+   "job": 3,
+   "kind": "s"
+  },
+  {
+   "id": "mu5",
+   "name": "마력",
+   "x": 1,
+   "y": -5,
+   "maxRank": 3,
+   "stat": "atkPct",
+   "perRank": 1,
+   "requires": [
+    "mu3"
+   ],
+   "job": 3,
+   "kind": "s"
+  },
+  {
+   "id": "mu6",
+   "name": "마력 과부하",
+   "x": 0,
+   "y": -6,
+   "maxRank": 1,
+   "stat": "overloadMp",
+   "perRank": 2,
+   "requires": [
+    "mu4",
+    "mu5"
+   ],
+   "job": 3,
+   "kind": "k",
+   "desc": "추가 MP 100당 데미지 +2% (최대 +25%). 추가 MP = 장비·트리로 늘어난 MP"
+  },
+  {
+   "id": "md0",
+   "name": "쿨타임 감소",
+   "x": 0,
+   "y": 2,
+   "maxRank": 3,
+   "stat": "cdPct",
+   "perRank": 1,
+   "requires": [
+    "mc_d"
+   ],
+   "job": 3,
+   "kind": "s"
+  },
+  {
+   "id": "md1",
+   "name": "이동속도",
+   "x": -1,
+   "y": 3,
+   "maxRank": 3,
+   "stat": "speedPct",
+   "perRank": 2,
+   "requires": [
+    "md0"
+   ],
+   "job": 3,
+   "kind": "s"
+  },
+  {
+   "id": "md2",
+   "name": "MP 회복",
+   "x": 1,
+   "y": 3,
+   "maxRank": 3,
+   "stat": "mpRegenPct",
+   "perRank": 10,
+   "requires": [
+    "md0"
+   ],
+   "job": 3,
+   "kind": "s"
+  },
+  {
+   "id": "md3",
+   "name": "흐름",
+   "x": 0,
+   "y": 4,
+   "maxRank": 1,
+   "stat": "cdPct",
+   "perRank": 3,
+   "requires": [
+    "md1",
+    "md2"
+   ],
+   "job": 3,
+   "stat2": "speedPct",
+   "perRank2": 5,
+   "kind": "n"
+  },
+  {
+   "id": "md4",
+   "name": "이동속도",
+   "x": -1,
+   "y": 5,
+   "maxRank": 3,
+   "stat": "speedPct",
+   "perRank": 2,
+   "requires": [
+    "md3"
+   ],
+   "job": 3,
+   "kind": "s"
+  },
+  {
+   "id": "md5",
+   "name": "쿨타임 감소",
+   "x": 1,
+   "y": 5,
+   "maxRank": 3,
+   "stat": "cdPct",
+   "perRank": 1,
+   "requires": [
+    "md3"
+   ],
+   "job": 3,
+   "kind": "s"
+  },
+  {
+   "id": "md6",
+   "name": "순간 영창",
+   "x": 0,
+   "y": 6,
+   "maxRank": 1,
+   "stat": "tpDmg",
+   "perRank": 15,
+   "requires": [
+    "md4",
+    "md5"
+   ],
+   "job": 3,
+   "kind": "k",
+   "desc": "텔레포트 후 3초 동안 데미지 +15%"
+  },
+  {
+   "id": "m_crit0",
+   "name": "크리 확률",
+   "x": -2,
+   "y": -1,
+   "maxRank": 3,
+   "stat": "critChance",
+   "perRank": 1,
+   "requires": [
+    "mc_l"
+   ],
+   "job": 3,
+   "kind": "s"
+  },
+  {
+   "id": "m_crit1",
+   "name": "지력",
+   "x": -3,
+   "y": -2,
+   "maxRank": 3,
+   "stat": "int",
+   "perRank": 3,
+   "requires": [
+    "m_crit0"
+   ],
+   "job": 3,
+   "kind": "s"
+  },
+  {
+   "id": "m_crit2",
+   "name": "크리 데미지",
+   "x": -4,
+   "y": -3,
+   "maxRank": 3,
+   "stat": "critDmg",
+   "perRank": 3,
+   "requires": [
+    "m_crit1"
+   ],
+   "job": 3,
+   "kind": "s"
+  },
+  {
+   "id": "m_crit3",
+   "name": "크리 데미지",
+   "x": -5,
+   "y": -4,
+   "maxRank": 2,
+   "stat": "critDmg",
+   "perRank": 3,
+   "requires": [
+    "m_crit2"
+   ],
+   "job": 3,
+   "kind": "s"
+  },
+  {
+   "id": "m_crit4",
+   "name": "크리 확률",
+   "x": -4,
+   "y": -5,
+   "maxRank": 1,
+   "stat": "critChance",
+   "perRank": 1,
+   "requires": [
+    "m_crit3"
+   ],
+   "job": 3,
+   "kind": "s"
+  },
+  {
+   "id": "m_crit5",
+   "name": "크리 확률",
+   "x": -6,
+   "y": -5,
+   "maxRank": 2,
+   "stat": "critChance",
+   "perRank": 1,
+   "requires": [
+    "m_crit3"
+   ],
+   "job": 3,
+   "kind": "s"
+  },
+  {
+   "id": "m_crit6",
+   "name": "정신 집중",
+   "x": -7,
+   "y": -6,
+   "maxRank": 1,
+   "stat": "critDmg",
+   "perRank": 15,
+   "requires": [
+    "m_crit5"
+   ],
+   "job": 3,
+   "stat2": "critChance",
+   "perRank2": 3,
+   "kind": "g"
+  },
+  {
+   "id": "m_crit7",
+   "name": "지력",
+   "x": -6,
+   "y": -3,
+   "maxRank": 2,
+   "stat": "int",
+   "perRank": 3,
+   "requires": [
+    "m_crit2"
+   ],
+   "job": 3,
+   "kind": "s"
+  },
+  {
+   "id": "m_crit8",
+   "name": "크리 데미지",
+   "x": -7,
+   "y": -2,
+   "maxRank": 2,
+   "stat": "critDmg",
+   "perRank": 3,
+   "requires": [
+    "m_crit7"
+   ],
+   "job": 3,
+   "kind": "s"
+  },
+  {
+   "id": "m_crit9",
+   "name": "원소 공명",
+   "x": -8,
+   "y": -1,
+   "maxRank": 1,
+   "stat": "burnOnCrit",
+   "perRank": 10,
+   "requires": [
+    "m_crit8"
+   ],
+   "job": 3,
+   "kind": "g",
+   "desc": "크리가 터지면 3초 화상 (1초마다 스공의 10%)"
+  },
+  {
+   "id": "m_mp0",
+   "name": "최대 MP",
+   "x": -2,
+   "y": 1,
+   "maxRank": 3,
+   "stat": "mpPct",
+   "perRank": 5,
+   "requires": [
+    "mc_l"
+   ],
+   "job": 3,
+   "kind": "s"
+  },
+  {
+   "id": "m_mp1",
+   "name": "MP 회복",
+   "x": -3,
+   "y": 2,
+   "maxRank": 3,
+   "stat": "mpRegenPct",
+   "perRank": 10,
+   "requires": [
+    "m_mp0"
+   ],
+   "job": 3,
+   "kind": "s"
+  },
+  {
+   "id": "m_mp2",
+   "name": "최대 HP",
+   "x": -4,
+   "y": 3,
+   "maxRank": 3,
+   "stat": "hpPct",
+   "perRank": 3,
+   "requires": [
+    "m_mp1"
+   ],
+   "job": 3,
+   "kind": "s"
+  },
+  {
+   "id": "m_mp3",
+   "name": "최대 MP",
+   "x": -5,
+   "y": 4,
+   "maxRank": 2,
+   "stat": "mpPct",
+   "perRank": 5,
+   "requires": [
+    "m_mp2"
+   ],
+   "job": 3,
+   "kind": "s"
+  },
+  {
+   "id": "m_mp4",
+   "name": "MP 회복",
+   "x": -4,
+   "y": 5,
+   "maxRank": 2,
+   "stat": "mpRegenPct",
+   "perRank": 10,
+   "requires": [
+    "m_mp3"
+   ],
+   "job": 3,
+   "kind": "s"
+  },
+  {
+   "id": "m_mp5",
+   "name": "최대 HP",
+   "x": -6,
+   "y": 5,
+   "maxRank": 2,
+   "stat": "hpPct",
+   "perRank": 3,
+   "requires": [
+    "m_mp3"
+   ],
+   "job": 3,
+   "kind": "s"
+  },
+  {
+   "id": "m_mp6",
+   "name": "마나 회수",
+   "x": -7,
+   "y": 6,
+   "maxRank": 1,
+   "stat": "killMp",
+   "perRank": 4,
+   "requires": [
+    "m_mp5"
+   ],
+   "job": 3,
+   "kind": "g",
+   "desc": "몹 처치 시 최대 MP 4% 회복"
+  },
+  {
+   "id": "m_mp7",
+   "name": "최대 MP",
+   "x": -6,
+   "y": 3,
+   "maxRank": 2,
+   "stat": "mpPct",
+   "perRank": 5,
+   "requires": [
+    "m_mp2"
+   ],
+   "job": 3,
+   "kind": "s"
+  },
+  {
+   "id": "m_mp8",
+   "name": "최대 HP",
+   "x": -7,
+   "y": 2,
+   "maxRank": 2,
+   "stat": "hpPct",
+   "perRank": 3,
+   "requires": [
+    "m_mp7"
+   ],
+   "job": 3,
+   "kind": "s"
+  },
+  {
+   "id": "m_mp9",
+   "name": "명상",
+   "x": -8,
+   "y": 1,
+   "maxRank": 1,
+   "stat": "meditation",
+   "perRank": 1,
+   "requires": [
+    "m_mp8"
+   ],
+   "job": 3,
+   "kind": "g",
+   "desc": "3초 동안 공격하지 않으면 MP 회복 ×3"
+  },
+  {
+   "id": "m_boss0",
+   "name": "보스 데미지",
+   "x": 2,
+   "y": -1,
+   "maxRank": 3,
+   "stat": "bossPct",
+   "perRank": 3,
+   "requires": [
+    "mc_r"
+   ],
+   "job": 3,
+   "kind": "s"
+  },
+  {
+   "id": "m_boss1",
+   "name": "데미지",
+   "x": 3,
+   "y": -2,
+   "maxRank": 3,
+   "stat": "dmgPct",
+   "perRank": 2,
+   "requires": [
+    "m_boss0"
+   ],
+   "job": 3,
+   "kind": "s"
+  },
+  {
+   "id": "m_boss2",
+   "name": "보스 데미지",
+   "x": 4,
+   "y": -3,
+   "maxRank": 3,
+   "stat": "bossPct",
+   "perRank": 3,
+   "requires": [
+    "m_boss1"
+   ],
+   "job": 3,
+   "kind": "s"
+  },
+  {
+   "id": "m_boss3",
+   "name": "보스 데미지",
+   "x": 5,
+   "y": -4,
+   "maxRank": 2,
+   "stat": "bossPct",
+   "perRank": 3,
+   "requires": [
+    "m_boss2"
+   ],
+   "job": 3,
+   "kind": "s"
+  },
+  {
+   "id": "m_boss4",
+   "name": "지력",
+   "x": 4,
+   "y": -5,
+   "maxRank": 2,
+   "stat": "int",
+   "perRank": 3,
+   "requires": [
+    "m_boss3"
+   ],
+   "job": 3,
+   "kind": "s"
+  },
+  {
+   "id": "m_boss5",
+   "name": "데미지",
+   "x": 6,
+   "y": -5,
+   "maxRank": 2,
+   "stat": "dmgPct",
+   "perRank": 2,
+   "requires": [
+    "m_boss3"
+   ],
+   "job": 3,
+   "kind": "s"
+  },
+  {
+   "id": "m_boss6",
+   "name": "고위 마법",
+   "x": 7,
+   "y": -6,
+   "maxRank": 1,
+   "stat": "bossPct",
+   "perRank": 12,
+   "requires": [
+    "m_boss5"
+   ],
+   "job": 3,
+   "kind": "g"
+  },
+  {
+   "id": "m_boss7",
+   "name": "데미지",
+   "x": 6,
+   "y": -3,
+   "maxRank": 2,
+   "stat": "dmgPct",
+   "perRank": 2,
+   "requires": [
+    "m_boss2"
+   ],
+   "job": 3,
+   "kind": "s"
+  },
+  {
+   "id": "m_boss8",
+   "name": "보스 데미지",
+   "x": 7,
+   "y": -2,
+   "maxRank": 2,
+   "stat": "bossPct",
+   "perRank": 3,
+   "requires": [
+    "m_boss7"
+   ],
+   "job": 3,
+   "kind": "s"
+  },
+  {
+   "id": "m_boss9",
+   "name": "마력 관통",
+   "x": 8,
+   "y": -1,
+   "maxRank": 1,
+   "stat": "ignoreDef",
+   "perRank": 15,
+   "requires": [
+    "m_boss8"
+   ],
+   "job": 3,
+   "kind": "g"
+  },
+  {
+   "id": "m_eff0",
+   "name": "쿨타임 감소",
+   "x": 2,
+   "y": 1,
+   "maxRank": 3,
+   "stat": "cdPct",
+   "perRank": 1,
+   "requires": [
+    "mc_r"
+   ],
+   "job": 3,
+   "kind": "s"
+  },
+  {
+   "id": "m_eff1",
+   "name": "MP 소모 감소",
+   "x": 3,
+   "y": 2,
+   "maxRank": 3,
+   "stat": "mpCost",
+   "perRank": 3,
+   "requires": [
+    "m_eff0"
+   ],
+   "job": 3,
+   "kind": "s"
+  },
+  {
+   "id": "m_eff2",
+   "name": "쿨타임 감소",
+   "x": 4,
+   "y": 3,
+   "maxRank": 3,
+   "stat": "cdPct",
+   "perRank": 1,
+   "requires": [
+    "m_eff1"
+   ],
+   "job": 3,
+   "kind": "s"
+  },
+  {
+   "id": "m_eff3",
+   "name": "MP 소모 감소",
+   "x": 5,
+   "y": 4,
+   "maxRank": 2,
+   "stat": "mpCost",
+   "perRank": 3,
+   "requires": [
+    "m_eff2"
+   ],
+   "job": 3,
+   "kind": "s"
+  },
+  {
+   "id": "m_eff4",
+   "name": "쿨타임 감소",
+   "x": 4,
+   "y": 5,
+   "maxRank": 2,
+   "stat": "cdPct",
+   "perRank": 1,
+   "requires": [
+    "m_eff3"
+   ],
+   "job": 3,
+   "kind": "s"
+  },
+  {
+   "id": "m_eff5",
+   "name": "MP 소모 감소",
+   "x": 6,
+   "y": 5,
+   "maxRank": 2,
+   "stat": "mpCost",
+   "perRank": 3,
+   "requires": [
+    "m_eff3"
+   ],
+   "job": 3,
+   "kind": "s"
+  },
+  {
+   "id": "m_eff6",
+   "name": "효율 영창",
+   "x": 7,
+   "y": 6,
+   "maxRank": 1,
+   "stat": "mpCost",
+   "perRank": 10,
+   "requires": [
+    "m_eff5"
+   ],
+   "job": 3,
+   "stat2": "cdPct",
+   "perRank2": 5,
+   "kind": "g"
+  },
+  {
+   "id": "m_eff7",
+   "name": "쿨타임 감소",
+   "x": 6,
+   "y": 3,
+   "maxRank": 2,
+   "stat": "cdPct",
+   "perRank": 1,
+   "requires": [
+    "m_eff2"
+   ],
+   "job": 3,
+   "kind": "s"
+  },
+  {
+   "id": "m_eff8",
+   "name": "MP 소모 감소",
+   "x": 7,
+   "y": 2,
+   "maxRank": 2,
+   "stat": "mpCost",
+   "perRank": 3,
+   "requires": [
+    "m_eff7"
+   ],
+   "job": 3,
+   "kind": "s"
+  },
+  {
+   "id": "m_eff9",
+   "name": "지속 연장",
+   "x": 8,
+   "y": 1,
+   "maxRank": 1,
+   "stat": "buffDur",
+   "perRank": 30,
+   "requires": [
+    "m_eff8"
+   ],
+   "job": 3,
+   "kind": "g",
+   "desc": "버프 스킬 지속시간 +30% (매직 가드·원소 증폭·블레스 등)"
+  },
+  {
+   "id": "ma0",
+   "name": "원소 지식",
+   "x": -2,
+   "y": 0,
+   "maxRank": 1,
+   "stat": "dmgPct",
+   "perRank": 10,
+   "requires": [
+    "mc_l"
+   ],
+   "job": 3,
+   "stat2": "int",
+   "perRank2": 10,
+   "kind": "n",
+   "branch": 1
+  },
+  {
+   "id": "ma1",
+   "name": "집중 영창",
+   "x": -3,
+   "y": 0,
+   "maxRank": 1,
+   "stat": "critChance",
+   "perRank": 5,
+   "requires": [
+    "ma0"
+   ],
+   "job": 3,
+   "stat2": "critDmg",
+   "perRank2": 10,
+   "kind": "n",
+   "branch": 1
+  },
+  {
+   "id": "ma2",
+   "name": "광역 파괴",
+   "x": -4,
+   "y": 0,
+   "maxRank": 1,
+   "stat": "mobPct",
+   "perRank": 15,
+   "requires": [
+    "ma1"
+   ],
+   "job": 3,
+   "kind": "n",
+   "branch": 1
+  },
+  {
+   "id": "ma3",
+   "name": "불길 번짐",
+   "x": -5,
+   "y": 0,
+   "maxRank": 1,
+   "stat": "burnSpread",
+   "perRank": 1,
+   "requires": [
+    "ma2"
+   ],
+   "job": 3,
+   "kind": "n",
+   "desc": "화상 걸린 몹이 죽으면 주변 3칸 몹에게 화상이 옮겨붙음",
+   "branch": 1
+  },
+  {
+   "id": "ma4",
+   "name": "원소의 화신",
+   "x": -6,
+   "y": 0,
+   "maxRank": 1,
+   "stat": "burnDmg",
+   "perRank": 20,
+   "requires": [
+    "ma3"
+   ],
+   "job": 3,
+   "stat2": "mpPct",
+   "perRank2": 15,
+   "kind": "k",
+   "desc": "화상 걸린 몹에게 데미지 +20%, 최대 MP +15%",
+   "branch": 1
+  },
+  {
+   "id": "mh0",
+   "name": "신앙",
+   "x": 2,
+   "y": 0,
+   "maxRank": 1,
+   "stat": "healPct",
+   "perRank": 15,
+   "requires": [
+    "mc_r"
+   ],
+   "job": 3,
+   "stat2": "mpPct",
+   "perRank2": 10,
+   "kind": "n",
+   "branch": 2
+  },
+  {
+   "id": "mh1",
+   "name": "축복받은 손",
+   "x": 3,
+   "y": 0,
+   "maxRank": 1,
+   "stat": "healBuff",
+   "perRank": 10,
+   "requires": [
+    "mh0"
+   ],
+   "job": 3,
+   "kind": "n",
+   "desc": "내 힐을 받은 파티원은 5초 동안 데미지 +10%",
+   "branch": 2
+  },
+  {
+   "id": "mh2",
+   "name": "성스러운 빛",
+   "x": 4,
+   "y": 0,
+   "maxRank": 1,
+   "stat": "bossPct",
+   "perRank": 15,
+   "requires": [
+    "mh1"
+   ],
+   "job": 3,
+   "kind": "n",
+   "branch": 2
+  },
+  {
+   "id": "mh3",
+   "name": "신성 영역",
+   "x": 5,
+   "y": 0,
+   "maxRank": 1,
+   "stat": "holyAura",
+   "perRank": 10,
+   "requires": [
+    "mh2"
+   ],
+   "job": 3,
+   "kind": "n",
+   "desc": "내 주변 8칸 파티원 최대 HP +10%",
+   "branch": 2
+  },
+  {
+   "id": "mh4",
+   "name": "빛의 사도",
+   "x": 6,
+   "y": 0,
+   "maxRank": 1,
+   "stat": "healDmg",
+   "perRank": 30,
+   "requires": [
+    "mh3"
+   ],
+   "job": 3,
+   "kind": "k",
+   "desc": "힐 회복량의 30%만큼 주변 4칸 몹에게 빛 피해",
+   "branch": 2
   }
  ]
 }

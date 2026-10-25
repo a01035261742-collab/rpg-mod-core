@@ -99,7 +99,8 @@ public class PlayerData {
     public transient boolean quickShotReady, moving, loneOk;
     public transient int stillStacks;
     public transient long aimUntil, windVeilReadyAt;
-    public transient double lastX, lastZ;
+    public transient double lastX, lastZ, baseMp, holyVal;
+    public transient long lastAttack, holyUntil;
     /** 피격 시 확률 무적 (잠재능력): 이 시각까지 피해 없음 */
     public transient long invulUntil;
     /** 연속 베기: 다음 타 (0~2), 이어서 누를 수 있는 시각 */
@@ -166,8 +167,10 @@ public class PlayerData {
         double vitHp = Balance.hpPerVit * total(VIT) * (1 + bonus("vitHpPct") / 100.0);   // 단단한 피부
         double mh = (Balance.hpBase + Balance.hpPerLevel * level + vitHp + eq("hp")) * (1 + bonus("hpPct") / 100.0)
                 * (1 + bonus("giantHp") / 100.0)    // 거신: 최대 HP ×1.3
-                * (oathVal > 0 ? 1.05 : 1);          // 수호자의 맹세: +5%
-        double mm = (Balance.mpBase + Balance.mpPerLevel * level + Balance.mpPerInt * total(INT) + eq("mp")) * (1 + bonus("mpPct") / 100.0);
+                * (oathVal > 0 ? 1.05 : 1)           // 수호자의 맹세: +5%
+                * (1 + holyVal / 100.0);             // 신성 영역
+        baseMp = Balance.mpBase + Balance.mpPerLevel * level + Balance.mpPerInt * total(INT);   // 마력 과부하: 이걸 넘는 MP = 추가 MP
+        double mm = (baseMp + eq("mp")) * (1 + bonus("mpPct") / 100.0);
         boolean changed = mh != maxHp || mm != maxMp;
         maxHp = Math.max(1, mh); maxMp = Math.max(0, mm);
         if (hp > maxHp) { hp = maxHp; changed = true; }
@@ -277,6 +280,7 @@ public class PlayerData {
         b.writeDouble(critDamage() * 100.0);
         b.writeDouble(staminaBonus());
         b.writeDouble(rpg.core.combat.Combat.ignoreDef(this)); b.writeDouble(bonus("bossPct") + rpg.core.skill.PassiveEffects.extraBoss(this));
+        b.writeDouble(rpg.core.skill.PassiveEffects.overload(this));
         // 스킬
         b.writeVarInt(skillPoints); b.writeVarInt(passivePoints);
         b.writeVarInt(skills.size());

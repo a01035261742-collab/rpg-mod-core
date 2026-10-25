@@ -138,6 +138,13 @@ public class PassiveScreen extends Screen {
     }
 
     private List<Component> tip(Defs.Node n) {
+        List<Component> tip = tip0(n);
+        if (ClientData.job == 3)   // 마법사는 공격력 대신 마력
+            tip.replaceAll(c -> Component.literal(c.getString().replace("공격력", "마력")));
+        return tip;
+    }
+
+    private List<Component> tip0(Defs.Node n) {
         List<Component> tip = new ArrayList<>();
         String kind = switch (n.kind()) {
             case "g" -> " §b(보석)";
@@ -160,6 +167,7 @@ public class PassiveScreen extends Screen {
             if (!n.stat2().isEmpty()) sb.append(", ").append(String.format(Defs.statLabel(n.stat2()), Defs.fmt(n.perRank2() * r)));
             tip.add(Component.literal(sb.toString()));
         }
+        if (n.stat().equals("overloadMp") && r > 0) tip.add(Component.literal("§b지금 적용 중: 데미지 +" + String.format("%.1f", ClientData.overloadPct) + "%"));
         tip.add(Component.literal("§7" + r + " / " + n.maxRank()));
         if (!usable(n)) tip.add(Component.literal("§c" + (n.branch() == 1 ? "가디언" : "버서커") + " 전용"));
         else if (!Defs.unlocked(n, k -> ClientData.passives.getOrDefault(k, 0))) tip.add(Component.literal("§c이어진 칸을 먼저 찍어야 해요"));

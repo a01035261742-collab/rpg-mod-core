@@ -62,6 +62,18 @@ public final class PlayerEvents {
             keep.putInt("rpgWarriorReset", 1);
             sp.getPersistentData().put(net.minecraft.world.entity.player.Player.PERSISTED_NBT_TAG, keep);
         }
+        // 마법사 개편 (한 번만): 마법사는 스킬 포인트 + 패시브 포인트 전부 돌려받음
+        if (keep.getInt("rpgMageReset") < 1) {
+            if (d.job == 3) {
+                d.refundSkills();
+                d.passives.clear();
+                d.passivePoints = Math.max(0, (d.level - 1) * rpg.core.balance.Balance.passivePointsPerLevel);
+                sp.sendSystemMessage(net.minecraft.network.chat.Component.literal("[마법사 개편] 스킬·패시브 포인트를 전부 돌려받았어요. 스킬 창(L)·패시브 창(N)에서 다시 찍어주세요")
+                        .withStyle(net.minecraft.ChatFormatting.GOLD));
+            }
+            keep.putInt("rpgMageReset", 1);
+            sp.getPersistentData().put(net.minecraft.world.entity.player.Player.PERSISTED_NBT_TAG, keep);
+        }
         // 궁수 개편 (한 번만): 궁수는 스킬 포인트 + 패시브 포인트 전부 돌려받음
         if (keep.getInt("rpgArcherReset") < 1) {
             if (d.job == 2) {
@@ -143,7 +155,8 @@ public final class PlayerEvents {
             if (sp.isAlive() && d.hp > 0 && !d.isDown()) {
                 double hp0 = d.hp, mp0 = d.mp;
                 d.hp = Math.min(d.maxHp, d.hp + d.maxHp * Balance.hpRegenPct / 100.0 * (1 + d.bonus("hpRegenPct") / 100.0));
-                d.mp = Math.min(d.maxMp, d.mp + d.maxMp * Balance.mpRegenPct / 100.0 * (1 + d.bonus("mpRegenPct") / 100.0));
+                d.mp = Math.min(d.maxMp, d.mp + d.maxMp * Balance.mpRegenPct / 100.0 * (1 + d.bonus("mpRegenPct") / 100.0)
+                        * (d.bonus("meditation") > 0 && d.clock - d.lastAttack >= 60 ? 3 : 1));   // 명상: 3초 안 때리면 ×3
                 changed |= hp0 != d.hp || mp0 != d.mp;
             }
         }

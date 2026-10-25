@@ -81,7 +81,7 @@ public final class Skills {
         if (s == null || lv <= 0 || s.passive() || !available(d, s)) return;
         long now = p.level().getGameTime();
         if (now < d.cdEnd.getOrDefault(id, 0L)) return;
-        if (d.mp < s.mp(lv)) {
+        if (d.mp < mpCost(d, s, lv, now)) {
             p.displayClientMessage(Component.literal("MP가 부족해요").withStyle(ChatFormatting.BLUE), true);
             return;
         }
@@ -101,8 +101,17 @@ public final class Skills {
         RpgData.sync(p);
     }
 
+    /** 실제 MP 소모: 원소 증폭 +30%, MP 소모 감소 (최대 50%) */
+    public static double mpCost(PlayerData d, Defs.SkillDef s, int lv, long now) {
+        double m = s.mp(lv);
+        if (d.buff("elemental_amp", now)) m *= 1.3;
+        m *= 1 - Math.min(50, d.bonus("mpCost")) / 100.0;
+        return Math.round(m);
+    }
+
     private static void spend(PlayerData d, Defs.SkillDef s, int lv, long now) {
-        d.mp -= s.mp(lv);
+        d.mp -= mpCost(d, s, lv, now);
+        d.lastAttack = now;   // 명상: 공격하면 초기화
         if (d.bonus("quickShot") > 0 && !s.passive()) d.quickShotReady = true;   // 속사: 다음 평타 강화
         // 빠른 영창: 쿨타임 감소
         int cd = (int) Math.round(s.cooldown(lv) * 20 * Math.max(0.6, 1 - d.bonus("cdPct") / 100.0));   // 쿨타임 감소 최대 40%
@@ -122,7 +131,7 @@ public final class Skills {
         d.chargeSkill = null; d.chargeSlot = -1;
         Defs.SkillDef s = Defs.SKILLS.get(id);
         int lv = d.skills.getOrDefault(id, 0);
-        if (s == null || lv <= 0 || d.isDown() || !p.isAlive() || d.mp < s.mp(lv)) { RpgData.sync(p); return; }
+        if (s == null || lv <= 0 || d.isDown() || !p.isAlive() || d.mp < mpCost(d, s, lv, now)) { RpgData.sync(p); return; }
         if ("power_strike".equals(id)) JobSkills.releaseCharge(p, d, s, lv, held);
         else if ("charged_shot".equals(id)) JobSkills.chargedShot(p, d, s, lv, held);
         spend(d, s, lv, now);

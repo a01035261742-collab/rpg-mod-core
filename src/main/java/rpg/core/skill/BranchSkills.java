@@ -68,8 +68,19 @@ public final class BranchSkills {
             }
             case "trap" -> trap(p, d, s, lv, now);
             case "fireball" -> fireball(p, d, s, lv);
-            case "teleport" -> teleport(p, s, lv);
-            case "heal" -> healSkill(p, d, s, lv);
+            case "teleport" -> {
+                boolean ok = teleport(p, s, lv);
+                if (ok && d.bonus("tpDmg") > 0) { d.buffEnd.put("tp_dmg", now + 60); d.buffVal.put("tp_dmg", d.bonus("tpDmg")); }   // 순간 영창
+                yield ok;
+            }
+            case "heal" -> MageSkills.heal(p, d, s, lv);
+            case "chain_lightning" -> MageSkills.chainLightning(p, s, lv);
+            case "bless" -> MageSkills.bless(p, d, s, lv);
+            case "elemental_amp" -> {
+                WarriorSkills.burst(p, ParticleTypes.FLAME, SoundEvents.BLAZE_SHOOT, 0.7f);
+                MageSkills.anim(p, "elemental_amp");
+                yield buff(p, d, "elemental_amp", s.duration(), s.value(lv), 0, ParticleTypes.FLAME, SoundEvents.FIRECHARGE_USE);
+            }
             case "holy_arrow" -> holyArrow(p, s, lv);
             case "flurry" -> flurry(p, d, s, lv);
             case "knife_throw" -> knifeThrow(p, s, lv);
@@ -82,7 +93,7 @@ public final class BranchSkills {
     private static boolean buff(ServerPlayer p, PlayerData d, String id, double seconds, double v, double v2,
                                 net.minecraft.core.particles.SimpleParticleType fx, net.minecraft.sounds.SoundEvent snd) {
         long now = p.level().getGameTime();
-        d.buffEnd.put(id, now + Math.round(seconds * 20));
+        d.buffEnd.put(id, now + MageSkills.dur(d, seconds));   // 지속 연장 적용
         d.buffVal.put(id, v);
         d.buffVal2.put(id, v2);
         ServerLevel l = p.serverLevel();
