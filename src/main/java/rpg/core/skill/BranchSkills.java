@@ -323,6 +323,7 @@ public final class BranchSkills {
         double pct = s.value(lv);
         int bleedTicks = (int) Math.round(s.duration() * 20);
         int n = s.hits(lv);   // 레벨 오를수록 타수 3~6
+        ThiefSkills.anim(p, "flurry", "RELENTLESS_COMBO|RUSHING_TEMPO1|DAGGER_AUTO1");   // 연속 찌르기 모션 (처음 한 번)
         for (int i = 0; i < n; i++) {
             Runnable hit = () -> {
                 ServerLevel l = p.serverLevel();
@@ -337,7 +338,6 @@ public final class BranchSkills {
                 Vec3 c = p.position().add(look.scale(1.5));
                 l.sendParticles(ParticleTypes.CRIT, c.x, p.getY() + 1.1, c.z, 8, 0.4, 0.3, 0.4, 0.2);
                 l.playSound(null, p.blockPosition(), SoundEvents.PLAYER_ATTACK_STRONG, SoundSource.PLAYERS, 0.6f, 1.5f);
-                p.swing(net.minecraft.world.InteractionHand.MAIN_HAND, true);
             };
             if (i == 0) hit.run(); else JobSkills.later(p, i * 3, hit);
         }
