@@ -226,7 +226,8 @@ public final class RpgHud {
         if (hover != null) {
             java.util.List<net.minecraft.network.chat.Component> tip = new java.util.ArrayList<>();
             String[] kinds = {"스킬", "파티원 버프", "패시브 트리", "재사용 대기"};
-            tip.add(net.minecraft.network.chat.Component.literal(hover.name()).withStyle(st -> st.withColor(KIND_COL[Math.max(0, Math.min(3, hover.kind()))] & 0xFFFFFF)));
+            final int hc = KIND_COL[Math.max(0, Math.min(3, hover.kind()))] & 0xFFFFFF;
+            tip.add(net.minecraft.network.chat.Component.literal(hover.name()).withStyle(st -> st.withColor(hc)));
             tip.add(net.minecraft.network.chat.Component.literal("§7" + kinds[Math.max(0, Math.min(3, hover.kind()))] + (hover.extra().isEmpty() ? "" : "  §f" + hover.extra())));
             if (hover.left() < 900_000_000) tip.add(net.minecraft.network.chat.Component.literal("§7남은 시간 " + (ClientData.left(hover.left()) + 19) / 20 + "초"));
             g.renderComponentTooltip(font, tip, hx, hy);
