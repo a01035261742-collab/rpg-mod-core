@@ -430,6 +430,12 @@ public final class Raids {
             r.boss = null;
             r.clearedAt = s.overworld().getGameTime();
             say(s, r.members, "레이드 클리어! 30초 뒤 단말기로 돌아가요 (드롭 주우세요)");
+            Component btn = Component.literal("[레이드] ").withStyle(ChatFormatting.LIGHT_PURPLE)
+                    .append(Component.literal("[지금 나가기]").withStyle(st -> st.withColor(ChatFormatting.GREEN).withUnderlined(true)
+                            .withClickEvent(new net.minecraft.network.chat.ClickEvent(net.minecraft.network.chat.ClickEvent.Action.RUN_COMMAND, "/rpg 레이드 나가기"))
+                            .withHoverEvent(new net.minecraft.network.chat.HoverEvent(net.minecraft.network.chat.HoverEvent.Action.SHOW_TEXT, Component.literal("다 주웠으면 바로 단말기로")))))
+                    .append(Component.literal("  또는 /rpg 레이드 나가기").withStyle(ChatFormatting.GRAY));
+            for (UUID id : r.members) { ServerPlayer m = s.getPlayerList().getPlayer(id); if (m != null) m.sendSystemMessage(btn); }
             return;
         }
     }
@@ -451,8 +457,10 @@ public final class Raids {
         if (r == null) { p.sendSystemMessage(Component.literal("레이드 중이 아니에요").withStyle(ChatFormatting.GRAY)); return; }
         r.members.remove(p.getUUID());
         if (r.bar != null) r.bar.removePlayer(p);
+        boolean cleared = r.clearedAt >= 0;
+        if (cleared) addClear(p, r.raid);   // 클리어 뒤 카운트 중에 먼저 나가도 클리어 기록
         toGate(p, r.gate);
-        p.sendSystemMessage(Component.literal("[레이드] 나왔어요").withStyle(ChatFormatting.GRAY));
+        p.sendSystemMessage(Component.literal(cleared ? "[레이드] 클리어! 단말기로 나왔어요" : "[레이드] 나왔어요").withStyle(cleared ? ChatFormatting.GOLD : ChatFormatting.GRAY));
         if (r.members.isEmpty()) finish(p.getServer(), r, "", false);
     }
 

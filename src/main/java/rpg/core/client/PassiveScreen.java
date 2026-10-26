@@ -290,10 +290,9 @@ public class PassiveScreen extends Screen {
         for (Defs.Node n : nodes) {
             int x = nx(n), y = ny(n), r = rad(n);
             if (x < ax - r - 4 || x > ax + aw + r + 4 || y < ay - r - 4 || y > ay + ah + r + 4) continue;
-            if (x + r >= px + 8 && x - r <= px + 158 && y + r >= py + ph - 82 && y - r <= py + ph - 8) continue;   // 왼쪽 아래 설명 칸 뒤는 안 그림 (겹침)
-            drawNode(g, n, x, y, r);
+            drawNode(g, n, x, y, r);   // 왼쪽 아래 설명 칸 뒤로 가려짐 (설명 칸이 더 위 z 에 불투명하게 그려짐)
             if (!q.isEmpty() && matches(n, q) && (System.currentTimeMillis() / 300) % 2 == 0) ring(g, x, y, r + 5, 2, 0xFFFFFFFF);
-            if (inArea && (mx - x) * (mx - x) + (my - y) * (my - y) <= (r + 2) * (r + 2)) hover = n;
+            if (inArea && !overLegend(mx, my) && (mx - x) * (mx - x) + (my - y) * (my - y) <= (r + 2) * (r + 2)) hover = n;
         }
         return hover;
     }
@@ -359,8 +358,13 @@ public class PassiveScreen extends Screen {
         g.fill(x + 1, y + 1, x + w - 1, y + h - 1, fill);
     }
 
+    /** 마우스가 왼쪽 아래 설명 칸 위 (그 뒤 칸은 고를 수 없음) */
+    private boolean overLegend(int mx, int my) {
+        return mx >= px + 8 && mx <= px + 158 && my >= py + ph - 82 && my <= py + ph - 8;
+    }
+
     private void legend(GuiGraphics g) {
-        g.pose().pushPose(); g.pose().translate(0, 0, 350);   // 칸 아이콘·랭크 글자보다 위에
+        g.pose().pushPose(); g.pose().translate(0, 0, 400);   // 칸 아이콘·랭크 글자보다 위에 (칸은 뒤로 가려짐)
         legendBody(g);
         g.flush();
         g.pose().popPose();
@@ -368,7 +372,7 @@ public class PassiveScreen extends Screen {
 
     private void legendBody(GuiGraphics g) {
         int lx = px + 8, ly = py + ph - 82, w = 150;
-        box(g, lx, ly, w, 74, 0xF012141E, 0xFF2C3042);
+        box(g, lx, ly, w, 74, 0xFF12141E, 0xFF2C3042);
         int cx = lx + 12, cy = ly + 12;
         ring(g, cx, cy, 6, 2, 0xFF343850); arc(g, cx, cy, 6, 2, 0.6, GOLD);
         g.drawString(font, "스탯 칸 (고리 = 랭크)", lx + 24, cy - 4, 0xFFD7D7E4, false);
@@ -536,7 +540,7 @@ public class PassiveScreen extends Screen {
     public boolean mouseReleased(double mx, double my, int button) {
         if (dragging && button == 0) {
             dragging = false;
-            if (dragDist < 4) {
+            if (dragDist < 4 && !overLegend((int) mx, (int) my)) {
                 for (Defs.Node n : nodes) {
                     int r = rad(n), x = nx(n), y = ny(n);
                     if ((mx - x) * (mx - x) + (my - y) * (my - y) <= (r + 2) * (r + 2)) {

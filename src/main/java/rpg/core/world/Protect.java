@@ -27,6 +27,8 @@ public final class Protect {
 
     @SubscribeEvent
     public static void place(BlockEvent.EntityPlaceEvent e) {
+        // 레이드 단말기: OP 는 서바이벌이어도 설치 가능
+        if (e.getEntity() instanceof Player op && op.hasPermissions(2) && e.getPlacedBlock().is(ModBlocks.RAID_GATE.get())) return;
         if (e.getEntity() instanceof Player p ? blocked(p) : e.getLevel() instanceof net.minecraft.world.level.Level l && RpgWorld.is(l))
             e.setCanceled(true);
     }
