@@ -62,6 +62,12 @@ public final class PlayerEvents {
             keep.putInt("rpgWarriorReset", 1);
             sp.getPersistentData().put(net.minecraft.world.entity.player.Player.PERSISTED_NBT_TAG, keep);
         }
+        // 트리 무료 초기화 (한 번만): 이미 2차인 사람한테 1회
+        if (keep.getInt("rpgTreeResetV1") < 1) {
+            if (d.branch > 0 && d.freeTreeReset == 0) d.freeTreeReset = 1;
+            keep.putInt("rpgTreeResetV1", 1);
+            sp.getPersistentData().put(net.minecraft.world.entity.player.Player.PERSISTED_NBT_TAG, keep);
+        }
         // 도적 개편 (한 번만): 도적은 스킬 포인트 + 패시브 포인트 전부 돌려받음
         if (keep.getInt("rpgThiefReset") < 1) {
             if (d.job == 4) {

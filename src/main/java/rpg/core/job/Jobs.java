@@ -140,6 +140,7 @@ public final class Jobs {
         give(p, new ItemStack(ModItems.DEEP_BLUE_POTION.get(), Balance.jobReward2Potions));
         p.serverLevel().sendParticles(ParticleTypes.TOTEM_OF_UNDYING, p.getX(), p.getY() + 1, p.getZ(), 80, 0.5, 1, 0.5, 0.5);
         p.level().playSound(null, p.blockPosition(), SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundSource.PLAYERS, 0.8f, 1f);
+        d.freeTreeReset += 1;   // 2차 전직: 무료 트리 초기화 1회
         p.sendSystemMessage(Component.literal("2차 전직 완료! 이제 " + branchName(family, d.branch) + "예요. ").withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD)
                 .append(Component.literal("스킬 창(L)에서 새 스킬을 배울 수 있어요").withStyle(ChatFormatting.YELLOW)));
         RpgData.sync(p);

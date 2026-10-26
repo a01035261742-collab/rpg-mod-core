@@ -39,6 +39,21 @@ public final class Power {
         return v;
     }
 
+    /** 트리 칸 하나 더 찍으면 전투력 차이 (찍을 수 없는 칸이면 0) */
+    public static long nodeDelta(ServerPlayer p, String nodeId) {
+        PlayerData d = RpgData.get(p);
+        var n = rpg.core.skill.Defs.NODES.get(nodeId);
+        if (n == null || !rpg.core.skill.Defs.inTree(n, d.job, d.branch)) return 0;
+        int cur = d.passives.getOrDefault(nodeId, 0);
+        if (cur >= n.maxRank()) return 0;
+        long now = of(p);
+        d.passives.put(nodeId, cur + 1);
+        long after;
+        try { after = of(p); }
+        finally { if (cur == 0) d.passives.remove(nodeId); else d.passives.put(nodeId, cur); d.recalc(); }
+        return after - now;
+    }
+
     /** 툴팁 비교 결과: state 0 = 비교값, 1 = 착용 중, 2 = 착용 불가(why) */
     public record Cmp(long delta, int state, String why) {}
 

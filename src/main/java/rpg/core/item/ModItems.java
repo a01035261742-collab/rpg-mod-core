@@ -19,6 +19,14 @@ public final class ModItems {
     public static final RegistryObject<Item> STAT_RESET_SCROLL = ITEMS.register("stat_reset_scroll",
             () -> new StatResetScroll(new Item.Properties().stacksTo(16).rarity(Rarity.RARE)));
 
+    public static final RegistryObject<Item> PASSIVE_RESET_SCROLL = ITEMS.register("passive_reset_scroll",
+            () -> new Item(new Item.Properties().stacksTo(16).rarity(Rarity.EPIC)) {
+                @Override public void appendHoverText(net.minecraft.world.item.ItemStack s, @org.jetbrains.annotations.Nullable net.minecraft.world.level.Level l,
+                                                      java.util.List<Component> tip, net.minecraft.world.item.TooltipFlag f) {
+                    tip.add(Component.literal("패시브 트리(N) → [초기화] 할 때 1장 씀").withStyle(net.minecraft.ChatFormatting.GRAY));
+                }
+            });
+
     public static final RegistryObject<Item> RED_POTION = potion("red_potion", Rarity.COMMON);
     public static final RegistryObject<Item> ORANGE_POTION = potion("orange_potion", Rarity.COMMON);
     public static final RegistryObject<Item> WHITE_POTION = potion("white_potion", Rarity.COMMON);

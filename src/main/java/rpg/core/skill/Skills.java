@@ -69,6 +69,30 @@ public final class Skills {
         RpgData.sync(p);
     }
 
+    /** 트리 초기화: 무료 횟수 먼저, 없으면 트리 초기화 주문서 1장 */
+    public static void resetTree(ServerPlayer p) {
+        PlayerData d = RpgData.get(p);
+        int spent = 0;
+        for (int v : d.passives.values()) spent += v;
+        if (spent <= 0) { p.displayClientMessage(Component.literal("돌려받을 패시브 포인트가 없어요").withStyle(ChatFormatting.GRAY), true); return; }
+        String how;
+        if (d.freeTreeReset > 0) { d.freeTreeReset--; how = "무료 초기화 사용"; }
+        else {
+            var item = rpg.core.item.ModItems.PASSIVE_RESET_SCROLL.get();
+            int slot = -1;
+            for (int i = 0; i < p.getInventory().getContainerSize(); i++) if (p.getInventory().getItem(i).is(item)) { slot = i; break; }
+            if (slot < 0 && !p.getAbilities().instabuild) { p.displayClientMessage(Component.literal("트리 초기화 주문서가 필요해요 (상점)").withStyle(ChatFormatting.RED), true); return; }
+            if (slot >= 0 && !p.getAbilities().instabuild) p.getInventory().getItem(slot).shrink(1);
+            how = "트리 초기화 주문서 사용";
+        }
+        d.passives.clear();
+        d.passivePoints += spent;
+        d.recalc();
+        RpgData.sync(p);
+        p.level().playSound(null, p.blockPosition(), net.minecraft.sounds.SoundEvents.ENCHANTMENT_TABLE_USE, net.minecraft.sounds.SoundSource.PLAYERS, 1f, 1.2f);
+        p.sendSystemMessage(Component.literal("패시브 트리를 초기화했어요 (" + how + "). 포인트 " + spent + " 돌려받음").withStyle(ChatFormatting.GREEN));
+    }
+
     // ───────── 스킬 쓰기 ─────────
     public static void use(ServerPlayer p, int slot) {
         if (slot < 0 || slot >= PlayerData.SLOTS || !p.isAlive()) return;

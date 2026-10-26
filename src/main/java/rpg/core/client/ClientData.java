@@ -29,7 +29,7 @@ public final class ClientData {
     public static final java.util.List<Buff> BUFFS = new java.util.ArrayList<>();
     public static boolean charging;
     public static int chargeTicks;
-    public static int branch, pendingBranch;
+    public static int branch, pendingBranch, freeTreeReset;
     public static boolean trialCleared;
     public static double shield;
 
@@ -46,6 +46,7 @@ public final class ClientData {
         staminaBonus = b.readDouble();
         ignoreDef = b.readDouble(); bossPct = b.readDouble();
         overloadPct = b.readDouble();
+        freeTreeReset = b.readVarInt();
         skillPoints = b.readVarInt(); passivePoints = b.readVarInt();
         skills.clear();
         int n = b.readVarInt();

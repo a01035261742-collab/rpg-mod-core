@@ -258,5 +258,6 @@
  "item.rpgcore.guardian_pendant": "Guardian Pendant",
  "item.rpgcore.guardian_cape": "Guardian Cape",
  "block.rpgcore.world_portal": "World Portal",
- "block.rpgcore.shared_stash": "Shared Stash"
+ "block.rpgcore.shared_stash": "Shared Stash",
+ "item.rpgcore.passive_reset_scroll": "Passive Tree Reset Scroll"
 }

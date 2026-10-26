@@ -112,6 +112,8 @@ public final class Net {
                 .encoder(DailyAction::encode).decoder(DailyAction::new).consumerMainThread(DailyAction::handle).add();
         CH.messageBuilder(AimLine.class, id++, NetworkDirection.PLAY_TO_CLIENT)
                 .encoder(AimLine::encode).decoder(AimLine::new).consumerMainThread(AimLine::handle).add();
+        CH.messageBuilder(NodePower.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(NodePower::encode).decoder(NodePower::new).consumerMainThread(NodePower::handle).add();
         CH.messageBuilder(MarkerSync.class, id++, NetworkDirection.PLAY_TO_CLIENT)
                 .encoder(MarkerSync::encode).decoder(MarkerSync::new).consumerMainThread(MarkerSync::handle).add();
         CH.messageBuilder(WorldChoice.class, id++, NetworkDirection.PLAY_TO_CLIENT)
@@ -122,6 +124,16 @@ public final class Net {
                 .encoder(PowerReq::encode).decoder(PowerReq::new).consumerMainThread(PowerReq::handle).add();
         CH.messageBuilder(PowerRes.class, id++, NetworkDirection.PLAY_TO_CLIENT)
                 .encoder(PowerRes::encode).decoder(PowerRes::new).consumerMainThread(PowerRes::handle).add();
+    }
+
+    // ───────── 트리 칸 전투력 미리보기 결과 ─────────
+    public record NodePower(String node, long delta) {
+        NodePower(FriendlyByteBuf b) { this(b.readUtf(64), b.readLong()); }
+        void encode(FriendlyByteBuf b) { b.writeUtf(node, 64); b.writeLong(delta); }
+        void handle(Supplier<NetworkEvent.Context> ctx) {
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> rpg.core.client.PassiveScreen.power(node, delta));
+            ctx.get().setPacketHandled(true);
+        }
     }
 
     // ───────── /rpg 보기 표시 ─────────
@@ -764,6 +776,13 @@ public final class Net {
             ServerPlayer p = ctx.get().getSender();
             if (p != null) {
                 if (kind == 0) rpg.core.skill.Skills.learn(p, id);
+                else if (kind == 2) rpg.core.skill.Skills.resetTree(p);                   // 트리 초기화
+                else if (kind == 3) {                                                      // 트리 칸 전투력 미리보기
+                    long[] r = POWER_RATE.computeIfAbsent(p.getUUID(), k -> new long[2]);
+                    long sec = p.level().getGameTime() / 20;
+                    if (r[0] != sec) { r[0] = sec; r[1] = 0; }
+                    if (++r[1] <= 20) CH.send(PacketDistributor.PLAYER.with(() -> p), new NodePower(id, rpg.core.equip.Power.nodeDelta(p, id)));
+                }
                 else rpg.core.skill.Skills.passiveUp(p, id);
             }
             ctx.get().setPacketHandled(true);

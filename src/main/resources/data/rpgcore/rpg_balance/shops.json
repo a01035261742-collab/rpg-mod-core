@@ -21,6 +21,10 @@
      3000
     ],
     [
+     "passive_reset_scroll",
+     50000
+    ],
+    [
      "scroll#watk#0",
      2000
     ],
@@ -289,6 +293,7 @@
   "red_potion": 4,
   "blue_potion": 5,
   "stat_reset_scroll": 500,
+  "passive_reset_scroll": 5000,
   "warrior_sword_1": 15,
   "archer_bow_1": 15,
   "mage_staff_1": 15,

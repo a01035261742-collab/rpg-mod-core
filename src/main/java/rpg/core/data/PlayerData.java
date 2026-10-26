@@ -24,6 +24,8 @@ public class PlayerData {
     public int job;          // 0 초보자, 1 전사 2 궁수 3 마법사 4 도적
     /** 2차 전직 갈래 (0 = 아직, 1·2 = 계열 안 갈래) */
     public int branch;
+    /** 무료 트리 초기화 남은 횟수 (2차 전직 때 1) */
+    public int freeTreeReset;
     /** 고른 갈래 (시련 중, 0 = 안 고름) · 교관의 시련 통과했나 */
     public int pendingBranch;
     public boolean trialCleared;
@@ -220,6 +222,7 @@ public class PlayerData {
         CompoundTag t = new CompoundTag();
         t.putInt("level", level); t.putLong("exp", exp); t.putIntArray("stats", stats.clone());
         t.putInt("sp", statPoints); t.putInt("job", job); t.putLong("gold", gold);
+        t.putInt("freeTreeReset", freeTreeReset);
         t.putInt("branch", branch); t.putInt("pendingBranch", pendingBranch); t.putBoolean("trialCleared", trialCleared);
         t.putDouble("hp", hp); t.putDouble("mp", mp);
         t.putInt("skp", skillPoints); t.putInt("pp", passivePoints);
@@ -246,6 +249,7 @@ public class PlayerData {
         int[] s = t.getIntArray("stats");
         for (int i = 0; i < N; i++) stats[i] = i < s.length ? s[i] : start(i);
         statPoints = t.getInt("sp"); job = t.getInt("job"); gold = t.getLong("gold");
+        freeTreeReset = t.getInt("freeTreeReset");
         branch = t.getInt("branch"); pendingBranch = t.getInt("pendingBranch"); trialCleared = t.getBoolean("trialCleared");
         hp = t.getDouble("hp"); mp = t.getDouble("mp");
         skillPoints = t.getInt("skp"); passivePoints = t.getInt("pp");
@@ -284,6 +288,7 @@ public class PlayerData {
         b.writeDouble(staminaBonus());
         b.writeDouble(rpg.core.combat.Combat.ignoreDef(this)); b.writeDouble(bonus("bossPct") + rpg.core.skill.PassiveEffects.extraBoss(this));
         b.writeDouble(rpg.core.skill.PassiveEffects.overload(this));
+        b.writeVarInt(freeTreeReset);
         // 스킬
         b.writeVarInt(skillPoints); b.writeVarInt(passivePoints);
         b.writeVarInt(skills.size());
