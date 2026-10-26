@@ -323,8 +323,8 @@ public final class BranchSkills {
         double pct = s.value(lv);
         int bleedTicks = (int) Math.round(s.duration() * 20);
         int n = s.hits(lv);   // 레벨 오를수록 타수 3~6
-        ThiefSkills.anim(p, "flurry", "RELENTLESS_COMBO|RUSHING_TEMPO1|DAGGER_AUTO1");   // 연속 찌르기 모션 (처음 한 번)
         for (int i = 0; i < n; i++) {
+            final int k = i;
             Runnable hit = () -> {
                 ServerLevel l = p.serverLevel();
                 Vec3 look = flatLook(p);
@@ -335,6 +335,8 @@ public final class BranchSkills {
                     CombatEvents.skillHit(p, m, pct);
                     // (출혈 삭제: 0.37.3)
                 }
+                if (k % 2 == 0)   // 2타마다 짧은 찌르기 모션 번갈아 (긴 모션에 묶여 못 움직이던 문제)
+                    ThiefSkills.anim(p, "flurry", (k / 2) % 2 == 0 ? "DAGGER_AUTO1|SWORD_AUTO1" : "DAGGER_AUTO2|SWORD_AUTO2");
                 Vec3 c = p.position().add(look.scale(1.5));
                 l.sendParticles(ParticleTypes.CRIT, c.x, p.getY() + 1.1, c.z, 8, 0.4, 0.3, 0.4, 0.2);
                 l.playSound(null, p.blockPosition(), SoundEvents.PLAYER_ATTACK_STRONG, SoundSource.PLAYERS, 0.6f, 1.5f);
