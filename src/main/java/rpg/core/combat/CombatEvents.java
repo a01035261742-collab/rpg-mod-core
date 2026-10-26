@@ -447,10 +447,10 @@ public final class CombatEvents {
         // 연속 처치 콤보 (골드 주는 몹만, 보스방 밖에서만): 10초 안에 다음 처치
         long now = killer.level().getGameTime();
         if (m.gold > 0 && !Boss.inArena(killer)) {
-            d.combo = now < d.comboUntil ? d.combo + 1 : 1;
-            d.comboUntil = now + 200;
-            if (d.combo >= 10 && d.combo % 10 == 0)
-                killer.displayClientMessage(net.minecraft.network.chat.Component.literal(d.combo + " 콤보! 골드 +" + d.comboGoldPct(now) + "%")
+            d.killCombo = now < d.killComboUntil ? d.killCombo + 1 : 1;
+            d.killComboUntil = now + 200;
+            if (d.killCombo >= 10 && d.killCombo % 10 == 0)
+                killer.displayClientMessage(net.minecraft.network.chat.Component.literal(d.killCombo + " 콤보! 골드 +" + d.comboGoldPct(now) + "%")
                         .withStyle(net.minecraft.ChatFormatting.GOLD), true);
         }
         rpg.core.loot.Drops.roll(mob, m, killer, d);   // 드롭은 막타 기준 (골드는 주머니로, 콤보 보너스 포함)

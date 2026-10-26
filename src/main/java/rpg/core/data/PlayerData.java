@@ -79,8 +79,8 @@ public class PlayerData {
     // 다운·부활 (저장 안 함)
     public long downEnd;              // 0 = 다운 아님
     /** 연속 처치 콤보 (10초 안에 다음 처치), 10콤보마다 골드 +10% (최대 +50%) */
-    public transient int combo;
-    public transient long comboUntil;
+    public transient int killCombo;
+    public transient long killComboUntil;
     /** 거래로 받은 골드 - 준 골드 (업적 '부자'는 이걸 뺀 골드로 판정) */
     public long tradeNet;
     public java.util.UUID reviver;
@@ -89,7 +89,7 @@ public class PlayerData {
     public boolean forceDie;
 
     public boolean isDown() { return downEnd > 0; }
-    public int comboGoldPct(long now) { return now < comboUntil ? Math.min(50, combo / 10 * 10) : 0; }
+    public int comboGoldPct(long now) { return now < killComboUntil ? Math.min(50, killCombo / 10 * 10) : 0; }
 
     // 계산값 (저장 안 함)
     public double maxHp = 1, maxMp = 1;
