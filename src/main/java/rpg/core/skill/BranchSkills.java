@@ -62,9 +62,9 @@ public final class BranchSkills {
             case "sniping" -> ArcherSkills.sniping(p, d, s, lv, now);
             case "mark_shot" -> ArcherSkills.markShot(p, s, lv);
             case "hunt_instinct" -> {
-                WarriorSkills.burst(p, ParticleTypes.HAPPY_VILLAGER, SoundEvents.WOLF_HOWL, 1.3f);
+                WarriorSkills.burst(p, ParticleTypes.HAPPY_VILLAGER, SoundEvents.GOAT_HORN_SOUND_VARIANTS.get(0).value(), 1.0f);   // 사냥 나팔
                 ArcherSkills.anim(p, "hunt_instinct", ArcherSkills.AIM);
-                yield buff(p, d, "hunt_instinct", s.duration(), s.value(lv), s.value2(lv), ParticleTypes.HAPPY_VILLAGER, SoundEvents.ARROW_HIT_PLAYER);
+                yield buff(p, d, "hunt_instinct", s.duration(), s.value(lv), s.value2(lv), ParticleTypes.HAPPY_VILLAGER, SoundEvents.ARMOR_EQUIP_LEATHER);
             }
             case "trap" -> trap(p, d, s, lv, now);
             case "fireball" -> fireball(p, d, s, lv);
@@ -540,8 +540,8 @@ public final class BranchSkills {
             }
             default -> {   // mist
                 if (now % 4 == 0) l.sendParticles(MIST, f.pos.x, f.pos.y + 0.6, f.pos.z, 12, f.r / 2, 0.5, f.r / 2, 0);
-                if (now % 20 == 0) for (Mob m : mobsAround(l, f.pos, f.r)) {
-                    CombatEvents.fixedHit(f.owner, m, f.a);
+                if (now % 10 == 0) for (Mob m : mobsAround(l, f.pos, f.r)) {   // 독 상태이상 (안에 있는 동안 계속 갱신)
+                    CombatEvents.dot(f.owner, m, "poison", f.a, 60);
                     MobData md = Combat.mob(m);
                     if (md != null) md.slow(f.b, now, now + 25);
                 }

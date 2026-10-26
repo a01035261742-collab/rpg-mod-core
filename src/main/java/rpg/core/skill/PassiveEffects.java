@@ -226,6 +226,11 @@ public final class PassiveEffects {
                 MobData md = Combat.mob(m);
                 if (md != null && !Boss.isBoss(md)) md.slow(20, now, now + 15);
             }
+        if (d.bonus("bloodFeast") > 0) {   // 피의 향연: 주변 8칸 출혈 몹 수
+            int n = 0;
+            for (Mob m : BranchSkills.mobsAround(l, p.position(), 8)) if (CombatEvents.dotDmg(m, "bleed") > 0 && ++n >= 5) break;
+            d.bleedNear = n;
+        } else d.bleedNear = 0;
         // 도발의 대가: 나를 노리는(도발) 몹 수
         if (d.bonus("tauntDmg") > 0) {
             int n = 0;
@@ -280,6 +285,7 @@ public final class PassiveEffects {
         v += d.buffV("tp_dmg", now);           // 순간 영창
         v += d.buffV("blessed_hand", now);     // 축복받은 손
         if (loneAssassin(d)) v += 25;           // 고독한 암살자
+        v += Math.min(25, d.bleedNear * d.bonus("bloodFeast"));   // 피의 향연
         return v;
     }
 

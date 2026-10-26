@@ -3418,19 +3418,19 @@
   },
   {
    "id": "tu6",
-   "name": "그림자 일격",
+   "name": "피의 향연",
    "x": 0,
    "y": -6,
    "maxRank": 1,
-   "stat": "backDmg",
-   "perRank": 25,
+   "stat": "bloodFeast",
+   "perRank": 5,
    "requires": [
     "tu4",
     "tu5"
    ],
    "job": 4,
    "kind": "k",
-   "desc": "몹 등 뒤에서 때리면 데미지 +25%"
+   "desc": "주변 8칸에 출혈 걸린 몹 1마리당 데미지 +5% (최대 +25%)"
   },
   {
    "id": "td0",

@@ -183,7 +183,7 @@ public final class Boss {
     }
 
     private static String barName(MobData m, Def def) {
-        return (def.bar().isEmpty() ? m.name : def.bar()) + " Lv." + m.level;
+        return (def.bar().isEmpty() ? m.name : def.bar()) + " Lv." + m.level + " · 방어율 " + Math.round(m.defRate) + "%";
     }
 
     private static boolean valid(Player p) {

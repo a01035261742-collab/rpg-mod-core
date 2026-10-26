@@ -31,12 +31,14 @@ public final class ArcherSkills {
         anim(p, "sniping", AIM);   // 조준 모션
         BranchSkills.task(p, t -> {
             if (t < aim) {   // 조준선
-                if (t % 2 == 0) {
-                    Vec3 eye = p.getEyePosition(), dir = JobSkills.aimDir(p);
-                    for (int i = 2; i <= 14; i += 2) {
+                if (t % 2 == 0) {   // 촘촘한 일직선 (0.2칸 간격), 쏘기 직전엔 하얗게
+                    Vec3 eye = p.getEyePosition().add(0, -0.1, 0), dir = JobSkills.aimDir(p);
+                    boolean ready = t >= aim - 4;
+                    var dust = new net.minecraft.core.particles.DustParticleOptions(
+                            ready ? new org.joml.Vector3f(1f, 1f, 1f) : new org.joml.Vector3f(1f, 0.15f, 0.15f), 0.35f);
+                    for (double i = 1; i <= 14; i += 0.2) {
                         Vec3 q = eye.add(dir.scale(i));
-                        l.sendParticles(p, new net.minecraft.core.particles.DustParticleOptions(new org.joml.Vector3f(1f, 0.2f, 0.2f), 0.6f),
-                                true, q.x, q.y, q.z, 1, 0, 0, 0, 0);
+                        l.sendParticles(p, dust, true, q.x, q.y, q.z, 1, 0, 0, 0, 0);
                     }
                 }
                 if (t == aim - 4) l.playSound(null, p.blockPosition(), SoundEvents.CROSSBOW_LOADING_END, SoundSource.PLAYERS, 1f, 1.2f);

@@ -95,7 +95,7 @@ public class PlayerData {
     public transient double atkSpeedPct, warcryVal, oathVal;
     public transient long crisisReadyAt, warcryUntil, oathUntil;
     public transient boolean guardNear;
-    public transient int tauntCount;
+    public transient int tauntCount, bleedNear;
     public transient boolean quickShotReady, moving, loneOk;
     public transient int stillStacks;
     public transient long aimUntil, windVeilReadyAt;
