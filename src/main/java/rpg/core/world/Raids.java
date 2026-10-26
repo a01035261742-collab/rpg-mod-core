@@ -42,6 +42,8 @@ public final class Raids {
     // ───────── 저장: 레이드 정의 ─────────
     public static final class Def {
         public String name; public BlockPos gate; public final List<BlockPos> rooms = new ArrayList<>(); public int minLevel;
+        /** 보스 키 (mobs.json). 있으면 방 위치 = 경기장 중앙, 들어가면 소환 */
+        public String boss = "";
     }
 
     public static final class Data extends SavedData {
@@ -55,6 +57,7 @@ public final class Raids {
                 for (BlockPos b : d.rooms) rooms.add(LongTag.valueOf(b.asLong()));
                 r.put("rooms", rooms);
                 r.putInt("minLevel", d.minLevel);
+                r.putString("boss", d.boss);
                 all.put(d.name, r);
             }
             t.put("raids", all);
@@ -69,6 +72,7 @@ public final class Raids {
                 if (r.contains("gate")) def.gate = BlockPos.of(r.getLong("gate"));
                 for (var x : r.getList("rooms", 4)) def.rooms.add(BlockPos.of(((LongTag) x).getAsLong()));
                 def.minLevel = r.getInt("minLevel");
+                def.boss = r.getString("boss");
                 d.raids.put(k, def);
             }
             return d;
@@ -92,6 +96,7 @@ public final class Raids {
     }
     private static final class Run {
         String raid; int room; final Set<UUID> members = new HashSet<>(); long end; ServerBossEvent bar;
+        UUID boss; long clearedAt = -1;
     }
     private static final Map<UUID, Ready> READY = new HashMap<>();   // 파티장 → 준비 확인
     private static final List<Run> RUNS = new ArrayList<>();
@@ -129,6 +134,14 @@ public final class Raids {
         def.gate = at.immutable();
         data(p.getServer()).setDirty();
         return "레이드 [" + name + "] 입구를 앞에 놓았어요 (" + at.toShortString() + ")";
+    }
+
+    public static String setBoss(MinecraftServer s, String name, String boss) {
+        Def def = def(s, name, true);
+        if (!boss.equals("없음") && !boss.equals("none") && !rpg.core.combat.Boss.DEFS.containsKey(boss)) return "없는 보스: " + boss;
+        def.boss = boss.equals("없음") || boss.equals("none") ? "" : boss;
+        data(s).setDirty();
+        return def.boss.isEmpty() ? "레이드 [" + name + "] 보스 없음" : "레이드 [" + name + "] 보스 = " + boss + " (방 위치 = 경기장 중앙)";
     }
 
     public static String addRoom(ServerPlayer p, String name) {
@@ -240,7 +253,10 @@ public final class Raids {
         Run run = new Run();
         run.raid = r.raid; run.room = room; run.end = s.overworld().getGameTime() + LIMIT_TICKS;
         run.bar = new ServerBossEvent(Component.literal(""), BossEvent.BossBarColor.PURPLE, BossEvent.BossBarOverlay.PROGRESS);
-        BlockPos at = def.rooms.get(room);
+        BlockPos center = def.rooms.get(room);
+        var bdef = def.boss.isEmpty() ? null : rpg.core.combat.Boss.DEFS.get(def.boss);
+        // 보스가 있으면 방 위치 = 경기장 중앙, 플레이어는 중앙에서 반경 60% 남쪽에서 시작
+        BlockPos at = bdef == null ? center : RpgWorld.ground(rl, center.offset(0, 0, (int) Math.round(bdef.arena() * 0.6)));
         ServerPlayer lead = s.getPlayerList().getPlayer(r.leader);
         java.util.Set<UUID> still = new HashSet<>();
         if (lead != null) for (ServerPlayer g : group(lead)) still.add(g.getUUID());
@@ -258,14 +274,30 @@ public final class Raids {
             setReturn(m, def.gate);
         }
         if (run.members.isEmpty()) { run.bar.removeAllPlayers(); return; }
+        if (bdef != null) {   // 보스 소환: 인원수만큼 체력 배수
+            var mob = rpg.core.combat.BossPoints.spawnAt(rl, def.boss, center, bdef.arena(), null);
+            if (mob != null) {
+                int people = run.members.size();
+                mob.getPersistentData().putInt("rpgRaidPeople", people);
+                mob.getPersistentData().putString("rpgRaid", def.name);
+                var md = rpg.core.combat.Combat.mob(mob);
+                if (md != null) { md.maxHp *= people; md.hp = md.maxHp; rpg.core.combat.Mobs.sync(mob); }
+                run.boss = mob.getUUID();
+            }
+        }
         RUNS.add(run);
-        say(s, run.members, "레이드 시작! 제한 시간 15분");
+        say(s, run.members, "레이드 시작! 제한 시간 15분" + (bdef != null ? " (보스 체력 ×" + run.members.size() + ")" : ""));
     }
 
     /** 끝 (실패·나가기·나중엔 클리어) */
     private static void finish(MinecraftServer s, Run run, String msg, boolean cleared) {
         RUNS.remove(run);
         if (run.bar != null) run.bar.removeAllPlayers();
+        if (run.boss != null) {   // 보스·기믹 정리
+            ServerLevel rl = RpgWorld.rpgLevel(s);
+            var e = rl == null ? null : rl.getEntity(run.boss);
+            if (e != null && e.isAlive()) e.discard();
+        }
         Def def = def(s, run.raid, false);
         for (UUID id : run.members) {
             ServerPlayer m = s.getPlayerList().getPlayer(id);
@@ -276,10 +308,26 @@ public final class Raids {
         }
     }
 
-    /** 나중에 레이드 보스가 죽을 때 부름 */
-    public static void clear(MinecraftServer s, ServerPlayer anyMember) {
-        Run r = runOf(anyMember.getUUID());
-        if (r != null) finish(s, r, "레이드 클리어!", true);
+    /** 레이드 보스가 죽으면 (Boss.onDeath): 30초 동안 드롭 줍고 입구로 */
+    public static void bossDied(MinecraftServer s, java.util.UUID bossId) {
+        for (Run r : RUNS) if (bossId.equals(r.boss)) {
+            r.boss = null;
+            r.clearedAt = s.overworld().getGameTime();
+            say(s, r.members, "레이드 클리어! 30초 뒤 입구로 돌아가요 (드롭 주우세요)");
+            return;
+        }
+    }
+
+    /** 레이드 보상: 하루 1번 (오전 6시 초기화). 처음이면 기록하고 true */
+    public static boolean rewardToday(ServerPlayer p, String raid) {
+        String today = java.time.LocalDateTime.now(java.time.ZoneId.of("Asia/Seoul")).minusHours(6).toLocalDate().toString();
+        CompoundTag k = p.getPersistentData().getCompound(Player.PERSISTED_NBT_TAG);
+        CompoundTag d = k.getCompound("rpgRaidDay");
+        if (today.equals(d.getString(raid))) return false;
+        d.putString(raid, today);
+        k.put("rpgRaidDay", d);
+        p.getPersistentData().put(Player.PERSISTED_NBT_TAG, k);
+        return true;
     }
 
     public static void leave(ServerPlayer p) {
@@ -372,6 +420,13 @@ public final class Raids {
                 if (m.isAlive() && !RpgData.get(m).isDown()) alive++;
             }
             long left = run.end - now;
+            if (run.clearedAt >= 0) {   // 클리어 뒤 30초
+                long rest = run.clearedAt + 600 - now;
+                if (rest <= 0 || run.members.isEmpty()) { finish(s, run, "레이드 클리어!", true); continue; }
+                run.bar.setName(Component.literal("레이드 [" + run.raid + "] 클리어! · " + (rest / 20) + "초 뒤 입구로"));
+                run.bar.setProgress(Math.max(0f, rest / 600f));
+                continue;
+            }
             if (run.members.isEmpty()) { finish(s, run, "", false); continue; }
             if (alive == 0) { finish(s, run, "전멸했어요. 레이드 실패", false); continue; }
             if (left <= 0) { finish(s, run, "시간 초과. 레이드 실패", false); continue; }

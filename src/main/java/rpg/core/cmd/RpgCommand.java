@@ -86,6 +86,12 @@ public final class RpgCommand {
                     String nm = com.mojang.brigadier.arguments.StringArgumentType.getString(c, "name");
                     return ok(c, rpg.core.world.Raids.addRoom(p, nm));
                 })));
+            for (String n : new String[]{"보스", "boss"})
+                raid.then(Commands.literal(n).requires(s -> s.hasPermission(2)).then(Commands.argument("boss", com.mojang.brigadier.arguments.StringArgumentType.word())
+                        .suggests((c, b) -> net.minecraft.commands.SharedSuggestionProvider.suggest(
+                                java.util.stream.Stream.concat(rpg.core.combat.Boss.DEFS.keySet().stream(), java.util.stream.Stream.of("none")), b))
+                        .then(Commands.argument("name", name).suggests(names).executes(c -> ok(c, rpg.core.world.Raids.setBoss(c.getSource().getServer(),
+                                com.mojang.brigadier.arguments.StringArgumentType.getString(c, "name"), com.mojang.brigadier.arguments.StringArgumentType.getString(c, "boss")))))));
             for (String n : new String[]{"방초기화", "clearrooms"})
                 raid.then(Commands.literal(n).requires(s -> s.hasPermission(2)).then(Commands.argument("name", name).suggests(names).executes(c -> {
                     String nm = com.mojang.brigadier.arguments.StringArgumentType.getString(c, "name");

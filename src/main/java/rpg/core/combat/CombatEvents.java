@@ -388,6 +388,7 @@ public final class CombatEvents {
         } else {
             dmg = 0;      // RPG 몹은 RPG 공격만 맞음 (환경·바닐라·다른 모드 피해 없음)
         }
+        if (src instanceof ServerPlayer cp && mob.getPersistentData().contains("rpgCocoon")) dmg = BossX.cocoonHit(mob, m, cp);   // 고치: 횟수로 풀림
         if (Boss.isBoss(m)) {   // 보스: 플레이어 피해만 (레벨 차이 감소·기여도), 나머지는 무시
             dmg = src instanceof ServerPlayer bp ? Boss.onHurt(mob, m, bp, dmg) : 0;
         }

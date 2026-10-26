@@ -59,7 +59,26 @@ public final class Telegraphs {
             float p = (float) Math.min(1, Math.max(0, (now - x.start()) / (double) Math.max(1, x.end() - x.start())));
             Net.Telegraph t = x.t();
             float y = (float) (groundY(mc, t) + 0.06);
-            if (t.shape() >= 10) {   // 추적 중 (노랑, 차오름 없음)
+            if (t.shape() >= 40) {   // 보라 예고 (나눠 맞기 등): 차오름
+                Net.Telegraph b = new Net.Telegraph(t.shape() - 40, t.x(), t.y(), t.z(), t.dx(), t.dz(), t.a(), t.b(), t.ticks());
+                switch (b.shape()) {
+                    case 1 -> { line(vc, m, b, y, 1f, 0x55B050FF, 0); line(vc, m, b, y + 0.01f, p, 0x99A030F0, 0); }
+                    case 2 -> { cone(vc, m, b, y, 1f, 0x55B050FF); cone(vc, m, b, y + 0.01f, p, 0x99A030F0); }
+                    default -> { circle(vc, m, b, y, 1f, 0x55B050FF); circle(vc, m, b, y + 0.01f, p, 0x99A030F0); }
+                }
+                continue;
+            }
+            if (t.shape() >= 30) {   // 초록 (안전 구역 · 독 늪): 차오름 없이 그대로
+                Net.Telegraph b = new Net.Telegraph(t.shape() - 30, t.x(), t.y(), t.z(), t.dx(), t.dz(), t.a(), t.b(), t.ticks());
+                float yy = y + 0.02f;
+                switch (b.shape()) {
+                    case 1 -> line(vc, m, b, yy, 1f, 0x7040E060, 0);
+                    case 2 -> cone(vc, m, b, yy, 1f, 0x7040E060);
+                    default -> circle(vc, m, b, yy, 1f, 0x7040E060);
+                }
+                continue;
+            }
+            if (t.shape() >= 10 && t.shape() < 20) {   // 추적 중 (노랑, 차오름 없음)
                 Net.Telegraph b = new Net.Telegraph(t.shape() - 10, t.x(), t.y(), t.z(), t.dx(), t.dz(), t.a(), t.b(), t.ticks());
                 switch (b.shape()) {
                     case 1 -> line(vc, m, b, y, 1f, 0x66FFD020, 0);
@@ -100,7 +119,7 @@ public final class Telegraphs {
             } else {
                 b = new Net.Telegraph(0, f.x, f.y, f.z, 1, 0, tr.a(), 0, 1);
                 float y = (float) (groundY(mc, b) + 0.05);
-                circle(vc, m, b, y, 1f, 0x66FFD020);
+                circle(vc, m, b, y, 1f, tr.shape() == 3 ? 0x77B050FF : 0x66FFD020);   // 3 = 보라 (나눠 맞기)
             }
         }
         buf.endBatch(RenderType.debugQuads());

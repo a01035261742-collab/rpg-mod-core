@@ -49,8 +49,14 @@ public final class ModEntities {
             () -> EntityType.Builder.<ForestLord>of(ForestLord::new, MobCategory.CREATURE)
                     .sized(3.5f, 3.5f).clientTrackingRange(16).updateInterval(1).build(RpgCore.MODID + ":forest_lord"));
 
+    /** 레이드 보스 "어둠거미여왕": 거미 몸 3배 (임시) */
+    public static final RegistryObject<EntityType<SpiderQueen>> SPIDER_QUEEN = TYPES.register("spider_queen",
+            () -> EntityType.Builder.<SpiderQueen>of(SpiderQueen::new, MobCategory.MONSTER)
+                    .sized(4.2f, 2.7f).clientTrackingRange(16).updateInterval(1).build(RpgCore.MODID + ":spider_queen"));
+
     @SubscribeEvent
     public static void attributes(EntityAttributeCreationEvent e) {
+        e.put(SPIDER_QUEEN.get(), net.minecraft.world.entity.monster.Spider.createAttributes().build());
         e.put(RAT.get(), RpgMonster.attrs(0.32).build());
         e.put(MUSH_KID.get(), RpgMonster.attrs(0.26).build());
         e.put(MUSH_SPIRIT.get(), RpgMonster.attrs(0.25).build());
