@@ -100,10 +100,27 @@ public final class RpgTooltip {
         List<Either<FormattedText, TooltipComponent>> list = e.getTooltipElements();
         if (list.isEmpty()) return;
         boolean gear = Gear.def(s) != null;
+        // Epic Fight 능력치 구역 빼기 ("에픽 파이트 능력치:" 부터 전투력 줄 전까지, 앞 빈 줄 포함)
+        for (int i = 1; i < list.size(); i++) {
+            String t = text(list.get(i));
+            if (t.startsWith("에픽 파이트") || t.startsWith("Epic Fight")) {
+                int from = i > 1 && text(list.get(i - 1)).isBlank() && list.get(i - 1).left().isPresent() ? i - 1 : i, to = i + 1;
+                while (to < list.size()) {
+                    String u = text(list.get(to));
+                    if (u.startsWith("전투력") || u.startsWith("착용 중") || u.startsWith("착용 불가") || list.get(to).right().isPresent()) break;
+                    to++;
+                }
+                list.subList(from, to).clear();
+                break;
+            }
+        }
         if (gear) {
-            // 이름 + (부위·레벨·직업 줄) + (별 줄) → 머리 칸 하나로
+            // 이름 + (부위·레벨·직업 줄) + (별 줄) → 머리 칸 하나로. 그 사이 Epic Fight 무기 종류 줄(Ranged 등)은 뺌
             String name = text(list.get(0));
-            String sub = list.size() > 1 ? text(list.get(1)) : "";
+            int subIdx = -1;
+            for (int i = 1; i < Math.min(list.size(), 6); i++) if (text(list.get(i)).contains("착용 Lv.")) { subIdx = i; break; }
+            String sub = subIdx > 0 ? text(list.get(subIdx)) : "";
+            if (subIdx > 0) { list.remove(subIdx); for (int i = subIdx - 1; i >= 1; i--) list.remove(i); }
             String stars = "";
             int starIdx = -1;
             for (int i = 1; i < Math.min(list.size(), 6); i++) {
@@ -111,7 +128,6 @@ public final class RpgTooltip {
                 if (t.startsWith("★") || t.startsWith("☆")) { stars = t; starIdx = i; break; }
             }
             if (starIdx > 0) list.remove(starIdx);
-            if (list.size() > 1) list.remove(1);
             String grade = Potential.has(s) ? "[" + Potential.GRADE[Math.max(0, Math.min(3, Potential.grade(s)))] + "] " : "";
             list.set(0, Either.right(new Header(s, name, grade + sub, stars, gradeColor(s))));
             if (list.size() > 1) list.add(1, Either.right(new Sep(0)));
