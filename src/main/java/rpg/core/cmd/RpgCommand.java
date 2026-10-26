@@ -61,9 +61,8 @@ public final class RpgCommand {
         for (String n : new String[]{"포탈", "gate"})
             root.then(Commands.literal(n).requires(s -> s.hasPermission(2)).executes(c -> {
                 ServerPlayer p = c.getSource().getPlayerOrException();
-                p.getInventory().add(new net.minecraft.world.item.ItemStack(rpg.core.world.ModBlocks.WORLD_PORTAL_ITEM.get(), 2));
                 p.getInventory().add(new net.minecraft.world.item.ItemStack(rpg.core.world.ModBlocks.SHARED_STASH_ITEM.get(), 1));
-                return ok(c, "차원 문 2개 (세로로 쌓기) + 공유 창고 1개 지급");
+                return ok(c, "공유 창고 1개 지급 (월드 이동은 /rpg 이동)");
             }));
         // 레이드 입장
         for (String rn : new String[]{"레이드", "raid"}) {

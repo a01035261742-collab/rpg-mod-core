@@ -144,14 +144,13 @@ public final class RpgWorld {
             Vec3 pos = null;
             if (wild.contains("dim") && !wild.getString("dim").equals(KEY.location().toString())) {   // 예전 버그로 RPG 위치가 저장된 건 무시
                 var lvl = s.getLevel(ResourceKey.create(Registries.DIMENSION, new net.minecraft.resources.ResourceLocation(wild.getString("dim"))));
-                if (lvl != null) { to = lvl; pos = new Vec3(wild.getDouble("x"), wild.getDouble("y"), wild.getDouble("z")); }
+                if (lvl != null) { to = lvl; pos = Vec3.atBottomCenterOf(ground(lvl, BlockPos.containing(wild.getDouble("x"), wild.getDouble("y"), wild.getDouble("z")))); }
             }
             if (pos == null) {
                 BlockPos sp = p.getRespawnPosition() != null && p.getRespawnDimension() == Level.OVERWORLD ? p.getRespawnPosition() : s.overworld().getSharedSpawnPos();
-                pos = Vec3.atBottomCenterOf(to.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, sp));
+                pos = Vec3.atBottomCenterOf(surface(to, sp.getX(), sp.getZ()));
             }
             p.teleportTo(to, pos.x, pos.y, pos.z, p.getYRot(), p.getXRot());
-            if (inPortal(p)) ARRIVED.add(p.getUUID());   // 문 위치로 돌아왔으면 나갈 때까지 대기
         } else {
             ServerLevel to = rpgLevel(s);
             if (to == null) { p.sendSystemMessage(Component.literal("RPG 대륙을 찾을 수 없어요").withStyle(ChatFormatting.RED)); return; }
@@ -161,12 +160,13 @@ public final class RpgWorld {
             wp.putDouble("x", p.getX()); wp.putDouble("y", p.getY()); wp.putDouble("z", p.getZ());
             w.put("wildPos", wp);
             putWorlds(p, w);
-            BlockPos sp = ground(to, data(s).rpgSpawn);
+            BlockPos sp = rpgArrive(to, data(s).rpgSpawn);
             p.teleportTo(to, sp.getX() + 0.5, sp.getY(), sp.getZ() + 0.5, p.getYRot(), p.getXRot());
         }
         p.fallDistance = 0;
         sync(p);
-        p.sendSystemMessage(Component.literal(is(p.level()) ? "RPG 대륙으로 왔어요" : "야생으로 왔어요").withStyle(ChatFormatting.LIGHT_PURPLE));
+        p.sendSystemMessage(Component.literal((is(p.level()) ? "RPG 대륙으로 왔어요" : "야생으로 왔어요")
+                + (p.hasPermissions(2) ? String.format(" (%d, %d, %d)", p.getBlockX(), p.getBlockY(), p.getBlockZ()) : "")).withStyle(ChatFormatting.LIGHT_PURPLE));
     }
 
     // 명령어 이동: 3초 가만히 (움직이거나 맞으면 취소)
@@ -206,12 +206,6 @@ public final class RpgWorld {
     @SubscribeEvent
     public static void tick(TickEvent.PlayerTickEvent e) {
         if (e.phase != TickEvent.Phase.END || !(e.player instanceof ServerPlayer p)) return;
-        // 차원 문: 서 있으면 이동 (넘어온 직후엔 문 밖으로 나갈 때까지 대기)
-        if (p.tickCount % 2 == 0) {
-            boolean inside = inPortal(p);
-            if (!inside) ARRIVED.remove(p.getUUID());
-            else if (!ARRIVED.contains(p.getUUID())) portal(p);
-        }
         // Epic Fight: 야생에서도 그대로 씀 (0.43.2 롤백). 예전에 걸어둔 전투 모드 잠금만 처음 몇 초 동안 풀어줌
         if (p.tickCount < 200 && p.tickCount % 20 == 0) rpg.core.compat.EpicFightCompat.forceMode(p, true);
         if (CHANNELS.isEmpty()) return;
@@ -264,7 +258,7 @@ public final class RpgWorld {
         // RPG 묶음을 들고 죽었으면 RPG 스폰에서 살아남
         if (RPG.equals(worlds(p).getString("loaded")) && !is(p.level()) && p.getServer() != null) {
             ServerLevel to = rpgLevel(p.getServer());
-            if (to != null) { BlockPos sp = ground(to, data(p.getServer()).rpgSpawn); p.teleportTo(to, sp.getX() + 0.5, sp.getY(), sp.getZ() + 0.5, p.getYRot(), p.getXRot()); }
+            if (to != null) { BlockPos sp = rpgArrive(to, data(p.getServer()).rpgSpawn); p.teleportTo(to, sp.getX() + 0.5, sp.getY(), sp.getZ() + 0.5, p.getYRot(), p.getXRot()); }
         }
         sync(p);
     }
@@ -297,7 +291,8 @@ public final class RpgWorld {
         if (d.portalsBuilt) {
             // RPG 대륙을 새로 만들었으면(폴더 삭제 등) 스폰 문이 없음 → 다시 설치
             BlockPos g = d.rpgSpawn.offset(0, 0, -3);
-            if (!rpg.getBlockState(g).is(ModBlocks.WORLD_PORTAL.get())) {
+            removePortal(rpg, g);
+            if (!rpg.getBlockState(g.west(2)).is(ModBlocks.SHARED_STASH.get())) {
                 for (int x = -4; x <= 4; x++) for (int z = -4; z <= 4; z++) rpg.setBlockAndUpdate(d.rpgSpawn.offset(x, -1, z), Blocks.SMOOTH_STONE.defaultBlockState());
                 placeGate(rpg, g);
             }
@@ -316,8 +311,22 @@ public final class RpgWorld {
         d.setDirty();
     }
 
+    /** 그 x,z 의 땅 위 (청크를 먼저 만들어야 함: 안 만들어진 청크는 높이가 맨 아래(-64)로 나와서 땅속에 낌) */
+    public static BlockPos surface(ServerLevel l, int x, int z) {
+        l.getChunk(x >> 4, z >> 4);
+        return new BlockPos(x, l.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z), z);
+    }
+
+    /** RPG 스폰 도착 자리: 저장된 스폰 기준으로 바닥 찾고, 그래도 발밑이 비면 땅 위 */
+    public static BlockPos rpgArrive(ServerLevel l, BlockPos spawn) {
+        BlockPos b = ground(l, spawn);
+        if (l.getBlockState(b.below()).isAir()) b = surface(l, spawn.getX(), spawn.getZ());
+        return b;
+    }
+
     /** 서 있을 수 있는 높이: 발밑이 비어 있으면 아래로, 막혀 있으면 위로 (공중·땅속 스폰 막기) */
     public static BlockPos ground(ServerLevel l, BlockPos at) {
+        l.getChunk(at.getX() >> 4, at.getZ() >> 4);
         BlockPos b = at;
         if (l.getBlockState(b).isAir() && l.getBlockState(b.below()).isAir()) {
             for (int i = 0; i < 128 && b.getY() > l.getMinBuildHeight() + 1; i++) { b = b.below(); if (!l.getBlockState(b.below()).isAir()) return b; }
@@ -328,10 +337,14 @@ public final class RpgWorld {
     }
 
     /** 문 2칸 (세로) + 왼쪽에 공유 창고 */
-    static void placeGate(ServerLevel l, BlockPos at) {
-        l.setBlockAndUpdate(at, ModBlocks.WORLD_PORTAL.get().defaultBlockState());
-        l.setBlockAndUpdate(at.above(), ModBlocks.WORLD_PORTAL.get().defaultBlockState());
+    static void placeGate(ServerLevel l, BlockPos at) {   // 차원 문은 0.43.3 에서 없앰 (이동은 /rpg 이동), 공유 창고만
         l.setBlockAndUpdate(at.west(2), ModBlocks.SHARED_STASH.get().defaultBlockState());
+    }
+
+    /** 예전에 설치된 차원 문 지우기 */
+    static void removePortal(ServerLevel l, BlockPos at) {
+        for (BlockPos q : new BlockPos[]{at, at.above()})
+            if (l.getBlockState(q).is(ModBlocks.WORLD_PORTAL.get())) l.setBlockAndUpdate(q, Blocks.AIR.defaultBlockState());
     }
 
     /** OP: 지금 자리를 RPG 스폰으로 */

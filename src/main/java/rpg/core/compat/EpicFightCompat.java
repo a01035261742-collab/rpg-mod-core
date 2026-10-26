@@ -121,7 +121,7 @@ public final class EpicFightCompat {
     }
 
     private static boolean noBreak(net.minecraft.world.entity.player.Player p) {
-        return !p.isCreative() && (holdingRpgWeapon(p) || battleMode(p));
+        return !p.isCreative() && rpg.core.world.RpgWorld.in(p) && (holdingRpgWeapon(p) || battleMode(p));   // 야생은 바닐라 그대로
     }
 
     @SubscribeEvent

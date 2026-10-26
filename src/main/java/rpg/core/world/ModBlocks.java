@@ -49,7 +49,7 @@ public final class ModBlocks {
         public PortalBlock(Properties p) { super(p); }
         @Override public VoxelShape getShape(BlockState s, BlockGetter l, BlockPos pos, CollisionContext c) { return Shapes.box(0, 0, 0.375, 1, 1, 0.625); }
         @Override public void entityInside(BlockState s, Level l, BlockPos pos, Entity e) {
-            if (!l.isClientSide && e instanceof ServerPlayer sp) RpgWorld.portal(sp);
+            // 0.43.3: 차원 문 기능 없앰 (이동은 /rpg 이동). 블록은 예전 월드 호환용으로만 남김
         }
     }
 
