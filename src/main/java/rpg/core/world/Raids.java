@@ -37,7 +37,7 @@ import rpg.core.net.Net;
 public final class Raids {
     private Raids() {}
 
-    public static final int LIMIT_TICKS = 15 * 60 * 20, READY_TICKS = 30 * 20, COUNT_TICKS = 10 * 20, NEAR = 16;
+    public static final int LIMIT_TICKS = 15 * 60 * 20, READY_TICKS = 30 * 20, COUNT_TICKS = 10 * 20, NEAR = 16, MAX_PARTY = 4;
 
     // ───────── 저장: 레이드 정의 ─────────
     public static final class Def {
@@ -164,7 +164,9 @@ public final class Raids {
             all &= lv && near;
             rows.add(m.getGameProfile().getName() + "|" + d.level + "|" + (lv ? 1 : 0) + "|" + (near ? 1 : 0));
         }
-        Net.raidInfo(p, def.name, def.minLevel, rows, all && leader(p), busyText(p.getServer(), def));
+        String busy = busyText(p.getServer(), def);
+        if (busy.isEmpty() && rows.size() > MAX_PARTY) busy = "레이드는 최대 " + MAX_PARTY + "명이에요 (지금 " + rows.size() + "명)";
+        Net.raidInfo(p, def.name, def.minLevel, rows, all && leader(p), busy);
     }
 
     private static String busyText(MinecraftServer s, Def def) {
@@ -187,7 +189,7 @@ public final class Raids {
     public static void request(ServerPlayer p, String name) {
         Def def = def(p.getServer(), name, false);
         if (def == null || !leader(p) || inRaid(p)) return;
-        if (!busyText(p.getServer(), def).isEmpty()) { sendInfo(p, def); return; }
+        if (!busyText(p.getServer(), def).isEmpty() || group(p).size() > MAX_PARTY) { sendInfo(p, def); return; }
         Ready r = new Ready();
         r.raid = name; r.leader = p.getUUID(); r.until = p.level().getGameTime() + READY_TICKS;
         for (ServerPlayer m : group(p)) {
