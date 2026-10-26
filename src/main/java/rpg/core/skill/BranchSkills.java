@@ -333,7 +333,7 @@ public final class BranchSkills {
                     Vec3 to = new Vec3(m.getX() - p.getX(), 0, m.getZ() - p.getZ());
                     if (to.length() > m.getBbWidth() / 2 + 0.5 && to.normalize().dot(look) < 0.5) continue;
                     CombatEvents.skillHit(p, m, pct);
-                    CombatEvents.dot(p, m, "bleed", bleed, bleedTicks);
+                    // (출혈 삭제: 0.37.3)
                 }
                 Vec3 c = p.position().add(look.scale(1.5));
                 l.sendParticles(ParticleTypes.CRIT, c.x, p.getY() + 1.1, c.z, 8, 0.4, 0.3, 0.4, 0.2);
