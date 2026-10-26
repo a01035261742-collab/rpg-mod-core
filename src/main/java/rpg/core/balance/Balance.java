@@ -51,11 +51,11 @@ public final class Balance {
     public static double dodgeCooldown = 3.0, dodgePower = 1.1;
     public static int dodgeIframes = 8;
     /** 직업별 평타 계수 % (0 초보 1 전사 2 궁수 3 법사 4 도적) */
-    public static double[] basicAttackPct = {100, 70, 70, 70, 100};
+    public static double[] basicAttackPct = {100, 70, 70, 70, 70};
     /** 몹 방어율 % (mobs.json defRate). 없으면 일반 레벨/5 (최대 10), 엘리트 20, 보스 30 */
     public static final java.util.Map<String, Double> MOB_DEF = new java.util.HashMap<>();
     /** 직업별 기본 숙련도 (0~1). 전사 0.4 (마스터리 스킬로 올림), 나머지는 개편 전까지 0.8 */
-    public static double[] masteryByJob = {0.8, 0.4, 0.4, 0.4, 0.8};
+    public static double[] masteryByJob = {0.8, 0.4, 0.4, 0.4, 0.4};
     public static double mastery = 0.8, critDamage = 1.5, fistAttack = 5, defPerVit = 1.0, defBase = 50, defPerMobLevel = 10;
     public static java.util.Set<String> huntingDimensions = new java.util.HashSet<>();
 

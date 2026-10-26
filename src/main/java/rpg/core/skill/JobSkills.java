@@ -57,7 +57,8 @@ public final class JobSkills {
             }
             case "magic_claw" -> MageSkills.magicClaw(p, s, lv);
             case "haste" -> haste(p, s, lv, now);
-            case "stealth" -> stealth(p, d, s, lv, now);
+            case "double_stab" -> ThiefSkills.doubleStab(p, s, lv);
+            case "evade_leap" -> ThiefSkills.evadeLeap(p, d, s, lv);
             case "double_shot" -> doubleShot(p, s, lv);
             case "retreat_shot" -> retreatShot(p, s, lv);
             case "booster" -> {   // 부스터: value2초 동안 활 당기는 속도 +value%
@@ -272,7 +273,7 @@ public final class JobSkills {
         List<ServerPlayer> targets = rpg.core.party.Parties.nearby(p);
         for (ServerPlayer t : targets) {
             PlayerData td = rpg.core.data.RpgData.get(t);
-            td.buffEnd.put("haste", now + Math.round(s.duration() * 20));
+            td.buffEnd.put("haste", now + MageSkills.dur(rpg.core.data.RpgData.get(p), Defs.value3(s, lv)));
             td.buffVal.put("haste", s.value(lv));    // 이동속도 %
             td.buffVal2.put("haste", s.value2(lv));  // 점프력 %
             t.serverLevel().sendParticles(ParticleTypes.EFFECT, t.getX(), t.getY() + 1, t.getZ(), 15, 0.4, 0.6, 0.4, 0.05);

@@ -40,6 +40,9 @@ public class MobData {
     public transient long tauntUntil;
     /** 방어율 % (방무로 깎임) */
     public double defRate;
+    /** 분신술: 이 시각까지 이 자리를 노림 */
+    public transient long decoyUntil;
+    public transient net.minecraft.world.phys.Vec3 decoyPos;
     // 둔화·속박 (덫·독안개): 이동속도 -slowPct% (100 = 못 움직임)
     public transient double slowPct;
     public transient long slowUntil;

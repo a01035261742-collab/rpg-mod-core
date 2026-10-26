@@ -3260,6 +3260,1008 @@
    "kind": "k",
    "desc": "힐 회복량의 30%만큼 주변 4칸 몹에게 빛 피해",
    "branch": 2
+  },
+  {
+   "id": "t0",
+   "name": "시작",
+   "x": 0,
+   "y": 0,
+   "maxRank": 0,
+   "stat": "",
+   "perRank": 0,
+   "requires": [],
+   "job": 4,
+   "kind": "start"
+  },
+  {
+   "id": "tc_u",
+   "name": "운",
+   "x": 0,
+   "y": -1,
+   "maxRank": 3,
+   "stat": "luk",
+   "perRank": 3,
+   "requires": [
+    "t0"
+   ],
+   "job": 4,
+   "kind": "s"
+  },
+  {
+   "id": "tc_l",
+   "name": "운",
+   "x": -1,
+   "y": 0,
+   "maxRank": 3,
+   "stat": "luk",
+   "perRank": 3,
+   "requires": [
+    "t0"
+   ],
+   "job": 4,
+   "kind": "s"
+  },
+  {
+   "id": "tc_r",
+   "name": "운",
+   "x": 1,
+   "y": 0,
+   "maxRank": 3,
+   "stat": "luk",
+   "perRank": 3,
+   "requires": [
+    "t0"
+   ],
+   "job": 4,
+   "kind": "s"
+  },
+  {
+   "id": "tc_d",
+   "name": "운",
+   "x": 0,
+   "y": 1,
+   "maxRank": 3,
+   "stat": "luk",
+   "perRank": 3,
+   "requires": [
+    "t0"
+   ],
+   "job": 4,
+   "kind": "s"
+  },
+  {
+   "id": "tu0",
+   "name": "공격력",
+   "x": 0,
+   "y": -2,
+   "maxRank": 3,
+   "stat": "atkPct",
+   "perRank": 1,
+   "requires": [
+    "tc_u"
+   ],
+   "job": 4,
+   "kind": "s"
+  },
+  {
+   "id": "tu1",
+   "name": "운",
+   "x": -1,
+   "y": -3,
+   "maxRank": 3,
+   "stat": "luk",
+   "perRank": 3,
+   "requires": [
+    "tu0"
+   ],
+   "job": 4,
+   "kind": "s"
+  },
+  {
+   "id": "tu2",
+   "name": "공격력",
+   "x": 1,
+   "y": -3,
+   "maxRank": 3,
+   "stat": "atkPct",
+   "perRank": 1,
+   "requires": [
+    "tu0"
+   ],
+   "job": 4,
+   "kind": "s"
+  },
+  {
+   "id": "tu3",
+   "name": "암습",
+   "x": 0,
+   "y": -4,
+   "maxRank": 1,
+   "stat": "dmgPct",
+   "perRank": 8,
+   "requires": [
+    "tu1",
+    "tu2"
+   ],
+   "job": 4,
+   "stat2": "atkPct",
+   "perRank2": 3,
+   "kind": "n"
+  },
+  {
+   "id": "tu4",
+   "name": "운",
+   "x": -1,
+   "y": -5,
+   "maxRank": 3,
+   "stat": "luk",
+   "perRank": 3,
+   "requires": [
+    "tu3"
+   ],
+   "job": 4,
+   "kind": "s"
+  },
+  {
+   "id": "tu5",
+   "name": "공격력",
+   "x": 1,
+   "y": -5,
+   "maxRank": 3,
+   "stat": "atkPct",
+   "perRank": 1,
+   "requires": [
+    "tu3"
+   ],
+   "job": 4,
+   "kind": "s"
+  },
+  {
+   "id": "tu6",
+   "name": "그림자 일격",
+   "x": 0,
+   "y": -6,
+   "maxRank": 1,
+   "stat": "backDmg",
+   "perRank": 25,
+   "requires": [
+    "tu4",
+    "tu5"
+   ],
+   "job": 4,
+   "kind": "k",
+   "desc": "몹 등 뒤에서 때리면 데미지 +25%"
+  },
+  {
+   "id": "td0",
+   "name": "이동속도",
+   "x": 0,
+   "y": 2,
+   "maxRank": 3,
+   "stat": "speedPct",
+   "perRank": 2,
+   "requires": [
+    "tc_d"
+   ],
+   "job": 4,
+   "kind": "s"
+  },
+  {
+   "id": "td1",
+   "name": "구르기 쿨타임",
+   "x": -1,
+   "y": 3,
+   "maxRank": 3,
+   "stat": "dodgeCd",
+   "perRank": 3,
+   "requires": [
+    "td0"
+   ],
+   "job": 4,
+   "kind": "s"
+  },
+  {
+   "id": "td2",
+   "name": "이동속도",
+   "x": 1,
+   "y": 3,
+   "maxRank": 3,
+   "stat": "speedPct",
+   "perRank": 2,
+   "requires": [
+    "td0"
+   ],
+   "job": 4,
+   "kind": "s"
+  },
+  {
+   "id": "td3",
+   "name": "날렵함",
+   "x": 0,
+   "y": 4,
+   "maxRank": 1,
+   "stat": "speedPct",
+   "perRank": 5,
+   "requires": [
+    "td1",
+    "td2"
+   ],
+   "job": 4,
+   "stat2": "cdPct",
+   "perRank2": 3,
+   "kind": "n"
+  },
+  {
+   "id": "td4",
+   "name": "구르기 쿨타임",
+   "x": -1,
+   "y": 5,
+   "maxRank": 3,
+   "stat": "dodgeCd",
+   "perRank": 3,
+   "requires": [
+    "td3"
+   ],
+   "job": 4,
+   "kind": "s"
+  },
+  {
+   "id": "td5",
+   "name": "이동속도",
+   "x": 1,
+   "y": 5,
+   "maxRank": 3,
+   "stat": "speedPct",
+   "perRank": 2,
+   "requires": [
+    "td3"
+   ],
+   "job": 4,
+   "kind": "s"
+  },
+  {
+   "id": "td6",
+   "name": "잔상 걸음",
+   "x": 0,
+   "y": 6,
+   "maxRank": 1,
+   "stat": "rollCrit",
+   "perRank": 20,
+   "requires": [
+    "td4",
+    "td5"
+   ],
+   "job": 4,
+   "kind": "k",
+   "desc": "구르거나 회피 도약 후 2초 동안 크리 확률 +20%"
+  },
+  {
+   "id": "t_crit0",
+   "name": "크리 확률",
+   "x": -2,
+   "y": -1,
+   "maxRank": 3,
+   "stat": "critChance",
+   "perRank": 1,
+   "requires": [
+    "tc_l"
+   ],
+   "job": 4,
+   "kind": "s"
+  },
+  {
+   "id": "t_crit1",
+   "name": "운",
+   "x": -3,
+   "y": -2,
+   "maxRank": 3,
+   "stat": "luk",
+   "perRank": 3,
+   "requires": [
+    "t_crit0"
+   ],
+   "job": 4,
+   "kind": "s"
+  },
+  {
+   "id": "t_crit2",
+   "name": "크리 데미지",
+   "x": -4,
+   "y": -3,
+   "maxRank": 3,
+   "stat": "critDmg",
+   "perRank": 3,
+   "requires": [
+    "t_crit1"
+   ],
+   "job": 4,
+   "kind": "s"
+  },
+  {
+   "id": "t_crit3",
+   "name": "크리 데미지",
+   "x": -5,
+   "y": -4,
+   "maxRank": 2,
+   "stat": "critDmg",
+   "perRank": 3,
+   "requires": [
+    "t_crit2"
+   ],
+   "job": 4,
+   "kind": "s"
+  },
+  {
+   "id": "t_crit4",
+   "name": "크리 확률",
+   "x": -4,
+   "y": -5,
+   "maxRank": 1,
+   "stat": "critChance",
+   "perRank": 1,
+   "requires": [
+    "t_crit3"
+   ],
+   "job": 4,
+   "kind": "s"
+  },
+  {
+   "id": "t_crit5",
+   "name": "크리 확률",
+   "x": -6,
+   "y": -5,
+   "maxRank": 2,
+   "stat": "critChance",
+   "perRank": 1,
+   "requires": [
+    "t_crit3"
+   ],
+   "job": 4,
+   "kind": "s"
+  },
+  {
+   "id": "t_crit6",
+   "name": "치명 일격",
+   "x": -7,
+   "y": -6,
+   "maxRank": 1,
+   "stat": "critDmg",
+   "perRank": 15,
+   "requires": [
+    "t_crit5"
+   ],
+   "job": 4,
+   "stat2": "critChance",
+   "perRank2": 3,
+   "kind": "g"
+  },
+  {
+   "id": "t_crit7",
+   "name": "운",
+   "x": -6,
+   "y": -3,
+   "maxRank": 2,
+   "stat": "luk",
+   "perRank": 3,
+   "requires": [
+    "t_crit2"
+   ],
+   "job": 4,
+   "kind": "s"
+  },
+  {
+   "id": "t_crit8",
+   "name": "크리 데미지",
+   "x": -7,
+   "y": -2,
+   "maxRank": 2,
+   "stat": "critDmg",
+   "perRank": 3,
+   "requires": [
+    "t_crit7"
+   ],
+   "job": 4,
+   "kind": "s"
+  },
+  {
+   "id": "t_crit9",
+   "name": "치명적 출혈",
+   "x": -8,
+   "y": -1,
+   "maxRank": 1,
+   "stat": "critBleed",
+   "perRank": 15,
+   "requires": [
+    "t_crit8"
+   ],
+   "job": 4,
+   "kind": "g",
+   "desc": "크리가 터지면 3초 출혈 (1초마다 스공의 15%)"
+  },
+  {
+   "id": "t_hp0",
+   "name": "최대 HP",
+   "x": -2,
+   "y": 1,
+   "maxRank": 3,
+   "stat": "hpPct",
+   "perRank": 3,
+   "requires": [
+    "tc_l"
+   ],
+   "job": 4,
+   "kind": "s"
+  },
+  {
+   "id": "t_hp1",
+   "name": "자연 회복",
+   "x": -3,
+   "y": 2,
+   "maxRank": 3,
+   "stat": "hpRegenPct",
+   "perRank": 10,
+   "requires": [
+    "t_hp0"
+   ],
+   "job": 4,
+   "kind": "s"
+  },
+  {
+   "id": "t_hp2",
+   "name": "회복량",
+   "x": -4,
+   "y": 3,
+   "maxRank": 3,
+   "stat": "healPct",
+   "perRank": 5,
+   "requires": [
+    "t_hp1"
+   ],
+   "job": 4,
+   "kind": "s"
+  },
+  {
+   "id": "t_hp3",
+   "name": "최대 HP",
+   "x": -5,
+   "y": 4,
+   "maxRank": 2,
+   "stat": "hpPct",
+   "perRank": 3,
+   "requires": [
+    "t_hp2"
+   ],
+   "job": 4,
+   "kind": "s"
+  },
+  {
+   "id": "t_hp4",
+   "name": "자연 회복",
+   "x": -4,
+   "y": 5,
+   "maxRank": 2,
+   "stat": "hpRegenPct",
+   "perRank": 10,
+   "requires": [
+    "t_hp3"
+   ],
+   "job": 4,
+   "kind": "s"
+  },
+  {
+   "id": "t_hp5",
+   "name": "최대 HP",
+   "x": -6,
+   "y": 5,
+   "maxRank": 2,
+   "stat": "hpPct",
+   "perRank": 3,
+   "requires": [
+    "t_hp3"
+   ],
+   "job": 4,
+   "kind": "s"
+  },
+  {
+   "id": "t_hp6",
+   "name": "흡혈",
+   "x": -7,
+   "y": 6,
+   "maxRank": 1,
+   "stat": "lifesteal",
+   "perRank": 1,
+   "requires": [
+    "t_hp5"
+   ],
+   "job": 4,
+   "kind": "g",
+   "desc": "크리가 터지면 준 피해의 1%만큼 HP 회복 (1초에 최대 HP 2%까지)"
+  },
+  {
+   "id": "t_hp7",
+   "name": "회복량",
+   "x": -6,
+   "y": 3,
+   "maxRank": 2,
+   "stat": "healPct",
+   "perRank": 5,
+   "requires": [
+    "t_hp2"
+   ],
+   "job": 4,
+   "kind": "s"
+  },
+  {
+   "id": "t_hp8",
+   "name": "최대 HP",
+   "x": -7,
+   "y": 2,
+   "maxRank": 2,
+   "stat": "hpPct",
+   "perRank": 3,
+   "requires": [
+    "t_hp7"
+   ],
+   "job": 4,
+   "kind": "s"
+  },
+  {
+   "id": "t_hp9",
+   "name": "도망자",
+   "x": -8,
+   "y": 1,
+   "maxRank": 1,
+   "stat": "escape",
+   "perRank": 1,
+   "requires": [
+    "t_hp8"
+   ],
+   "job": 4,
+   "kind": "g",
+   "desc": "HP 30% 아래로 떨어지면 2초 투명 + 이동속도 +50% (60초에 1번)"
+  },
+  {
+   "id": "t_boss0",
+   "name": "보스 데미지",
+   "x": 2,
+   "y": -1,
+   "maxRank": 3,
+   "stat": "bossPct",
+   "perRank": 3,
+   "requires": [
+    "tc_r"
+   ],
+   "job": 4,
+   "kind": "s"
+  },
+  {
+   "id": "t_boss1",
+   "name": "데미지",
+   "x": 3,
+   "y": -2,
+   "maxRank": 3,
+   "stat": "dmgPct",
+   "perRank": 2,
+   "requires": [
+    "t_boss0"
+   ],
+   "job": 4,
+   "kind": "s"
+  },
+  {
+   "id": "t_boss2",
+   "name": "보스 데미지",
+   "x": 4,
+   "y": -3,
+   "maxRank": 3,
+   "stat": "bossPct",
+   "perRank": 3,
+   "requires": [
+    "t_boss1"
+   ],
+   "job": 4,
+   "kind": "s"
+  },
+  {
+   "id": "t_boss3",
+   "name": "보스 데미지",
+   "x": 5,
+   "y": -4,
+   "maxRank": 2,
+   "stat": "bossPct",
+   "perRank": 3,
+   "requires": [
+    "t_boss2"
+   ],
+   "job": 4,
+   "kind": "s"
+  },
+  {
+   "id": "t_boss4",
+   "name": "운",
+   "x": 4,
+   "y": -5,
+   "maxRank": 2,
+   "stat": "luk",
+   "perRank": 3,
+   "requires": [
+    "t_boss3"
+   ],
+   "job": 4,
+   "kind": "s"
+  },
+  {
+   "id": "t_boss5",
+   "name": "데미지",
+   "x": 6,
+   "y": -5,
+   "maxRank": 2,
+   "stat": "dmgPct",
+   "perRank": 2,
+   "requires": [
+    "t_boss3"
+   ],
+   "job": 4,
+   "kind": "s"
+  },
+  {
+   "id": "t_boss6",
+   "name": "거물 사냥",
+   "x": 7,
+   "y": -6,
+   "maxRank": 1,
+   "stat": "bossPct",
+   "perRank": 12,
+   "requires": [
+    "t_boss5"
+   ],
+   "job": 4,
+   "kind": "g"
+  },
+  {
+   "id": "t_boss7",
+   "name": "데미지",
+   "x": 6,
+   "y": -3,
+   "maxRank": 2,
+   "stat": "dmgPct",
+   "perRank": 2,
+   "requires": [
+    "t_boss2"
+   ],
+   "job": 4,
+   "kind": "s"
+  },
+  {
+   "id": "t_boss8",
+   "name": "보스 데미지",
+   "x": 7,
+   "y": -2,
+   "maxRank": 2,
+   "stat": "bossPct",
+   "perRank": 3,
+   "requires": [
+    "t_boss7"
+   ],
+   "job": 4,
+   "kind": "s"
+  },
+  {
+   "id": "t_boss9",
+   "name": "처형",
+   "x": 8,
+   "y": -1,
+   "maxRank": 1,
+   "stat": "executePct",
+   "perRank": 25,
+   "requires": [
+    "t_boss8"
+   ],
+   "job": 4,
+   "kind": "g",
+   "desc": "HP 30% 아래 몹에게 데미지 +25%"
+  },
+  {
+   "id": "t_dot0",
+   "name": "지속 피해",
+   "x": 2,
+   "y": 1,
+   "maxRank": 3,
+   "stat": "dotPct",
+   "perRank": 5,
+   "requires": [
+    "tc_r"
+   ],
+   "job": 4,
+   "kind": "s"
+  },
+  {
+   "id": "t_dot1",
+   "name": "지속 피해",
+   "x": 3,
+   "y": 2,
+   "maxRank": 3,
+   "stat": "dotPct",
+   "perRank": 5,
+   "requires": [
+    "t_dot0"
+   ],
+   "job": 4,
+   "kind": "s"
+  },
+  {
+   "id": "t_dot2",
+   "name": "운",
+   "x": 4,
+   "y": 3,
+   "maxRank": 3,
+   "stat": "luk",
+   "perRank": 3,
+   "requires": [
+    "t_dot1"
+   ],
+   "job": 4,
+   "kind": "s"
+  },
+  {
+   "id": "t_dot3",
+   "name": "지속 피해",
+   "x": 5,
+   "y": 4,
+   "maxRank": 2,
+   "stat": "dotPct",
+   "perRank": 5,
+   "requires": [
+    "t_dot2"
+   ],
+   "job": 4,
+   "kind": "s"
+  },
+  {
+   "id": "t_dot4",
+   "name": "운",
+   "x": 4,
+   "y": 5,
+   "maxRank": 2,
+   "stat": "luk",
+   "perRank": 3,
+   "requires": [
+    "t_dot3"
+   ],
+   "job": 4,
+   "kind": "s"
+  },
+  {
+   "id": "t_dot5",
+   "name": "지속 피해",
+   "x": 6,
+   "y": 5,
+   "maxRank": 2,
+   "stat": "dotPct",
+   "perRank": 5,
+   "requires": [
+    "t_dot3"
+   ],
+   "job": 4,
+   "kind": "s"
+  },
+  {
+   "id": "t_dot6",
+   "name": "깊은 상처",
+   "x": 7,
+   "y": 6,
+   "maxRank": 1,
+   "stat": "deepWound",
+   "perRank": 10,
+   "requires": [
+    "t_dot5"
+   ],
+   "job": 4,
+   "kind": "g",
+   "desc": "평타가 20% 확률로 3초 출혈 (1초마다 스공의 10%)"
+  },
+  {
+   "id": "t_dot7",
+   "name": "운",
+   "x": 6,
+   "y": 3,
+   "maxRank": 2,
+   "stat": "luk",
+   "perRank": 3,
+   "requires": [
+    "t_dot2"
+   ],
+   "job": 4,
+   "kind": "s"
+  },
+  {
+   "id": "t_dot8",
+   "name": "지속 피해",
+   "x": 7,
+   "y": 2,
+   "maxRank": 2,
+   "stat": "dotPct",
+   "perRank": 5,
+   "requires": [
+    "t_dot7"
+   ],
+   "job": 4,
+   "kind": "s"
+  },
+  {
+   "id": "t_dot9",
+   "name": "이중 고통",
+   "x": 8,
+   "y": 1,
+   "maxRank": 1,
+   "stat": "doubleAgony",
+   "perRank": 20,
+   "requires": [
+    "t_dot8"
+   ],
+   "job": 4,
+   "kind": "g",
+   "desc": "독과 출혈이 둘 다 걸린 몹에게 데미지 +20%"
+  },
+  {
+   "id": "tas0",
+   "name": "냉혈",
+   "x": -2,
+   "y": 0,
+   "maxRank": 1,
+   "stat": "critChance",
+   "perRank": 5,
+   "requires": [
+    "tc_l"
+   ],
+   "job": 4,
+   "stat2": "luk",
+   "perRank2": 10,
+   "kind": "n",
+   "branch": 1
+  },
+  {
+   "id": "tas1",
+   "name": "급소",
+   "x": -3,
+   "y": 0,
+   "maxRank": 1,
+   "stat": "critDmg",
+   "perRank": 10,
+   "requires": [
+    "tas0"
+   ],
+   "job": 4,
+   "stat2": "ignoreDef",
+   "perRank2": 10,
+   "kind": "n",
+   "branch": 1
+  },
+  {
+   "id": "tas2",
+   "name": "출혈 전문가",
+   "x": -4,
+   "y": 0,
+   "maxRank": 1,
+   "stat": "bleedPct",
+   "perRank": 30,
+   "requires": [
+    "tas1"
+   ],
+   "job": 4,
+   "kind": "n",
+   "branch": 1
+  },
+  {
+   "id": "tas3",
+   "name": "그림자 사냥",
+   "x": -5,
+   "y": 0,
+   "maxRank": 1,
+   "stat": "bossPct",
+   "perRank": 15,
+   "requires": [
+    "tas2"
+   ],
+   "job": 4,
+   "kind": "n",
+   "branch": 1
+  },
+  {
+   "id": "tas4",
+   "name": "고독한 암살자",
+   "x": -6,
+   "y": 0,
+   "maxRank": 1,
+   "stat": "loneAssassin",
+   "perRank": 1,
+   "requires": [
+    "tas3"
+   ],
+   "job": 4,
+   "kind": "k",
+   "desc": "8칸 안에 파티원이 없으면 데미지 +25%, 크리 확률 +15%, 크리 피해 +15%",
+   "branch": 1
+  },
+  {
+   "id": "ttr0",
+   "name": "은밀한 손",
+   "x": 2,
+   "y": 0,
+   "maxRank": 1,
+   "stat": "dropPct",
+   "perRank": 10,
+   "requires": [
+    "tc_r"
+   ],
+   "job": 4,
+   "stat2": "goldPct",
+   "perRank2": 10,
+   "kind": "n",
+   "branch": 2
+  },
+  {
+   "id": "ttr1",
+   "name": "독 전문가",
+   "x": 3,
+   "y": 0,
+   "maxRank": 1,
+   "stat": "poisonPct",
+   "perRank": 30,
+   "requires": [
+    "ttr0"
+   ],
+   "job": 4,
+   "kind": "n",
+   "branch": 2
+  },
+  {
+   "id": "ttr2",
+   "name": "교란",
+   "x": 4,
+   "y": 0,
+   "maxRank": 1,
+   "stat": "mobPct",
+   "perRank": 15,
+   "requires": [
+    "ttr1"
+   ],
+   "job": 4,
+   "kind": "n",
+   "branch": 2
+  },
+  {
+   "id": "ttr3",
+   "name": "날쌘 손놀림",
+   "x": 5,
+   "y": 0,
+   "maxRank": 1,
+   "stat": "cdPct",
+   "perRank": 5,
+   "requires": [
+    "ttr2"
+   ],
+   "job": 4,
+   "stat2": "speedPct",
+   "perRank2": 5,
+   "kind": "n",
+   "branch": 2
+  },
+  {
+   "id": "ttr4",
+   "name": "혼돈의 장",
+   "x": 6,
+   "y": 0,
+   "maxRank": 1,
+   "stat": "chaosField",
+   "perRank": 10,
+   "requires": [
+    "ttr3"
+   ],
+   "job": 4,
+   "kind": "k",
+   "desc": "내 주변 5칸 일반 몹 이동속도 -20%, 그 몹들에게 데미지 +10%",
+   "branch": 2
   }
  ]
 }

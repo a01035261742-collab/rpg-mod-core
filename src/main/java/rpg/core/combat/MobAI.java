@@ -133,6 +133,11 @@ public final class MobAI {
             mob.setDeltaMovement(v.x * 0.5, v.y, v.z * 0.5);
             return;
         }
+        if (now < m.decoyUntil && m.decoyPos != null) {   // 분신술: 분신한테 감 (플레이어 안 노림)
+            if (mob.getTarget() != null) mob.setTarget(null);
+            if (mob.tickCount % 10 == 0) mob.getNavigation().moveTo(m.decoyPos.x, m.decoyPos.y, m.decoyPos.z, 1.2);
+            return;
+        }
         if (def.skills().isEmpty() && !def.look().chase()) return;
         if (mob.tickCount % 5 != 0) return;
 

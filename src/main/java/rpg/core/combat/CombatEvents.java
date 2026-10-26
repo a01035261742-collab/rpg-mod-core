@@ -148,6 +148,8 @@ public final class CombatEvents {
     /** 지속 피해 걸기 (같은 종류는 새로 덮어씀). kind: bleed 출혈 / burn 화상 / poison 독 */
     public static void dot(ServerPlayer owner, Mob m, String kind, double perSecond, int ticks) {
         if (perSecond <= 0 || ticks <= 0) return;
+        PlayerData od = RpgData.get(owner);   // 트리: 지속 피해 +% · 출혈/독 전문가
+        perSecond *= 1 + (od.bonus("dotPct") + od.bonus(kind + "Pct")) / 100.0;
         DOTS.put(m.getId() + ":" + kind, new Dot(owner, m.getId(), kind, perSecond, owner.level().getGameTime() + ticks));
     }
 
@@ -330,7 +332,7 @@ public final class CombatEvents {
                     dmg = Math.round(dmg * (ad.critDamage() + ad.bonus("backCritDmg") / 100.0) / ad.critDamage());
                 rpg.core.skill.JobSkills.onHit(ap, ad, now);                                                  // 전투 흥분 등
                 boolean basic = sk == null && (direct == ap || (direct != null && direct.getPersistentData().contains("rpgPower")));
-                rpg.core.skill.PassiveEffects.afterDeal(ap, ad, mob, m, direct, basic, crit);              // 트리: 독·관통·표식
+                rpg.core.skill.PassiveEffects.afterDeal(ap, ad, mob, m, direct, basic, crit, dmg);              // 트리: 독·관통·표식
                 // 경직 충격: 근접은 EF 모션 배율, 스킬은 배율, 화살은 당긴 정도 (출혈 등 고정 피해는 경직 없음)
                 double impact = Math.min(3.0, ratio * (crit ? 1.2 : 1.0));
                 MobAI.stun(mob, m, impact, ap);

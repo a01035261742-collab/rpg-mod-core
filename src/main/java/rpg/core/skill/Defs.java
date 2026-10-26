@@ -158,6 +158,12 @@ public final class Defs {
             case "str" -> "힘 +%s";
             case "dex" -> "덱스 +%s";
             case "int" -> "지력 +%s";
+            case "luk" -> "운 +%s";
+            case "dotPct" -> "지속 피해 (출혈·독) +%s%%";
+            case "bleedPct" -> "출혈 피해 +%s%%";
+            case "poisonPct" -> "독 피해 +%s%%";
+            case "dropPct" -> "드롭률 +%s%%";
+            case "goldPct" -> "골드 획득 +%s%%";
             case "mpCost" -> "MP 소모 -%s%%";
             case "mpPct" -> "최대 MP +%s%%";
             case "ignoreDef" -> "방어율 무시 +%s%%";

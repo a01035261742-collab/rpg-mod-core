@@ -100,7 +100,8 @@ public class PlayerData {
     public transient int stillStacks;
     public transient long aimUntil, windVeilReadyAt;
     public transient double lastX, lastZ, baseMp, holyVal;
-    public transient long lastAttack, holyUntil;
+    public transient long lastAttack, holyUntil, escapeReadyAt, lifestealSec;
+    public transient double lifestealUsed;
     /** 피격 시 확률 무적 (잠재능력): 이 시각까지 피해 없음 */
     public transient long invulUntil;
     /** 연속 베기: 다음 타 (0~2), 이어서 누를 수 있는 시각 */
@@ -201,11 +202,11 @@ public class PlayerData {
     }
 
     // ── 상세 능력치 (공식은 balance 파일) ──
-    public double crit() { return Balance.critBase + Balance.critPerDex * total(DEX) + bonus("critChance") + buffV("focus", clock); }
+    public double crit() { return Balance.critBase + Balance.critPerDex * total(DEX) + bonus("critChance") + buffV("focus", clock) + rpg.core.skill.PassiveEffects.extraCrit(this); }
     public double critDamage() { return Balance.critDamage + (bonus("critDmg") + rpg.core.skill.PassiveEffects.extraCritDmg(this)) / 100.0; }
     public double healBonus() { return bonus("healPct"); }   // 회복량 증가 (패시브·전사의 회복력). 지력은 이제 힐 스공으로 반영
-    public double dropBonus() { return Balance.dropPerLuk * total(LUK) + bonus("dropPct"); }
-    public double goldBonus() { return Balance.goldPerLuk * total(LUK) + bonus("goldPct"); }
+    public double dropBonus() { return Balance.dropPerLuk * total(LUK) + bonus("dropPct") + buffV("plunder", clock); }
+    public double goldBonus() { return Balance.goldPerLuk * total(LUK) + bonus("goldPct") + buffV("plunder", clock); }
     /** Epic Fight 최대 스태미나에 더해지는 양 (스태미나 스탯 + 패시브) */
     public double staminaBonus() { return Balance.staminaPerPoint * total(STA) + bonus("stamina"); }
 

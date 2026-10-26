@@ -80,6 +80,7 @@ public final class Skills {
         int lv = d.skills.getOrDefault(id, 0);
         if (s == null || lv <= 0 || s.passive() || !available(d, s)) return;
         long now = p.level().getGameTime();
+        if ("shadow_clone".equals(id) && ThiefSkills.detonate(p)) return;   // 분신술 다시 누르기: 바로 폭발
         if (now < d.cdEnd.getOrDefault(id, 0L)) return;
         if (d.mp < mpCost(d, s, lv, now)) {
             p.displayClientMessage(Component.literal("MP가 부족해요").withStyle(ChatFormatting.BLUE), true);
@@ -222,7 +223,7 @@ public final class Skills {
             }
         }
         double pct = d.bonus("speedPct") + (now < d.sprintEnd ? d.sprintPct : 0) + d.buffV("haste", now)
-                + d.buffV("evasion_instinct", now) + d.buffV("battle_thrill", now) + d.buffV("hunt_speed", now) + d.buffV("hunt_instinct", now) + d.buffV("chase", now) + d.buffV("wind_veil", now)
+                + d.buffV("evasion_instinct", now) + d.buffV("battle_thrill", now) + d.buffV("hunt_speed", now) + d.buffV("hunt_instinct", now) + d.buffV("chase", now) + d.buffV("wind_veil", now) + d.buffV("escape_speed", now)
                 - (now < d.aimUntil ? 50 : 0)
                 - (d.chargeSkill != null ? 50 : 0);
         AttributeInstance inst = p.getAttribute(Attributes.MOVEMENT_SPEED);

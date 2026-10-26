@@ -86,6 +86,12 @@ public final class BranchSkills {
             case "knife_throw" -> knifeThrow(p, s, lv);
             case "poison_mist" -> poisonMist(p, d, s, lv, now);
             case "dash" -> dash(p, d, s, lv, now);
+            case "shadow_blade" -> {
+                WarriorSkills.burst(p, ParticleTypes.SMOKE, SoundEvents.ILLUSIONER_PREPARE_MIRROR, 1.3f);
+                yield buff(p, d, "shadow_blade", s.duration(), s.value(lv), 0, ParticleTypes.SMOKE, SoundEvents.TRIDENT_RETURN);
+            }
+            case "shadow_clone" -> ThiefSkills.shadowClone(p, s, lv);
+            case "plunder" -> ThiefSkills.plunder(p, d, s, lv);
             default -> false;
         };
     }

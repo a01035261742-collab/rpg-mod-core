@@ -68,6 +68,7 @@ public final class PassiveEffects {
     /** 구르기: 재빠른 회피 (2초 데미지 +) */
     public static void onRoll(PlayerData d, long now) {
         if (d.bonus("rollDmg") > 0) { d.buffEnd.put("roll_dmg", now + 40); d.buffVal.put("roll_dmg", d.bonus("rollDmg")); }
+        if (d.bonus("rollCrit") > 0) { d.buffEnd.put("roll_crit", now + 40); d.buffVal.put("roll_crit", d.bonus("rollCrit")); }   // 잔상 걸음
     }
 
     /** 평타 계수 (직업 평타% + 트리 평타%, 속사면 ×1.5) */
@@ -78,9 +79,22 @@ public final class PassiveEffects {
     }
 
     /** 피해 준 뒤: 속사 소모 · 독 바른 화살 · 꿰뚫기 · 표식 */
-    public static void afterDeal(ServerPlayer p, PlayerData d, Mob mob, MobData m, net.minecraft.world.entity.Entity direct, boolean basic, boolean crit) {
+    public static void afterDeal(ServerPlayer p, PlayerData d, Mob mob, MobData m, net.minecraft.world.entity.Entity direct, boolean basic, boolean crit, double dmg) {
         long now = p.level().getGameTime();
         d.lastAttack = now;
+        ThiefSkills.onDeal(p, d, mob, now);   // 그림자 칼날
+        double sa = -1;
+        if (crit && d.bonus("critBleed") > 0)   // 치명적 출혈
+            CombatEvents.dot(p, mob, "bleed", (sa = Combat.statAttack(p, d)) * d.bonus("critBleed") / 100.0, 60);
+        if (basic && d.bonus("deepWound") > 0 && p.getRandom().nextFloat() < 0.2f)   // 깊은 상처
+            CombatEvents.dot(p, mob, "bleed", (sa >= 0 ? sa : Combat.statAttack(p, d)) * d.bonus("deepWound") / 100.0, 60);
+        if (crit && d.bonus("lifesteal") > 0) {   // 흡혈: 준 피해의 1%, 초당 최대 HP 2%까지
+            long sec = now / 20;
+            if (sec != d.lifestealSec) { d.lifestealSec = sec; d.lifestealUsed = 0; }
+            double cap = d.maxHp * 0.02 - d.lifestealUsed;
+            double heal = Math.min(cap, dmg * d.bonus("lifesteal") / 100.0);
+            if (heal > 0) { d.lifestealUsed += heal; d.hp = Math.min(d.maxHp, d.hp + heal); }
+        }
         if (basic && d.quickShotReady) d.quickShotReady = false;
         if (crit && d.bonus("burnOnCrit") > 0)   // 원소 공명
             CombatEvents.dot(p, mob, "burn", Combat.statAttack(p, d) * d.bonus("burnOnCrit") / 100.0, 60);
@@ -117,6 +131,10 @@ public final class PassiveEffects {
         if (d.bonus("weakHunt") > 0 && (t < m.slowUntil && m.slowPct > 0 || mob.hasEffect(MobEffects.MOVEMENT_SLOWDOWN)))
             extra += d.bonus("weakHunt");                                                            // 약점 사냥
         if (d.bonus("burnDmg") > 0 && CombatEvents.dotDmg(mob, "burn") > 0) extra += d.bonus("burnDmg");   // 원소의 화신
+        if (d.bonus("backDmg") > 0 && behind(mob, p)) extra += d.bonus("backDmg");                     // 그림자 일격
+        if (d.bonus("doubleAgony") > 0 && CombatEvents.dotDmg(mob, "bleed") > 0 && CombatEvents.dotDmg(mob, "poison") > 0)
+            extra += d.bonus("doubleAgony");                                                         // 이중 고통
+        if (d.bonus("chaosField") > 0 && !Boss.isBoss(m) && p.distanceToSqr(mob) <= 25) extra += d.bonus("chaosField");   // 혼돈의 장
         double mul = add(d, extra);
         var pd = mob.getPersistentData();   // 표식: 그 몹이 받는 내 피해 +%
         if (pd.contains("rpgMarkBy") && t < pd.getLong("rpgMarkUntil") && p.getUUID().equals(pd.getUUID("rpgMarkBy")))
@@ -157,6 +175,21 @@ public final class PassiveEffects {
             d.buffVal.put("wind_veil", 50.0);
             p.serverLevel().sendParticles(ParticleTypes.CLOUD, p.getX(), p.getY() + 1, p.getZ(), 25, 0.5, 0.6, 0.5, 0.08);
         }
+        if (d.bonus("escape") > 0 && d.hp > 0 && d.hp < d.maxHp * 0.3 && now >= d.escapeReadyAt) {   // 도망자: 2초 투명 + 이속
+            d.escapeReadyAt = now + 1200;
+            d.buffEnd.put("stealth", now + 40); d.buffVal.put("stealth", 0.0); d.buffVal2.put("stealth", 0.0);
+            p.addEffect(new MobEffectInstance(MobEffects.INVISIBILITY, 40, 0, false, false, true));
+            for (Mob m : p.serverLevel().getEntitiesOfClass(Mob.class, p.getBoundingBox().inflate(32))) if (m.getTarget() == p) m.setTarget(null);
+            d.buffEnd.put("escape_speed", now + 40); d.buffVal.put("escape_speed", 50.0);
+            p.serverLevel().sendParticles(ParticleTypes.LARGE_SMOKE, p.getX(), p.getY() + 1, p.getZ(), 25, 0.4, 0.6, 0.4, 0.02);
+        }
+    }
+
+    /** 공격자가 몹 등 뒤에 있나 */
+    static boolean behind(Mob mob, net.minecraft.world.entity.Entity a) {
+        net.minecraft.world.phys.Vec3 look = net.minecraft.world.phys.Vec3.directionFromRotation(0, mob.yBodyRot);
+        net.minecraft.world.phys.Vec3 to = new net.minecraft.world.phys.Vec3(a.getX() - mob.getX(), 0, a.getZ() - mob.getZ());
+        return to.lengthSqr() > 1e-4 && to.normalize().dot(look) < -0.2;
     }
 
     // ───────── 매초: 공속 · 오라 ─────────
@@ -187,6 +220,11 @@ public final class PassiveEffects {
             for (Mob m : BranchSkills.mobsAround(l, p.position(), 4)) {
                 MobData md = Combat.mob(m);
                 if (md != null && !Boss.isBoss(md)) m.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 15, 0, false, false));
+            }
+        if (d.bonus("chaosField") > 0)   // 혼돈의 장: 주변 5칸 일반 몹 둔화 20%
+            for (Mob m : BranchSkills.mobsAround(l, p.position(), 5)) {
+                MobData md = Combat.mob(m);
+                if (md != null && !Boss.isBoss(md)) md.slow(20, now, now + 15);
             }
         // 도발의 대가: 나를 노리는(도발) 몹 수
         if (d.bonus("tauntDmg") > 0) {
@@ -241,6 +279,7 @@ public final class PassiveEffects {
         v += overload(d);                       // 마력 과부하
         v += d.buffV("tp_dmg", now);           // 순간 영창
         v += d.buffV("blessed_hand", now);     // 축복받은 손
+        if (loneAssassin(d)) v += 25;           // 고독한 암살자
         return v;
     }
 
@@ -258,7 +297,17 @@ public final class PassiveEffects {
 
     /** 추가 크리 피해%: 고독한 저격수 */
     public static double extraCritDmg(PlayerData d) {
-        return d.loneOk ? 20 : 0;
+        return (d.loneOk ? 20 : 0) + (loneAssassin(d) ? 15 : 0);
+    }
+
+    /** 추가 크리 확률%: 잔상 걸음 · 고독한 암살자 */
+    public static double extraCrit(PlayerData d) {
+        return d.buffV("roll_crit", d.clock) + (loneAssassin(d) ? 15 : 0);
+    }
+
+    /** 고독한 암살자: 8칸 안에 파티원 없음 */
+    static boolean loneAssassin(PlayerData d) {
+        return d.bonus("loneAssassin") > 0 && !d.guardNear;
     }
 
     /** 추가 보스%: 고독한 저격수 */
