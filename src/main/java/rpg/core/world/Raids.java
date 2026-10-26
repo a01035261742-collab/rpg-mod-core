@@ -334,11 +334,37 @@ public final class Raids {
 
     private static void startCount(MinecraftServer s, Ready r) {
         r.countAt = s.overworld().getGameTime() + COUNT_TICKS;
+        countdown(s, r, COUNT_TICKS / 20);
         Def def = def(s, r.raid, false);
         say(s, r.members, "모두 준비 완료! 10초 뒤 " + (def == null ? r.raid : def.title()) + " 레이드로 들어가요");
     }
 
+    /** 입장 카운트다운: 화면 가운데 큰 숫자 + 틱 소리 (3초부터 높아짐) */
+    private static void countdown(MinecraftServer s, Ready r, int sec) {
+        Def def = def(s, r.raid, false);
+        String name = def == null ? r.raid : def.title();
+        ChatFormatting col = sec <= 3 ? ChatFormatting.RED : sec <= 5 ? ChatFormatting.GOLD : ChatFormatting.WHITE;
+        for (UUID id : r.members) {
+            ServerPlayer m = s.getPlayerList().getPlayer(id);
+            if (m == null) continue;
+            title(m, Component.literal(String.valueOf(sec)).withStyle(col, ChatFormatting.BOLD),
+                    Component.literal(name + " 레이드 입장까지").withStyle(ChatFormatting.LIGHT_PURPLE), 22);
+            if (sec <= 3) m.playNotifySound(net.minecraft.sounds.SoundEvents.NOTE_BLOCK_PLING.value(), net.minecraft.sounds.SoundSource.MASTER, 1f, 0.8f + (3 - sec) * 0.3f);
+            else m.playNotifySound(net.minecraft.sounds.SoundEvents.NOTE_BLOCK_HAT.value(), net.minecraft.sounds.SoundSource.MASTER, 0.8f, 1f);
+        }
+    }
+
+    private static void title(ServerPlayer m, Component big, Component small, int stay) {
+        m.connection.send(new net.minecraft.network.protocol.game.ClientboundSetTitlesAnimationPacket(0, stay, 6));
+        m.connection.send(new net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket(small));
+        m.connection.send(new net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket(big));
+    }
+
     private static void cancel(MinecraftServer s, Ready r, String why) {
+        for (UUID id : r.members) {   // 화면 숫자 지우기
+            ServerPlayer m = s.getPlayerList().getPlayer(id);
+            if (m != null) m.connection.send(new net.minecraft.network.protocol.game.ClientboundClearTitlesPacket(true));
+        }
         READY.remove(r.leader);
         say(s, r.members, "입장 취소: " + why);
     }
@@ -390,6 +416,13 @@ public final class Raids {
         }
         RUNS.add(run);
         say(s, run.members, def.title() + " 레이드 시작! 제한 시간 15분 (보스 체력 ×" + run.members.size() + ")");
+        for (UUID id : run.members) {   // 화면 가운데 "입장!" + 소리
+            ServerPlayer m = s.getPlayerList().getPlayer(id);
+            if (m == null) continue;
+            title(m, Component.literal(def.title()).withStyle(ChatFormatting.LIGHT_PURPLE, ChatFormatting.BOLD),
+                    Component.literal("제한 시간 15분 · 보스 체력 ×" + run.members.size()).withStyle(ChatFormatting.GRAY), 50);
+            m.playNotifySound(net.minecraft.sounds.SoundEvents.ENDER_DRAGON_GROWL, net.minecraft.sounds.SoundSource.MASTER, 0.6f, 1.2f);
+        }
     }
 
     /** 끝 (실패·나가기·클리어) */
@@ -528,7 +561,7 @@ public final class Raids {
         for (Ready r : List.copyOf(READY.values())) {
             if (r.countAt >= 0) {
                 long left = r.countAt - now;
-                if (left > 0 && left % 20 == 0 && left <= 100) say(s, r.members, (left / 20) + "...");
+                if (left > 0 && left % 20 == 0) countdown(s, r, (int) (left / 20));
                 if (left <= 0) enter(s, r);
             } else if (now > r.until) cancel(s, r, "30초 안에 준비하지 않은 사람이 있어요");
         }
