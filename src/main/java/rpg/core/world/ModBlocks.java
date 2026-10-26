@@ -35,6 +35,10 @@ public final class ModBlocks {
     public static final RegistryObject<Block> SHARED_STASH = BLOCKS.register("shared_stash", () -> new StashBlock(
             BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLUE).strength(-1f, 3600000f).noLootTable()));
 
+    public static final RegistryObject<Block> RAID_GATE = BLOCKS.register("raid_gate", () -> new RaidGateBlock(
+            BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_RED).strength(-1f, 3600000f).lightLevel(s -> 9).noLootTable()));
+    public static final RegistryObject<Item> RAID_GATE_ITEM = ModItems.ITEMS.register("raid_gate", () -> new BlockItem(RAID_GATE.get(), new Item.Properties()));
+
     public static final RegistryObject<Item> WORLD_PORTAL_ITEM = ModItems.ITEMS.register("world_portal", () -> new BlockItem(WORLD_PORTAL.get(), new Item.Properties()));
     public static final RegistryObject<Item> SHARED_STASH_ITEM = ModItems.ITEMS.register("shared_stash", () -> new BlockItem(SHARED_STASH.get(), new Item.Properties()));
 
@@ -54,6 +58,15 @@ public final class ModBlocks {
         public StashBlock(Properties p) { super(p); }
         @Override public InteractionResult use(BlockState s, Level l, BlockPos pos, Player p, InteractionHand h, BlockHitResult hit) {
             if (!l.isClientSide && p instanceof ServerPlayer sp) SharedStash.open(sp);
+            return InteractionResult.sidedSuccess(l.isClientSide);
+        }
+    }
+
+    /** 레이드 입구: 우클릭하면 입장 창 */
+    public static class RaidGateBlock extends Block {
+        public RaidGateBlock(Properties p) { super(p); }
+        @Override public InteractionResult use(BlockState s, Level l, BlockPos pos, Player p, InteractionHand h, BlockHitResult hit) {
+            if (!l.isClientSide && p instanceof ServerPlayer sp) Raids.openGate(sp, pos);
             return InteractionResult.sidedSuccess(l.isClientSide);
         }
     }

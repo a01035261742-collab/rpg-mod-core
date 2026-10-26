@@ -120,6 +120,12 @@ public final class Net {
                 .encoder(WorldChoice::encode).decoder(WorldChoice::new).consumerMainThread(WorldChoice::handle).add();
         CH.messageBuilder(ChooseWorld.class, id++, NetworkDirection.PLAY_TO_SERVER)
                 .encoder(ChooseWorld::encode).decoder(ChooseWorld::new).consumerMainThread(ChooseWorld::handle).add();
+        CH.messageBuilder(RaidInfo.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(RaidInfo::encode).decoder(RaidInfo::new).consumerMainThread(RaidInfo::handle).add();
+        CH.messageBuilder(RaidReady.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(RaidReady::encode).decoder(RaidReady::new).consumerMainThread(RaidReady::handle).add();
+        CH.messageBuilder(RaidAction.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(RaidAction::encode).decoder(RaidAction::new).consumerMainThread(RaidAction::handle).add();
         CH.messageBuilder(PowerReq.class, id++, NetworkDirection.PLAY_TO_SERVER)
                 .encoder(PowerReq::encode).decoder(PowerReq::new).consumerMainThread(PowerReq::handle).add();
         CH.messageBuilder(PowerRes.class, id++, NetworkDirection.PLAY_TO_CLIENT)
@@ -152,6 +158,48 @@ public final class Net {
 
     public static void markers(ServerPlayer p, java.util.List<rpg.core.world.Markers.M> list) {
         CH.send(PacketDistributor.PLAYER.with(() -> p), new MarkerSync(list));
+    }
+
+    // ───────── 레이드 입장 ─────────
+    /** rows: "이름|레벨|레벨OK|가까움OK" */
+    public record RaidInfo(String raid, int minLevel, java.util.List<String> rows, boolean canGo, String busy) {
+        RaidInfo(FriendlyByteBuf b) { this(b.readUtf(64), b.readInt(), b.readList(x -> x.readUtf(128)), b.readBoolean(), b.readUtf(256)); }
+        void encode(FriendlyByteBuf b) { b.writeUtf(raid, 64); b.writeInt(minLevel); b.writeCollection(rows, (x, r) -> x.writeUtf(r, 128)); b.writeBoolean(canGo); b.writeUtf(busy, 256); }
+        void handle(Supplier<NetworkEvent.Context> ctx) {
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> rpg.core.client.RaidScreen.open(this));
+            ctx.get().setPacketHandled(true);
+        }
+    }
+    public record RaidReady(String raid, String leader) {
+        RaidReady(FriendlyByteBuf b) { this(b.readUtf(64), b.readUtf(64)); }
+        void encode(FriendlyByteBuf b) { b.writeUtf(raid, 64); b.writeUtf(leader, 64); }
+        void handle(Supplier<NetworkEvent.Context> ctx) {
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> net.minecraft.client.Minecraft.getInstance().setScreen(new rpg.core.client.RaidReadyScreen(raid, leader)));
+            ctx.get().setPacketHandled(true);
+        }
+    }
+    /** action 0 입장 요청 · 1 준비 · 2 거절 · 3 새로고침 */
+    public record RaidAction(int action, String raid) {
+        RaidAction(FriendlyByteBuf b) { this(b.readByte(), b.readUtf(64)); }
+        void encode(FriendlyByteBuf b) { b.writeByte(action); b.writeUtf(raid, 64); }
+        void handle(Supplier<NetworkEvent.Context> ctx) {
+            ServerPlayer p = ctx.get().getSender();
+            ctx.get().setPacketHandled(true);
+            if (p == null) return;
+            switch (action) {
+                case 0 -> rpg.core.world.Raids.request(p, raid);
+                case 1 -> rpg.core.world.Raids.answer(p, true);
+                case 2 -> rpg.core.world.Raids.answer(p, false);
+                case 3 -> rpg.core.world.Raids.refresh(p, raid);
+                default -> {}
+            }
+        }
+    }
+    public static void raidInfo(ServerPlayer p, String raid, int minLevel, java.util.List<String> rows, boolean canGo, String busy) {
+        CH.send(PacketDistributor.PLAYER.with(() -> p), new RaidInfo(raid, minLevel, rows, canGo, busy));
+    }
+    public static void raidReady(ServerPlayer p, String raid, String leader) {
+        CH.send(PacketDistributor.PLAYER.with(() -> p), new RaidReady(raid, leader));
     }
 
     // ───────── 첫 접속: 야생 / RPG 고르기 ─────────

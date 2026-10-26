@@ -165,6 +165,7 @@ public final class RpgWorld {
     private static final Map<UUID, Long> PORTAL_CD = new HashMap<>();
 
     public static void command(ServerPlayer p) {
+        if (Raids.inRaid(p)) { p.sendSystemMessage(Component.literal("레이드 중에는 이동할 수 없어요 (/rpg 레이드 나가기)").withStyle(ChatFormatting.RED)); return; }
         if (rpg.core.combat.Boss.inArena(p)) { p.sendSystemMessage(Component.literal("보스방에서는 이동할 수 없어요").withStyle(ChatFormatting.RED)); return; }
         long now = p.level().getGameTime();
         var d = RpgData.get(p);
