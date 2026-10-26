@@ -151,6 +151,7 @@ public final class RpgWorld {
                 pos = Vec3.atBottomCenterOf(surface(to, sp.getX(), sp.getZ()));
             }
             p.teleportTo(to, pos.x, pos.y, pos.z, p.getYRot(), p.getXRot());
+            if (inPortal(p)) ARRIVED.add(p.getUUID());   // 문 위치로 돌아왔으면 나갈 때까지 대기
         } else {
             ServerLevel to = rpgLevel(s);
             if (to == null) { p.sendSystemMessage(Component.literal("RPG 대륙을 찾을 수 없어요").withStyle(ChatFormatting.RED)); return; }
@@ -206,6 +207,12 @@ public final class RpgWorld {
     @SubscribeEvent
     public static void tick(TickEvent.PlayerTickEvent e) {
         if (e.phase != TickEvent.Phase.END || !(e.player instanceof ServerPlayer p)) return;
+        // 차원 문: 서 있으면 이동 (넘어온 직후엔 문 밖으로 나갈 때까지 대기)
+        if (p.tickCount % 2 == 0) {
+            boolean inside = inPortal(p);
+            if (!inside) ARRIVED.remove(p.getUUID());
+            else if (!ARRIVED.contains(p.getUUID())) portal(p);
+        }
         // Epic Fight: 야생에서도 그대로 씀 (0.43.2 롤백). 예전에 걸어둔 전투 모드 잠금만 처음 몇 초 동안 풀어줌
         if (p.tickCount < 200 && p.tickCount % 20 == 0) rpg.core.compat.EpicFightCompat.forceMode(p, true);
         if (CHANNELS.isEmpty()) return;
@@ -291,8 +298,7 @@ public final class RpgWorld {
         if (d.portalsBuilt) {
             // RPG 대륙을 새로 만들었으면(폴더 삭제 등) 스폰 문이 없음 → 다시 설치
             BlockPos g = d.rpgSpawn.offset(0, 0, -3);
-            removePortal(rpg, g);
-            if (!rpg.getBlockState(g.west(2)).is(ModBlocks.SHARED_STASH.get())) {
+            if (!rpg.getBlockState(g).is(ModBlocks.WORLD_PORTAL.get())) {
                 for (int x = -4; x <= 4; x++) for (int z = -4; z <= 4; z++) rpg.setBlockAndUpdate(d.rpgSpawn.offset(x, -1, z), Blocks.SMOOTH_STONE.defaultBlockState());
                 placeGate(rpg, g);
             }
@@ -337,14 +343,10 @@ public final class RpgWorld {
     }
 
     /** 문 2칸 (세로) + 왼쪽에 공유 창고 */
-    static void placeGate(ServerLevel l, BlockPos at) {   // 차원 문은 0.43.3 에서 없앰 (이동은 /rpg 이동), 공유 창고만
+    static void placeGate(ServerLevel l, BlockPos at) {
+        l.setBlockAndUpdate(at, ModBlocks.WORLD_PORTAL.get().defaultBlockState());
+        l.setBlockAndUpdate(at.above(), ModBlocks.WORLD_PORTAL.get().defaultBlockState());
         l.setBlockAndUpdate(at.west(2), ModBlocks.SHARED_STASH.get().defaultBlockState());
-    }
-
-    /** 예전에 설치된 차원 문 지우기 */
-    static void removePortal(ServerLevel l, BlockPos at) {
-        for (BlockPos q : new BlockPos[]{at, at.above()})
-            if (l.getBlockState(q).is(ModBlocks.WORLD_PORTAL.get())) l.setBlockAndUpdate(q, Blocks.AIR.defaultBlockState());
     }
 
     /** OP: 지금 자리를 RPG 스폰으로 */
