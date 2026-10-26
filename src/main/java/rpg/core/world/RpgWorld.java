@@ -234,15 +234,22 @@ public final class RpgWorld {
         if (!(e.getEntity() instanceof ServerPlayer p)) return;
         CompoundTag w = worlds(p);
         if (!w.contains("loaded")) {
-            // 업데이트 전부터 하던 사람: 지금 가진 건 RPG 묶음으로, 야생은 빈손
-            if (!is(p.level())) {
+            // 업데이트 전부터 하던 사람: 지금 가진 건 RPG 묶음으로, 야생은 빈손 (새로 온 사람은 그대로 야생에서 시작)
+            var rd = RpgData.get(p);
+            boolean veteran = rd.level > 1 || rd.job > 0 || rd.gold > 0;
+            if (veteran && !is(p.level())) {
                 w.put(RPG, snapshot(p, RPG));
                 restore(p, new CompoundTag());
             }
             w.putString("loaded", group(p.level()));
             putWorlds(p, w);
         } else sync(p);
-        if (!w.getBoolean("chosen")) rpg.core.net.Net.worldChoice(p);   // 처음 한 번 고르기
+        if (!w.getBoolean("chosen")) {   // 처음 접속: 고르기 창 없이 야생에서 시작 (0.43.5)
+            w = worlds(p);
+            w.putBoolean("chosen", true);
+            putWorlds(p, w);
+            p.sendSystemMessage(Component.literal("[RPG] 야생에서 시작해요. RPG 대륙은 /rpg 이동 (또는 스폰 옆 차원 문)으로 갈 수 있어요").withStyle(ChatFormatting.LIGHT_PURPLE));
+        }
     }
 
     /** 첫 접속 고르기 결과 */
