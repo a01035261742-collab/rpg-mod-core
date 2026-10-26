@@ -46,22 +46,30 @@ public final class AimLaser {
         for (var en : AIMS.entrySet()) {
             Entity p = mc.level.getEntity(en.getKey());
             if (p == null) continue;
-            boolean self = p == mc.getCameraEntity() && mc.options.getCameraType().isFirstPerson();
-            Vec3 eye, look, from;
-            if (self) {   // 1인칭 내 것: 카메라 기준 (움직여도 화면 가운데로 똑바로)
-                eye = e.getCamera().getPosition();
-                look = new Vec3(e.getCamera().getLookVector());
-                Vec3 up = new Vec3(e.getCamera().getUpVector());
-                from = eye.add(look.scale(0.8)).subtract(up.scale(0.22));
+            boolean me = p == mc.player, first = mc.options.getCameraType().isFirstPerson();
+            Vec3 from, to;
+            if (me) {   // 내 것: 화면 가운데(조준점) 방향 = 실제로 화살이 나가는 방향. Epic Fight 가 몸을 이동 방향으로 돌려도 안 틀어짐
+                Vec3 camPos = e.getCamera().getPosition(), camLook = new Vec3(e.getCamera().getLookVector());
+                Vec3 eye = p.getEyePosition(pt);
+                double reach = 14 + camPos.distanceTo(eye);
+                var hit = mc.level.clip(new ClipContext(camPos, camPos.add(camLook.scale(reach)), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, p));
+                to = hit.getType() == HitResult.Type.MISS ? camPos.add(camLook.scale(reach)) : hit.getLocation();
+                if (first) from = camPos.add(camLook.scale(0.8)).subtract(new Vec3(e.getCamera().getUpVector()).scale(0.22));
+                else {
+                    Vec3 dir = to.subtract(eye).normalize();
+                    Vec3 right = dir.cross(new Vec3(0, 1, 0));
+                    right = right.lengthSqr() < 1e-4 ? new Vec3(1, 0, 0) : right.normalize();
+                    from = eye.add(right.scale(0.25)).add(0, -0.25, 0).add(dir.scale(0.4));
+                }
             } else {
-                eye = p.getEyePosition(pt); look = p.getViewVector(pt);
+                Vec3 eye = p.getEyePosition(pt), look = p.getViewVector(pt);
                 Vec3 right = look.cross(new Vec3(0, 1, 0));
                 right = right.lengthSqr() < 1e-4 ? new Vec3(1, 0, 0) : right.normalize();
                 from = eye.add(right.scale(0.25)).add(0, -0.25, 0).add(look.scale(0.4));   // 손 근처에서 시작
+                Vec3 far = eye.add(look.scale(14));
+                var hit = mc.level.clip(new ClipContext(eye, far, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, p));
+                to = hit.getType() == HitResult.Type.MISS ? far : hit.getLocation();
             }
-            Vec3 far = eye.add(look.scale(14));
-            var hit = mc.level.clip(new ClipContext(eye, far, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, p));
-            Vec3 to = hit.getType() == HitResult.Type.MISS ? far : hit.getLocation();
             boolean ready = en.getValue().end() - now <= 200;
             float r = 1f, g = ready ? 1f : 0.15f, b = ready ? 1f : 0.15f, a = 0.85f;
             beam(vc, ps.last().pose(), from.subtract(cam), to.subtract(cam), 0.018f, r, g, b, a);
