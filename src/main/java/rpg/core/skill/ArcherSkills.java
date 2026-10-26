@@ -29,18 +29,9 @@ public final class ArcherSkills {
         ServerLevel l = p.serverLevel();
         l.playSound(null, p.blockPosition(), SoundEvents.CROSSBOW_LOADING_START, SoundSource.PLAYERS, 1f, 0.8f);
         anim(p, "sniping", AIM);   // 조준 모션
+        rpg.core.net.Net.aimLine(p, aim);   // 조준선 (클라에서 끊김 없는 선으로 그림)
         BranchSkills.task(p, t -> {
-            if (t < aim) {   // 조준선
-                if (t % 2 == 0) {   // 촘촘한 일직선 (0.2칸 간격), 쏘기 직전엔 하얗게
-                    Vec3 eye = p.getEyePosition().add(0, -0.1, 0), dir = JobSkills.aimDir(p);
-                    boolean ready = t >= aim - 4;
-                    var dust = new net.minecraft.core.particles.DustParticleOptions(
-                            ready ? new org.joml.Vector3f(1f, 1f, 1f) : new org.joml.Vector3f(1f, 0.15f, 0.15f), 0.35f);
-                    for (double i = 1; i <= 14; i += 0.2) {
-                        Vec3 q = eye.add(dir.scale(i));
-                        l.sendParticles(p, dust, true, q.x, q.y, q.z, 1, 0, 0, 0, 0);
-                    }
-                }
+            if (t < aim) {
                 if (t == aim - 4) l.playSound(null, p.blockPosition(), SoundEvents.CROSSBOW_LOADING_END, SoundSource.PLAYERS, 1f, 1.2f);
                 return false;
             }

@@ -99,6 +99,8 @@ public final class RpgHud {
         partyHud(g, mc.font, w, h);
         downHud(g, mc.font, w, h);
         notes(g, mc.font, w, h);
+        topY = buffBar(g, mc.font, w, -1, -1);
+        topY = goldBox(g, mc.font, w, topY);
         questTracker(g, mc.font, w, h);
         levelUpBanner(g, mc.font, w);
         if (mc.player.isCreative()) return;
@@ -157,15 +159,7 @@ public final class RpgHud {
         }
         // 구르기는 Epic Fight (Left Alt) — 자체 표시 사용
         // 질주 버프 남은 시간
-        // 버프 남은 시간 (스킬바 왼쪽, 위에서부터)
-        int by = y0;
-        for (ClientData.Buff b : ClientData.BUFFS) {
-            int bl = ClientData.left(b.left());
-            if (bl <= 0) continue;
-            String t = b.name() + (b.left() >= 900_000_000 ? "" : " " + (bl + 19) / 20 + "s");
-            g.drawString(font, t, x0 - font.width(t) - 4, by, 0xFF80E0FF, true);
-            by += 10;
-        }
+        // (버프는 오른쪽 위 buffBar 로 옮김)
         // 차지 게이지 (화면 가운데 아래)
         if (ClientData.charging) {
             int ticks = ClientData.chargeTicks + (int) ((System.currentTimeMillis() - ClientData.receivedAt) / 50);
@@ -175,6 +169,78 @@ public final class RpgHud {
             g.fill(cx - 30, cy, cx - 30 + (int) (60 * r), cy + 4, r >= 1 ? 0xFFFF8030 : 0xFFFFD24A);
             if (r >= 1) g.drawString(font, "MAX", cx - font.width("MAX") / 2, cy + 7, 0xFFFF8030, true);
         }
+    }
+
+    // ───────── 오른쪽 위: 버프 칸 + 골드 ─────────
+    private static int topY = 58;
+    static final int BOX = 20, BGAP = 4, PER_ROW = 10;
+    private static final int[] KIND_COL = {0xFF5AC8FF, 0xFF6EDC6E, 0xFFFFC83C, 0xFF8C8C8C};   // 스킬 · 파티 · 트리 · 재사용 대기
+
+    /** 버프 칸 그리기 (mx,my 가 칸 위면 툴팁). 아래 끝 y 를 돌려줌 */
+    public static int buffBar(GuiGraphics g, Font font, int w, int mx, int my) {
+        java.util.List<ClientData.Buff> list = new java.util.ArrayList<>();
+        for (ClientData.Buff b : ClientData.BUFFS) if (b.left() >= 900_000_000 || ClientData.left(b.left()) > 0) list.add(b);
+        if (list.isEmpty()) return 4;
+        int rowH = BOX + 12;
+        ClientData.Buff hover = null;
+        int hx = 0, hy = 0;
+        for (int i = 0; i < list.size(); i++) {
+            ClientData.Buff b = list.get(i);
+            int row = i / PER_ROW, col = i % PER_ROW;
+            int x = w - 4 - (col + 1) * BOX - col * BGAP, y = 4 + row * rowH;
+            boolean inf = b.left() >= 900_000_000;
+            int left = inf ? Integer.MAX_VALUE : ClientData.left(b.left());
+            int c = KIND_COL[Math.max(0, Math.min(3, b.kind()))];
+            boolean blink = !inf && b.kind() != 3 && left < 60 && (System.currentTimeMillis() / 250) % 2 == 0;
+            g.fill(x, y, x + BOX, y + BOX, 0xD0101018);
+            if (!blink) {
+                g.fill(x, y, x + BOX, y + 1, c); g.fill(x, y + BOX - 1, x + BOX, y + BOX, c);
+                g.fill(x, y, x + 1, y + BOX, c); g.fill(x + BOX - 1, y, x + BOX, y + BOX, c);
+            }
+            String nm = b.name().replace(" ", "");
+            String two = nm.length() > 2 ? nm.substring(0, 2) : nm;
+            g.pose().pushPose();
+            g.pose().translate(x + BOX / 2f, y + 4, 0);
+            g.pose().scale(0.75f, 0.75f, 1);
+            g.drawCenteredString(font, two, 0, 0, c);
+            g.pose().popPose();
+            String ex = b.extra();
+            if (ex.startsWith("×")) {   // 중첩: 칸 오른쪽 아래
+                g.pose().pushPose();
+                g.pose().translate(x + BOX - 2, y + BOX - 7, 0);
+                g.pose().scale(0.7f, 0.7f, 1);
+                g.drawString(font, ex.substring(1), -font.width(ex.substring(1)), 0, 0xFFFFFFFF, true);
+                g.pose().popPose();
+            }
+            String under = !ex.isEmpty() && !ex.startsWith("×") ? ex : inf ? "" : left >= 1200 ? (left / 1200) + "m" : String.valueOf((left + 19) / 20);
+            if (!under.isEmpty()) {
+                g.pose().pushPose();
+                g.pose().translate(x + BOX / 2f, y + BOX + 2, 0);
+                g.pose().scale(0.7f, 0.7f, 1);
+                g.drawCenteredString(font, under, 0, 0, 0xFFE0E0E0);
+                g.pose().popPose();
+            }
+            if (mx >= x && mx < x + BOX && my >= y && my < y + BOX) { hover = b; hx = mx; hy = my; }
+        }
+        int rows = (list.size() + PER_ROW - 1) / PER_ROW;
+        if (hover != null) {
+            java.util.List<net.minecraft.network.chat.Component> tip = new java.util.ArrayList<>();
+            String[] kinds = {"스킬", "파티원 버프", "패시브 트리", "재사용 대기"};
+            tip.add(net.minecraft.network.chat.Component.literal(hover.name()).withStyle(st -> st.withColor(KIND_COL[Math.max(0, Math.min(3, hover.kind()))] & 0xFFFFFF)));
+            tip.add(net.minecraft.network.chat.Component.literal("§7" + kinds[Math.max(0, Math.min(3, hover.kind()))] + (hover.extra().isEmpty() ? "" : "  §f" + hover.extra())));
+            if (hover.left() < 900_000_000) tip.add(net.minecraft.network.chat.Component.literal("§7남은 시간 " + (ClientData.left(hover.left()) + 19) / 20 + "초"));
+            g.renderComponentTooltip(font, tip, hx, hy);
+        }
+        return 4 + rows * rowH;
+    }
+
+    /** 골드 박스 (버프 칸 아래 오른쪽) */
+    static int goldBox(GuiGraphics g, Font font, int w, int y) {
+        String t = String.format("%,d G", ClientData.gold);
+        int tw = font.width(t), x1 = w - 4, x0 = x1 - tw - 10;
+        g.fill(x0, y, x1, y + 13, 0x90101018);
+        g.drawString(font, t, x0 + 5, y + 3, 0xFFFFD24A, true);
+        return y + 15;
     }
 
     /** 오른쪽: 진행 중 퀘스트 목표 (최대 3개) */
@@ -203,7 +269,7 @@ public final class RpgHud {
         if (list.size() > 3) lines.add(new Object[]{"+" + (list.size() - 3) + "개 더 (J)", 0xFF909090, false});
         int width = font.width("퀘스트");
         for (Object[] l : lines) width = Math.max(width, font.width((String) l[0]) + ((boolean) l[2] ? 0 : 6));
-        int pad = 6, right = w - 4, x0 = right - width - pad * 2, y = 58;
+        int pad = 6, right = w - 4, x0 = right - width - pad * 2, y = topY + 4;
         int height = 13 + lines.size() * 10 + pad;
         g.fill(x0, y, right, y + height, 0x90101018);
         g.fill(x0, y, right, y + 1, 0xC0FFD24A);

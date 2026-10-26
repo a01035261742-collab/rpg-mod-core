@@ -24,7 +24,8 @@ public final class ClientData {
     public static int dodgeLeft, dodgeLen, sprintLeft;
     public static int downLeft = -1, reviveProgress = -1;
     public static long receivedAt;
-    public record Buff(String name, int left) {}
+    /** kind 0 스킬 · 1 파티 · 2 트리 · 3 재사용 대기, extra = 중첩·수치 글자 */
+    public record Buff(String name, int left, int kind, String extra) {}
     public static final java.util.List<Buff> BUFFS = new java.util.ArrayList<>();
     public static boolean charging;
     public static int chargeTicks;
@@ -58,7 +59,7 @@ public final class ClientData {
         downLeft = b.readVarInt(); reviveProgress = b.readVarInt();
         BUFFS.clear();
         int nb = b.readVarInt();
-        for (int i = 0; i < nb; i++) BUFFS.add(new Buff(b.readUtf(), b.readVarInt()));
+        for (int i = 0; i < nb; i++) BUFFS.add(new Buff(b.readUtf(), b.readVarInt(), b.readByte(), b.readUtf()));
         charging = b.readBoolean();
         chargeTicks = b.readVarInt();
         branch = b.readVarInt(); pendingBranch = b.readVarInt(); trialCleared = b.readBoolean();

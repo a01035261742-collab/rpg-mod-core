@@ -65,6 +65,13 @@ public class EquipScreen extends AbstractContainerScreen<EquipMenu> {
     public void render(GuiGraphics g, int mx, int my, float pt) {
         renderBackground(g);
         super.render(g, mx, my, pt);
+        // 골드: 창 오른쪽 위 바깥 가로 박스
+        String t = "보유 골드  " + String.format("%,d G", ClientData.gold);
+        int bw = font.width(t) + 12, bx = leftPos + imageWidth - bw, by = topPos - 16;
+        Ui.panel(g, bx, by, bw, 14, Ui.GOLD);
+        g.drawString(font, t, bx + 6, by + 3, 0xFFFFD24A, false);
+        // 버프 칸: 화면 오른쪽 위 그대로 (마우스 올리면 설명)
+        RpgHud.buffBar(g, font, width, mx, my);
         renderTooltip(g, mx, my);
     }
 }

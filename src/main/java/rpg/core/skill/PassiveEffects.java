@@ -271,6 +271,10 @@ public final class PassiveEffects {
         // 맹세가 끝나면 최대 HP 원래대로
         if (d.oathVal > 0 && now >= d.oathUntil) { d.oathVal = 0; d.recalc(); RpgData.sync(p); }
         if (now >= d.warcryUntil) d.warcryVal = 0;
+        // HUD 버프 칸: 조건부 효과가 바뀌면 바로 보내기
+        int sig = java.util.Objects.hash(d.guardNear && d.bonus("guardInstinct") > 0, d.moving && d.bonus("moveDmg") > 0, d.stillStacks, d.loneOk,
+                d.bleedNear, d.tauntCount, d.bonus("lowHpDmg") > 0 && d.hp < d.maxHp * 0.5, Math.round(overload(d) * 10), loneAssassin(d));
+        if (sig != d.buffSig) { d.buffSig = sig; RpgData.sync(p); }
     }
 
     /** 추가 데미지%: 광전사의 혼 · 학살자 · 도발의 대가 · 전장의 함성 */

@@ -110,6 +110,22 @@ public final class Net {
                 .encoder(DailySync::encode).decoder(DailySync::new).consumerMainThread(DailySync::handle).add();
         CH.messageBuilder(DailyAction.class, id++, NetworkDirection.PLAY_TO_SERVER)
                 .encoder(DailyAction::encode).decoder(DailyAction::new).consumerMainThread(DailyAction::handle).add();
+        CH.messageBuilder(AimLine.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(AimLine::encode).decoder(AimLine::new).consumerMainThread(AimLine::handle).add();
+    }
+
+    // ───────── 서버 → 클라: 스나이핑 조준선 ─────────
+    public record AimLine(int id, int ticks) {
+        AimLine(FriendlyByteBuf b) { this(b.readVarInt(), b.readVarInt()); }
+        void encode(FriendlyByteBuf b) { b.writeVarInt(id); b.writeVarInt(ticks); }
+        void handle(Supplier<NetworkEvent.Context> ctx) {
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> rpg.core.client.AimLaser.start(id, ticks));
+            ctx.get().setPacketHandled(true);
+        }
+    }
+
+    public static void aimLine(ServerPlayer p, int ticks) {
+        CH.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> p), new AimLine(p.getId(), ticks));
     }
 
     // ───────── 일일 퀘스트 ─────────

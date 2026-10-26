@@ -95,7 +95,7 @@ public class PlayerData {
     public transient double atkSpeedPct, warcryVal, oathVal;
     public transient long crisisReadyAt, warcryUntil, oathUntil;
     public transient boolean guardNear;
-    public transient int tauntCount, bleedNear;
+    public transient int tauntCount, bleedNear, buffSig;
     public transient boolean quickShotReady, moving, loneOk;
     public transient int stillStacks;
     public transient long aimUntil, windVeilReadyAt;
@@ -301,20 +301,10 @@ public class PlayerData {
         b.writeVarInt((int) Math.max(0, sprintEnd - now));
         b.writeVarInt(isDown() ? (int) Math.max(0, downEnd - now) : -1);
         b.writeVarInt(reviver != null && reviveNeed > 0 ? (int) Math.min(100, (now - reviveStart) * 100 / reviveNeed) : -1);
-        // 버프 표시 (이름, 남은 틱)
-        java.util.List<String> names = new java.util.ArrayList<>();
-        java.util.List<Integer> lefts = new java.util.ArrayList<>();
-        if (now < sprintEnd) { names.add("질주"); lefts.add((int) (sprintEnd - now)); }
-        if (now < shieldEnd && shield > 0) { names.add("보호막"); lefts.add(shieldEnd == Long.MAX_VALUE ? 1_000_000_000 : (int) (shieldEnd - now)); }
-        buffEnd.forEach((id, end) -> {
-            if (now < end) {
-                var def = Defs.SKILLS.get(id);
-                names.add(def == null ? id : def.name());
-                lefts.add((int) (end - now));
-            }
-        });
-        b.writeVarInt(names.size());
-        for (int i = 0; i < names.size(); i++) { b.writeUtf(names.get(i)); b.writeVarInt(lefts.get(i)); }
+        // 버프 표시 (이름, 남은 틱, 종류 0 스킬 · 1 파티 · 2 트리 · 3 재사용 대기, 덧붙일 글자)
+        var bl = rpg.core.skill.BuffList.build(this, now);
+        b.writeVarInt(bl.size());
+        for (var e : bl) { b.writeUtf(e.name()); b.writeVarInt(e.left()); b.writeByte(e.kind()); b.writeUtf(e.extra()); }
         b.writeBoolean(chargeSkill != null);
         b.writeVarInt(chargeSkill != null ? (int) (now - chargeStart) : 0);
         b.writeVarInt(branch); b.writeVarInt(pendingBranch); b.writeBoolean(trialCleared);
