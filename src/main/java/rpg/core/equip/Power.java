@@ -39,6 +39,59 @@ public final class Power {
         return v;
     }
 
+    /** 툴팁 비교 결과: state 0 = 비교값, 1 = 착용 중, 2 = 착용 불가(why) */
+    public record Cmp(long delta, int state, String why) {}
+
+    /**
+     * 툴팁용: 이 장비를 같은 부위에 끼면 전투력이 얼마나 바뀌나 (칸이 여러 개면 제일 이득인 칸).
+     * 계산 동안만 잠깐 바꿔 끼고 바로 되돌림.
+     */
+    public static Cmp compare(ServerPlayer p, ItemStack s) {
+        GearDefs.GearDef d = Gear.def(s);
+        if (d == null) return new Cmp(0, 2, "");
+        if (!Gear.canEquip(p, s)) {
+            int need = d.level() - Flame.reqLv(s);
+            String why = Enhance.broken(s) ? "파괴된 장비" : RpgData.get(p).level < need ? "Lv." + need + "부터 착용"
+                    : (switch (d.job()) { case 1 -> "전사"; case 2 -> "궁수"; case 3 -> "마법사"; case 4 -> "도적"; default -> ""; }) + " 전용";
+            return new Cmp(0, 2, why);
+        }
+        String slot = d.slot();
+        var inv = p.getInventory();
+        long now = of(p), best = Long.MIN_VALUE;
+        if ("weapon".equals(slot)) {
+            int sel = inv.selected;
+            ItemStack held = inv.items.get(sel);
+            if (ItemStack.matches(held, s)) return new Cmp(0, 1, "");
+            inv.items.set(sel, s.copy());
+            try { best = of(p) - now; } finally { inv.items.set(sel, held); }
+            return new Cmp(best, 0, "");
+        }
+        net.minecraft.world.entity.EquipmentSlot es = switch (slot) {
+            case "head", "helmet", "hat" -> net.minecraft.world.entity.EquipmentSlot.HEAD;
+            case "chest", "top", "armor" -> net.minecraft.world.entity.EquipmentSlot.CHEST;
+            case "legs", "bottom", "pants" -> net.minecraft.world.entity.EquipmentSlot.LEGS;
+            case "feet", "shoes", "boots" -> net.minecraft.world.entity.EquipmentSlot.FEET;
+            default -> null;
+        };
+        if (es != null) {
+            int ai = es.getIndex();
+            ItemStack cur = inv.armor.get(ai);
+            if (ItemStack.matches(cur, s)) return new Cmp(0, 1, "");
+            inv.armor.set(ai, s.copy());
+            try { best = of(p) - now; } finally { inv.armor.set(ai, cur); }
+            return new Cmp(best, 0, "");
+        }
+        PlayerEquip pe = PlayerEquip.get(p);
+        for (int i = 1; i < PlayerEquip.SLOT_TYPES.length; i++) {
+            if (!PlayerEquip.SLOT_TYPES[i].equals(slot)) continue;
+            ItemStack cur = pe.items.getStackInSlot(i);
+            if (ItemStack.matches(cur, s)) return new Cmp(0, 1, "");
+            pe.items.setStackInSlot(i, s.copy());
+            try { best = Math.max(best, of(p) - now); } finally { pe.items.setStackInSlot(i, cur); }
+        }
+        return best == Long.MIN_VALUE ? new Cmp(0, 2, "") : new Cmp(best, 0, "");
+    }
+
     /**
      * 장비 s 의 NBT 칸 key 를 alt 로 바꿨을 때 전투력 차이.
      * 무기가 손에 없으면 (핫바 다른 칸·인벤) 잠깐 손에 든 걸로 바꿔서 계산하고 바로 되돌림.

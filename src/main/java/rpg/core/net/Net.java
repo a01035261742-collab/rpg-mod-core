@@ -112,6 +112,38 @@ public final class Net {
                 .encoder(DailyAction::encode).decoder(DailyAction::new).consumerMainThread(DailyAction::handle).add();
         CH.messageBuilder(AimLine.class, id++, NetworkDirection.PLAY_TO_CLIENT)
                 .encoder(AimLine::encode).decoder(AimLine::new).consumerMainThread(AimLine::handle).add();
+        CH.messageBuilder(PowerReq.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(PowerReq::encode).decoder(PowerReq::new).consumerMainThread(PowerReq::handle).add();
+        CH.messageBuilder(PowerRes.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(PowerRes::encode).decoder(PowerRes::new).consumerMainThread(PowerRes::handle).add();
+    }
+
+    // ───────── 툴팁 전투력 비교 (마우스 올릴 때만) ─────────
+    private static final java.util.Map<java.util.UUID, long[]> POWER_RATE = new java.util.HashMap<>();
+
+    public record PowerReq(int key, net.minecraft.world.item.ItemStack stack) {
+        PowerReq(FriendlyByteBuf b) { this(b.readInt(), b.readItem()); }
+        void encode(FriendlyByteBuf b) { b.writeInt(key); b.writeItem(stack); }
+        void handle(Supplier<NetworkEvent.Context> ctx) {
+            ServerPlayer p = ctx.get().getSender();
+            ctx.get().setPacketHandled(true);
+            if (p == null || rpg.core.equip.Gear.def(stack) == null) return;
+            long[] r = POWER_RATE.computeIfAbsent(p.getUUID(), k -> new long[2]);   // 1초에 최대 20번
+            long sec = p.level().getGameTime() / 20;
+            if (r[0] != sec) { r[0] = sec; r[1] = 0; }
+            if (++r[1] > 20) return;
+            var c = rpg.core.equip.Power.compare(p, stack);
+            CH.send(PacketDistributor.PLAYER.with(() -> p), new PowerRes(key, c.delta(), c.state(), c.why()));
+        }
+    }
+
+    public record PowerRes(int key, long delta, int state, String why) {
+        PowerRes(FriendlyByteBuf b) { this(b.readInt(), b.readLong(), b.readByte(), b.readUtf()); }
+        void encode(FriendlyByteBuf b) { b.writeInt(key); b.writeLong(delta); b.writeByte(state); b.writeUtf(why); }
+        void handle(Supplier<NetworkEvent.Context> ctx) {
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> rpg.core.client.RpgTooltip.result(key, delta, state, why));
+            ctx.get().setPacketHandled(true);
+        }
     }
 
     // ───────── 서버 → 클라: 스나이핑 조준선 ─────────

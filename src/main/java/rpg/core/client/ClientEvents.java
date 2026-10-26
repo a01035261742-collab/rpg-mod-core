@@ -86,6 +86,12 @@ public final class ClientEvents {
         }
 
         @SubscribeEvent
+        public static void tooltipParts(net.minecraftforge.client.event.RegisterClientTooltipComponentFactoriesEvent e) {
+            e.register(RpgTooltip.Header.class, RpgTooltip::client);
+            e.register(RpgTooltip.Sep.class, RpgTooltip::client);
+        }
+
+        @SubscribeEvent
         public static void keys(RegisterKeyMappingsEvent e) {
             e.register(STAT_KEY);
             e.register(SKILL_WINDOW_KEY);
