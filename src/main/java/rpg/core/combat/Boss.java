@@ -376,6 +376,8 @@ public final class Boss {
                 if (pool.contains(t)) { pool.remove(t); pool.add(0, t); }
                 for (int i = 0; i < Math.min(n, pool.size()); i++) st.rocks.put(pool.get(i).getUUID(), pool.get(i).position());
                 beginTrack(mob, st, p, now);
+                if (p.type().equals("share")) for (ServerPlayer x : arena(l, st, 16))
+                    Net.alert(x, "◆ " + p.name() + " — 보라 원에 모여서 나눠 맞으세요!", ChatFormatting.LIGHT_PURPLE, 70);
                 return;
             }
             case "mark" -> {   // 독 표식: 모두
@@ -383,7 +385,7 @@ public final class Boss {
                 for (ServerPlayer f : fighters) st.rocks.put(f.getUUID(), f.position());
                 beginTrack(mob, st, p, now);
                 for (ServerPlayer x : arena(l, st, 16))
-                    x.displayClientMessage(Component.literal("◆ " + p.name() + " — 흩어지세요! 다른 사람 폭발에 겹치면 피해 2배").withStyle(ChatFormatting.RED), true);
+                    Net.alert(x, "◆ " + p.name() + " — 흩어지세요! 겹치면 피해 2배", ChatFormatting.RED, 70);
                 return;
             }
             case "fang" -> {   // 독니 찌르기 (2페이즈: 반대 방향으로 한 번 더)
@@ -405,7 +407,7 @@ public final class Boss {
                 mob.setGlowingTag(true);
                 Net.telegraph(l, st.pos, st.dir, MobAI.CIRCLE + 20, p.r(), 0, w);
                 for (ServerPlayer x : arena(l, st, 16))
-                    x.displayClientMessage(Component.literal("◆ " + p.name() + " — " + (int) p.x("window", 2) + "초 안에 때려서 끊으세요!").withStyle(ChatFormatting.AQUA), true);
+                    Net.alert(x, "◆ " + p.name() + " — " + (int) p.x("window", 2) + "초 안에 때려서 끊으세요!", ChatFormatting.AQUA, 60);
                 l.playSound(null, mob.blockPosition(), SoundEvents.BEACON_POWER_SELECT, SoundSource.HOSTILE, 1.5f, 1.4f);
                 st.stageEnd = now + w;
                 return;

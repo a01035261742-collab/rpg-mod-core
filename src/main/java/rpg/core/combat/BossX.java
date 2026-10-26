@@ -377,7 +377,7 @@ final class BossX {
     }
 
     private static void say(ServerLevel l, Boss.State st, String s, ChatFormatting c) {
-        for (ServerPlayer p : Boss.arena(l, st, 16)) p.displayClientMessage(Component.literal(s).withStyle(c), true);
+        for (ServerPlayer p : Boss.arena(l, st, 16)) Net.alert(p, s, c, 70);   // 화면 위 가운데
     }
 
     /** 리셋·처치·사라짐: 알·새끼·고치·독 구역 정리 */

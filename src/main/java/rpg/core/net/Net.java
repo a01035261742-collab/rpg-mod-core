@@ -130,6 +130,23 @@ public final class Net {
                 .encoder(PowerReq::encode).decoder(PowerReq::new).consumerMainThread(PowerReq::handle).add();
         CH.messageBuilder(PowerRes.class, id++, NetworkDirection.PLAY_TO_CLIENT)
                 .encoder(PowerRes::encode).decoder(PowerRes::new).consumerMainThread(PowerRes::handle).add();
+        CH.messageBuilder(Alert.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(Alert::encode).decoder(Alert::new).consumerMainThread(Alert::handle).add();
+    }
+
+    // ───────── 보스 기믹 알림 (화면 위 가운데) ─────────
+    public record Alert(String text, int color, int ticks) {
+        Alert(FriendlyByteBuf b) { this(b.readUtf(256), b.readInt(), b.readVarInt()); }
+        void encode(FriendlyByteBuf b) { b.writeUtf(text, 256); b.writeInt(color); b.writeVarInt(ticks); }
+        void handle(Supplier<NetworkEvent.Context> ctx) {
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> rpg.core.client.BossAlert.show(text, color, ticks));
+            ctx.get().setPacketHandled(true);
+        }
+    }
+
+    public static void alert(ServerPlayer p, String text, net.minecraft.ChatFormatting col, int ticks) {
+        Integer c = col.getColor();
+        CH.send(PacketDistributor.PLAYER.with(() -> p), new Alert(text, c == null ? 0xFFFFFF : c, ticks));
     }
 
     // ───────── 트리 칸 전투력 미리보기 결과 ─────────

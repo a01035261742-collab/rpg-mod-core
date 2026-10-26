@@ -112,6 +112,7 @@ public final class ClientEvents {
         @SubscribeEvent
         public static void overlays(RegisterGuiOverlaysEvent e) {
             e.registerAbove(VanillaGuiOverlay.HOTBAR.id(), "rpg_hud", RpgHud::render);
+            e.registerAbove(VanillaGuiOverlay.BOSS_EVENT_PROGRESS.id(), "rpg_boss_alert", BossAlert::render);
         }
     }
 
