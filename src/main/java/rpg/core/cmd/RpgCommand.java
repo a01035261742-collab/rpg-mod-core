@@ -66,57 +66,43 @@ public final class RpgCommand {
                 p.getInventory().add(new net.minecraft.world.item.ItemStack(rpg.core.world.ModBlocks.SHARED_STASH_ITEM.get(), 1));
                 return ok(c, "차원 문 2개 (세로로 쌓기) + 공유 창고 1개 지급");
             }));
-        // 레이드 입장
+        // 레이드: 보스별 단말기 + 경기장
         for (String rn : new String[]{"레이드", "raid"}) {
             var raid = Commands.literal(rn);
-            var name = com.mojang.brigadier.arguments.StringArgumentType.greedyString();
-            com.mojang.brigadier.suggestion.SuggestionProvider<CommandSourceStack> names = (c, b) ->
-                    net.minecraft.commands.SharedSuggestionProvider.suggest(rpg.core.world.Raids.data(c.getSource().getServer()).raids.keySet(), b);
-            for (String n : new String[]{"입구", "gate"})
-                raid.then(Commands.literal(n).requires(s -> s.hasPermission(2)).then(Commands.argument("name", name).suggests(names).executes(c -> {
-                    ServerPlayer p = c.getSource().getPlayerOrException();
-                    if (!rpg.core.world.RpgWorld.in(p)) return fail(c, "RPG 대륙 안에서만 정할 수 있어요");
-                    String nm = com.mojang.brigadier.arguments.StringArgumentType.getString(c, "name");
-                    return ok(c, rpg.core.world.Raids.setGate(p, nm));
-                })));
-            for (String n : new String[]{"방", "room"})
-                raid.then(Commands.literal(n).requires(s -> s.hasPermission(2)).then(Commands.argument("name", name).suggests(names).executes(c -> {
-                    ServerPlayer p = c.getSource().getPlayerOrException();
-                    if (!rpg.core.world.RpgWorld.in(p)) return fail(c, "RPG 대륙 안에서만 정할 수 있어요");
-                    String nm = com.mojang.brigadier.arguments.StringArgumentType.getString(c, "name");
-                    return ok(c, rpg.core.world.Raids.addRoom(p, nm));
-                })));
-            for (String n : new String[]{"보스", "boss"})
+            com.mojang.brigadier.suggestion.SuggestionProvider<CommandSourceStack> bosses = (c, b) ->
+                    net.minecraft.commands.SharedSuggestionProvider.suggest(rpg.core.combat.Boss.DEFS.keySet(), b);
+            for (String n : new String[]{"단말기", "terminal"})
                 raid.then(Commands.literal(n).requires(s -> s.hasPermission(2)).then(Commands.argument("boss", com.mojang.brigadier.arguments.StringArgumentType.word())
-                        .suggests((c, b) -> net.minecraft.commands.SharedSuggestionProvider.suggest(
-                                java.util.stream.Stream.concat(rpg.core.combat.Boss.DEFS.keySet().stream(), java.util.stream.Stream.of("none")), b))
-                        .then(Commands.argument("name", name).suggests(names).executes(c -> ok(c, rpg.core.world.Raids.setBoss(c.getSource().getServer(),
-                                com.mojang.brigadier.arguments.StringArgumentType.getString(c, "name"), com.mojang.brigadier.arguments.StringArgumentType.getString(c, "boss")))))));
-            for (String n : new String[]{"방초기화", "clearrooms"})
-                raid.then(Commands.literal(n).requires(s -> s.hasPermission(2)).then(Commands.argument("name", name).suggests(names).executes(c -> {
-                    String nm = com.mojang.brigadier.arguments.StringArgumentType.getString(c, "name");
-                    var def = rpg.core.world.Raids.def(c.getSource().getServer(), nm, false);
-                    if (def == null) return fail(c, "없는 레이드: " + nm);
-                    def.rooms.clear(); rpg.core.world.Raids.data(c.getSource().getServer()).setDirty();
-                    return ok(c, "레이드 [" + nm + "] 방 위치를 모두 지웠어요");
+                        .suggests(bosses).executes(c -> {
+                    ServerPlayer p = c.getSource().getPlayerOrException();
+                    String boss = com.mojang.brigadier.arguments.StringArgumentType.getString(c, "boss");
+                    if (!rpg.core.world.Raids.isBoss(boss)) return fail(c, "없는 보스: " + boss);
+                    var it = rpg.core.world.Raids.terminalItem(boss);
+                    String nm = it.getHoverName().getString();
+                    if (!p.getInventory().add(it)) p.drop(it, false);
+                    return ok(c, nm + " 지급 · RPG 대륙 아무 데나 놓으면 입구");
                 })));
+            for (String n : new String[]{"경기장", "arena"})
+                raid.then(Commands.literal(n).requires(s -> s.hasPermission(2)).then(Commands.argument("boss", com.mojang.brigadier.arguments.StringArgumentType.word())
+                        .suggests(bosses).executes(c -> {
+                    ServerPlayer p = c.getSource().getPlayerOrException();
+                    if (!rpg.core.world.RpgWorld.in(p)) return fail(c, "RPG 대륙 안에서만 정할 수 있어요");
+                    return ok(c, rpg.core.world.Raids.addRoom(p, com.mojang.brigadier.arguments.StringArgumentType.getString(c, "boss")));
+                })));
+            for (String n : new String[]{"경기장삭제", "removearena"})
+                raid.then(Commands.literal(n).requires(s -> s.hasPermission(2)).then(Commands.argument("boss", com.mojang.brigadier.arguments.StringArgumentType.word())
+                        .suggests(bosses).executes(c -> ok(c, rpg.core.world.Raids.removeRoom(c.getSource().getPlayerOrException(),
+                                com.mojang.brigadier.arguments.StringArgumentType.getString(c, "boss"))))));
             for (String n : new String[]{"레벨", "level"})
-                raid.then(Commands.literal(n).requires(s -> s.hasPermission(2)).then(Commands.argument("lv", IntegerArgumentType.integer(1, 999))
-                        .then(Commands.argument("name", name).suggests(names).executes(c -> {
-                    String nm = com.mojang.brigadier.arguments.StringArgumentType.getString(c, "name");
-                    int lv = IntegerArgumentType.getInteger(c, "lv");
-                    var def = rpg.core.world.Raids.def(c.getSource().getServer(), nm, true);
-                    def.minLevel = lv; rpg.core.world.Raids.data(c.getSource().getServer()).setDirty();
-                    return ok(c, "레이드 [" + nm + "] 입장 Lv." + lv + " 이상");
+                raid.then(Commands.literal(n).requires(s -> s.hasPermission(2)).then(Commands.argument("boss", com.mojang.brigadier.arguments.StringArgumentType.word())
+                        .suggests(bosses).then(Commands.argument("lv", IntegerArgumentType.integer(0, 999)).executes(c -> {
+                    String boss = com.mojang.brigadier.arguments.StringArgumentType.getString(c, "boss");
+                    if (!rpg.core.world.Raids.isBoss(boss)) return fail(c, "없는 보스: " + boss);
+                    var def = rpg.core.world.Raids.def(c.getSource().getServer(), boss, true);
+                    def.minLevel = IntegerArgumentType.getInteger(c, "lv");
+                    rpg.core.world.Raids.data(c.getSource().getServer()).setDirty();
+                    return ok(c, def.title() + " 레이드 입장 Lv." + def.minLevel() + " 이상" + (def.minLevel == 0 ? " (자동)" : "") + " · 단말기 글자는 다시 놓으면 바뀜");
                 }))));
-            for (String n : new String[]{"삭제", "remove"})
-                raid.then(Commands.literal(n).requires(s -> s.hasPermission(2)).then(Commands.argument("name", name).suggests(names).executes(c -> {
-                    String nm = com.mojang.brigadier.arguments.StringArgumentType.getString(c, "name");
-                    var data = rpg.core.world.Raids.data(c.getSource().getServer());
-                    if (data.raids.remove(nm) == null) return fail(c, "없는 레이드: " + nm);
-                    data.setDirty();
-                    return ok(c, "레이드 [" + nm + "] 삭제 (입구 블록은 직접 부수세요)");
-                })));
             for (String n : new String[]{"목록", "list"})
                 raid.then(Commands.literal(n).executes(c -> { c.getSource().sendSuccess(() -> rpg.core.world.Raids.listText(c.getSource()), false); return 1; }));
             for (String n : new String[]{"나가기", "leave"})

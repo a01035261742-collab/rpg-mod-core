@@ -18,7 +18,7 @@ import rpg.core.RpgCore;
 public final class Markers {
     private Markers() {}
 
-    /** type 0 사냥터(상자) · 1 보스방(원) · 2 NPC · 3 퀘스트 지점 · 4 전직 시련 · 5 마을 · 6 RPG 스폰 · 7 레이드 입구 · 8 레이드 방 */
+    /** type 0 사냥터(상자) · 1 보스방(원) · 2 NPC · 3 퀘스트 지점 · 4 전직 시련 · 5 마을 · 6 RPG 스폰 · 7 레이드 단말기 · 8 레이드 경기장 */
     public record M(int type, int x1, int y1, int z1, int x2, int y2, int z2, float r, String label) {}
 
     private static final Set<UUID> ON = new HashSet<>();
@@ -57,8 +57,9 @@ public final class Markers {
         if (RpgWorld.is(l)) {
             out.add(at(6, RpgWorld.data(p.getServer()).rpgSpawn, 0, "RPG 스폰"));
             for (var d : Raids.data(p.getServer()).raids.values()) {
-                if (d.gate != null) out.add(at(7, d.gate, 0, "레이드 입구: " + d.name + " (Lv." + d.minLevel + ")"));
-                for (int i = 0; i < d.rooms.size(); i++) out.add(at(8, d.rooms.get(i), 0, "레이드 방: " + d.name + " " + (i + 1) + "번"));
+                for (var g : d.gates) out.add(at(7, g, 0, "레이드 단말기: " + d.title() + " (Lv." + d.minLevel() + ")"));
+                double ar = rpg.core.combat.Boss.DEFS.containsKey(d.name) ? rpg.core.combat.Boss.DEFS.get(d.name).arena() : 0;
+                for (int i = 0; i < d.rooms.size(); i++) out.add(at(8, d.rooms.get(i), (float) ar, "레이드 경기장: " + d.title() + " " + (i + 1) + "번"));
             }
         }
         return out;

@@ -99,6 +99,14 @@ public final class AdminPanel {
         }
         say(src, row("테스트 소환", spawn));
         say(src, row("경기장 등록 (발밑)", point));
+        MutableComponent term = Component.literal(""), arena = Component.literal("");
+        for (var e : rpg.core.combat.Boss.DEFS.keySet()) {
+            String nm = rpg.core.balance.Balance.MOBS.containsKey(e) ? rpg.core.balance.Balance.MOBS.get(e).name() : e;
+            term.append(btn(nm, "/rpg 레이드 단말기 " + e, ChatFormatting.LIGHT_PURPLE)).append(" ");
+            arena.append(btn(nm, "/rpg 레이드 경기장 " + e, ChatFormatting.DARK_PURPLE)).append(" ");
+        }
+        say(src, row("레이드 단말기 받기", term));
+        say(src, row("레이드 경기장 (발밑 = 중앙)", arena));
         say(src, row("", btn("경기장 목록", "/rpg boss point list", ChatFormatting.YELLOW), btn("재등장 초기화", "/rpg boss respawn", ChatFormatting.YELLOW),
                 btn("◀ 패널", "/rpg 관리", ChatFormatting.WHITE)));
     }

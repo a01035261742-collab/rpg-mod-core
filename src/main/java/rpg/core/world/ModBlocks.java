@@ -63,9 +63,17 @@ public final class ModBlocks {
         }
     }
 
-    /** 레이드 입구: 우클릭하면 입장 창 */
+    /** 레이드 단말기: 아이템의 보스 키로 놓으면 그 보스 레이드 입구, 우클릭하면 입장 창 */
     public static class RaidGateBlock extends Block {
         public RaidGateBlock(Properties p) { super(p); }
+        @Override public void setPlacedBy(Level l, BlockPos pos, BlockState s, @org.jetbrains.annotations.Nullable net.minecraft.world.entity.LivingEntity placer, net.minecraft.world.item.ItemStack stack) {
+            super.setPlacedBy(l, pos, s, placer, stack);
+            if (l instanceof net.minecraft.server.level.ServerLevel sl) Raids.placed(sl, pos, stack, placer);
+        }
+        @Override public void onRemove(BlockState s, Level l, BlockPos pos, BlockState ns, boolean moving) {
+            if (!s.is(ns.getBlock()) && l instanceof net.minecraft.server.level.ServerLevel sl) Raids.removed(sl, pos);
+            super.onRemove(s, l, pos, ns, moving);
+        }
         @Override public InteractionResult use(BlockState s, Level l, BlockPos pos, Player p, InteractionHand h, BlockHitResult hit) {
             if (!l.isClientSide && p instanceof ServerPlayer sp) Raids.openGate(sp, pos);
             return InteractionResult.sidedSuccess(l.isClientSide);

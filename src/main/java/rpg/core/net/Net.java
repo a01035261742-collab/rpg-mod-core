@@ -162,9 +162,10 @@ public final class Net {
 
     // ───────── 레이드 입장 ─────────
     /** rows: "이름|레벨|레벨OK|가까움OK" */
-    public record RaidInfo(String raid, int minLevel, java.util.List<String> rows, boolean canGo, String busy) {
-        RaidInfo(FriendlyByteBuf b) { this(b.readUtf(64), b.readInt(), b.readList(x -> x.readUtf(128)), b.readBoolean(), b.readUtf(256)); }
-        void encode(FriendlyByteBuf b) { b.writeUtf(raid, 64); b.writeInt(minLevel); b.writeCollection(rows, (x, r) -> x.writeUtf(r, 128)); b.writeBoolean(canGo); b.writeUtf(busy, 256); }
+    /** title = "보스 이름|보스 레벨|빈 경기장|경기장 수", rows = "이름|레벨|레벨OK|근처|오늘 보상 가능" */
+    public record RaidInfo(String raid, String title, int minLevel, java.util.List<String> rows, boolean canGo, String busy) {
+        RaidInfo(FriendlyByteBuf b) { this(b.readUtf(64), b.readUtf(128), b.readInt(), b.readList(x -> x.readUtf(128)), b.readBoolean(), b.readUtf(256)); }
+        void encode(FriendlyByteBuf b) { b.writeUtf(raid, 64); b.writeUtf(title, 128); b.writeInt(minLevel); b.writeCollection(rows, (x, r) -> x.writeUtf(r, 128)); b.writeBoolean(canGo); b.writeUtf(busy, 256); }
         void handle(Supplier<NetworkEvent.Context> ctx) {
             DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> rpg.core.client.RaidScreen.open(this));
             ctx.get().setPacketHandled(true);
@@ -195,8 +196,8 @@ public final class Net {
             }
         }
     }
-    public static void raidInfo(ServerPlayer p, String raid, int minLevel, java.util.List<String> rows, boolean canGo, String busy) {
-        CH.send(PacketDistributor.PLAYER.with(() -> p), new RaidInfo(raid, minLevel, rows, canGo, busy));
+    public static void raidInfo(ServerPlayer p, String raid, String title, int minLevel, java.util.List<String> rows, boolean canGo, String busy) {
+        CH.send(PacketDistributor.PLAYER.with(() -> p), new RaidInfo(raid, title, minLevel, rows, canGo, busy));
     }
     public static void raidReady(ServerPlayer p, String raid, String leader) {
         CH.send(PacketDistributor.PLAYER.with(() -> p), new RaidReady(raid, leader));
