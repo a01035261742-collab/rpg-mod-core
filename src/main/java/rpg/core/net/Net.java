@@ -132,13 +132,13 @@ public final class Net {
         }
     }
 
-    public record ChooseWorld(boolean rpg) {
+    public record ChooseWorld(boolean toRpg) {
         ChooseWorld(FriendlyByteBuf b) { this(b.readBoolean()); }
-        void encode(FriendlyByteBuf b) { b.writeBoolean(rpg); }
+        void encode(FriendlyByteBuf b) { b.writeBoolean(toRpg); }
         void handle(Supplier<NetworkEvent.Context> ctx) {
             ServerPlayer p = ctx.get().getSender();
             ctx.get().setPacketHandled(true);
-            if (p != null) rpg.core.world.RpgWorld.choose(p, rpg);
+            if (p != null) rpg.core.world.RpgWorld.choose(p, toRpg);
         }
     }
 
