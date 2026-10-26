@@ -26,7 +26,8 @@ public final class BuffList {
         List<Entry> skill = new ArrayList<>(), party = new ArrayList<>(), tree = new ArrayList<>(), cd = new ArrayList<>();
         if (now < d.sprintEnd) skill.add(new Entry("질주", (int) (d.sprintEnd - now), 0, ""));
         if (now < d.shieldEnd && d.shield > 0) skill.add(new Entry("보호막", d.shieldEnd == Long.MAX_VALUE ? INF : (int) (d.shieldEnd - now), 0, ""));
-        if (now < d.killComboUntil && d.killCombo > 0) tree.add(new Entry("콤보", (int) (d.killComboUntil - now), 2, d.killCombo + (d.comboGoldPct(now) > 0 ? " +" + d.comboGoldPct(now) + "%" : "")));
+        if (now < d.killComboUntil && d.killCombo > 0)   // 칸: "콤보" · 오른쪽 아래 콤보 수 · 아래 남은 시간 (골드 % 는 툴팁 이름)
+            tree.add(new Entry("콤보" + (d.comboGoldPct(now) > 0 ? " · 골드 +" + d.comboGoldPct(now) + "%" : ""), (int) (d.killComboUntil - now), 2, "×" + d.killCombo));
         d.buffEnd.forEach((id, end) -> {
             if (now >= end || id.equals("stealth") && d.buffV("stealth", now) == 0 && d.buffEnd.containsKey("escape_speed")) return;
             int left = (int) (end - now);

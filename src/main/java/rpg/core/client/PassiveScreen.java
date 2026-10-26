@@ -290,6 +290,7 @@ public class PassiveScreen extends Screen {
         for (Defs.Node n : nodes) {
             int x = nx(n), y = ny(n), r = rad(n);
             if (x < ax - r - 4 || x > ax + aw + r + 4 || y < ay - r - 4 || y > ay + ah + r + 4) continue;
+            if (x + r >= px + 8 && x - r <= px + 158 && y + r >= py + ph - 82 && y - r <= py + ph - 8) continue;   // 왼쪽 아래 설명 칸 뒤는 안 그림 (겹침)
             drawNode(g, n, x, y, r);
             if (!q.isEmpty() && matches(n, q) && (System.currentTimeMillis() / 300) % 2 == 0) ring(g, x, y, r + 5, 2, 0xFFFFFFFF);
             if (inArea && (mx - x) * (mx - x) + (my - y) * (my - y) <= (r + 2) * (r + 2)) hover = n;
@@ -359,7 +360,7 @@ public class PassiveScreen extends Screen {
     }
 
     private void legend(GuiGraphics g) {
-        g.pose().pushPose(); g.pose().translate(0, 0, 300);   // 칸 아이콘·랭크 글자보다 위에
+        g.pose().pushPose(); g.pose().translate(0, 0, 350);   // 칸 아이콘·랭크 글자보다 위에
         legendBody(g);
         g.flush();
         g.pose().popPose();

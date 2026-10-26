@@ -18,7 +18,7 @@ import rpg.core.RpgCore;
 public final class Markers {
     private Markers() {}
 
-    /** type 0 사냥터(상자) · 1 보스방(원) · 2 NPC · 3 퀘스트 지점 · 4 전직 시련 · 5 마을 · 6 RPG 스폰 */
+    /** type 0 사냥터(상자) · 1 보스방(원) · 2 NPC · 3 퀘스트 지점 · 4 전직 시련 · 5 마을 · 6 RPG 스폰 · 7 레이드 입구 · 8 레이드 방 */
     public record M(int type, int x1, int y1, int z1, int x2, int y2, int z2, float r, String label) {}
 
     private static final Set<UUID> ON = new HashSet<>();
@@ -54,7 +54,13 @@ public final class Markers {
         qp.points.forEach((id, pl) -> { if (pl.dim().equals(dim)) out.add(at(3, pl.pos(), 0, "퀘스트: " + rpg.core.quest.Quests.pointName(id))); });
         for (var pl : qp.trials) if (pl.dim().equals(dim)) out.add(at(4, pl.pos(), 0, "전직 시련"));
         rpg.core.town.Towns.get(l).towns.forEach((name, pos) -> out.add(at(5, pos, 0, "마을: " + name)));
-        if (RpgWorld.is(l)) out.add(at(6, RpgWorld.data(p.getServer()).rpgSpawn, 0, "RPG 스폰"));
+        if (RpgWorld.is(l)) {
+            out.add(at(6, RpgWorld.data(p.getServer()).rpgSpawn, 0, "RPG 스폰"));
+            for (var d : Raids.data(p.getServer()).raids.values()) {
+                if (d.gate != null) out.add(at(7, d.gate, 0, "레이드 입구: " + d.name + " (Lv." + d.minLevel + ")"));
+                for (int i = 0; i < d.rooms.size(); i++) out.add(at(8, d.rooms.get(i), 0, "레이드 방: " + d.name + " " + (i + 1) + "번"));
+            }
+        }
         return out;
     }
 

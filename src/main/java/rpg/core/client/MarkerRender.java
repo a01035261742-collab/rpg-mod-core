@@ -24,7 +24,7 @@ public final class MarkerRender {
     private MarkerRender() {}
 
     public static final List<Markers.M> LIST = new ArrayList<>();
-    private static final int[] COL = {0x40E040, 0xFF4040, 0xFFD24A, 0xFFD24A, 0xFF9040, 0x50A0FF, 0xC060FF};
+    private static final int[] COL = {0x40E040, 0xFF4040, 0xFFD24A, 0xFFD24A, 0xFF9040, 0x50A0FF, 0xC060FF, 0xE040A0, 0xFF60D0};
 
     public static void set(List<Markers.M> l) { LIST.clear(); LIST.addAll(l); }
 
