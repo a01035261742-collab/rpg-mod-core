@@ -6,7 +6,7 @@
    "job": 1,
    "level": 1,
    "stats": {
-    "atk": 17
+    "atk": 9
    },
    "speed": 1.6
   },
@@ -15,7 +15,7 @@
    "job": 1,
    "level": 10,
    "stats": {
-    "atk": 30,
+    "atk": 15,
     "str": 2
    },
    "speed": 1.6
@@ -25,7 +25,7 @@
    "job": 2,
    "level": 1,
    "stats": {
-    "atk": 15
+    "atk": 8
    },
    "speed": 1.4
   },
@@ -34,7 +34,7 @@
    "job": 2,
    "level": 10,
    "stats": {
-    "atk": 28,
+    "atk": 14,
     "dex": 2
    },
    "speed": 1.4
@@ -44,7 +44,7 @@
    "job": 3,
    "level": 1,
    "stats": {
-    "matk": 18
+    "matk": 9
    },
    "speed": 1.2
   },
@@ -53,7 +53,7 @@
    "job": 3,
    "level": 10,
    "stats": {
-    "matk": 32,
+    "matk": 16,
     "int": 2
    },
    "speed": 1.2
@@ -63,7 +63,7 @@
    "job": 4,
    "level": 1,
    "stats": {
-    "atk": 15
+    "atk": 8
    },
    "speed": 1.8
   },
@@ -72,7 +72,7 @@
    "job": 4,
    "level": 10,
    "stats": {
-    "atk": 28,
+    "atk": 14,
     "luk": 2
    },
    "speed": 1.8
@@ -290,7 +290,7 @@
    "job": 1,
    "level": 20,
    "stats": {
-    "atk": 43,
+    "atk": 22,
     "str": 4
    },
    "speed": 1.6
@@ -300,7 +300,7 @@
    "job": 1,
    "level": 30,
    "stats": {
-    "atk": 56,
+    "atk": 28,
     "str": 6
    },
    "speed": 1.6
@@ -310,7 +310,7 @@
    "job": 1,
    "level": 40,
    "stats": {
-    "atk": 69,
+    "atk": 35,
     "str": 8
    },
    "speed": 1.6
@@ -320,7 +320,7 @@
    "job": 2,
    "level": 20,
    "stats": {
-    "atk": 41,
+    "atk": 21,
     "dex": 4
    },
    "speed": 1.4
@@ -330,7 +330,7 @@
    "job": 2,
    "level": 30,
    "stats": {
-    "atk": 54,
+    "atk": 27,
     "dex": 6
    },
    "speed": 1.4
@@ -340,7 +340,7 @@
    "job": 2,
    "level": 40,
    "stats": {
-    "atk": 67,
+    "atk": 34,
     "dex": 8
    },
    "speed": 1.4
@@ -350,7 +350,7 @@
    "job": 3,
    "level": 20,
    "stats": {
-    "matk": 46,
+    "matk": 23,
     "int": 4
    },
    "speed": 1.2
@@ -360,7 +360,7 @@
    "job": 3,
    "level": 30,
    "stats": {
-    "matk": 60,
+    "matk": 30,
     "int": 6
    },
    "speed": 1.2
@@ -370,7 +370,7 @@
    "job": 3,
    "level": 40,
    "stats": {
-    "matk": 74,
+    "matk": 37,
     "int": 8
    },
    "speed": 1.2
@@ -380,7 +380,7 @@
    "job": 4,
    "level": 20,
    "stats": {
-    "atk": 41,
+    "atk": 21,
     "luk": 4
    },
    "speed": 1.8
@@ -390,7 +390,7 @@
    "job": 4,
    "level": 30,
    "stats": {
-    "atk": 54,
+    "atk": 27,
     "luk": 6
    },
    "speed": 1.8
@@ -400,7 +400,7 @@
    "job": 4,
    "level": 40,
    "stats": {
-    "atk": 67,
+    "atk": 34,
     "luk": 8
    },
    "speed": 1.8
@@ -731,8 +731,8 @@
    "job": 0,
    "level": 5,
    "stats": {
-    "hp": 35,
-    "mp": 15
+    "hp": 53,
+    "mp": 23
    }
   },
   "cow_horn_earring": {
@@ -740,11 +740,11 @@
    "job": 0,
    "level": 5,
    "stats": {
-    "str": 2,
-    "dex": 2,
-    "int": 2,
-    "luk": 2,
-    "hp": 10
+    "str": 3,
+    "dex": 3,
+    "int": 3,
+    "luk": 3,
+    "hp": 15
    }
   },
   "slime_ring": {
@@ -752,11 +752,11 @@
    "job": 0,
    "level": 10,
    "stats": {
-    "str": 2,
-    "dex": 2,
-    "int": 2,
-    "luk": 2,
-    "hp": 15
+    "str": 3,
+    "dex": 3,
+    "int": 3,
+    "luk": 3,
+    "hp": 23
    }
   },
   "rat_tail_belt": {
@@ -764,9 +764,9 @@
    "job": 0,
    "level": 10,
    "stats": {
-    "hp": 45,
-    "def": 3,
-    "dex": 2
+    "hp": 68,
+    "def": 5,
+    "dex": 3
    }
   },
   "dog_fang_earring": {
@@ -774,10 +774,10 @@
    "job": 0,
    "level": 15,
    "stats": {
-    "str": 4,
-    "dex": 4,
-    "int": 4,
-    "luk": 4
+    "str": 6,
+    "dex": 6,
+    "int": 6,
+    "luk": 6
    }
   },
   "bee_cape": {
@@ -785,9 +785,9 @@
    "job": 0,
    "level": 15,
    "stats": {
-    "def": 7,
-    "hp": 30,
-    "dex": 2
+    "def": 11,
+    "hp": 45,
+    "dex": 3
    }
   },
   "tusk_gloves": {
@@ -795,10 +795,10 @@
    "job": 0,
    "level": 20,
    "stats": {
-    "def": 6,
-    "atk": 2,
-    "matk": 2,
-    "str": 2
+    "def": 9,
+    "atk": 3,
+    "matk": 3,
+    "str": 3
    }
   },
   "bear_belt": {
@@ -806,9 +806,9 @@
    "job": 0,
    "level": 20,
    "stats": {
-    "hp": 70,
-    "def": 4,
-    "vit": 2
+    "hp": 105,
+    "def": 6,
+    "vit": 3
    }
   },
   "spirit_pendant": {
@@ -816,9 +816,9 @@
    "job": 0,
    "level": 25,
    "stats": {
-    "hp": 100,
-    "mp": 70,
-    "int": 3
+    "hp": 150,
+    "mp": 105,
+    "int": 5
    }
   },
   "mushroom_ring": {
@@ -826,11 +826,11 @@
    "job": 0,
    "level": 25,
    "stats": {
-    "str": 3,
-    "dex": 3,
-    "int": 3,
-    "luk": 3,
-    "hp": 25
+    "str": 5,
+    "dex": 5,
+    "int": 5,
+    "luk": 5,
+    "hp": 38
    }
   },
   "soldier_gloves": {
@@ -838,10 +838,10 @@
    "job": 0,
    "level": 30,
    "stats": {
-    "def": 9,
-    "atk": 3,
-    "matk": 3,
-    "str": 3
+    "def": 14,
+    "atk": 5,
+    "matk": 5,
+    "str": 5
    }
   },
   "fairy_cape": {
@@ -849,10 +849,10 @@
    "job": 0,
    "level": 30,
    "stats": {
-    "def": 10,
-    "hp": 50,
-    "dex": 3,
-    "luk": 3
+    "def": 15,
+    "hp": 75,
+    "dex": 5,
+    "luk": 5
    }
   },
   "gland_earring": {
@@ -860,10 +860,10 @@
    "job": 0,
    "level": 35,
    "stats": {
-    "str": 8,
-    "dex": 8,
-    "int": 8,
-    "luk": 8
+    "str": 12,
+    "dex": 12,
+    "int": 12,
+    "luk": 12
    }
   },
   "witch_pendant": {
@@ -871,9 +871,9 @@
    "job": 0,
    "level": 35,
    "stats": {
-    "hp": 120,
-    "mp": 100,
-    "int": 4
+    "hp": 180,
+    "mp": 150,
+    "int": 6
    }
   },
   "dark_eye_ring": {
@@ -881,11 +881,11 @@
    "job": 0,
    "level": 40,
    "stats": {
-    "str": 6,
-    "dex": 6,
-    "int": 6,
-    "luk": 6,
-    "hp": 40
+    "str": 9,
+    "dex": 9,
+    "int": 9,
+    "luk": 9,
+    "hp": 60
    }
   },
   "beast_belt": {
@@ -893,9 +893,9 @@
    "job": 0,
    "level": 40,
    "stats": {
-    "hp": 130,
-    "def": 9,
-    "vit": 5
+    "hp": 195,
+    "def": 14,
+    "vit": 8
    }
   },
   "warrior_hat_10": {
@@ -1665,21 +1665,21 @@
   }
  },
  "options": {
-  "_설명": "추가 옵션 (메이플 환생의 불꽃식). 수치 = 단계 × (values[0] + values[1] × 장비 레벨) 내림 최소 1, 무기 공/마 = 기본 공격력 × weaponAtkPct% × 단계. 줄 수 lineChances(1~4줄), bossItems 는 4줄. 처음 얻을 때 dropTiers (1~4단계). flames: min 단계부터 w 비중. 비용 = 불꽃 + (장비 레벨+10) × costMul G",
+  "_설명": "추가 옵션 (메이플 환생의 불꽃식). 수치 = 단계 × (values[0] + values[1] × 장비 레벨) 내림 최소 1, 무기 공/마 = 기본 공격력 × weaponAtkPct% × 단계 (무기 기본 공격력은 0.43.0 에서 절반). 줄 수 lineChances(1~4줄), bossItems 는 4줄. 처음 얻을 때 dropTiers (1~4단계). flames: min 단계부터 w 비중. 비용 = 불꽃 + (장비 레벨+10) × costMul G",
   "lineChances": [
-   25,
-   25,
-   25,
-   25
+   10,
+   30,
+   40,
+   20
   ],
   "dropTiers": [
-   25,
-   25,
-   25,
-   25
+   35,
+   35,
+   22,
+   8
   ],
   "costMul": 50,
-  "weaponAtkPct": 3,
+  "weaponAtkPct": 8,
   "bossItems": [
    "forest_lord_ring",
    "guardian_ring",
@@ -1822,11 +1822,11 @@
     0.05
    ],
    "atk": [
-    0.6,
+    1,
     0
    ],
    "matk": [
-    0.6,
+    1,
     0
    ],
    "reqLv": [
@@ -2058,7 +2058,7 @@
      9,
      12
     ],
-     "matkPct": [
+    "matkPct": [
      3,
      6,
      9,
@@ -2076,7 +2076,12 @@
      30,
      40
     ],
-     "ignoreDef": [0, 0, 30, 40],
+    "ignoreDef": [
+     0,
+     0,
+     30,
+     40
+    ],
     "str": [
      8,
      0,
@@ -2305,98 +2310,6 @@
  },
  "sets": {
   "_설명": "세트 효과. items = 세트 아이템 (서로 다른 아이템 착용 수), bonus = {부위 수: 효과} 그 수 이하 단계 전부 적용. 키는 장비 스탯 (str·atk·hp…, atkPct=데미지%, bossPct, critChance, critDmg, cdPct, speedPct, defPct, hpPct)",
-  "common_10": {
-   "name": "Lv10 모험가 세트",
-   "items": [
-    "hat_10",
-    "top_10",
-    "bottom_10",
-    "shoes_10"
-   ],
-   "bonus": {
-    "2": {
-     "str": 2,
-     "dex": 2,
-     "int": 2,
-     "luk": 2
-    },
-    "3": {
-     "hpPct": 3
-    },
-    "4": {
-     "atkPct": 2
-    }
-   }
-  },
-  "common_20": {
-   "name": "Lv20 모험가 세트",
-   "items": [
-    "hat_20",
-    "top_20",
-    "bottom_20",
-    "shoes_20"
-   ],
-   "bonus": {
-    "2": {
-     "str": 4,
-     "dex": 4,
-     "int": 4,
-     "luk": 4
-    },
-    "3": {
-     "hpPct": 4
-    },
-    "4": {
-     "atkPct": 3
-    }
-   }
-  },
-  "common_30": {
-   "name": "Lv30 모험가 세트",
-   "items": [
-    "hat_30",
-    "top_30",
-    "bottom_30",
-    "shoes_30"
-   ],
-   "bonus": {
-    "2": {
-     "str": 6,
-     "dex": 6,
-     "int": 6,
-     "luk": 6
-    },
-    "3": {
-     "atkPct": 4
-    },
-    "4": {
-     "bossPct": 8
-    }
-   }
-  },
-  "common_40": {
-   "name": "Lv40 모험가 세트",
-   "items": [
-    "hat_40",
-    "top_40",
-    "bottom_40",
-    "shoes_40"
-   ],
-   "bonus": {
-    "2": {
-     "str": 9,
-     "dex": 9,
-     "int": 9,
-     "luk": 9
-    },
-    "3": {
-     "atkPct": 6
-    },
-    "4": {
-     "bossPct": 12
-    }
-   }
-  },
   "warrior_10": {
    "name": "Lv10 전사 세트",
    "items": [

@@ -60,6 +60,15 @@ public final class Shops {
                 }
                 SHOPS.put(e.getKey(), new Shop(e.getKey(), s.has("name") ? s.get("name").getAsString() : e.getKey(), list));
             }
+            // 상점에서 파는 물건: 상점가 절반에 팔림 (물약·귀환 주문서는 1/10). 주문서(#)는 sell 표 그대로
+            Map<String, Long> rule = new LinkedHashMap<>();
+            for (Shop sh : SHOPS.values()) for (Offer of : sh.offers()) {
+                if (of.item().contains("#")) continue;
+                Item it = ForgeRegistries.ITEMS.getValue(new ResourceLocation(of.item()));
+                boolean cheap = it instanceof rpg.core.item.Potion || it instanceof rpg.core.item.ReturnScroll;
+                rule.merge(of.item(), cheap ? of.price() / 10 : of.price() / 2, Math::min);
+            }
+            SELL.putAll(rule);
             RpgCore.LOG.info("[rpgcore] 상점 {}개, 판매가 {}개 읽음", SHOPS.size(), SELL.size());
         } catch (Exception ex) {
             RpgCore.LOG.warn("[rpgcore] shops.json 읽기 실패: {}", ex.toString());

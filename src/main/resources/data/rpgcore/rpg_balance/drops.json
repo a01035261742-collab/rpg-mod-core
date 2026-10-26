@@ -28,7 +28,7 @@
   "levelRange": 10
  },
  "enhance": {
-  "chance": 1.5,
+  "chance": 3,
   "items": {
    "scroll_fragment": 70,
    "scroll": 30
@@ -51,7 +51,7 @@
    "uniques": [
     [
      "pig_snout_pendant",
-     0.2
+     0.3
     ]
    ]
   },
@@ -69,7 +69,7 @@
    "uniques": [
     [
      "cow_horn_earring",
-     0.2
+     0.3
     ]
    ]
   },
@@ -87,7 +87,7 @@
    "uniques": [
     [
      "slime_ring",
-     0.2
+     0.3
     ]
    ]
   },
@@ -105,7 +105,7 @@
    "uniques": [
     [
      "rat_tail_belt",
-     0.2
+     0.3
     ]
    ]
   },
@@ -123,7 +123,7 @@
    "uniques": [
     [
      "dog_fang_earring",
-     0.2
+     0.3
     ]
    ]
   },
@@ -141,7 +141,7 @@
    "uniques": [
     [
      "bee_cape",
-     0.2
+     0.3
     ]
    ]
   },
@@ -159,7 +159,7 @@
    "uniques": [
     [
      "tusk_gloves",
-     0.2
+     0.3
     ]
    ]
   },
@@ -177,7 +177,7 @@
    "uniques": [
     [
      "bear_belt",
-     0.2
+     0.3
     ]
    ]
   },
@@ -195,7 +195,7 @@
    "uniques": [
     [
      "spirit_pendant",
-     0.2
+     0.3
     ]
    ]
   },
@@ -213,7 +213,7 @@
    "uniques": [
     [
      "mushroom_ring",
-     0.2
+     0.3
     ]
    ]
   },
@@ -231,7 +231,7 @@
    "uniques": [
     [
      "soldier_gloves",
-     0.2
+     0.3
     ]
    ]
   },
@@ -249,7 +249,7 @@
    "uniques": [
     [
      "fairy_cape",
-     0.2
+     0.3
     ]
    ]
   },
@@ -267,7 +267,7 @@
    "uniques": [
     [
      "gland_earring",
-     0.2
+     0.3
     ]
    ]
   },
@@ -285,7 +285,7 @@
    "uniques": [
     [
      "witch_pendant",
-     0.2
+     0.3
     ]
    ]
   },
@@ -303,7 +303,7 @@
    "uniques": [
     [
      "dark_eye_ring",
-     0.2
+     0.3
     ]
    ]
   },
@@ -321,7 +321,7 @@
    "uniques": [
     [
      "beast_belt",
-     0.2
+     0.3
     ]
    ]
   }

@@ -207,18 +207,15 @@ public final class Potential {
         return p;
     }
 
-    private static int[] ceil(Player p) {
-        int[] c = p.getPersistentData().getCompound(Player.PERSISTED_NBT_TAG).getIntArray("rpgPotCeil");
+    /** 천장 카운트: 장비마다 따로 (장비 NBT rpgPotCeil) */
+    public static int[] ceil(ItemStack s) {
+        int[] c = s.hasTag() ? s.getTag().getIntArray("rpgPotCeil") : new int[0];
         return c.length == 3 ? c : new int[3];
     }
 
-    private static void saveCeil(Player p, int[] c) {
-        CompoundTag keep = p.getPersistentData().getCompound(Player.PERSISTED_NBT_TAG);
-        keep.putIntArray("rpgPotCeil", c);
-        p.getPersistentData().put(Player.PERSISTED_NBT_TAG, keep);
+    private static void saveCeil(ItemStack s, int[] c) {
+        s.getOrCreateTag().putIntArray("rpgPotCeil", c);
     }
-
-    public static int[] ceilCounts(Player p) { return ceil(p); }
 
     private static void msg(ServerPlayer p, String s, ChatFormatting c) {
         p.displayClientMessage(Component.literal(s).withStyle(c), true);
@@ -257,11 +254,11 @@ public final class Potential {
         }
         int ng = g;
         if (g < 3) {
-            int[] c = ceil(p);
+            int[] c = ceil(s);
             c[g]++;
             boolean up = c[g] >= ceiling[g] || ThreadLocalRandom.current().nextDouble() * 100 < upChance[g];
             if (up) { ng = g + 1; c[g] = 0; }
-            saveCeil(p, c);
+            saveCeil(s, c);
         }
         s.getOrCreateTag().getCompound("rpgPot").put("new", roll(d, ng));
         if (s.hasTag()) s.getTag().remove("rpgPotLock");   // (예전 잠금 기능 삭제)

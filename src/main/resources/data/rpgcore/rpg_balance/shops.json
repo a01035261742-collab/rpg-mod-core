@@ -1,56 +1,56 @@
 {
- "_설명": "shops = 상점별 사기 목록 [아이템, 가격]. 상점 장비는 일반 장비 = 추가 옵션 없음 (제작·드롭 장비는 4줄). gear = 첫 마을(Lv1·10), gear2 = 두 번째 마을(Lv20·30·40). 장신구는 상점에서 안 팖(세공사 제작). sell = NPC에게 팔 때 가격 (없는 아이템은 못 팖). 숫자는 임시값 물약: general = 첫 마을(빨강·파랑), general2 = 물약 상인(두 번째 마을 이후, 주황·하얀·진한 파랑·마나 엘릭서). 엘릭서·파워 엘릭서는 안 팖(드롭·제작·퀘스트). 장비 가격 = 사냥 4레벨분 골드 기준 (Lv10 ×0.6, Lv20 ×0.47, Lv30 ×0.42, Lv40 ×0.4) 장비 판매가도 같은 배율로 낮춤. 장비 판매가도 같은 배율로 낮춤. 주문서: id scroll#종류#등급 (등급 0=100% 1=60% 2=30% 3=10%, scroll#white=순백). 상점은 100% 주문서만 (2,000 G). 주문서 판매가 키는 등급만: scroll#g0~g3, scroll#white",
+ "_설명": "shops = 상점별 사기 목록 [아이템, 가격]. 상점 장비는 일반 장비 = 추가 옵션 없음 (제작·드롭 장비는 4줄). gear = 첫 마을(Lv1·10), gear2 = 두 번째 마을(Lv20·30·40). 장신구는 상점에서 안 팖(세공사 제작). sell = NPC에게 팔 때 가격 (없는 아이템은 못 팖). 숫자는 임시값 물약: general = 첫 마을(빨강·파랑), general2 = 물약 상인(두 번째 마을 이후, 주황·하얀·진한 파랑·마나 엘릭서). 엘릭서·파워 엘릭서는 안 팖(드롭·제작·퀘스트). 장비 가격 = 사냥 4레벨분 골드 기준 (Lv10 ×0.6, Lv20 ×0.47, Lv30 ×0.42, Lv40 ×0.4) 장비 판매가도 같은 배율로 낮춤. 장비 판매가도 같은 배율로 낮춤. 주문서: id scroll#종류#등급 (등급 0=100% 1=60% 2=30% 3=10%, scroll#white=순백). 상점은 100% 주문서만 (2,000 G). 주문서 판매가 키는 등급만: scroll#g0~g3, scroll#white (0.43.0: 상점가 ×2, 상점에서 파는 물건은 상점가 절반에 팔림 — 물약·귀환 주문서는 1/10. 몹 재료 ×10, 몹 전용 장비 = 레벨×1000, 보스 장신구 = 레벨×2000)",
  "shops": {
   "general": {
    "name": "잡화 상인",
    "items": [
     [
      "return_scroll",
-     500
+     1000
     ],
     [
      "red_potion",
-     45
+     90
     ],
     [
      "blue_potion",
-     60
+     120
     ],
     [
      "stat_reset_scroll",
-     3000
+     6000
     ],
     [
      "passive_reset_scroll",
-     50000
+     100000
     ],
     [
      "scroll#watk#0",
-     2000
+     4000
     ],
     [
      "scroll#wmatk#0",
-     2000
+     4000
     ],
     [
      "scroll#str#0",
-     2000
+     4000
     ],
     [
      "scroll#dex#0",
-     2000
+     4000
     ],
     [
      "scroll#int#0",
-     2000
+     4000
     ],
     [
      "scroll#luk#0",
-     2000
+     4000
     ],
     [
      "scroll#vit#0",
-     2000
+     4000
     ]
    ]
   },
@@ -59,67 +59,67 @@
    "items": [
     [
      "warrior_sword_1",
-     80
+     160
     ],
     [
      "archer_bow_1",
-     80
+     160
     ],
     [
      "mage_staff_1",
-     80
+     160
     ],
     [
      "thief_dagger_1",
-     80
+     160
     ],
     [
      "hat_1",
-     50
+     100
     ],
     [
      "top_1",
-     60
+     120
     ],
     [
      "bottom_1",
-     55
+     110
     ],
     [
      "shoes_1",
-     45
+     90
     ],
     [
      "warrior_sword_10",
-     540
+     1080
     ],
     [
      "archer_bow_10",
-     540
+     1080
     ],
     [
      "mage_staff_10",
-     540
+     1080
     ],
     [
      "thief_dagger_10",
-     540
+     1080
     ],
     [
      "hat_10",
-     300
+     600
     ],
     [
      "top_10",
-     390
+     780
     ],
     [
      "bottom_10",
-     360
+     720
     ],
     [
      "shoes_10",
-     270
+     540
     ]
    ]
   },
@@ -128,99 +128,99 @@
    "items": [
     [
      "warrior_sword_20",
-     1580
+     3160
     ],
     [
      "archer_bow_20",
-     1580
+     3160
     ],
     [
      "mage_staff_20",
-     1580
+     3160
     ],
     [
      "thief_dagger_20",
-     1580
+     3160
     ],
     [
      "hat_20",
-     870
+     1740
     ],
     [
      "top_20",
-     1140
+     2280
     ],
     [
      "bottom_20",
-     1060
+     2120
     ],
     [
      "shoes_20",
-     790
+     1580
     ],
     [
      "warrior_sword_30",
-     3130
+     6260
     ],
     [
      "archer_bow_30",
-     3130
+     6260
     ],
     [
      "mage_staff_30",
-     3130
+     6260
     ],
     [
      "thief_dagger_30",
-     3130
+     6260
     ],
     [
      "hat_30",
-     1720
+     3440
     ],
     [
      "top_30",
-     2260
+     4520
     ],
     [
      "bottom_30",
-     2100
+     4200
     ],
     [
      "shoes_30",
-     1570
+     3140
     ],
     [
      "warrior_sword_40",
-     5280
+     10560
     ],
     [
      "archer_bow_40",
-     5280
+     10560
     ],
     [
      "mage_staff_40",
-     5280
+     10560
     ],
     [
      "thief_dagger_40",
-     5280
+     10560
     ],
     [
      "hat_40",
-     2900
+     5800
     ],
     [
      "top_40",
-     3800
+     7600
     ],
     [
      "bottom_40",
-     3540
+     7080
     ],
     [
      "shoes_40",
-     2640
+     5280
     ]
    ]
   },
@@ -229,59 +229,59 @@
    "items": [
     [
      "return_scroll",
-     500
+     1000
     ],
     [
      "red_potion",
-     45
+     90
     ],
     [
      "blue_potion",
-     60
-    ],
-    [
-     "orange_potion",
      120
     ],
     [
+     "orange_potion",
+     240
+    ],
+    [
      "white_potion",
-     300
+     600
     ],
     [
      "deep_blue_potion",
-     165
-    ],
-    [
-     "mana_elixir",
      330
     ],
     [
+     "mana_elixir",
+     660
+    ],
+    [
      "scroll#watk#0",
-     2000
+     4000
     ],
     [
      "scroll#wmatk#0",
-     2000
+     4000
     ],
     [
      "scroll#str#0",
-     2000
+     4000
     ],
     [
      "scroll#dex#0",
-     2000
+     4000
     ],
     [
      "scroll#int#0",
-     2000
+     4000
     ],
     [
      "scroll#luk#0",
-     2000
+     4000
     ],
     [
      "scroll#vit#0",
-     2000
+     4000
     ]
    ]
   }
@@ -324,38 +324,38 @@
   "ring_10": 72,
   "pendant_10": 72,
   "medal_10": 72,
-  "pig_hide": 3,
-  "golden_hoof": 39,
-  "cow_hide": 3,
-  "cow_horn": 39,
-  "slime_goo": 4,
-  "slime_core": 54,
-  "rat_tail": 4,
-  "rat_tooth": 54,
-  "dog_fur": 5,
-  "dog_fang": 69,
-  "bee_sting": 5,
-  "royal_jelly": 69,
-  "boar_bristle": 6,
-  "boar_tusk": 84,
-  "bear_pelt": 6,
-  "bear_paw": 84,
-  "spore_dust": 8,
-  "spirit_cap": 99,
-  "tiny_cap": 8,
-  "glow_spore": 99,
-  "toxic_cap": 9,
-  "soldier_badge": 114,
-  "fairy_wing": 9,
-  "fairy_dust": 114,
-  "spore_silk": 10,
-  "spore_gland": 129,
-  "witch_herb": 10,
-  "odd_potion": 129,
-  "dark_silk": 12,
-  "dark_eye": 144,
-  "beast_shell": 12,
-  "beast_core": 144,
+  "pig_hide": 30,
+  "golden_hoof": 390,
+  "cow_hide": 30,
+  "cow_horn": 390,
+  "slime_goo": 40,
+  "slime_core": 540,
+  "rat_tail": 40,
+  "rat_tooth": 540,
+  "dog_fur": 50,
+  "dog_fang": 690,
+  "bee_sting": 50,
+  "royal_jelly": 690,
+  "boar_bristle": 60,
+  "boar_tusk": 840,
+  "bear_pelt": 60,
+  "bear_paw": 840,
+  "spore_dust": 80,
+  "spirit_cap": 990,
+  "tiny_cap": 80,
+  "glow_spore": 990,
+  "toxic_cap": 90,
+  "soldier_badge": 1140,
+  "fairy_wing": 90,
+  "fairy_dust": 1140,
+  "spore_silk": 100,
+  "spore_gland": 1290,
+  "witch_herb": 100,
+  "odd_potion": 1290,
+  "dark_silk": 120,
+  "dark_eye": 1440,
+  "beast_shell": 120,
+  "beast_core": 1440,
   "warrior_sword_20": 237,
   "archer_bow_20": 237,
   "mage_staff_20": 237,
@@ -411,6 +411,29 @@
   "scroll#white": 3000,
   "forest_lord_claw": 1000,
   "guardian_heart": 3000,
-  "return_scroll": 100
+  "return_scroll": 100,
+  "pig_snout_pendant": 5000,
+  "cow_horn_earring": 5000,
+  "slime_ring": 10000,
+  "rat_tail_belt": 10000,
+  "dog_fang_earring": 15000,
+  "bee_cape": 15000,
+  "tusk_gloves": 20000,
+  "bear_belt": 20000,
+  "spirit_pendant": 25000,
+  "mushroom_ring": 25000,
+  "soldier_gloves": 30000,
+  "fairy_cape": 30000,
+  "gland_earring": 35000,
+  "witch_pendant": 35000,
+  "dark_eye_ring": 40000,
+  "beast_belt": 40000,
+  "forest_lord_ring": 40000,
+  "guardian_ring": 70000,
+  "forest_lord_belt": 40000,
+  "guardian_pendant": 70000,
+  "guardian_cape": 70000,
+  "forest_lord_treasure": 20000,
+  "guardian_treasure": 40000
  }
 }

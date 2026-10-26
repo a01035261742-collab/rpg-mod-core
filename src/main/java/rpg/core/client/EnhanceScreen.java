@@ -354,7 +354,7 @@ public class EnhanceScreen extends Screen {
             }
         } else if (gr < 3) {
             yy += 4;
-            g.drawString(font, "등급 상승 " + fmt(rpg.core.equip.Potential.upChance[gr]) + "% · 천장 " + extra.get(3 + gr) + " / " + rpg.core.equip.Potential.ceiling[gr], px, yy, 0xFFA0A0A0, false);
+            g.drawString(font, "등급 상승 " + fmt(rpg.core.equip.Potential.upChance[gr]) + "% · 천장 " + rpg.core.equip.Potential.ceil(s)[gr] + " / " + rpg.core.equip.Potential.ceiling[gr], px, yy, 0xFFA0A0A0, false);
         }
     }
 

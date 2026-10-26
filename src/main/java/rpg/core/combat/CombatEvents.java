@@ -86,6 +86,26 @@ public final class CombatEvents {
         if (MobAI.edge(m, p) > RpgMeleeGoal.REACH + 0.6) e.setCanceled(true);
     }
 
+    /**
+     * RPG 몹이 맞을 수 있는 공격인가: 플레이어 근접(가시 제외) · RPG 스킬·화살·지속 피해 · 공허/kill.
+     * 바닐라 활·석궁·삼지창·물약·불·독·펫·다른 모드 공격은 0 (공유 창고로 들여온 아이템 악용 막기)
+     */
+    public static boolean allowedHit(Mob t, net.minecraft.world.damagesource.DamageSource src) {
+        if (src.is(net.minecraft.tags.DamageTypeTags.BYPASSES_INVULNERABILITY)) return true;
+        if (SKILL_PCT.containsKey(t.getId()) || FIXED.containsKey(t.getId())) return true;
+        if (!(src.getEntity() instanceof ServerPlayer ap)) return false;
+        Entity direct = src.getDirectEntity();
+        if (direct == ap) return !src.is(net.minecraft.world.damagesource.DamageTypes.THORNS);
+        if (direct == null) return false;
+        var pd = direct.getPersistentData();
+        return pd.contains("rpgSkillPct") || pd.contains("rpgPower") || pd.getBoolean("rpgArrow");
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public static void onlyRpgHits(net.minecraftforge.event.entity.living.LivingAttackEvent e) {
+        if (e.getEntity() instanceof Mob t && !t.level().isClientSide && isRpg(t) && !allowedHit(t, e.getSource())) e.setCanceled(true);
+    }
+
     /** PvP 끔: 플레이어(또는 플레이어가 쏜 것)가 다른 플레이어를 때리면 막음 */
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void noPvp(net.minecraftforge.event.entity.living.LivingAttackEvent e) {
@@ -106,7 +126,7 @@ public final class CombatEvents {
     /** 바닐라 독·시듦은 플레이어에게 안 걸림 (RPG 피해만) */
     @SubscribeEvent
     public static void noVanillaDot(net.minecraftforge.event.entity.living.MobEffectEvent.Applicable e) {
-        if (!(e.getEntity() instanceof net.minecraft.world.entity.player.Player)) return;
+        if (!(e.getEntity() instanceof net.minecraft.world.entity.player.Player pl) || !rpg.core.world.RpgWorld.in(pl)) return;   // 야생은 바닐라 그대로
         var eff = e.getEffectInstance().getEffect();
         if (eff == net.minecraft.world.effect.MobEffects.POISON || eff == net.minecraft.world.effect.MobEffects.WITHER)
             e.setResult(net.minecraftforge.eventbus.api.Event.Result.DENY);
@@ -272,7 +292,8 @@ public final class CombatEvents {
             if (mx != null) dmg = d.maxHp * mx / 100.0;   // 최대 HP 비율 피해
             else if (src instanceof Mob m && isRpg(m)) {
                 Double pc = MOB_PCT.get(sp.getId());
-                dmg = Combat.mobToPlayer(Combat.mob(m).atk * (pc == null ? 1 : pc / 100.0), Combat.mob(m).level, d);
+                dmg = Combat.mobToPlayer(Combat.mob(m).atk * (pc == null ? 1 : pc / 100.0), Combat.mob(m).level, d)
+                        * takeLevelMul(Combat.mob(m).level, d.level);   // 높은 몹: 레벨당 받는 피해 +5%
             }
             else if (src instanceof Mob) dmg = Math.max(1, e.getAmount() / 20.0 * d.maxHp * (1 - Combat.defRatio(d, d.level)));  // 일반 몹: 비율, 내 레벨 몹으로 보고 방어
             else dmg = e.getAmount() / 20.0 * d.maxHp;   // 환경 피해: 바닐라와 같은 비율
@@ -330,7 +351,9 @@ public final class CombatEvents {
                 else if (direct != null && direct.getPersistentData().contains("rpgPower"))
                     ratio = Math.max(0.1, direct.getPersistentData().getFloat("rpgPower"))   // 활: 당긴 정도 × 직업 평타 계수
                             * rpg.core.skill.PassiveEffects.basicMul(ad, now);
-                else ratio = 1.0;
+                else if (direct != null && direct.getPersistentData().getBoolean("rpgArrow"))
+                    ratio = rpg.core.skill.PassiveEffects.basicMul(ad, now);           // 궁수 평타 화살 (직업 평타 계수)
+                else ratio = 0;                                                          // RPG 공격이 아님 (allowedHit 에서 이미 막힘)
                 // 은신 중 첫 공격: 추가 피해 + 출혈, 은신 풀림
                 if (ad.buff("stealth", now)) {
                     ratio *= 1 + ad.buffV("stealth", now) / 100.0;
@@ -355,14 +378,15 @@ public final class CombatEvents {
                 double impact = Math.min(3.0, ratio * (crit ? 1.2 : 1.0));
                 MobAI.stun(mob, m, impact, ap);
             }
+            if (!Boss.isBoss(m)) dmg = Math.max(1, Math.round(dmg * dealLevelMul(m.level, ad.level)));   // 높은 몹: 레벨당 주는 피해 -5% (보스는 Boss.onHurt)
             if (direct != null && direct.getPersistentData().contains("rpgSlow")) {
                 mob.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.MOVEMENT_SLOWDOWN,
                         direct.getPersistentData().getInt("rpgSlow"), 1));
             }
-        } else if (src instanceof Mob other && isRpg(other)) {
-            dmg = Combat.mob(other).atk;
+        } else if (e.getSource().is(net.minecraft.tags.DamageTypeTags.BYPASSES_INVULNERABILITY)) {
+            dmg = m.hp;   // 공허·/kill
         } else {
-            dmg = e.getAmount() / Math.max(1f, mob.getMaxHealth()) * m.maxHp;  // 환경 피해
+            dmg = 0;      // RPG 몹은 RPG 공격만 맞음 (환경·바닐라·다른 모드 피해 없음)
         }
         if (Boss.isBoss(m)) {   // 보스: 플레이어 피해만 (레벨 차이 감소·기여도), 나머지는 무시
             dmg = src instanceof ServerPlayer bp ? Boss.onHurt(mob, m, bp, dmg) : 0;
@@ -420,17 +444,45 @@ public final class CombatEvents {
         if (rpg.core.job.Trials.isTrialMob(mob)) return;   // 시련 몹: 보상 없음 (통과는 Trials)
         if (Boss.isBoss(m)) { Boss.onDeath(mob, m, killer); return; }
         if (mob.getPersistentData().getBoolean("rpgPillar")) return;   // 보스 기둥: 보상 없음   // 보스: 기여도 분배 · 드롭 세트
-        rpg.core.loot.Drops.roll(mob, m, killer, d);   // 드롭은 막타 기준 (골드는 주머니로)
-        // 경험치: 근처 파티원끼리 균등 분배 + 인원당 보너스
+        // 연속 처치 콤보 (골드 주는 몹만, 보스방 밖에서만): 10초 안에 다음 처치
+        long now = killer.level().getGameTime();
+        if (m.gold > 0 && !Boss.inArena(killer)) {
+            d.combo = now < d.comboUntil ? d.combo + 1 : 1;
+            d.comboUntil = now + 200;
+            if (d.combo >= 10 && d.combo % 10 == 0)
+                killer.displayClientMessage(net.minecraft.network.chat.Component.literal(d.combo + " 콤보! 골드 +" + d.comboGoldPct(now) + "%")
+                        .withStyle(net.minecraft.ChatFormatting.GOLD), true);
+        }
+        rpg.core.loot.Drops.roll(mob, m, killer, d);   // 드롭은 막타 기준 (골드는 주머니로, 콤보 보너스 포함)
+        // 경험치: 근처 파티원끼리 균등 분배 + 인원당 보너스, 레벨 차이 5 넘으면 넘는 레벨당 -10% (각자 레벨 기준)
         var members = rpg.core.party.Parties.nearby(killer);
         int n = members.size();
         double total = m.exp * (1 + rpg.core.balance.Balance.partyBonusPerMember * (n - 1) / 100.0);
-        long each = Math.max(1, Math.round(total / n));
+        double eachBase = total / n;
         for (ServerPlayer mem : members) {
+            long each = Math.max(1, Math.round(eachBase * expLevelMul(m.level, RpgData.get(mem).level)));
             Net.reward(mem, each, 0);
             Progress.giveExp(mem, each);
         }
         rpg.core.quest.QuestEvents.onKill(members, m);   // 퀘스트 처치 진행도 (근처 파티원 모두)
+    }
+
+    /** 레벨 차이 경험치 배율: 위아래 5레벨까지 100%, 넘는 1레벨마다 -10% (최소 10%) */
+    public static double expLevelMul(int mobLevel, int playerLevel) {
+        int over = Math.abs(mobLevel - playerLevel) - 5;
+        return over <= 0 ? 1.0 : Math.max(0.1, 1 - over * 0.1);
+    }
+
+    /** 몹이 나보다 높으면 레벨당 주는 피해 -5% (최소 10%) */
+    public static double dealLevelMul(int mobLevel, int playerLevel) {
+        int diff = mobLevel - playerLevel;
+        return diff <= 0 ? 1.0 : Math.max(0.1, 1 - diff * 0.05);
+    }
+
+    /** 몹이 나보다 높으면 레벨당 받는 피해 +5% (최대 2배) */
+    public static double takeLevelMul(int mobLevel, int playerLevel) {
+        int diff = mobLevel - playerLevel;
+        return diff <= 0 ? 1.0 : Math.min(2.0, 1 + diff * 0.05);
     }
 
     /** RPG 몹은 바닐라 드롭·경험치 구슬 없음 (RPG 드롭은 loot.Drops) */

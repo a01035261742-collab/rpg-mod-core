@@ -81,7 +81,7 @@ public final class Mobs {
         m.maxHp *= Balance.eliteHp; m.hp = m.maxHp;
         m.atk *= Balance.eliteAtk;
         m.exp = Math.round(m.exp * Balance.eliteReward);
-        m.gold = Math.round(m.gold * Balance.eliteReward);
+        m.gold = Math.round(m.gold * Balance.eliteGoldMul);
         m.name = "★" + m.name;
         mob.setGlowingTag(true);
     }

@@ -43,7 +43,7 @@ public final class Dailies {
     public record Kind(int need, int weight, int minLevel) {}
     public static final Map<String, Kind> KINDS = new LinkedHashMap<>();
     public static int resetHour = 6, count = 3, rerolls = 1;
-    public static double expPct = 15, goldMobs = 30, bossMul = 2;
+    public static double expPct = 15, goldMobs = 30, bossMul = 2, goldPerLevel = 0, bonusGoldPerLevel = 0;
     public static int fragments = 3, bonusFragments = 5, bonusPotions = 10, bonusReturn = 1, bonusFlames = 1;
 
     public static void parse(String text) {
@@ -62,12 +62,14 @@ public final class Dailies {
                 JsonObject r = o.getAsJsonObject("reward");
                 expPct = r.has("expPct") ? r.get("expPct").getAsDouble() : expPct;
                 goldMobs = r.has("goldMobs") ? r.get("goldMobs").getAsDouble() : goldMobs;
+                goldPerLevel = r.has("goldPerLevel") ? r.get("goldPerLevel").getAsDouble() : 0;
                 fragments = r.has("fragments") ? r.get("fragments").getAsInt() : fragments;
                 bossMul = r.has("bossMul") ? r.get("bossMul").getAsDouble() : bossMul;
             }
             if (o.has("bonus")) {
                 JsonObject b = o.getAsJsonObject("bonus");
                 bonusFragments = b.has("fragments") ? b.get("fragments").getAsInt() : bonusFragments;
+                bonusGoldPerLevel = b.has("goldPerLevel") ? b.get("goldPerLevel").getAsDouble() : 0;
                 bonusPotions = b.has("potions") ? b.get("potions").getAsInt() : bonusPotions;
                 bonusReturn = b.has("returnScroll") ? b.get("returnScroll").getAsInt() : bonusReturn;
                 bonusFlames = b.has("flames") ? b.get("flames").getAsInt() : bonusFlames;
@@ -294,7 +296,8 @@ public final class Dailies {
         double mul = q.getString("k").equals("boss") ? bossMul : 1;
         long exp = Math.max(1, Math.round(Balance.expNeed(pd.level) * expPct / 100.0 * mul));
         Balance.MobDef md = Balance.MOBS.get(q.getString("g"));
-        long gold = Math.max(1, Math.round((md == null ? 10 : md.at(pd.level).gold()) * goldMobs * mul));
+        long gold = goldPerLevel > 0 ? Math.round(pd.level * goldPerLevel * mul)   // 레벨 × 골드
+                : Math.max(1, Math.round((md == null ? 10 : md.at(pd.level).gold()) * goldMobs * mul));
         pd.gold += gold;
         Progress.giveExp(p, exp);
         give(p, new ItemStack(ModItems.SCROLL_FRAGMENT.get(), (int) Math.round(fragments * mul)));
@@ -313,8 +316,10 @@ public final class Dailies {
             give(p, new ItemStack(pot, bonusPotions));
             if (bonusReturn > 0) give(p, new ItemStack(ModItems.RETURN_SCROLL.get(), bonusReturn));
             if (bonusFlames > 0) give(p, new ItemStack(ModItems.POWERFUL_FLAME.get(), bonusFlames));
+            long bg = Math.round(pd.level * bonusGoldPerLevel);
+            if (bg > 0) { pd.gold += bg; Net.reward(p, 0, bg); }
             p.sendSystemMessage(Component.literal("[일일] 오늘 일일 퀘스트를 다 했어요! 보너스: 주문서 조각 " + bonusFragments + " · 물약 " + bonusPotions
-                    + (bonusReturn > 0 ? " · 귀환 주문서 " + bonusReturn : "") + (bonusFlames > 0 ? " · 강력한 환생의 불꽃 " + bonusFlames : "")).withStyle(ChatFormatting.GOLD));
+                    + (bonusReturn > 0 ? " · 귀환 주문서 " + bonusReturn : "") + (bonusFlames > 0 ? " · 강력한 환생의 불꽃 " + bonusFlames : "") + (bg > 0 ? " · " + String.format("%,d", bg) + " G" : "")).withStyle(ChatFormatting.GOLD));
         }
         save(p, d);
         RpgData.sync(p);

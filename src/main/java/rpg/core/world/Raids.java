@@ -241,14 +241,23 @@ public final class Raids {
         run.raid = r.raid; run.room = room; run.end = s.overworld().getGameTime() + LIMIT_TICKS;
         run.bar = new ServerBossEvent(Component.literal(""), BossEvent.BossBarColor.PURPLE, BossEvent.BossBarOverlay.PROGRESS);
         BlockPos at = def.rooms.get(room);
+        ServerPlayer lead = s.getPlayerList().getPlayer(r.leader);
+        java.util.Set<UUID> still = new HashSet<>();
+        if (lead != null) for (ServerPlayer g : group(lead)) still.add(g.getUUID());
         for (UUID id : r.members) {
             ServerPlayer m = s.getPlayerList().getPlayer(id);
             if (m == null) continue;
+            // 카운트다운 중에 파티를 나갔거나 입구에서 멀어진 사람은 안 데려감
+            if (!still.contains(id) || !RpgWorld.in(m) || def.gate == null || m.blockPosition().distSqr(def.gate) > NEAR * NEAR) {
+                m.sendSystemMessage(Component.literal("[레이드] 입구에서 멀어져서(또는 파티를 나가서) 같이 들어가지 못했어요").withStyle(ChatFormatting.GRAY));
+                continue;
+            }
             m.teleportTo(rl, at.getX() + 0.5, at.getY(), at.getZ() + 0.5, m.getYRot(), m.getXRot());
             run.members.add(id);
             run.bar.addPlayer(m);
             setReturn(m, def.gate);
         }
+        if (run.members.isEmpty()) { run.bar.removeAllPlayers(); return; }
         RUNS.add(run);
         say(s, run.members, "레이드 시작! 제한 시간 15분");
     }

@@ -1,97 +1,115 @@
 {
-  "_설명": "플레이어 기본 수치 (임시값). 고친 뒤 /reload 하면 바로 반영",
-  "startStat": 4,
-  "startStamina": 0,
-  "staminaPerPoint": 1.0,
-  "statPointsPerLevel": 5,
-  "maxLevel": 200,
-  "hpBase": 50,
-  "hpPerLevel": 10,
-  "hpPerVit": 5,
-  "mpBase": 50,
-  "mpPerLevel": 5,
-  "mpPerLevelByJob": [5, 5, 10, 5, 10],
-  "mpPerInt": 2,
-  "regenIntervalSec": 5,
-  "hpRegenPercent": 0,
-  "mpRegenPercent": 0.5,
-  "mageMpRegenPercent": 1.0,
-  "bossPotionCooldown": 5,
-  "_전투": "스공 = (주스탯×4 + 부스탯) × 무기공격력 / 100. 데미지 = 스공 × (숙련도~100% 랜덤)",
-  "_평타": "직업별 평타 계수 % [초보, 전사, 궁수, 법사, 도적] (Epic Fight 모션 배율에 곱함)",
-  "basicAttackPct": [100, 70, 70, 70, 70],
-  "_숙련도": "직업별 기본 숙련도 [초보, 전사, 궁수, 법사, 도적] (최소 데미지 = 최대 × 숙련도), 마스터리 스킬 stat mastery 로 올림 (최대 0.95)",
-  "masteryByJob": [0.8, 0.4, 0.4, 0.4, 0.4],
-  "mastery": 0.8,
-  "critDamage": 1.5,
-  "fistAttack": 5,
-  "defPerVit": 1.0,
-  "_방어": "받는 피해 = 몹 공격 × (1 - 방어 / (방어 + defBase + 몹 레벨 × defPerMobLevel))",
-  "defBase": 50,
-  "defPerMobLevel": 10,
-  "_사냥맵": "자연 스폰을 막을 차원 (사냥 맵). 예: [\"minecraft:overworld\"]",
-  "huntingDimensions": [],
-  "critBase": 5.0,
-  "critPerDex": 0.1,
-  "healPerInt": 0.5,
-  "dropPerLuk": 0.2,
-  "goldPerLuk": 0.3,
-  "skillPointsPerLevel": 3,
-  "passivePointsPerLevel": 2,
-  "_구르기": "왼쪽 Alt. 쿨타임(초), 힘(속도), 무적(틱)",
-  "dodgeCooldown": 3.0,
-  "dodgePower": 1.1,
-  "dodgeIframes": 8,
-  "_파티·사망": "deathExpLossPct = 죽으면 현재 레벨 필요 경험치의 몇 % 잃음 (레벨은 안 떨어짐). downEverywhere = true 면 파티 중 어디서나 다운, false 면 보스 경기장 안에서만 다운",
-  "partyMax": 6,
-  "partyRange": 40,
-  "partyBonusPerMember": 10,
-  "deathExpLossPct": 30,
-  "downEverywhere": false,
-  "downSeconds": 30,
-  "reviveSeconds": 3,
-  "reviveHpPct": 30,
-  "_전직·물약": "전직 레벨, 전직 보상 물약 개수, 물약 회복량(고정), 물약 쿨타임(초)",
-  "jobLevel1": 10,
-  "jobRewardPotions": 10,
-  "jobLevel2": 30,
-  "jobReward2Potions": 10,
-  "potionCooldown": 1.0,
-  "_원거리": "궁수 화살·마법사 마법탄 사거리(칸)",
-  "rangedRange": 20,
-  "_경험치": "필요 경험치 = expBase × 레벨^expPower + expLinear × 레벨",
-  "expBase": 15,
-  "expPower": 2.0,
-  "expLinear": 30,
-  "_물약": "물약 종류. hp/mp = 고정 회복량, hpPct/mpPct = 최대치의 % 회복 (둘 다 쓸 수 있음), cooldown = 그 물약 쿨타임(초, 없으면 potionCooldown). 회복량 증가(healPct)가 곱해짐. 엘릭서는 상점에서 안 팖",
-  "potions": {
-    "red_potion": {
-      "hp": 60
-    },
-    "orange_potion": {
-      "hp": 150
-    },
-    "white_potion": {
-      "hp": 300
-    },
-    "blue_potion": {
-      "mp": 40
-    },
-    "deep_blue_potion": {
-      "mp": 100
-    },
-    "mana_elixir": {
-      "mp": 200
-    },
-    "elixir": {
-      "hpPct": 50,
-      "mpPct": 50,
-      "cooldown": 30
-    },
-    "power_elixir": {
-      "hpPct": 100,
-      "mpPct": 100,
-      "cooldown": 60
-    }
+ "_설명": "플레이어 기본 수치 (임시값). 고친 뒤 /reload 하면 바로 반영",
+ "startStat": 4,
+ "startStamina": 0,
+ "staminaPerPoint": 1.0,
+ "statPointsPerLevel": 5,
+ "maxLevel": 200,
+ "hpBase": 50,
+ "hpPerLevel": 10,
+ "hpPerVit": 5,
+ "mpBase": 50,
+ "mpPerLevel": 5,
+ "mpPerLevelByJob": [
+  5,
+  5,
+  10,
+  5,
+  10
+ ],
+ "mpPerInt": 2,
+ "regenIntervalSec": 5,
+ "hpRegenPercent": 0,
+ "mpRegenPercent": 0.5,
+ "mageMpRegenPercent": 1.0,
+ "bossPotionCooldown": 5,
+ "_전투": "스공 = (주스탯×4 + 부스탯) × 무기공격력 / 100. 데미지 = 스공 × (숙련도~100% 랜덤)",
+ "_평타": "직업별 평타 계수 % [초보, 전사, 궁수, 법사, 도적] (Epic Fight 모션 배율에 곱함)",
+ "basicAttackPct": [
+  100,
+  70,
+  70,
+  70,
+  70
+ ],
+ "_숙련도": "직업별 기본 숙련도 [초보, 전사, 궁수, 법사, 도적] (최소 데미지 = 최대 × 숙련도), 마스터리 스킬 stat mastery 로 올림 (최대 0.95)",
+ "masteryByJob": [
+  0.8,
+  0.4,
+  0.4,
+  0.4,
+  0.4
+ ],
+ "mastery": 0.8,
+ "critDamage": 1.5,
+ "fistAttack": 5,
+ "defPerVit": 1.0,
+ "_방어": "받는 피해 = 몹 공격 × (1 - 방어 / (방어 + defBase + 몹 레벨 × defPerMobLevel))",
+ "defBase": 50,
+ "defPerMobLevel": 10,
+ "_사냥맵": "자연 스폰을 막을 차원 (사냥 맵). 예: [\"minecraft:overworld\"]",
+ "huntingDimensions": [],
+ "critBase": 5.0,
+ "critPerDex": 0.1,
+ "healPerInt": 0.5,
+ "dropPerLuk": 0.1,
+ "goldPerLuk": 0.15,
+ "skillPointsPerLevel": 3,
+ "passivePointsPerLevel": 2,
+ "_구르기": "왼쪽 Alt. 쿨타임(초), 힘(속도), 무적(틱)",
+ "dodgeCooldown": 3.0,
+ "dodgePower": 1.1,
+ "dodgeIframes": 8,
+ "_파티·사망": "deathExpLossPct = 죽으면 현재 레벨 필요 경험치의 몇 % 잃음 (레벨은 안 떨어짐). downEverywhere = true 면 파티 중 어디서나 다운, false 면 보스 경기장 안에서만 다운",
+ "partyMax": 6,
+ "partyRange": 40,
+ "partyBonusPerMember": 10,
+ "deathExpLossPct": 30,
+ "downEverywhere": false,
+ "downSeconds": 30,
+ "reviveSeconds": 3,
+ "reviveHpPct": 30,
+ "_전직·물약": "전직 레벨, 전직 보상 물약 개수, 물약 회복량(고정), 물약 쿨타임(초)",
+ "jobLevel1": 10,
+ "jobRewardPotions": 10,
+ "jobLevel2": 30,
+ "jobReward2Potions": 10,
+ "potionCooldown": 1.0,
+ "_원거리": "궁수 화살·마법사 마법탄 사거리(칸)",
+ "rangedRange": 20,
+ "_경험치": "필요 경험치 = expBase × 레벨^expPower + expLinear × 레벨",
+ "expBase": 22.5,
+ "expPower": 2.0,
+ "expLinear": 45,
+ "_물약": "물약 종류. hp/mp = 고정 회복량, hpPct/mpPct = 최대치의 % 회복 (둘 다 쓸 수 있음), cooldown = 그 물약 쿨타임(초, 없으면 potionCooldown). 회복량 증가(healPct)가 곱해짐. 엘릭서는 상점에서 안 팖",
+ "potions": {
+  "red_potion": {
+   "hp": 60
+  },
+  "orange_potion": {
+   "hp": 150
+  },
+  "white_potion": {
+   "hp": 300
+  },
+  "blue_potion": {
+   "mp": 40
+  },
+  "deep_blue_potion": {
+   "mp": 100
+  },
+  "mana_elixir": {
+   "mp": 200
+  },
+  "elixir": {
+   "hpPct": 50,
+   "mpPct": 50,
+   "cooldown": 30
+  },
+  "power_elixir": {
+   "hpPct": 100,
+   "mpPct": 100,
+   "cooldown": 60
   }
+ }
 }

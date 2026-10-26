@@ -117,7 +117,7 @@ public final class Drops {
         List<ItemStack> out = new ArrayList<>();
 
         // 골드 주머니
-        long gold = Math.round(m.gold * (1.0 + d.goldBonus() / 100.0) * (0.85 + r.nextDouble() * 0.3));
+        long gold = Math.round(m.gold * (1.0 + d.goldBonus() / 100.0) * (1.0 + d.comboGoldPct(killer.level().getGameTime()) / 100.0) * (0.85 + r.nextDouble() * 0.3));
         if (gold > 0 && r.nextDouble() * 100 < goldChance) out.add(GoldPouch.of(gold));
 
         MobDrops md = MOBS.get(m.key);

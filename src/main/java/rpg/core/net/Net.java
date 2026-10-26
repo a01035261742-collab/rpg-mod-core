@@ -348,7 +348,7 @@ public final class Net {
             if (!rpg.core.item.Scroll.kind(s).isEmpty()) { slots.add(i); scrolls.add(s.copy()); }
         }
         int frags = rpg.core.equip.Enhance.count(p, rpg.core.item.ModItems.SCROLL_FRAGMENT.get());
-        int[] ce = rpg.core.equip.Potential.ceilCounts(p);
+        int[] ce = new int[3];   // 천장은 장비마다 (장비 NBT 로 보냄)
         java.util.List<Integer> extra = java.util.List.of(rpg.core.equip.Enhance.count(p, rpg.core.item.ModItems.CUBE.get()),
                 rpg.core.equip.Enhance.count(p, rpg.core.item.ModItems.POTENTIAL_SCROLL.get()),
                 rpg.core.equip.Enhance.count(p, rpg.core.item.ModItems.EPIC_POTENTIAL_SCROLL.get()), ce[0], ce[1], ce[2],

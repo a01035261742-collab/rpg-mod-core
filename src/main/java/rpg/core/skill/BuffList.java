@@ -26,6 +26,7 @@ public final class BuffList {
         List<Entry> skill = new ArrayList<>(), party = new ArrayList<>(), tree = new ArrayList<>(), cd = new ArrayList<>();
         if (now < d.sprintEnd) skill.add(new Entry("질주", (int) (d.sprintEnd - now), 0, ""));
         if (now < d.shieldEnd && d.shield > 0) skill.add(new Entry("보호막", d.shieldEnd == Long.MAX_VALUE ? INF : (int) (d.shieldEnd - now), 0, ""));
+        if (now < d.comboUntil && d.combo > 0) tree.add(new Entry("콤보", (int) (d.comboUntil - now), 2, d.combo + (d.comboGoldPct(now) > 0 ? " +" + d.comboGoldPct(now) + "%" : "")));
         d.buffEnd.forEach((id, end) -> {
             if (now >= end || id.equals("stealth") && d.buffV("stealth", now) == 0 && d.buffEnd.containsKey("escape_speed")) return;
             int left = (int) (end - now);

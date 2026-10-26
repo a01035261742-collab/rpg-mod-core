@@ -78,12 +78,18 @@ public class PlayerData {
 
     // 다운·부활 (저장 안 함)
     public long downEnd;              // 0 = 다운 아님
+    /** 연속 처치 콤보 (10초 안에 다음 처치), 10콤보마다 골드 +10% (최대 +50%) */
+    public transient int combo;
+    public transient long comboUntil;
+    /** 거래로 받은 골드 - 준 골드 (업적 '부자'는 이걸 뺀 골드로 판정) */
+    public long tradeNet;
     public java.util.UUID reviver;
     public long reviveStart;
     public int reviveNeed;
     public boolean forceDie;
 
     public boolean isDown() { return downEnd > 0; }
+    public int comboGoldPct(long now) { return now < comboUntil ? Math.min(50, combo / 10 * 10) : 0; }
 
     // 계산값 (저장 안 함)
     public double maxHp = 1, maxMp = 1;
@@ -222,7 +228,7 @@ public class PlayerData {
         CompoundTag t = new CompoundTag();
         t.putInt("level", level); t.putLong("exp", exp); t.putIntArray("stats", stats.clone());
         t.putInt("sp", statPoints); t.putInt("job", job); t.putLong("gold", gold);
-        t.putInt("freeTreeReset", freeTreeReset);
+        t.putInt("freeTreeReset", freeTreeReset); t.putLong("tradeNet", tradeNet);
         t.putInt("branch", branch); t.putInt("pendingBranch", pendingBranch); t.putBoolean("trialCleared", trialCleared);
         t.putDouble("hp", hp); t.putDouble("mp", mp);
         t.putInt("skp", skillPoints); t.putInt("pp", passivePoints);
@@ -249,7 +255,7 @@ public class PlayerData {
         int[] s = t.getIntArray("stats");
         for (int i = 0; i < N; i++) stats[i] = i < s.length ? s[i] : start(i);
         statPoints = t.getInt("sp"); job = t.getInt("job"); gold = t.getLong("gold");
-        freeTreeReset = t.getInt("freeTreeReset");
+        freeTreeReset = t.getInt("freeTreeReset"); tradeNet = t.getLong("tradeNet");
         branch = t.getInt("branch"); pendingBranch = t.getInt("pendingBranch"); trialCleared = t.getBoolean("trialCleared");
         hp = t.getDouble("hp"); mp = t.getDouble("mp");
         skillPoints = t.getInt("skp"); passivePoints = t.getInt("pp");

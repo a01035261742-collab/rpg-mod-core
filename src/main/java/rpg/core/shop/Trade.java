@@ -128,6 +128,8 @@ public final class Trade {
         SESSIONS.remove(s.b.getUUID());
         da.gold += s.goldB - s.goldA;
         db.gold += s.goldA - s.goldB;
+        da.tradeNet += s.goldB - s.goldA;   // 업적 '부자' 판정용
+        db.tradeNet += s.goldA - s.goldB;
         giveBack(s.b, s.ca);   // a 의 물건 → b
         giveBack(s.a, s.cb);
         RpgData.sync(s.a);

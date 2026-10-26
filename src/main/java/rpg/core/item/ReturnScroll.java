@@ -41,6 +41,7 @@ public class ReturnScroll extends Item {
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (level.isClientSide || !(player instanceof ServerPlayer sp)) return InteractionResultHolder.success(stack);
+        if (rpg.core.world.Raids.inRaid(sp)) { msg(sp, "레이드 중에는 귀환할 수 없어요 (/rpg 레이드 나가기)", ChatFormatting.RED); return InteractionResultHolder.fail(stack); }
         if (rpg.core.combat.Boss.inArena(sp)) { msg(sp, "보스 경기장에서는 귀환할 수 없어요", ChatFormatting.RED); return InteractionResultHolder.fail(stack); }
         if (rpg.core.town.Towns.get(sp.serverLevel()).towns.isEmpty()) { msg(sp, "이 세계에 등록된 마을이 없어요", ChatFormatting.RED); return InteractionResultHolder.fail(stack); }
         if (CASTS.containsKey(sp.getUUID())) return InteractionResultHolder.fail(stack);

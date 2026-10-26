@@ -199,6 +199,7 @@ public final class Skills {
         p.setDeltaMovement(dir.x, p.onGround() ? 0.2 : p.getDeltaMovement().y, dir.z);
         p.hurtMarked = true;
         p.invulnerableTime = Math.max(p.invulnerableTime, Balance.dodgeIframes);
+        d.invulUntil = Math.max(d.invulUntil, now + Balance.dodgeIframes);   // 바닐라 무적은 10틱 넘어야 먹혀서 RPG 쪽에서 무적 처리
         int cd = (int) Math.round(Balance.dodgeCooldown * 20 * Math.max(0.1, 1 - d.bonus("dodgeCd") / 100.0));
         d.dodgeEnd = now + cd;
         d.dodgeLen = cd;

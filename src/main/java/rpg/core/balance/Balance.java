@@ -84,7 +84,7 @@ public final class Balance {
     public record Ground(String name, java.util.List<String> mobs, int min, int max) {}
     public static final Map<String, Ground> GROUNDS = new java.util.LinkedHashMap<>();
     /** 엘리트: 확률 %, 체력·공격·보상 배수, 장비 드롭 배수 */
-    public static double eliteChance = 5, eliteHp = 5, eliteAtk = 1.5, eliteReward = 5, eliteGear = 3;
+    public static double eliteChance = 5, eliteHp = 5, eliteAtk = 1.5, eliteReward = 5, eliteGear = 3, eliteGoldMul = 10;
     /** 경직 (EF 방식): 충격 - 경직 방어 = 남는 충격. shortMin 이상 짧은 경직, longMin 이상 긴 경직 */
     public static double stunShortMin = 0.5, stunLongMin = 1.4, eliteStunArmor = 0.8;
     public static int stunShortTicks = 6, stunLongTicks = 12, stunChain = 4, stunChainWindow = 40, stunImmuneTicks = 30;
@@ -208,7 +208,7 @@ public final class Balance {
             if (root.has("_elite")) {
                 JsonObject o = root.getAsJsonObject("_elite");
                 eliteChance = d(o, "chance", 5); eliteHp = d(o, "hp", 5); eliteAtk = d(o, "atk", 1.5);
-                eliteReward = d(o, "reward", 5); eliteGear = d(o, "gear", 3);
+                eliteReward = d(o, "reward", 5); eliteGear = d(o, "gear", 3); eliteGoldMul = d(o, "goldMul", eliteReward);
             }
             for (var e : root.entrySet()) {
                 if (e.getKey().startsWith("_") || !e.getValue().isJsonObject()) continue;

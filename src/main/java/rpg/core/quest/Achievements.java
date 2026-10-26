@@ -67,7 +67,7 @@ public final class Achievements {
             case "star" -> a.getInt("bestStar");
             case "destroy" -> a.getInt("destroy");
             case "bossKinds" -> a.getCompound("boss").size();
-            case "gold" -> d.gold;
+            case "gold" -> d.gold - Math.max(0, d.tradeNet);   // 거래로 받은 돈은 빼고
             default -> 0;
         };
     }

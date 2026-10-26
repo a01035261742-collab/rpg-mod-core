@@ -832,6 +832,10 @@ public final class Boss {
     }
 
     // ───────── 처치 ─────────
+    /** 참여 기준 (보스 최대 체력 비율), 보물·골드 제한 레벨 차이 */
+    public static final double PART_MIN = 0.05;
+    public static final int OVER_LEVEL = 15;
+
     public static void onDeath(Mob mob, MobData m, ServerPlayer killer) {
         Def def = DEFS.get(m.key);
         State st = STATES.remove(mob.getUUID());
@@ -845,7 +849,8 @@ public final class Boss {
         Map<ServerPlayer, Double> part = new LinkedHashMap<>();
         if (st != null) for (var e : st.dmg.entrySet()) {
             Player p = l.getPlayerByUUID(e.getKey());
-            if (p instanceof ServerPlayer sp && flat(sp.position(), st.center) <= st.radius + 24) part.put(sp, e.getValue());
+            if (p instanceof ServerPlayer sp && flat(sp.position(), st.center) <= st.radius + 24 && e.getValue() >= m.maxHp * PART_MIN)
+                part.put(sp, e.getValue());   // 보스 체력 5% 이상 딜한 사람만 참여자
         }
         if (part.isEmpty() && killer != null) part.put(killer, 1.0);
         double total = 0;
@@ -856,8 +861,9 @@ public final class Boss {
             PlayerData d = RpgData.get(p);
             bestDrop = Math.max(bestDrop, d.dropBonus());
             double share = e.getValue() / Math.max(1, total);
-            long exp = Math.max(1, Math.round(m.exp * share));
-            long gold = Math.max(1, Math.round(m.gold * share * (1 + d.goldBonus() / 100.0)));
+            boolean over = d.level >= m.level + OVER_LEVEL;   // 보스보다 15레벨 이상: 골드 절반 · 보물 없음
+            long exp = Math.max(1, Math.round(m.exp * share * CombatEvents.expLevelMul(m.level, d.level)));
+            long gold = Math.max(1, Math.round(m.gold * share * (1 + d.goldBonus() / 100.0) * (over ? 0.5 : 1)));
             d.gold += gold;
             Progress.giveExp(p, exp);
             Net.reward(p, exp, gold);
@@ -885,8 +891,9 @@ public final class Boss {
         // 드롭 세트: 참여 인원수만큼, 바닥에 (누구나 주움)
         ThreadLocalRandom r = ThreadLocalRandom.current();
         double mul = 1 + bestDrop / 100.0;
-        List<ItemStack> out = new ArrayList<>();
-        for (int i = 0; i < part.size(); i++) {
+        for (ServerPlayer owner : part.keySet()) {
+            List<ItemStack> out = new ArrayList<>();
+            boolean over = RpgData.get(owner).level >= m.level + OVER_LEVEL;
             if (!def.sure().isEmpty()) out.add(rpg.core.item.ItemIds.stack(RpgCore.MODID + ":" + def.sure(), 1));
             for (Mats mt : def.mats()) rpg.core.loot.Drops.rollMats(mt.mob(), mt.times(), mul, out);
             if (def.fragments() > 0) out.add(new ItemStack(rpg.core.item.ModItems.SCROLL_FRAGMENT.get(), def.fragments()));
@@ -903,27 +910,30 @@ public final class Boss {
                 out.add(new ItemStack(rpg.core.item.ModItems.BLACK_FLAME.get()));
             for (String[] ex : EXTRAS.getOrDefault(def.key(), List.of())) {
                 if (r.nextDouble() * 100 >= Double.parseDouble(ex[1]) * mul) continue;
+                if (over && ex[0].endsWith("_treasure")) continue;   // 고레벨: 보물 없음
                 ItemStack g = rpg.core.item.ItemIds.stack(RpgCore.MODID + ":" + ex[0], 1);
                 if (g.isEmpty()) continue;
                 rpg.core.equip.Gear.roll(g);
                 out.add(g);
-                for (ServerPlayer p : part.keySet())
-                    p.sendSystemMessage(Component.literal("✦ " + g.getHoverName().getString() + " 이(가) 떨어졌어요!").withStyle(ChatFormatting.LIGHT_PURPLE));
+                if (!ex[0].endsWith("_treasure")) for (ServerPlayer p : part.keySet())
+                    p.sendSystemMessage(Component.literal("✦ " + g.getHoverName().getString() + " 이(가) 떨어졌어요! (" + owner.getGameProfile().getName() + ")").withStyle(ChatFormatting.LIGHT_PURPLE));
             }
             if (!def.ring().isEmpty() && r.nextDouble() * 100 < def.ringChance() * mul) {
                 ItemStack g = rpg.core.item.ItemIds.stack(RpgCore.MODID + ":" + def.ring(), 1);
                 rpg.core.equip.Gear.roll(g);
                 out.add(g);
                 for (ServerPlayer p : part.keySet())
-                    p.sendSystemMessage(Component.literal("✦ " + g.getHoverName().getString() + " 이(가) 떨어졌어요!").withStyle(ChatFormatting.LIGHT_PURPLE));
+                    p.sendSystemMessage(Component.literal("✦ " + g.getHoverName().getString() + " 이(가) 떨어졌어요! (" + owner.getGameProfile().getName() + ")").withStyle(ChatFormatting.LIGHT_PURPLE));
             }
-        }
-        for (ItemStack s : out) {
-            if (s.isEmpty()) continue;
-            ItemEntity it = new ItemEntity(l, mob.getX() + r.nextDouble() * 2 - 1, mob.getY() + 0.5, mob.getZ() + r.nextDouble() * 2 - 1, s);
-            it.setDeltaMovement(r.nextDouble() * 0.3 - 0.15, 0.3, r.nextDouble() * 0.3 - 0.15);
-            it.setDefaultPickUpDelay();
-            l.addFreshEntity(it);
+            // 이 참여자 몫: 30초 동안 주인만 주움
+            for (ItemStack s : out) {
+                if (s.isEmpty()) continue;
+                ItemEntity it = new ItemEntity(l, mob.getX() + r.nextDouble() * 2 - 1, mob.getY() + 0.5, mob.getZ() + r.nextDouble() * 2 - 1, s);
+                it.setDeltaMovement(r.nextDouble() * 0.3 - 0.15, 0.3, r.nextDouble() * 0.3 - 0.15);
+                it.setDefaultPickUpDelay();
+                rpg.core.loot.Loot.claim(it, owner, 30);
+                l.addFreshEntity(it);
+            }
         }
         l.playSound(null, mob.blockPosition(), SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundSource.HOSTILE, 1f, 1f);
     }

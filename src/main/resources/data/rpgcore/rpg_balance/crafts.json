@@ -2578,7 +2578,7 @@
    "tab": "재료",
    "result": "bear_paw",
    "count": 1,
-   "gold": 38,
+   "gold": 380,
    "mats": [
     [
      "bear_pelt",
@@ -2591,7 +2591,7 @@
    "tab": "재료",
    "result": "beast_core",
    "count": 1,
-   "gold": 58,
+   "gold": 580,
    "mats": [
     [
      "beast_shell",
@@ -2604,7 +2604,7 @@
    "tab": "재료",
    "result": "boar_tusk",
    "count": 1,
-   "gold": 38,
+   "gold": 380,
    "mats": [
     [
      "boar_bristle",
@@ -2617,7 +2617,7 @@
    "tab": "재료",
    "result": "cow_horn",
    "count": 1,
-   "gold": 23,
+   "gold": 230,
    "mats": [
     [
      "cow_hide",
@@ -2630,7 +2630,7 @@
    "tab": "재료",
    "result": "dark_eye",
    "count": 1,
-   "gold": 58,
+   "gold": 580,
    "mats": [
     [
      "dark_silk",
@@ -2643,7 +2643,7 @@
    "tab": "재료",
    "result": "dog_fang",
    "count": 1,
-   "gold": 33,
+   "gold": 330,
    "mats": [
     [
      "dog_fur",
@@ -2656,7 +2656,7 @@
    "tab": "재료",
    "result": "fairy_dust",
    "count": 1,
-   "gold": 48,
+   "gold": 480,
    "mats": [
     [
      "fairy_wing",
@@ -2669,7 +2669,7 @@
    "tab": "재료",
    "result": "glow_spore",
    "count": 1,
-   "gold": 43,
+   "gold": 430,
    "mats": [
     [
      "tiny_cap",
@@ -2682,7 +2682,7 @@
    "tab": "재료",
    "result": "golden_hoof",
    "count": 1,
-   "gold": 23,
+   "gold": 230,
    "mats": [
     [
      "pig_hide",
@@ -2695,7 +2695,7 @@
    "tab": "재료",
    "result": "odd_potion",
    "count": 1,
-   "gold": 53,
+   "gold": 530,
    "mats": [
     [
      "witch_herb",
@@ -2708,7 +2708,7 @@
    "tab": "재료",
    "result": "rat_tooth",
    "count": 1,
-   "gold": 28,
+   "gold": 280,
    "mats": [
     [
      "rat_tail",
@@ -2721,7 +2721,7 @@
    "tab": "재료",
    "result": "royal_jelly",
    "count": 1,
-   "gold": 33,
+   "gold": 330,
    "mats": [
     [
      "bee_sting",
@@ -2734,7 +2734,7 @@
    "tab": "재료",
    "result": "slime_core",
    "count": 1,
-   "gold": 28,
+   "gold": 280,
    "mats": [
     [
      "slime_goo",
@@ -2747,7 +2747,7 @@
    "tab": "재료",
    "result": "soldier_badge",
    "count": 1,
-   "gold": 48,
+   "gold": 480,
    "mats": [
     [
      "toxic_cap",
@@ -2760,7 +2760,7 @@
    "tab": "재료",
    "result": "spirit_cap",
    "count": 1,
-   "gold": 43,
+   "gold": 430,
    "mats": [
     [
      "spore_dust",
@@ -2773,7 +2773,7 @@
    "tab": "재료",
    "result": "spore_gland",
    "count": 1,
-   "gold": 53,
+   "gold": 530,
    "mats": [
     [
      "spore_silk",

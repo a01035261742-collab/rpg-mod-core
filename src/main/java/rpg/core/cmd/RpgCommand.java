@@ -45,7 +45,7 @@ public final class RpgCommand {
         for (String n : new String[]{"이동", "travel"})
             root.then(Commands.literal(n).executes(c -> { rpg.core.world.RpgWorld.command(c.getSource().getPlayerOrException()); return 1; }));
         for (String n : new String[]{"공유창고", "stash"})
-            root.then(Commands.literal(n).executes(c -> { rpg.core.world.SharedStash.open(c.getSource().getPlayerOrException()); return 1; }));
+            root.then(Commands.literal(n).executes(c -> { rpg.core.world.SharedStash.command(c.getSource().getPlayerOrException()); return 1; }));
         for (String n : new String[]{"스폰설정", "setspawn"})
             root.then(Commands.literal(n).requires(s -> s.hasPermission(2)).executes(c -> {
                 ServerPlayer p = c.getSource().getPlayerOrException();

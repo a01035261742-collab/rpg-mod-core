@@ -121,6 +121,9 @@ public final class RpgWorld {
         String loaded = w.getString("loaded"), now = group(p.level());
         if (loaded.isEmpty()) { w.putString("loaded", now); putWorlds(p, w); return; }
         if (loaded.equals(now)) return;
+        // 들고 있는 것(마우스·제작칸·열린 창)을 먼저 인벤으로 → 다른 월드로 몰래 안 넘어가게
+        if (p.containerMenu != p.inventoryMenu) p.doCloseContainer();
+        p.inventoryMenu.removed(p);
         w.put(loaded, snapshot(p, loaded));
         restore(p, w.getCompound(now));
         w.putString("loaded", now);

@@ -83,8 +83,8 @@
    "goals": [],
    "turnIn": "bram",
    "reward": {
-    "exp": 130,
-    "gold": 40,
+    "exp": 90,
+    "gold": 160,
     "items": [
      [
       "red_potion",
@@ -116,8 +116,8 @@
     }
    ],
    "reward": {
-    "exp": 130,
-    "gold": 40,
+    "exp": 90,
+    "gold": 160,
     "items": [
      [
       "red_potion",
@@ -155,8 +155,8 @@
    ],
    "after": "q02_pigs",
    "reward": {
-    "exp": 130,
-    "gold": 80,
+    "exp": 90,
+    "gold": 320,
     "items": [
      [
       "red_potion",
@@ -200,8 +200,8 @@
     ]
    ],
    "reward": {
-    "exp": 130,
-    "gold": 120,
+    "exp": 90,
+    "gold": 480,
     "items": [
      [
       "red_potion",
@@ -234,8 +234,8 @@
     }
    ],
    "reward": {
-    "exp": 130,
-    "gold": 160,
+    "exp": 90,
+    "gold": 640,
     "items": [
      [
       "red_potion",
@@ -271,8 +271,8 @@
     }
    ],
    "reward": {
-    "exp": 620,
-    "gold": 240,
+    "exp": 435,
+    "gold": 960,
     "items": [
      [
       "red_potion",
@@ -304,8 +304,8 @@
     }
    ],
    "reward": {
-    "exp": 620,
-    "gold": 280,
+    "exp": 435,
+    "gold": 1120,
     "items": [
      [
       "red_potion",
@@ -345,8 +345,8 @@
     ]
    ],
    "reward": {
-    "exp": 620,
-    "gold": 320,
+    "exp": 435,
+    "gold": 1280,
     "items": [
      [
       "red_potion",
@@ -378,8 +378,8 @@
     }
    ],
    "reward": {
-    "exp": 620,
-    "gold": 320,
+    "exp": 435,
+    "gold": 1280,
     "items": [
      [
       "red_potion",
@@ -419,8 +419,8 @@
    ],
    "after": "q07_rats",
    "reward": {
-    "exp": 620,
-    "gold": 360,
+    "exp": 435,
+    "gold": 1440,
     "items": [
      [
       "earring_10",
@@ -460,8 +460,8 @@
     }
    ],
    "reward": {
-    "exp": 1230,
-    "gold": 440,
+    "exp": 860,
+    "gold": 1760,
     "items": [
      [
       "red_potion",
@@ -493,8 +493,8 @@
     }
    ],
    "reward": {
-    "exp": 1230,
-    "gold": 480,
+    "exp": 860,
+    "gold": 1920,
     "items": [
      [
       "red_potion",
@@ -538,8 +538,8 @@
     ]
    ],
    "reward": {
-    "exp": 1230,
-    "gold": 480,
+    "exp": 860,
+    "gold": 1920,
     "items": [
      [
       "red_potion",
@@ -577,8 +577,8 @@
     "text": "들개 굴 구석에서 낡은 사냥 활을 찾았다!"
    },
    "reward": {
-    "exp": 1230,
-    "gold": 520,
+    "exp": 860,
+    "gold": 2080,
     "items": [
      [
       "red_potion",
@@ -615,8 +615,8 @@
    ],
    "after": "q11_dogs",
    "reward": {
-    "exp": 1230,
-    "gold": 520,
+    "exp": 860,
+    "gold": 2080,
     "items": [
      [
       "ring_10",
@@ -648,8 +648,8 @@
     }
    ],
    "reward": {
-    "exp": 1230,
-    "gold": 560,
+    "exp": 860,
+    "gold": 2240,
     "items": [
      [
       "red_potion",
@@ -685,8 +685,8 @@
     }
    ],
    "reward": {
-    "exp": 3390,
-    "gold": 640,
+    "exp": 2375,
+    "gold": 2560,
     "items": [
      [
       "red_potion",
@@ -718,8 +718,8 @@
     }
    ],
    "reward": {
-    "exp": 3390,
-    "gold": 680,
+    "exp": 2375,
+    "gold": 2720,
     "items": [
      [
       "red_potion",
@@ -755,8 +755,8 @@
     }
    ],
    "reward": {
-    "exp": 3390,
-    "gold": 720,
+    "exp": 2375,
+    "gold": 2880,
     "items": [
      [
       "red_potion",
@@ -799,8 +799,8 @@
     ]
    ],
    "reward": {
-    "exp": 3390,
-    "gold": 800,
+    "exp": 2375,
+    "gold": 3200,
     "items": [
      [
       "pendant_20",
@@ -840,8 +840,8 @@
     }
    ],
    "reward": {
-    "exp": 3610,
-    "gold": 840,
+    "exp": 2525,
+    "gold": 3360,
     "items": [
      [
       "orange_potion",
@@ -885,8 +885,8 @@
     ]
    ],
    "reward": {
-    "exp": 3610,
-    "gold": 880,
+    "exp": 2525,
+    "gold": 3520,
     "items": [
      [
       "orange_potion",
@@ -918,8 +918,8 @@
     }
    ],
    "reward": {
-    "exp": 3610,
-    "gold": 880,
+    "exp": 2525,
+    "gold": 3520,
     "items": [
      [
       "deep_blue_potion",
@@ -951,8 +951,8 @@
     }
    ],
    "reward": {
-    "exp": 3610,
-    "gold": 920,
+    "exp": 2525,
+    "gold": 3680,
     "items": [
      [
       "orange_potion",
@@ -994,8 +994,8 @@
     "text": "제단 위에서 포자의 고서를 찾았다!"
    },
    "reward": {
-    "exp": 3610,
-    "gold": 960,
+    "exp": 2525,
+    "gold": 3840,
     "items": [
      [
       "orange_potion",
@@ -1032,8 +1032,8 @@
    ],
    "after": "q23_dust",
    "reward": {
-    "exp": 3610,
-    "gold": 960,
+    "exp": 2525,
+    "gold": 3840,
     "items": [
      [
       "earring_20",
@@ -1069,8 +1069,8 @@
     }
    ],
    "reward": {
-    "exp": 5260,
-    "gold": 1040,
+    "exp": 3680,
+    "gold": 4160,
     "items": [
      [
       "orange_potion",
@@ -1102,8 +1102,8 @@
     }
    ],
    "reward": {
-    "exp": 5260,
-    "gold": 1080,
+    "exp": 3680,
+    "gold": 4320,
     "items": [
      [
       "deep_blue_potion",
@@ -1143,8 +1143,8 @@
     ]
    ],
    "reward": {
-    "exp": 5260,
-    "gold": 1120,
+    "exp": 3680,
+    "gold": 4480,
     "items": [
      [
       "deep_blue_potion",
@@ -1177,8 +1177,8 @@
    ],
    "after": "q27_soldiers",
    "reward": {
-    "exp": 5260,
-    "gold": 1120,
+    "exp": 3680,
+    "gold": 4480,
     "items": [
      [
       "scroll_fragment",
@@ -1220,8 +1220,8 @@
     "text": "막사 탁자 밑에서 작전 지도를 찾았다!"
    },
    "reward": {
-    "exp": 5260,
-    "gold": 1160,
+    "exp": 3680,
+    "gold": 4640,
     "items": [
      [
       "orange_potion",
@@ -1257,8 +1257,8 @@
     }
    ],
    "reward": {
-    "exp": 5260,
-    "gold": 1160,
+    "exp": 3680,
+    "gold": 4640,
     "items": [
      [
       "orange_potion",
@@ -1294,8 +1294,8 @@
     }
    ],
    "reward": {
-    "exp": 7230,
-    "gold": 1240,
+    "exp": 5060,
+    "gold": 4960,
     "items": [
      [
       "orange_potion",
@@ -1327,8 +1327,8 @@
     }
    ],
    "reward": {
-    "exp": 7230,
-    "gold": 1280,
+    "exp": 5060,
+    "gold": 5120,
     "items": [
      [
       "deep_blue_potion",
@@ -1368,8 +1368,8 @@
     ]
    ],
    "reward": {
-    "exp": 7230,
-    "gold": 1320,
+    "exp": 5060,
+    "gold": 5280,
     "items": [
      [
       "orange_potion",
@@ -1401,8 +1401,8 @@
     }
    ],
    "reward": {
-    "exp": 7230,
-    "gold": 1320,
+    "exp": 5060,
+    "gold": 5280,
     "items": [
      [
       "orange_potion",
@@ -1441,8 +1441,8 @@
    "turnIn": "morris",
    "after": "q34_herbs",
    "reward": {
-    "exp": 7230,
-    "gold": 1360,
+    "exp": 5060,
+    "gold": 5440,
     "items": [
      [
       "ring_30",
@@ -1484,8 +1484,8 @@
     "text": "은신처 책장에서 마녀의 주문서를 찾았다!"
    },
    "reward": {
-    "exp": 7230,
-    "gold": 1360,
+    "exp": 5060,
+    "gold": 5440,
     "items": [
      [
       "orange_potion",
@@ -1521,8 +1521,8 @@
     }
    ],
    "reward": {
-    "exp": 9510,
-    "gold": 1440,
+    "exp": 6655,
+    "gold": 5760,
     "items": [
      [
       "white_potion",
@@ -1562,8 +1562,8 @@
     ]
    ],
    "reward": {
-    "exp": 9510,
-    "gold": 1480,
+    "exp": 6655,
+    "gold": 5920,
     "items": [
      [
       "white_potion",
@@ -1595,8 +1595,8 @@
     }
    ],
    "reward": {
-    "exp": 9510,
-    "gold": 1480,
+    "exp": 6655,
+    "gold": 5920,
     "items": [
      [
       "mana_elixir",
@@ -1628,8 +1628,8 @@
     }
    ],
    "reward": {
-    "exp": 9510,
-    "gold": 1520,
+    "exp": 6655,
+    "gold": 6080,
     "items": [
      [
       "white_potion",
@@ -1672,8 +1672,8 @@
     "text": "둥지 근처에서 순찰병의 일지를 찾았다…"
    },
    "reward": {
-    "exp": 9510,
-    "gold": 1520,
+    "exp": 6655,
+    "gold": 6080,
     "items": [
      [
       "white_potion",
@@ -1713,8 +1713,8 @@
    ],
    "after": "q42_beasts",
    "reward": {
-    "exp": 9510,
-    "gold": 1560,
+    "exp": 6655,
+    "gold": 6240,
     "items": [
      [
       "pendant_40",
