@@ -90,6 +90,28 @@ public final class EpicFightCompat {
         }
     }
 
+    private static java.lang.reflect.Method toVanilla;
+    private static java.lang.reflect.Field restricted;
+
+    /** 야생: EF 바닐라 모드로 고정 (전투 모드 못 켬) · RPG 대륙: 다시 켤 수 있게 */
+    public static void forceMode(net.minecraft.world.entity.player.Player p, boolean rpg) {
+        try {
+            if (!efLookedUp) battleMode(p);
+            if (getPatch == null) return;
+            Object patch = getPatch.invoke(null, p, playerPatchClass);
+            if (patch == null) return;
+            if (restricted == null) {
+                restricted = playerPatchClass.getDeclaredField("battleModeRestricted");
+                restricted.setAccessible(true);
+                toVanilla = playerPatchClass.getMethod("toVanillaMode", boolean.class);
+            }
+            restricted.setBoolean(patch, !rpg);
+            if (!rpg && (boolean) isBattle.invoke(patch)) toVanilla.invoke(patch, true);
+        } catch (Throwable ex) {
+            restricted = null;
+        }
+    }
+
     /** 우리 무기 (검·활·지팡이·단검) 들고 있나 */
     public static boolean holdingRpgWeapon(net.minecraft.world.entity.player.Player p) {
         ResourceLocation id = ForgeRegistries.ITEMS.getKey(p.getMainHandItem().getItem());

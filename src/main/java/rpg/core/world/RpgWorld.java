@@ -42,7 +42,7 @@ public final class RpgWorld {
     private RpgWorld() {}
 
     /** RPG 대륙 평지 바로 위 높이 (dimension/rpg_world.json 층과 맞춤) */
-    static final int FLAT_TOP = -60;
+    static final int FLAT_TOP = -10;   // 기반암 1 · 돌 50 · 흙 2 · 풀 1 → 위 Y=-10
     public static final ResourceKey<Level> KEY = ResourceKey.create(Registries.DIMENSION, RpgCore.id("rpg_world"));
     static final String WILD = "wild", RPG = "rpg";
 
@@ -147,6 +147,7 @@ public final class RpgWorld {
                 pos = Vec3.atBottomCenterOf(to.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, sp));
             }
             p.teleportTo(to, pos.x, pos.y, pos.z, p.getYRot(), p.getXRot());
+            if (inPortal(p)) ARRIVED.add(p.getUUID());   // 문 위치로 돌아왔으면 나갈 때까지 대기
         } else {
             ServerLevel to = rpgLevel(s);
             if (to == null) { p.sendSystemMessage(Component.literal("RPG 대륙을 찾을 수 없어요").withStyle(ChatFormatting.RED)); return; }
@@ -174,17 +175,35 @@ public final class RpgWorld {
         p.displayClientMessage(Component.literal("3초 뒤 " + (is(p.level()) ? "야생" : "RPG 대륙") + "으로 이동해요 (움직이면 취소)").withStyle(ChatFormatting.LIGHT_PURPLE), true);
     }
 
+    /** 포탈 막 넘어와서 아직 문 안에 서 있는 사람 (문 밖으로 나갈 때까지 다시 안 넘어감) */
+    private static final java.util.Set<UUID> ARRIVED = new java.util.HashSet<>();
+
     public static void portal(ServerPlayer p) {
         long now = p.level().getGameTime();
-        if (now < PORTAL_CD.getOrDefault(p.getUUID(), 0L)) return;
-        PORTAL_CD.put(p.getUUID(), now + 60);
+        if (ARRIVED.contains(p.getUUID()) || now < PORTAL_CD.getOrDefault(p.getUUID(), 0L)) return;
+        PORTAL_CD.put(p.getUUID(), now + 40);
         travel(p);
-        PORTAL_CD.put(p.getUUID(), p.level().getGameTime() + 60);   // 도착한 쪽 포탈에서 바로 다시 안 넘어가게
+        ARRIVED.add(p.getUUID());
+        PORTAL_CD.put(p.getUUID(), p.level().getGameTime() + 40);
+    }
+
+    static boolean inPortal(ServerPlayer p) {
+        var b = ModBlocks.WORLD_PORTAL.get();
+        return p.level().getBlockState(p.blockPosition()).is(b) || p.level().getBlockState(BlockPos.containing(p.getEyePosition())).is(b);
     }
 
     @SubscribeEvent
     public static void tick(TickEvent.PlayerTickEvent e) {
-        if (e.phase != TickEvent.Phase.END || !(e.player instanceof ServerPlayer p) || CHANNELS.isEmpty()) return;
+        if (e.phase != TickEvent.Phase.END || !(e.player instanceof ServerPlayer p)) return;
+        // 차원 문: 서 있으면 이동 (넘어온 직후엔 문 밖으로 나갈 때까지 대기)
+        if (p.tickCount % 2 == 0) {
+            boolean inside = inPortal(p);
+            if (!inside) ARRIVED.remove(p.getUUID());
+            else if (!ARRIVED.contains(p.getUUID())) portal(p);
+        }
+        // 야생: Epic Fight 끄기 (바닐라 모드로)
+        if (p.tickCount % 10 == 0) rpg.core.compat.EpicFightCompat.forceMode(p, is(p.level()));
+        if (CHANNELS.isEmpty()) return;
         Channel c = CHANNELS.get(p.getUUID());
         if (c == null) return;
         if (p.position().distanceToSqr(c.at()) > 0.25 || p.getHealth() < c.hp() || !p.isAlive()) {
@@ -255,8 +274,8 @@ public final class RpgWorld {
         Data d = data(s);
         ServerLevel rpg = rpgLevel(s);
         if (rpg == null) return;
-        // 0.39.0 에서 땅속에 생긴 경우: 스폰·문을 평지 위로 다시
-        boolean buried = d.portalsBuilt && d.rpgSpawn.getY() < FLAT_TOP;
+        // 예전 높이로 생긴 경우: 스폰·문을 지금 평지 높이로 다시
+        boolean buried = d.portalsBuilt && d.rpgSpawn.getY() != FLAT_TOP && d.rpgSpawn.getX() == 0 && d.rpgSpawn.getZ() == 0;
         if (buried) {
             d.rpgSpawn = new BlockPos(0, FLAT_TOP, 0);
             BlockPos b = d.rpgSpawn;
