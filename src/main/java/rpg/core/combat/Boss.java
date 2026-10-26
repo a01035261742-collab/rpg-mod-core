@@ -131,6 +131,7 @@ public final class Boss {
         List<String> deck = new ArrayList<>();
         String last = "";
         long nextAt;
+        int done;             // 끝낸 패턴 수 (정기 휴식용)
         Pattern cur;
         int stage;            // 0 추적 · 1 확정 · 2 돌진 중
         long stageEnd;
@@ -608,6 +609,17 @@ public final class Boss {
         standing(mob, false);
         double[] w = st.phase >= 2 ? def.wait2() : def.wait1();
         st.nextAt = now + Math.round((w[0] + ThreadLocalRandom.current().nextDouble() * Math.max(0, w[1] - w[0])) * 20);
+        // 정기 휴식: restEvery 패턴마다 restSec초 동안 기본 공격만 (딜 타임)
+        int every = (int) def.g("restEvery", 0);
+        if (every > 0 && ++st.done % every == 0) {
+            double sec = def.g("restSec", 4);
+            st.nextAt += Math.round(sec * 20);
+            ServerLevel l = (ServerLevel) mob.level();
+            for (ServerPlayer pl : arena(l, st, 8))
+                pl.displayClientMessage(net.minecraft.network.chat.Component.literal(mob.getName().getString() + " 이(가) 숨을 고릅니다 (" + (int) sec + "초)")
+                        .withStyle(net.minecraft.ChatFormatting.GREEN), true);
+            l.sendParticles(ParticleTypes.CLOUD, mob.getX(), mob.getY() + 1.5, mob.getZ(), 12, 1.2, 0.6, 1.2, 0.01);
+        }
     }
 
     static void hitCircle(Mob mob, MobData m, State st, ServerLevel l, Vec3 c, double r, Pattern p) {

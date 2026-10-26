@@ -1893,12 +1893,12 @@
    "resetSec": 60,
    "phase2": 50,
    "wait1": [
-    1.5,
-    2.5
+    3,
+    4.5
    ],
    "wait2": [
-    0.8,
-    1.6
+    2,
+    3
    ],
    "penaltyPerLevel": 5,
    "maxPenalty": 90,
@@ -1906,7 +1906,9 @@
     "poisonPct": 2,
     "zonePct": 8,
     "hatchCount": 4,
-    "absorbHeal": 3
+    "absorbHeal": 3,
+    "restEvery": 3,
+    "restSec": 4
    },
    "patterns": [
     {
@@ -1915,7 +1917,7 @@
      "type": "fang",
      "r": 8,
      "angle": 120,
-     "delay": 1.2,
+     "delay": 1.6,
      "pct": 220,
      "poison": 4,
      "only": 1
@@ -1926,7 +1928,7 @@
      "type": "web",
      "r": 2.5,
      "track": 1.5,
-     "delay": 1.0,
+     "delay": 1.4,
      "pct": 100,
      "cocoon": 4,
      "only": 1
@@ -1945,7 +1947,7 @@
      "type": "jump",
      "r": 6,
      "track": 1.5,
-     "delay": 1.2,
+     "delay": 1.6,
      "pct": 250,
      "only": 1
     },
@@ -1963,7 +1965,7 @@
      "id": "lanes",
      "name": "새끼 거미 떼 돌진",
      "type": "lanes",
-     "delay": 2.5,
+     "delay": 2.9,
      "pct": 200,
      "only": 1
     },
@@ -1973,8 +1975,8 @@
      "type": "fang",
      "r": 8,
      "angle": 120,
-     "delay": 1.0,
-     "delay2": 0.8,
+     "delay": 1.4,
+     "delay2": 1.2,
      "hits2": 2,
      "pct": 220,
      "poison": 4,
@@ -1986,7 +1988,7 @@
      "type": "web",
      "r": 2.5,
      "track": 1.5,
-     "delay": 1.0,
+     "delay": 1.4,
      "pct": 100,
      "cocoon": 4,
      "targets2": 2,
@@ -2006,7 +2008,7 @@
      "type": "mark",
      "r": 5,
      "track": 2.0,
-     "delay": 1.0,
+     "delay": 1.4,
      "pct": 150,
      "poison": 3,
      "only": 2
@@ -2017,7 +2019,7 @@
      "type": "share",
      "r": 5,
      "track": 2.5,
-     "delay": 1.0,
+     "delay": 1.4,
      "maxPct": 90,
      "only": 2
     },
@@ -2025,7 +2027,7 @@
      "id": "collapse",
      "name": "둥지 붕괴",
      "type": "collapse",
-     "delay": 1.5,
+     "delay": 1.9,
      "linger": 3,
      "pct": 150,
      "only": 2
@@ -2038,8 +2040,8 @@
      "angle": 120,
      "pct": 200,
      "hits": 3,
-     "fangDelay": 0.8,
-     "finalDelay": 2,
+     "fangDelay": 1.2,
+     "finalDelay": 2.4,
      "safeR": 6,
      "finalPct": 300,
      "only": 2
