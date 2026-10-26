@@ -55,13 +55,15 @@ public final class ModItems {
             {0x5A5A5A, 0x3C3C46, 0x5A3C5A, 0x1E1E24}};
 
     /** 몹 전용 장신구 16종 (drops.json uniques) */
-    public static final String[] UNIQUE = {"pig_snout_pendant", "cow_horn_earring", "slime_ring", "rat_tail_belt", "dog_fang_earring", "bee_cape", "tusk_gloves", "bear_belt", "spirit_pendant", "mushroom_ring", "soldier_gloves", "fairy_cape", "gland_earring", "witch_pendant", "dark_eye_ring", "beast_belt", "forest_lord_ring", "guardian_ring", "forest_lord_belt", "guardian_pendant", "guardian_cape", "forest_hunter_medal", "mush_hunter_medal", "hunter_medal", "slayer_medal", "enhancer_medal", "unlucky_medal", "boss_hunter_medal", "rich_medal"};   // + 보스 장신구
+    public static final String[] UNIQUE = {"pig_snout_pendant", "cow_horn_earring", "slime_ring", "rat_tail_belt", "dog_fang_earring", "bee_cape", "tusk_gloves", "bear_belt", "spirit_pendant", "mushroom_ring", "soldier_gloves", "fairy_cape", "gland_earring", "witch_pendant", "dark_eye_ring", "beast_belt", "forest_lord_ring", "guardian_ring", "forest_lord_belt", "guardian_pendant", "guardian_cape", "forest_hunter_medal", "mush_hunter_medal", "hunter_medal", "slayer_medal", "enhancer_medal", "unlucky_medal", "boss_hunter_medal", "rich_medal",
+            "spider_queen_earring", "spider_queen_gloves", "spider_queen_ring", "spider_queen_medal"};   // + 보스 장신구
 
     static {
         java.util.List<String> all = new java.util.ArrayList<>(java.util.List.of(BASIC));
         for (String b : new String[]{"warrior_sword", "archer_bow", "mage_staff", "thief_dagger", "gloves", "cape", "belt", "earring", "ring", "pendant", "medal"})
             for (int lv : new int[]{20, 30, 40}) all.add(b + "_" + lv);   // Lv20·30·40 (제작·상점)
         all.addAll(java.util.List.of(UNIQUE));   // 몹 전용 장신구 (드롭 전용)
+        all.addAll(java.util.List.of("warrior_sword_queen", "archer_bow_queen", "mage_staff_queen", "thief_dagger_queen"));   // 여왕의 독니 무기 (레이드)
         for (String id : all) GEAR.add(ITEMS.register(id, () -> id.startsWith("archer_bow")
                 ? new rpg.core.equip.GearItems.Bow(new Item.Properties(), id)
                 : (id.startsWith("warrior_sword") || id.startsWith("mage_staff") || id.startsWith("thief_dagger"))
@@ -119,8 +121,9 @@ public final class ModItems {
         }
         MATERIALS.add(ITEMS.register("star_fragment", () -> new Material(new Item.Properties().rarity(Rarity.RARE), "강화 재료 (지금은 쓰는 곳 없음)", false)));
         MATERIALS.add(ITEMS.register("forest_lord_claw", () -> new Material(new Item.Properties().rarity(Rarity.EPIC), "보스 \"숲의 주인\" 확정 드롭 · 판매용 (나중에 제작 재료)", false)));
-        MATERIALS.add(ITEMS.register("forest_lord_treasure", () -> new Material(new Item.Properties().rarity(Rarity.EPIC), "보스 \"숲의 주인\" 보물 · 상점에 팔면 20,000 G", false)));
-        MATERIALS.add(ITEMS.register("guardian_treasure", () -> new Material(new Item.Properties().rarity(Rarity.EPIC), "보스 \"거대버섯 수호자\" 보물 · 상점에 팔면 40,000 G", false)));
+        MATERIALS.add(ITEMS.register("forest_lord_treasure", () -> new Treasure(new Item.Properties().rarity(Rarity.EPIC), "보스 \"숲의 주인\" 보물 · 상점에 팔면 20,000 G")));
+        MATERIALS.add(ITEMS.register("guardian_treasure", () -> new Treasure(new Item.Properties().rarity(Rarity.EPIC), "보스 \"거대버섯 수호자\" 보물 · 상점에 팔면 40,000 G")));
+        MATERIALS.add(ITEMS.register("spider_queen_treasure", () -> new Treasure(new Item.Properties().rarity(Rarity.EPIC), "레이드 \"어둠거미여왕\" 보물 · 상점에 팔면 80,000 G")));
         MATERIALS.add(ITEMS.register("guardian_heart", () -> new Material(new Item.Properties().rarity(Rarity.EPIC), "보스 \"거대버섯 수호자\" 확정 드롭 · 판매용 (나중에 제작 재료)", false)));
         SCROLL_FRAGMENT = ITEMS.register("scroll_fragment", () -> new Material(new Item.Properties().rarity(Rarity.RARE), "10개 → 메뉴(M) · 강화 · 조각 합성에서 무작위 주문서", false));
         MATERIALS.add(SCROLL_FRAGMENT);

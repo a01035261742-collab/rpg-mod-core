@@ -63,7 +63,12 @@ public final class Boss {
     public static final Map<String, Def> DEFS = new HashMap<>();
 
     // ───────── 읽기 (Balance 가 mobs.json 읽을 때) ─────────
-    public static void clear() { DEFS.clear(); }
+    public static void clear() { DEFS.clear(); TREASURE.clear(); }
+
+    /** 보스 보물 열기 표: 보물 아이템 id → [보스 키, 줄들]. 줄 = {아이템 id, 비중, 개수}. 특수 id: gold(개수 = 골드) · scroll(보스 레벨 무작위 주문서) · job:a|b|c|d(내 직업 것, 초보자는 무작위) */
+    public record TreasureRow(String id, double weight, int count) {}
+    public record TreasureTable(String boss, List<TreasureRow> rows) {}
+    public static final Map<String, TreasureTable> TREASURE = new HashMap<>();
 
     public static void define(String key, JsonObject o) {
         try {
@@ -92,6 +97,14 @@ public final class Boss {
                 ex.add(new String[]{a.get(0).getAsString(), a.get(1).getAsString()});
             }
             EXTRAS.put(key, ex);
+            if (rw.has("treasure")) {
+                List<TreasureRow> rows = new ArrayList<>();
+                for (var x : rw.getAsJsonArray("treasure")) {
+                    JsonArray a = x.getAsJsonArray();
+                    rows.add(new TreasureRow(a.get(0).getAsString(), a.get(1).getAsDouble(), a.size() > 2 ? a.get(2).getAsInt() : 1));
+                }
+                for (String[] e : ex) if (e[0].endsWith("_treasure")) TREASURE.put(e[0], new TreasureTable(key, rows));
+            }
             DEFS.put(key, new Def(key, d(o, "arena", 24), (int) d(o, "respawnSec", 600), (int) d(o, "resetSec", 30), d(o, "phase2", 50),
                     pair(o, "wait1", 2, 4), pair(o, "wait2", 1.5, 3), d(o, "penaltyPerLevel", 5), d(o, "maxPenalty", 90), ps,
                     s(rw, "sure", ""), (int) d(rw, "fragments", 0), d(rw, "scrollChance", 0), s(rw, "ring", ""), d(rw, "ringChance", 0), mats,
@@ -1013,7 +1026,8 @@ public final class Boss {
             for (String[] ex : EXTRAS.getOrDefault(def.key(), List.of())) {
                 if (r.nextDouble() * 100 >= Double.parseDouble(ex[1]) * mul) continue;
                 if (over && ex[0].endsWith("_treasure")) continue;   // 고레벨: 보물 없음
-                ItemStack g = rpg.core.item.ItemIds.stack(RpgCore.MODID + ":" + ex[0], 1);
+                String[] pick = ex[0].split("\\|");   // a|b|c = 그중 무작위 하나
+                ItemStack g = rpg.core.item.ItemIds.stack(RpgCore.MODID + ":" + pick[r.nextInt(pick.length)], 1);
                 if (g.isEmpty()) continue;
                 rpg.core.equip.Gear.roll(g);
                 out.add(g);

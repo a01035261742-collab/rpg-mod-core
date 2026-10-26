@@ -1704,6 +1704,46 @@
       "forest_lord_treasure",
       100
      ]
+    ],
+    "treasure": [
+     [
+      "forest_lord_ring",
+      4
+     ],
+     [
+      "forest_lord_belt",
+      4
+     ],
+     [
+      "cube",
+      15
+     ],
+     [
+      "eternal_flame",
+      15
+     ],
+     [
+      "black_flame",
+      4
+     ],
+     [
+      "epic_potential_scroll",
+      3
+     ],
+     [
+      "scroll",
+      15
+     ],
+     [
+      "forest_lord_claw",
+      15,
+      3
+     ],
+     [
+      "gold",
+      25,
+      25000
+     ]
     ]
    },
    "melee": {
@@ -1852,6 +1892,50 @@
      [
       "guardian_treasure",
       100
+     ]
+    ],
+    "treasure": [
+     [
+      "guardian_ring",
+      3
+     ],
+     [
+      "guardian_pendant",
+      3
+     ],
+     [
+      "guardian_cape",
+      3
+     ],
+     [
+      "cube",
+      15
+     ],
+     [
+      "eternal_flame",
+      15
+     ],
+     [
+      "black_flame",
+      5
+     ],
+     [
+      "epic_potential_scroll",
+      4
+     ],
+     [
+      "scroll",
+      15
+     ],
+     [
+      "guardian_heart",
+      12,
+      3
+     ],
+     [
+      "gold",
+      25,
+      50000
      ]
     ]
    }
@@ -2073,7 +2157,71 @@
     "epicScrollChance": 20,
     "eternalFlameChance": 50,
     "blackFlameChance": 15,
-    "extras": []
+    "extras": [
+     [
+      "spider_queen_earring",
+      5
+     ],
+     [
+      "spider_queen_gloves",
+      5
+     ],
+     [
+      "warrior_sword_queen|archer_bow_queen|mage_staff_queen|thief_dagger_queen",
+      3
+     ],
+     [
+      "spider_queen_treasure",
+      100
+     ]
+    ],
+    "ring": "spider_queen_ring",
+    "ringChance": 5,
+    "first": "spider_queen_medal",
+    "treasure": [
+     [
+      "spider_queen_earring",
+      3
+     ],
+     [
+      "spider_queen_gloves",
+      3
+     ],
+     [
+      "spider_queen_ring",
+      3
+     ],
+     [
+      "job:warrior_sword_queen|archer_bow_queen|mage_staff_queen|thief_dagger_queen",
+      2
+     ],
+     [
+      "cube",
+      15,
+      2
+     ],
+     [
+      "eternal_flame",
+      14
+     ],
+     [
+      "black_flame",
+      6
+     ],
+     [
+      "epic_potential_scroll",
+      5
+     ],
+     [
+      "scroll",
+      14
+     ],
+     [
+      "gold",
+      35,
+      100000
+     ]
+    ]
    }
   }
  },

@@ -1662,6 +1662,105 @@
     "int": 3,
     "luk": 3
    }
+  },
+  "spider_queen_earring": {
+   "slot": "earring",
+   "job": 0,
+   "level": 45,
+   "stats": {
+    "str": 9,
+    "dex": 9,
+    "int": 9,
+    "luk": 9,
+    "atk": 4,
+    "matk": 4
+   }
+  },
+  "spider_queen_gloves": {
+   "slot": "gloves",
+   "job": 0,
+   "level": 45,
+   "stats": {
+    "def": 12,
+    "atk": 6,
+    "matk": 6,
+    "str": 3,
+    "dex": 3,
+    "int": 3,
+    "luk": 3
+   }
+  },
+  "spider_queen_ring": {
+   "slot": "ring",
+   "job": 0,
+   "level": 45,
+   "stats": {
+    "str": 8,
+    "dex": 8,
+    "int": 8,
+    "luk": 8,
+    "atk": 5,
+    "matk": 5
+   }
+  },
+  "spider_queen_medal": {
+   "slot": "medal",
+   "job": 0,
+   "level": 45,
+   "stats": {
+    "str": 8,
+    "dex": 8,
+    "int": 8,
+    "luk": 8,
+    "atk": 3,
+    "matk": 3
+   },
+   "title": "거미 여왕 토벌자",
+   "titleColor": "#7FD04A"
+  },
+  "warrior_sword_queen": {
+   "slot": "weapon",
+   "job": 1,
+   "level": 45,
+   "stats": {
+    "atk": 40,
+    "str": 10,
+    "bossPct": 10
+   },
+   "speed": 1.6
+  },
+  "archer_bow_queen": {
+   "slot": "weapon",
+   "job": 2,
+   "level": 45,
+   "stats": {
+    "atk": 39,
+    "dex": 10,
+    "bossPct": 10
+   },
+   "speed": 1.4
+  },
+  "mage_staff_queen": {
+   "slot": "weapon",
+   "job": 3,
+   "level": 45,
+   "stats": {
+    "matk": 42,
+    "int": 10,
+    "bossPct": 10
+   },
+   "speed": 1.2
+  },
+  "thief_dagger_queen": {
+   "slot": "weapon",
+   "job": 4,
+   "level": 45,
+   "stats": {
+    "atk": 39,
+    "luk": 10,
+    "bossPct": 10
+   },
+   "speed": 1.8
   }
  },
  "options": {
@@ -1685,7 +1784,14 @@
    "guardian_ring",
    "forest_lord_belt",
    "guardian_pendant",
-   "guardian_cape"
+   "guardian_cape",
+   "spider_queen_earring",
+   "spider_queen_gloves",
+   "spider_queen_ring",
+   "warrior_sword_queen",
+   "archer_bow_queen",
+   "mage_staff_queen",
+   "thief_dagger_queen"
   ],
   "flames": {
    "powerful": {
@@ -2692,7 +2798,10 @@
     "forest_lord_belt",
     "guardian_ring",
     "guardian_pendant",
-    "guardian_cape"
+    "guardian_cape",
+    "spider_queen_earring",
+    "spider_queen_gloves",
+    "spider_queen_ring"
    ],
    "max": 8,
    "bonus": {

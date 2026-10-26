@@ -263,5 +263,14 @@
  "block.rpgcore.raid_gate": "Raid Gate",
  "block.rpgcore.world_portal": "World Portal",
  "block.rpgcore.shared_stash": "Shared Stash",
- "item.rpgcore.passive_reset_scroll": "Passive Tree Reset Scroll"
+ "item.rpgcore.passive_reset_scroll": "Passive Tree Reset Scroll",
+ "item.rpgcore.spider_queen_earring": "Queen's Fang Earring",
+ "item.rpgcore.spider_queen_gloves": "Queen's Silk Gloves",
+ "item.rpgcore.spider_queen_ring": "Queen's Compound Eye Ring",
+ "item.rpgcore.spider_queen_medal": "Spider Queen Slayer Medal",
+ "item.rpgcore.spider_queen_treasure": "Spider Queen's Treasure",
+ "item.rpgcore.warrior_sword_queen": "Queen's Fang Greatsword",
+ "item.rpgcore.archer_bow_queen": "Queen's Fang Bow",
+ "item.rpgcore.mage_staff_queen": "Queen's Fang Staff",
+ "item.rpgcore.thief_dagger_queen": "Queen's Fang Dagger"
 }

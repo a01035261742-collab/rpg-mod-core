@@ -434,6 +434,14 @@
   "guardian_pendant": 70000,
   "guardian_cape": 70000,
   "forest_lord_treasure": 20000,
-  "guardian_treasure": 40000
+  "guardian_treasure": 40000,
+  "spider_queen_earring": 90000,
+  "spider_queen_gloves": 90000,
+  "spider_queen_ring": 90000,
+  "warrior_sword_queen": 100000,
+  "archer_bow_queen": 100000,
+  "mage_staff_queen": 100000,
+  "thief_dagger_queen": 100000,
+  "spider_queen_treasure": 80000
  }
 }

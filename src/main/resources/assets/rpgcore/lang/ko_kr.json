@@ -263,5 +263,14 @@
  "block.rpgcore.raid_gate": "레이드 입구",
  "block.rpgcore.world_portal": "차원 문",
  "block.rpgcore.shared_stash": "공유 창고",
- "item.rpgcore.passive_reset_scroll": "트리 초기화 주문서"
+ "item.rpgcore.passive_reset_scroll": "트리 초기화 주문서",
+ "item.rpgcore.spider_queen_earring": "여왕의 독니 귀걸이",
+ "item.rpgcore.spider_queen_gloves": "여왕의 거미줄 장갑",
+ "item.rpgcore.spider_queen_ring": "여왕의 겹눈 반지",
+ "item.rpgcore.spider_queen_medal": "거미 여왕 토벌자 훈장",
+ "item.rpgcore.spider_queen_treasure": "거미 여왕의 보물",
+ "item.rpgcore.warrior_sword_queen": "여왕의 독니 대검",
+ "item.rpgcore.archer_bow_queen": "여왕의 독니 활",
+ "item.rpgcore.mage_staff_queen": "여왕의 독니 지팡이",
+ "item.rpgcore.thief_dagger_queen": "여왕의 독니 단검"
 }
