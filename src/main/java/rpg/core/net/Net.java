@@ -112,6 +112,8 @@ public final class Net {
                 .encoder(DailyAction::encode).decoder(DailyAction::new).consumerMainThread(DailyAction::handle).add();
         CH.messageBuilder(AimLine.class, id++, NetworkDirection.PLAY_TO_CLIENT)
                 .encoder(AimLine::encode).decoder(AimLine::new).consumerMainThread(AimLine::handle).add();
+        CH.messageBuilder(MarkerSync.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(MarkerSync::encode).decoder(MarkerSync::new).consumerMainThread(MarkerSync::handle).add();
         CH.messageBuilder(WorldChoice.class, id++, NetworkDirection.PLAY_TO_CLIENT)
                 .encoder(WorldChoice::encode).decoder(WorldChoice::new).consumerMainThread(WorldChoice::handle).add();
         CH.messageBuilder(ChooseWorld.class, id++, NetworkDirection.PLAY_TO_SERVER)
@@ -120,6 +122,24 @@ public final class Net {
                 .encoder(PowerReq::encode).decoder(PowerReq::new).consumerMainThread(PowerReq::handle).add();
         CH.messageBuilder(PowerRes.class, id++, NetworkDirection.PLAY_TO_CLIENT)
                 .encoder(PowerRes::encode).decoder(PowerRes::new).consumerMainThread(PowerRes::handle).add();
+    }
+
+    // ───────── /rpg 보기 표시 ─────────
+    public record MarkerSync(java.util.List<rpg.core.world.Markers.M> list) {
+        MarkerSync(FriendlyByteBuf b) {
+            this(b.readList(x -> new rpg.core.world.Markers.M(x.readByte(), x.readInt(), x.readInt(), x.readInt(), x.readInt(), x.readInt(), x.readInt(), x.readFloat(), x.readUtf())));
+        }
+        void encode(FriendlyByteBuf b) {
+            b.writeCollection(list, (x, m) -> { x.writeByte(m.type()); x.writeInt(m.x1()); x.writeInt(m.y1()); x.writeInt(m.z1()); x.writeInt(m.x2()); x.writeInt(m.y2()); x.writeInt(m.z2()); x.writeFloat(m.r()); x.writeUtf(m.label()); });
+        }
+        void handle(Supplier<NetworkEvent.Context> ctx) {
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> rpg.core.client.MarkerRender.set(list));
+            ctx.get().setPacketHandled(true);
+        }
+    }
+
+    public static void markers(ServerPlayer p, java.util.List<rpg.core.world.Markers.M> list) {
+        CH.send(PacketDistributor.PLAYER.with(() -> p), new MarkerSync(list));
     }
 
     // ───────── 첫 접속: 야생 / RPG 고르기 ─────────

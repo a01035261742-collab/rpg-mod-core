@@ -53,6 +53,11 @@ public final class RpgCommand {
                 rpg.core.world.RpgWorld.setSpawn(p);
                 return ok(c, "여기를 RPG 스폰으로 정했어요 (처음 들어올 때·죽었을 때)");
             }));
+        for (String n : new String[]{"보기", "markers"})
+            root.then(Commands.literal(n).requires(s -> s.hasPermission(2)).executes(c -> {
+                boolean on = rpg.core.world.Markers.toggle(c.getSource().getPlayerOrException());
+                return ok(c, on ? "지점 보기 켬 (사냥터·보스방·NPC·퀘스트·마을)" : "지점 보기 끔");
+            }));
         for (String n : new String[]{"포탈", "gate"})
             root.then(Commands.literal(n).requires(s -> s.hasPermission(2)).executes(c -> {
                 ServerPlayer p = c.getSource().getPlayerOrException();
