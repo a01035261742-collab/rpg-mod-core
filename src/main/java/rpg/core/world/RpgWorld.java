@@ -212,8 +212,8 @@ public final class RpgWorld {
             if (!inside) ARRIVED.remove(p.getUUID());
             else if (!ARRIVED.contains(p.getUUID())) portal(p);
         }
-        // 야생: Epic Fight 끄기 (바닐라 모드로)
-        if (p.tickCount % 10 == 0) rpg.core.compat.EpicFightCompat.forceMode(p, is(p.level()));
+        // Epic Fight: 야생에서도 그대로 씀 (0.43.2 롤백). 예전에 걸어둔 전투 모드 잠금만 처음 몇 초 동안 풀어줌
+        if (p.tickCount < 200 && p.tickCount % 20 == 0) rpg.core.compat.EpicFightCompat.forceMode(p, true);
         if (CHANNELS.isEmpty()) return;
         Channel c = CHANNELS.get(p.getUUID());
         if (c == null) return;

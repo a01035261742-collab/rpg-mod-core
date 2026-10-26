@@ -153,15 +153,32 @@ public class PassiveScreen extends Screen {
 
     private static void ring(GuiGraphics g, int cx, int cy, int r, int th, int col) { arc(g, cx, cy, r, th, 1.0, col); }
 
-    /** 12시부터 시계방향으로 frac 만큼 원호 */
+    /** 12시부터 시계방향으로 frac 만큼 원호 (사각형 조각으로 한 번에 그림) */
     private static void arc(GuiGraphics g, int cx, int cy, int r, int th, double frac, int col) {
-        int steps = Math.max(24, r * 8);
-        int n = (int) Math.round(steps * frac);
-        for (int i = 0; i <= n; i++) {
-            double a = -Math.PI / 2 + Math.PI * 2 * i / steps;
-            int x = cx + (int) Math.round(Math.cos(a) * (r - th / 2.0)), y = cy + (int) Math.round(Math.sin(a) * (r - th / 2.0));
-            g.fill(x - th / 2, y - th / 2, x - th / 2 + th, y - th / 2 + th, col);
+        int steps = Math.max(16, Math.min(64, r * 3));
+        int n = (int) Math.ceil(steps * frac);
+        double rr = r - th / 2.0;
+        for (int i = 0; i < n; i++) {
+            double a1 = -Math.PI / 2 + Math.PI * 2 * i / steps, a2 = -Math.PI / 2 + Math.PI * 2 * Math.min(frac, (i + 1.0) / steps);
+            seg(g, (float) (cx + Math.cos(a1) * rr), (float) (cy + Math.sin(a1) * rr), (float) (cx + Math.cos(a2) * rr), (float) (cy + Math.sin(a2) * rr), th, col);
         }
+    }
+
+    /** 두께 있는 선분 하나 = 사각형 1개 (픽셀마다 fill 하면 렉) */
+    private static void seg(GuiGraphics g, float x1, float y1, float x2, float y2, float th, int col) {
+        float dx = x2 - x1, dy = y2 - y1, len = (float) Math.sqrt(dx * dx + dy * dy);
+        if (len < 0.01f) return;
+        // 끝을 살짝 늘려서 조각 사이 틈 없게
+        float ex = dx / len * th * 0.5f, ey = dy / len * th * 0.5f;
+        x1 -= ex; y1 -= ey; x2 += ex; y2 += ey;
+        float nx = -dy / len * th / 2f, ny = dx / len * th / 2f;
+        var m = g.pose().last().pose();
+        var vc = g.bufferSource().getBuffer(net.minecraft.client.renderer.RenderType.gui());
+        int a = col >>> 24, r = col >> 16 & 255, gr = col >> 8 & 255, b = col & 255;
+        vc.vertex(m, x1 - nx, y1 - ny, 0).color(r, gr, b, a).endVertex();
+        vc.vertex(m, x1 + nx, y1 + ny, 0).color(r, gr, b, a).endVertex();
+        vc.vertex(m, x2 + nx, y2 + ny, 0).color(r, gr, b, a).endVertex();
+        vc.vertex(m, x2 - nx, y2 - ny, 0).color(r, gr, b, a).endVertex();
     }
 
     private static void hexagon(GuiGraphics g, int cx, int cy, int r, int fill, int border) {
@@ -183,12 +200,7 @@ public class PassiveScreen extends Screen {
     }
 
     private static void line(GuiGraphics g, int x1, int y1, int x2, int y2, int th, int col) {
-        int steps = Math.max(Math.abs(x2 - x1), Math.abs(y2 - y1));
-        if (steps == 0) return;
-        for (int i = 0; i <= steps; i++) {
-            int x = x1 + (x2 - x1) * i / steps, y = y1 + (y2 - y1) * i / steps;
-            g.fill(x - th / 2, y - th / 2, x - th / 2 + th, y - th / 2 + th, col);
-        }
+        seg(g, x1, y1, x2, y2, th, col);
     }
 
     private static void lock(GuiGraphics g, int x, int y, int col) {
@@ -224,6 +236,18 @@ public class PassiveScreen extends Screen {
         }
 
         g.enableScissor(ax, ay, ax + aw, ay + ah);
+        Defs.Node[] hov = new Defs.Node[1];
+        g.drawManaged(() -> hov[0] = drawTree(g, mx, my));   // 모아서 한 번에 그림 (렉 줄이기)
+        Defs.Node hover = hov[0];
+        if (hover != null) ring(g, nx(hover), ny(hover), rad(hover) + 4, 2, 0xFFFFFFFF);
+        g.flush();
+        g.disableScissor();
+        legend(g);
+        super.render(g, mx, my, pt);
+        if (hover != null) tooltip(g, hover, mx, my);
+    }
+
+    private Defs.Node drawTree(GuiGraphics g, int mx, int my) {
         // 배경: 동심원 + 별가루
         int cx = (int) (ax + aw / 2.0 + panX), cy = (int) (ay + ah / 2.0 + panY);
         for (int r = 1; r <= 16; r++) {
@@ -270,11 +294,7 @@ public class PassiveScreen extends Screen {
             if (!q.isEmpty() && matches(n, q) && (System.currentTimeMillis() / 300) % 2 == 0) ring(g, x, y, r + 5, 2, 0xFFFFFFFF);
             if (inArea && (mx - x) * (mx - x) + (my - y) * (my - y) <= (r + 2) * (r + 2)) hover = n;
         }
-        if (hover != null) ring(g, nx(hover), ny(hover), rad(hover) + 4, 2, 0xFFFFFFFF);
-        g.disableScissor();
-        legend(g);
-        super.render(g, mx, my, pt);
-        if (hover != null) tooltip(g, hover, mx, my);
+        return hover;
     }
 
     private void drawNode(GuiGraphics g, Defs.Node n, int x, int y, int r) {
@@ -326,11 +346,10 @@ public class PassiveScreen extends Screen {
     }
 
     private static void ellipse(GuiGraphics g, int cx, int cy, int rx, int ry, int col) {
-        int steps = Math.max(40, (rx + ry) / 2);
+        int steps = 72;
         for (int i = 0; i < steps; i++) {
-            double a = Math.PI * 2 * i / steps;
-            int x = cx + (int) (Math.cos(a) * rx), y = cy + (int) (Math.sin(a) * ry);
-            g.fill(x, y, x + 1, y + 1, col);
+            double a1 = Math.PI * 2 * i / steps, a2 = Math.PI * 2 * (i + 1) / steps;
+            seg(g, (float) (cx + Math.cos(a1) * rx), (float) (cy + Math.sin(a1) * ry), (float) (cx + Math.cos(a2) * rx), (float) (cy + Math.sin(a2) * ry), 1, col);
         }
     }
 
