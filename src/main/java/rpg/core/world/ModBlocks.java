@@ -49,7 +49,8 @@ public final class ModBlocks {
         public PortalBlock(Properties p) { super(p); }
         @Override public VoxelShape getShape(BlockState s, BlockGetter l, BlockPos pos, CollisionContext c) { return Shapes.box(0, 0, 0.375, 1, 1, 0.625); }
         @Override public void entityInside(BlockState s, Level l, BlockPos pos, Entity e) {
-            if (!l.isClientSide && e instanceof ServerPlayer sp) RpgWorld.portal(sp);
+            // 여기서 바로 보내면 안 됨: 이동 처리 도중이라 이동이 끝나며 위치가 이전 월드 좌표로 덮어써짐 (서바이벌).
+            // 플레이어 틱(RpgWorld.tick)에서 문 안에 있는지 보고 보냄
         }
     }
 
