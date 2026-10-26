@@ -90,7 +90,7 @@ public final class RpgWorld {
         ListTag fx = new ListTag();
         for (MobEffectInstance m : p.getActiveEffects()) fx.add(m.save(new CompoundTag()));
         t.put("fx", fx);
-        if (WILD.equals(g)) { t.putString("dim", p.level().dimension().location().toString()); t.putDouble("x", p.getX()); t.putDouble("y", p.getY()); t.putDouble("z", p.getZ()); }
+        if (WILD.equals(g) && !is(p.level())) { t.putString("dim", p.level().dimension().location().toString()); t.putDouble("x", p.getX()); t.putDouble("y", p.getY()); t.putDouble("z", p.getZ()); }
         return t;
     }
 
@@ -138,10 +138,11 @@ public final class RpgWorld {
         MinecraftServer s = p.getServer();
         if (s == null) return;
         if (is(p.level())) {
-            CompoundTag wild = worlds(p).getCompound(WILD);
+            CompoundTag wild = worlds(p).getCompound("wildPos");
+            if (!wild.contains("dim")) wild = worlds(p).getCompound(WILD);
             ServerLevel to = s.overworld();
             Vec3 pos = null;
-            if (wild.contains("dim")) {
+            if (wild.contains("dim") && !wild.getString("dim").equals(KEY.location().toString())) {   // 예전 버그로 RPG 위치가 저장된 건 무시
                 var lvl = s.getLevel(ResourceKey.create(Registries.DIMENSION, new net.minecraft.resources.ResourceLocation(wild.getString("dim"))));
                 if (lvl != null) { to = lvl; pos = new Vec3(wild.getDouble("x"), wild.getDouble("y"), wild.getDouble("z")); }
             }
@@ -154,7 +155,13 @@ public final class RpgWorld {
         } else {
             ServerLevel to = rpgLevel(s);
             if (to == null) { p.sendSystemMessage(Component.literal("RPG 대륙을 찾을 수 없어요").withStyle(ChatFormatting.RED)); return; }
-            BlockPos sp = data(s).rpgSpawn;
+            // 떠나기 전에 야생 위치 기억 (다음에 야생으로 돌아올 자리)
+            CompoundTag w = worlds(p), wp = new CompoundTag();
+            wp.putString("dim", p.level().dimension().location().toString());
+            wp.putDouble("x", p.getX()); wp.putDouble("y", p.getY()); wp.putDouble("z", p.getZ());
+            w.put("wildPos", wp);
+            putWorlds(p, w);
+            BlockPos sp = ground(to, data(s).rpgSpawn);
             p.teleportTo(to, sp.getX() + 0.5, sp.getY(), sp.getZ() + 0.5, p.getYRot(), p.getXRot());
         }
         p.fallDistance = 0;
@@ -257,7 +264,7 @@ public final class RpgWorld {
         // RPG 묶음을 들고 죽었으면 RPG 스폰에서 살아남
         if (RPG.equals(worlds(p).getString("loaded")) && !is(p.level()) && p.getServer() != null) {
             ServerLevel to = rpgLevel(p.getServer());
-            if (to != null) { BlockPos sp = data(p.getServer()).rpgSpawn; p.teleportTo(to, sp.getX() + 0.5, sp.getY(), sp.getZ() + 0.5, p.getYRot(), p.getXRot()); }
+            if (to != null) { BlockPos sp = ground(to, data(p.getServer()).rpgSpawn); p.teleportTo(to, sp.getX() + 0.5, sp.getY(), sp.getZ() + 0.5, p.getYRot(), p.getXRot()); }
         }
         sync(p);
     }
@@ -287,7 +294,15 @@ public final class RpgWorld {
             placeGate(rpg, b.offset(0, 0, -3));
             d.setDirty();
         }
-        if (d.portalsBuilt) return;
+        if (d.portalsBuilt) {
+            // RPG 대륙을 새로 만들었으면(폴더 삭제 등) 스폰 문이 없음 → 다시 설치
+            BlockPos g = d.rpgSpawn.offset(0, 0, -3);
+            if (!rpg.getBlockState(g).is(ModBlocks.WORLD_PORTAL.get())) {
+                for (int x = -4; x <= 4; x++) for (int z = -4; z <= 4; z++) rpg.setBlockAndUpdate(d.rpgSpawn.offset(x, -1, z), Blocks.SMOOTH_STONE.defaultBlockState());
+                placeGate(rpg, g);
+            }
+            return;
+        }
         // RPG 대륙: 스폰 (0, 평지 위, 0) 에 9×9 돌바닥 + 문. 평지 높이는 고정 (기반암 -64 · 흙 2 · 풀 1 → 위 -60)
         BlockPos base = new BlockPos(0, FLAT_TOP, 0);
         for (int x = -4; x <= 4; x++) for (int z = -4; z <= 4; z++) rpg.setBlockAndUpdate(base.offset(x, -1, z), Blocks.SMOOTH_STONE.defaultBlockState());
@@ -299,6 +314,17 @@ public final class RpgWorld {
         placeGate(ow, ws);
         d.portalsBuilt = true;
         d.setDirty();
+    }
+
+    /** 서 있을 수 있는 높이: 발밑이 비어 있으면 아래로, 막혀 있으면 위로 (공중·땅속 스폰 막기) */
+    public static BlockPos ground(ServerLevel l, BlockPos at) {
+        BlockPos b = at;
+        if (l.getBlockState(b).isAir() && l.getBlockState(b.below()).isAir()) {
+            for (int i = 0; i < 128 && b.getY() > l.getMinBuildHeight() + 1; i++) { b = b.below(); if (!l.getBlockState(b.below()).isAir()) return b; }
+            return at;
+        }
+        for (int i = 0; i < 128 && (!l.getBlockState(b).isAir() || !l.getBlockState(b.above()).isAir()); i++) b = b.above();
+        return b;
     }
 
     /** 문 2칸 (세로) + 왼쪽에 공유 창고 */

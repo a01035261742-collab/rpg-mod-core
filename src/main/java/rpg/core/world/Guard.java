@@ -51,7 +51,7 @@ public final class Guard {
         d.mp = d.maxMp;
         ServerLevel rl = RpgWorld.rpgLevel(p.getServer());
         if (rl != null) {
-            BlockPos sp = RpgWorld.data(p.getServer()).rpgSpawn;
+            BlockPos sp = RpgWorld.ground(rl, RpgWorld.data(p.getServer()).rpgSpawn);
             p.teleportTo(rl, sp.getX() + 0.5, sp.getY(), sp.getZ() + 0.5, p.getYRot(), p.getXRot());
         }
         CompoundTag k = p.getPersistentData().getCompound(Player.PERSISTED_NBT_TAG);
