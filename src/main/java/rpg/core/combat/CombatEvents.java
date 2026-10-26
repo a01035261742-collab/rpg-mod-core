@@ -174,12 +174,19 @@ public final class CombatEvents {
             Dot first = en.get(0);
             Entity ent = first.owner().serverLevel().getEntity(first.mob());
             if (!(ent instanceof Mob m) || !m.isAlive()) continue;
-            dotDealt = 0;
+            java.util.Map<String, Double> byKind = new java.util.LinkedHashMap<>();   // 종류별 합계 (독·출혈·화상 색 다르게)
             DOT_HIT = true;
-            try { for (Dot b : en) if (m.isAlive() && b.owner().isAlive()) fixedHit(b.owner(), m, b.dmg()); }
-            finally { DOT_HIT = false; }
+            try {
+                for (Dot b : en) {
+                    if (!m.isAlive() || !b.owner().isAlive()) continue;
+                    dotDealt = 0;
+                    fixedHit(b.owner(), m, b.dmg());
+                    byKind.merge(b.kind(), dotDealt, Double::sum);
+                }
+            } finally { DOT_HIT = false; }
             Mobs.sync(m);
-            if (dotDealt > 0) Net.damageText(m, dotDealt, 2);
+            for (var k : byKind.entrySet())
+                if (k.getValue() > 0) Net.damageText(m, k.getValue(), k.getKey().equals("poison") ? 2 : k.getKey().equals("burn") ? 4 : 3);
             var l = first.owner().serverLevel();
             double y = m.getY() + m.getBbHeight() * 0.6;
             String kind = en.get(en.size() - 1).kind();

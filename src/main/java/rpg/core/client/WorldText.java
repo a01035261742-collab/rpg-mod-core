@@ -33,7 +33,8 @@ public final class WorldText {
     private static final int LIFE = 24;
 
     public static void addDamage(int id, double amount, int type) {
-        boolean crit = type == 1, dot = type == 2;
+        boolean crit = type == 1, dot = type >= 2;
+        int dotCol = type == 2 ? 0xFF7CE05A : type == 3 ? 0xFFE04848 : 0xFFFF9A3C;   // 독 초록 · 출혈 빨강 · 화상 주황
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null) return;
         Entity e = mc.level.getEntity(id);
@@ -41,7 +42,7 @@ public final class WorldText {
         Vec3 p = e.position().add(0, e.getBbHeight() + 0.5, 0);
         double dx = (Math.random() - 0.5) * 0.8;
         String t = String.format("%,d", (long) amount);
-        POPS.add(new Pop(p, crit ? "✦" + t : t, crit ? 0xFFFFA020 : dot ? 0xFF7CE05A : 0xFFFFFFFF, crit ? 1.5f : dot ? 0.7f : 1.0f, dx));
+        POPS.add(new Pop(p, crit ? "✦" + t : t, crit ? 0xFFFFA020 : dot ? dotCol : 0xFFFFFFFF, crit ? 1.5f : dot ? 0.7f : 1.0f, dx));
         if (POPS.size() > 60) POPS.remove(0);
     }
 

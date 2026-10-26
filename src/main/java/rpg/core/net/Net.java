@@ -718,7 +718,7 @@ public final class Net {
     }
 
     // ───────── 서버 → 클라: 데미지 숫자 ─────────
-    /** type 0 보통 · 1 치명타 · 2 지속 피해 (작은 초록) */
+    /** type 0 보통 · 1 치명타 · 2 독 (초록) · 3 출혈 (빨강) · 4 화상 (주황), 지속 피해는 작게 */
     public record DamageText(int id, double amount, int type) {
         DamageText(FriendlyByteBuf b) { this(b.readVarInt(), b.readDouble(), b.readByte()); }
         void encode(FriendlyByteBuf b) { b.writeVarInt(id); b.writeDouble(amount); b.writeByte(type); }
