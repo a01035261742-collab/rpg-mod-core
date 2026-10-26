@@ -359,6 +359,13 @@ public class PassiveScreen extends Screen {
     }
 
     private void legend(GuiGraphics g) {
+        g.pose().pushPose(); g.pose().translate(0, 0, 300);   // 칸 아이콘·랭크 글자보다 위에
+        legendBody(g);
+        g.flush();
+        g.pose().popPose();
+    }
+
+    private void legendBody(GuiGraphics g) {
         int lx = px + 8, ly = py + ph - 82, w = 150;
         box(g, lx, ly, w, 74, 0xF012141E, 0xFF2C3042);
         int cx = lx + 12, cy = ly + 12;
