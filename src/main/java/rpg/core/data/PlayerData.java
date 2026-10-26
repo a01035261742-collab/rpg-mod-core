@@ -165,6 +165,8 @@ public class PlayerData {
         }
         // 장비(잠재능력)의 % 옵션을 패시브 합계에 더함
         for (String k : EQUIP_BONUS) { double v = eq(k); if (v != 0) bonus.merge(k, v, Double::sum); }
+        double ap = eq(job == 3 ? "matkPct" : "patkPct");   // 잠재 공격력%(마법사 빼고) · 마력%(마법사만)
+        if (ap != 0) bonus.merge("atkPct", ap, Double::sum);
         double vitHp = Balance.hpPerVit * total(VIT) * (1 + bonus("vitHpPct") / 100.0);   // 단단한 피부
         double mh = (Balance.hpBase + Balance.hpPerLevel * level + vitHp + eq("hp")) * (1 + bonus("hpPct") / 100.0)
                 * (1 + bonus("giantHp") / 100.0)    // 거신: 최대 HP ×1.3

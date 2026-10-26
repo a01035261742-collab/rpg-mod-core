@@ -149,21 +149,21 @@ public class EnhanceScreen extends Screen {
                 addRenderableWidget(b2);
             } else if (rpg.core.equip.Potential.pending(s)) {
                 String key = curLoc() + ":" + rpg.core.equip.Potential.pot(s).getCompound("new");
-                if (!key.equals(pendKey)) { pendKey = key; readyAt = System.currentTimeMillis() + 700; confirmKeep = false; }
-                waiting = System.currentTimeMillis() < readyAt;
                 boolean up = rpg.core.equip.Potential.pendingUp(s);
+                if (!key.equals(pendKey)) { pendKey = key; readyAt = up ? System.currentTimeMillis() + 700 : 0; confirmKeep = false; }   // 대기는 등급업일 때만
+                waiting = System.currentTimeMillis() < readyAt;
                 // 등급업이면 버튼을 아래 줄 가운데로 (재설정 버튼 자리 연타해도 안 눌리게)
-                int ax = up ? x + 170 : bx, ay = up ? y + H - Ui.FOOT : by;
+                int ax = up ? x + 120 : bx, ay = up ? y + H - Ui.FOOT : by;   // 등급업: 아래 줄 (메뉴·닫기 사이 가운데)
                 Button b1, b2;
                 if (up && confirmKeep) {
-                    b1 = Ui.button(Component.literal("유지할게요"), bt -> { confirmKeep = false; Net.CH.sendToServer(new Net.EnhanceAction(9, curLoc(), 1)); }).bounds(ax, ay, 70, 18).build();
-                    b2 = Ui.button(Component.literal("취소"), bt -> { confirmKeep = false; rebuildWidgets(); }).bounds(ax + 74, ay, 66, 18).build();
+                    b1 = Ui.button(Component.literal("유지할게요"), bt -> { confirmKeep = false; Net.CH.sendToServer(new Net.EnhanceAction(9, curLoc(), 1)); }).bounds(ax, ay, 90, 18).build();
+                    b2 = Ui.button(Component.literal("취소"), bt -> { confirmKeep = false; rebuildWidgets(); }).bounds(ax + 96, ay, 90, 18).build();
                 } else {
-                    b1 = Ui.button(Component.literal(up ? "새 옵션 적용 ▲" : "새 옵션 적용"), bt -> Net.CH.sendToServer(new Net.EnhanceAction(8, curLoc(), 0))).bounds(ax, ay, up ? 70 : 86, 18).build();
+                    b1 = Ui.button(Component.literal(up ? "새 옵션 적용 ▲" : "새 옵션 적용"), bt -> Net.CH.sendToServer(new Net.EnhanceAction(8, curLoc(), 0))).bounds(ax, ay, up ? 90 : 86, 18).build();
                     b2 = Ui.button(Component.literal("기존 유지"), bt -> {
                         if (up) { confirmKeep = true; readyAt = System.currentTimeMillis() + 700; rebuildWidgets(); }
                         else Net.CH.sendToServer(new Net.EnhanceAction(9, curLoc(), 0));
-                    }).bounds(up ? ax + 74 : bx + 90, ay, up ? 66 : 86, 18).build();
+                    }).bounds(up ? ax + 96 : bx + 90, ay, up ? 90 : 86, 18).build();
                 }
                 b1.active = b2.active = !waiting;
                 addRenderableWidget(b1);
