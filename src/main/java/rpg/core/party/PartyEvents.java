@@ -32,6 +32,10 @@ public final class PartyEvents {
     @SubscribeEvent(priority = EventPriority.LOW)
     public static void death(LivingDeathEvent e) {
         if (!(e.getEntity() instanceof ServerPlayer sp)) return;
+        if (!rpg.core.world.RpgWorld.in(sp)) {   // 야생: 바닐라 죽음 (다운·경험치 손실 없음), 메시지만
+            if (sp.getServer() != null) sp.getServer().getPlayerList().broadcastSystemMessage(sp.getCombatTracker().getDeathMessage(), false);
+            return;
+        }
         PlayerData d = RpgData.get(sp);
         if (!d.forceDie && !d.isDown() && canGoDown(sp)) {
             e.setCanceled(true);

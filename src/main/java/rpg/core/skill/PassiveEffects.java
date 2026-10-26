@@ -197,6 +197,7 @@ public final class PassiveEffects {
     public static void tick(TickEvent.PlayerTickEvent e) {
         if (e.phase != TickEvent.Phase.END || !(e.player instanceof ServerPlayer p) || p.tickCount % 10 != 0) return;
         PlayerData d = RpgData.get(p);
+        if (!rpg.core.world.RpgWorld.in(p)) { d.atkSpeedPct = 0; return; }   // 야생: 트리 효과 없음
         long now = p.level().getGameTime();
         ServerLevel l = p.serverLevel();
         // 움직이는 중 (질풍) · 냉정 · 고독한 저격수

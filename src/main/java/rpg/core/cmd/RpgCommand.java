@@ -41,6 +41,25 @@ public final class RpgCommand {
         CommandDispatcher<CommandSourceStack> d = e.getDispatcher();
         var root = Commands.literal("rpg");
         ZoneCommand.addTo(root);
+        // 월드 (야생 ↔ RPG 대륙)
+        for (String n : new String[]{"이동", "travel"})
+            root.then(Commands.literal(n).executes(c -> { rpg.core.world.RpgWorld.command(c.getSource().getPlayerOrException()); return 1; }));
+        for (String n : new String[]{"공유창고", "stash"})
+            root.then(Commands.literal(n).executes(c -> { rpg.core.world.SharedStash.open(c.getSource().getPlayerOrException()); return 1; }));
+        for (String n : new String[]{"스폰설정", "setspawn"})
+            root.then(Commands.literal(n).requires(s -> s.hasPermission(2)).executes(c -> {
+                ServerPlayer p = c.getSource().getPlayerOrException();
+                if (!rpg.core.world.RpgWorld.in(p)) return fail(c, "RPG 대륙 안에서만 설정할 수 있어요");
+                rpg.core.world.RpgWorld.setSpawn(p);
+                return ok(c, "여기를 RPG 스폰으로 정했어요 (처음 들어올 때·죽었을 때)");
+            }));
+        for (String n : new String[]{"포탈", "gate"})
+            root.then(Commands.literal(n).requires(s -> s.hasPermission(2)).executes(c -> {
+                ServerPlayer p = c.getSource().getPlayerOrException();
+                p.getInventory().add(new net.minecraft.world.item.ItemStack(rpg.core.world.ModBlocks.WORLD_PORTAL_ITEM.get(), 2));
+                p.getInventory().add(new net.minecraft.world.item.ItemStack(rpg.core.world.ModBlocks.SHARED_STASH_ITEM.get(), 1));
+                return ok(c, "차원 문 2개 (세로로 쌓기) + 공유 창고 1개 지급");
+            }));
         d.register(root
                 .then(Commands.literal("info").executes(RpgCommand::info))
                 .then(Commands.literal("level").requires(s -> s.hasPermission(2))
@@ -107,6 +126,11 @@ public final class RpgCommand {
                 d.stats[0], d.stats[1], d.stats[2], d.stats[3], d.stats[4], d.stats[5], d.statPoints, d.gold))
                 .withStyle(ChatFormatting.AQUA), false);
         return 1;
+    }
+
+    private static int fail(CommandContext<CommandSourceStack> c, String msg) {
+        c.getSource().sendFailure(Component.literal("[RPG] " + msg));
+        return 0;
     }
 
     private static int ok(CommandContext<CommandSourceStack> c, String msg) {

@@ -74,6 +74,7 @@ public final class Skills {
         if (slot < 0 || slot >= PlayerData.SLOTS || !p.isAlive()) return;
         PlayerData d = RpgData.get(p);
         if (d.isDown()) return;
+        if (!rpg.core.world.RpgWorld.in(p)) { p.displayClientMessage(Component.literal("야생에서는 스킬을 쓸 수 없어요").withStyle(ChatFormatting.GRAY), true); return; }
         String id = d.slots[slot];
         if (id == null) return;
         Defs.SkillDef s = Defs.SKILLS.get(id);
@@ -215,7 +216,7 @@ public final class Skills {
         if (d.shield > 0 && (now >= d.shieldEnd || d.isDown() || !p.isAlive())) d.shield = 0;
         AttributeInstance as = p.getAttribute(Attributes.ATTACK_SPEED);
         if (as != null) {
-            double wantA = d.atkSpeedPct / 100.0;   // 트리: 광란 · 피의 열기
+            double wantA = rpg.core.world.RpgWorld.in(p) ? d.atkSpeedPct / 100.0 : 0;   // 트리: 광란 · 피의 열기 (야생은 없음)
             AttributeModifier ca = as.getModifier(ATK_SPEED_ID);
             if (ca == null || Math.abs(ca.getAmount() - wantA) > 1e-6) {
                 if (ca != null) as.removeModifier(ATK_SPEED_ID);
@@ -229,7 +230,7 @@ public final class Skills {
         AttributeInstance inst = p.getAttribute(Attributes.MOVEMENT_SPEED);
         if (inst == null) return;
         AttributeModifier cur = inst.getModifier(SPEED_ID);
-        double want = pct / 100.0;
+        double want = rpg.core.world.RpgWorld.in(p) ? pct / 100.0 : 0;   // 야생: RPG 이동속도 없음
         if (cur != null && Math.abs(cur.getAmount() - want) < 1e-6) return;
         if (cur != null) inst.removeModifier(SPEED_ID);
         if (want != 0) inst.addTransientModifier(new AttributeModifier(SPEED_ID, "rpg speed", want, AttributeModifier.Operation.MULTIPLY_TOTAL));

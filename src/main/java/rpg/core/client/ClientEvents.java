@@ -124,6 +124,7 @@ public final class ClientEvents {
         @SubscribeEvent
         public static void hideVanilla(RenderGuiOverlayEvent.Pre e) {
             NamedGuiOverlay o = e.getOverlay();
+            if (!ClientRpg.inRpg()) return;   // 야생: 바닐라 HUD 그대로
             if (o == VanillaGuiOverlay.PLAYER_HEALTH.type()
                     || o == VanillaGuiOverlay.FOOD_LEVEL.type()
                     || o == VanillaGuiOverlay.ARMOR_LEVEL.type()

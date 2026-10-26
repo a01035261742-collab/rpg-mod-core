@@ -262,6 +262,7 @@ public final class CombatEvents {
 
         // ── 플레이어가 맞음 ──
         if (target instanceof ServerPlayer sp) {
+            if (!rpg.core.world.RpgWorld.in(sp)) return;   // 야생: 바닐라 피해
             PlayerData d = RpgData.get(sp);
             long tnow = sp.level().getGameTime();
             if (tnow < d.invulUntil) { e.setCanceled(true); return; }   // 잠재능력: 확률 무적 중

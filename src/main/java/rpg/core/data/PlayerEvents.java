@@ -147,6 +147,7 @@ public final class PlayerEvents {
         PlayerData d = RpgData.get(sp);
         d.clock = sp.level().getGameTime();
         if (d.isNew()) { d.init(); RpgData.sync(sp); }
+        if (!rpg.core.world.RpgWorld.in(sp)) { rpg.core.skill.Skills.tick(sp, d); return; }   // 야생: 바닐라 체력·배고픔
         // 배고픔 없음
         sp.getFoodData().setFoodLevel(20);
         sp.getFoodData().setSaturation(5f);
@@ -184,6 +185,6 @@ public final class PlayerEvents {
     /** 바닐라 회복(음식·재생 효과)은 막고 RPG 회복만 */
     @SubscribeEvent
     public static void heal(LivingHealEvent e) {
-        if (e.getEntity() instanceof Player) e.setCanceled(true);
+        if (e.getEntity() instanceof Player p && rpg.core.world.RpgWorld.in(p)) e.setCanceled(true);   // RPG 대륙만 (야생은 바닐라 회복)
     }
 }

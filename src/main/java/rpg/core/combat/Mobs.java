@@ -23,7 +23,7 @@ public final class Mobs {
 
     public static Mob spawn(ServerLevel level, String key, int lv, BlockPos pos, String zone, boolean elite) {
         Balance.MobDef def = Balance.MOBS.get(key);
-        if (def == null) return null;
+        if (def == null || !rpg.core.world.RpgWorld.is(level)) return null;   // RPG 몹은 RPG 대륙에서만
         ResourceLocation id = ResourceLocation.tryParse(def.entity());
         if (id == null) return null;
         EntityType<?> type = BuiltInRegistries.ENTITY_TYPE.get(id);

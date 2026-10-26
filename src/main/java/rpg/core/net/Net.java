@@ -112,10 +112,38 @@ public final class Net {
                 .encoder(DailyAction::encode).decoder(DailyAction::new).consumerMainThread(DailyAction::handle).add();
         CH.messageBuilder(AimLine.class, id++, NetworkDirection.PLAY_TO_CLIENT)
                 .encoder(AimLine::encode).decoder(AimLine::new).consumerMainThread(AimLine::handle).add();
+        CH.messageBuilder(WorldChoice.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(WorldChoice::encode).decoder(WorldChoice::new).consumerMainThread(WorldChoice::handle).add();
+        CH.messageBuilder(ChooseWorld.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(ChooseWorld::encode).decoder(ChooseWorld::new).consumerMainThread(ChooseWorld::handle).add();
         CH.messageBuilder(PowerReq.class, id++, NetworkDirection.PLAY_TO_SERVER)
                 .encoder(PowerReq::encode).decoder(PowerReq::new).consumerMainThread(PowerReq::handle).add();
         CH.messageBuilder(PowerRes.class, id++, NetworkDirection.PLAY_TO_CLIENT)
                 .encoder(PowerRes::encode).decoder(PowerRes::new).consumerMainThread(PowerRes::handle).add();
+    }
+
+    // ───────── 첫 접속: 야생 / RPG 고르기 ─────────
+    public record WorldChoice() {
+        WorldChoice(FriendlyByteBuf b) { this(); }
+        void encode(FriendlyByteBuf b) {}
+        void handle(Supplier<NetworkEvent.Context> ctx) {
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> net.minecraft.client.Minecraft.getInstance().setScreen(new rpg.core.client.WorldChoiceScreen()));
+            ctx.get().setPacketHandled(true);
+        }
+    }
+
+    public record ChooseWorld(boolean rpg) {
+        ChooseWorld(FriendlyByteBuf b) { this(b.readBoolean()); }
+        void encode(FriendlyByteBuf b) { b.writeBoolean(rpg); }
+        void handle(Supplier<NetworkEvent.Context> ctx) {
+            ServerPlayer p = ctx.get().getSender();
+            ctx.get().setPacketHandled(true);
+            if (p != null) rpg.core.world.RpgWorld.choose(p, rpg);
+        }
+    }
+
+    public static void worldChoice(ServerPlayer p) {
+        CH.send(PacketDistributor.PLAYER.with(() -> p), new WorldChoice());
     }
 
     // ───────── 툴팁 전투력 비교 (마우스 올릴 때만) ─────────

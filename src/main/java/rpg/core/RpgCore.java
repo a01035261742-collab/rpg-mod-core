@@ -27,6 +27,8 @@ public class RpgCore {
 
     public RpgCore() {
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
+        rpg.core.world.ModBlocks.init();
+        rpg.core.world.ModBlocks.BLOCKS.register(modBus);
         ModItems.ITEMS.register(modBus);
         ModItems.TABS.register(modBus);
         rpg.core.shop.Trade.init();

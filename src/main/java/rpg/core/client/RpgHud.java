@@ -94,7 +94,7 @@ public final class RpgHud {
 
     public static void render(ForgeGui gui, GuiGraphics g, float partialTick, int w, int h) {
         Minecraft mc = Minecraft.getInstance();
-        if (mc.player == null || mc.options.hideGui || !ClientData.ready || mc.player.isSpectator()) return;
+        if (mc.player == null || mc.options.hideGui || !ClientData.ready || mc.player.isSpectator() || !ClientRpg.inRpg()) return;   // 야생: RPG HUD 숨김
         skillBar(g, mc.font, w, h);
         partyHud(g, mc.font, w, h);
         downHud(g, mc.font, w, h);

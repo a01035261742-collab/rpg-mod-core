@@ -267,7 +267,7 @@ public final class EpicFightCompat {
         if (attr == null) return;
         AttributeInstance inst = sp.getAttribute(attr);
         if (inst == null) return;
-        double want = RpgData.get(sp).staminaBonus();
+        double want = rpg.core.world.RpgWorld.in(sp) ? RpgData.get(sp).staminaBonus() : 0;   // 야생: 기본 스태미나
         AttributeModifier cur = inst.getModifier(STAMINA_ID);
         if (cur != null && Math.abs(cur.getAmount() - want) < 1e-6) return;
         if (cur != null) inst.removeModifier(STAMINA_ID);
