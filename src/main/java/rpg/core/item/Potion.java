@@ -50,6 +50,7 @@ public class Potion extends Item {
         if (mana) d.mp = Math.min(d.maxMp, d.mp + (p.mp() + d.maxMp * p.mpPct() / 100.0) * mul);
         if (!sp.getAbilities().instabuild) stack.shrink(1);
         double cd = p.cooldown() > 0 ? p.cooldown() : Balance.potionCooldown;
+        if (rpg.core.combat.Boss.inArena(sp)) cd = Math.max(cd, Balance.bossPotionCooldown);   // 보스전: 물약 쿨 5초
         sp.getCooldowns().addCooldown(this, (int) Math.round(cd * 20));
         level.playSound(null, sp.blockPosition(), SoundEvents.GENERIC_DRINK, SoundSource.PLAYERS, 0.6f, 1.2f);
         RpgData.sync(sp);

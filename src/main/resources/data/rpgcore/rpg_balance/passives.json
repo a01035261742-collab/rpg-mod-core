@@ -2418,14 +2418,14 @@
    "y": -6,
    "maxRank": 1,
    "stat": "overloadMp",
-   "perRank": 2,
+   "perRank": 1,
    "requires": [
     "mu4",
     "mu5"
    ],
    "job": 3,
    "kind": "k",
-   "desc": "추가 MP 100당 데미지 +2% (최대 +25%). 추가 MP = 장비·트리로 늘어난 MP"
+   "desc": "최대 MP 200당 데미지 +1% (최대 +25%)"
   },
   {
    "id": "md0",
@@ -2680,7 +2680,7 @@
    "y": 1,
    "maxRank": 3,
    "stat": "mpPct",
-   "perRank": 5,
+   "perRank": 3,
    "requires": [
     "mc_l"
    ],
@@ -2722,7 +2722,7 @@
    "y": 4,
    "maxRank": 2,
    "stat": "mpPct",
-   "perRank": 5,
+   "perRank": 3,
    "requires": [
     "m_mp2"
    ],
@@ -2764,13 +2764,13 @@
    "y": 6,
    "maxRank": 1,
    "stat": "killMp",
-   "perRank": 4,
+   "perRank": 3,
    "requires": [
     "m_mp5"
    ],
    "job": 3,
    "kind": "g",
-   "desc": "몹 처치 시 최대 MP 4% 회복"
+   "desc": "몹 처치 시 최대 MP 3% 회복"
   },
   {
    "id": "m_mp7",
@@ -2779,7 +2779,7 @@
    "y": 3,
    "maxRank": 2,
    "stat": "mpPct",
-   "perRank": 5,
+   "perRank": 3,
    "requires": [
     "m_mp2"
    ],
@@ -3176,9 +3176,9 @@
    ],
    "job": 3,
    "stat2": "mpPct",
-   "perRank2": 15,
+   "perRank2": 5,
    "kind": "k",
-   "desc": "화상 걸린 몹에게 데미지 +20%, 최대 MP +15%",
+   "desc": "화상 걸린 몹에게 데미지 +20%, 최대 MP +5%",
    "branch": 1
   },
   {
@@ -3194,7 +3194,7 @@
    ],
    "job": 3,
    "stat2": "mpPct",
-   "perRank2": 10,
+   "perRank2": 5,
    "kind": "n",
    "branch": 2
   },

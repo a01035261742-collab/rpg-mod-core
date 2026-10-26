@@ -244,11 +244,11 @@ public final class PassiveEffects {
         return v;
     }
 
-    /** 마력 과부하: 추가 MP 100당 +2% (최대 +25%) */
+    /** 마력 과부하: 최대 MP 200당 +1% (최대 +25%) */
     public static double overload(PlayerData d) {
         double per = d.bonus("overloadMp");
         if (per <= 0) return 0;
-        return Math.min(25, Math.max(0, d.maxMp - d.baseMp) / 100.0 * per);
+        return Math.min(25, Math.max(0, d.maxMp) / 200.0 * per);
     }
 
     /** 추가 공격력%: 냉정 (가만히 2초마다 +3%, 최대 5중첩) */

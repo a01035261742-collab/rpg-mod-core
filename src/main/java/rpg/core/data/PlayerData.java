@@ -169,7 +169,7 @@ public class PlayerData {
                 * (1 + bonus("giantHp") / 100.0)    // 거신: 최대 HP ×1.3
                 * (oathVal > 0 ? 1.05 : 1)           // 수호자의 맹세: +5%
                 * (1 + holyVal / 100.0);             // 신성 영역
-        baseMp = Balance.mpBase + Balance.mpPerLevel * level + Balance.mpPerInt * total(INT);   // 마력 과부하: 이걸 넘는 MP = 추가 MP
+        baseMp = Balance.mpBase + Balance.mpPerLevelByJob[Math.max(0, Math.min(4, job))] * level + Balance.mpPerInt * total(INT);   // 마력 과부하: 이걸 넘는 MP = 추가 MP
         double mm = (baseMp + eq("mp")) * (1 + bonus("mpPct") / 100.0);
         boolean changed = mh != maxHp || mm != maxMp;
         maxHp = Math.max(1, mh); maxMp = Math.max(0, mm);

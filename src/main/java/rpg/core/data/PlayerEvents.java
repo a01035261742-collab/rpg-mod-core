@@ -155,7 +155,7 @@ public final class PlayerEvents {
             if (sp.isAlive() && d.hp > 0 && !d.isDown()) {
                 double hp0 = d.hp, mp0 = d.mp;
                 d.hp = Math.min(d.maxHp, d.hp + d.maxHp * Balance.hpRegenPct / 100.0 * (1 + d.bonus("hpRegenPct") / 100.0));
-                d.mp = Math.min(d.maxMp, d.mp + d.maxMp * Balance.mpRegenPct / 100.0 * (1 + d.bonus("mpRegenPct") / 100.0)
+                d.mp = Math.min(d.maxMp, d.mp + d.maxMp * (d.job == 3 ? Balance.mageMpRegenPct : Balance.mpRegenPct) / 100.0 * (1 + d.bonus("mpRegenPct") / 100.0)
                         * (d.bonus("meditation") > 0 && d.clock - d.lastAttack >= 60 ? 3 : 1));   // 명상: 3초 안 때리면 ×3
                 changed |= hp0 != d.hp || mp0 != d.mp;
             }
