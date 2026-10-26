@@ -308,6 +308,20 @@ public final class Raids {
         }
     }
 
+    /** 이 보스가 지금 진행 중인 레이드 보스인지 */
+    public static boolean bossActive(MinecraftServer s, java.util.UUID bossId) {
+        for (Run r : RUNS) if (bossId.equals(r.boss)) return true;
+        return false;
+    }
+
+    /** 이 보스 레이드의 인원 (접속 중) */
+    public static List<ServerPlayer> membersOfBoss(MinecraftServer s, java.util.UUID bossId) {
+        List<ServerPlayer> out = new ArrayList<>();
+        for (Run r : RUNS) if (bossId.equals(r.boss))
+            for (UUID id : r.members) { ServerPlayer m = s.getPlayerList().getPlayer(id); if (m != null) out.add(m); }
+        return out;
+    }
+
     /** 레이드 보스가 죽으면 (Boss.onDeath): 30초 동안 드롭 줍고 입구로 */
     public static void bossDied(MinecraftServer s, java.util.UUID bossId) {
         for (Run r : RUNS) if (bossId.equals(r.boss)) {

@@ -341,7 +341,7 @@ final class BossX {
                 Vec3 d = quarterDir(x, x.step);
                 long linger = Math.round(p.x("linger", 3) * 20);
                 x.zones.add(new Zone(st.center, d, st.radius, 90, now + linger));
-                Net.telegraph(l, st.center, d, 30 + MobAI.CONE, st.radius, 90, (int) linger);
+                Net.telegraph(l, st.center, d, 50 + MobAI.CONE, st.radius, 90, (int) linger);   // 독 늪 (탁한 황록)
                 l.playSound(null, mob.blockPosition(), SoundEvents.SLIME_SQUISH, SoundSource.HOSTILE, 2f, 0.5f);
                 // 막 무너진 칸 안에 있던 사람은 바로 한 번 맞음
                 for (ServerPlayer pl : Boss.arena(l, st, 4))
@@ -388,5 +388,6 @@ final class BossX {
         for (UUID id : x.adds) { Entity e = l.getEntity(id); if (e != null) e.discard(); }
         for (Cocoon c : x.cocoons.values()) { Entity e = l.getEntity(c.entity()); if (e != null) e.discard(); }
         x.hatch.clear(); x.absorb.clear(); x.adds.clear(); x.cocoons.clear(); x.zones.clear();
+        for (ServerPlayer p : Boss.arena(l, st, 24)) POISON.remove(p.getUUID());   // 독도 끝
     }
 }

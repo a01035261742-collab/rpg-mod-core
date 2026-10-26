@@ -259,6 +259,9 @@ public final class Boss {
             if (st.props.size() < def.g("props", 0)) placeProp(l, st, def);
         }
 
+        // 레이드가 끝났는데 남은 보스 (서버 재시작 등): 지움
+        if (mob.tickCount % 20 == 0 && !mob.getPersistentData().getString("rpgRaid").isEmpty() && l.getServer() != null
+                && !rpg.core.world.Raids.bossActive(l.getServer(), mob.getUUID())) { mob.discard(); return; }
         BossX.ambient(mob, m, st, def, l, now);
         if (st.cur != null && BossX.TYPES.contains(st.cur.type())) { BossX.run(mob, m, st, def, l, now); return; }
         if (st.cur != null) { run(mob, m, st, def, l, now); return; }
@@ -681,6 +684,8 @@ public final class Boss {
                 for (Vec3 q : st.rocks.values()) {
                     List<ServerPlayer> in = new ArrayList<>();
                     for (ServerPlayer pl : arena(l, st, 4)) if (valid(pl) && flat(pl.position(), q) <= p.r() + PAD && Math.abs(pl.getY() - q.y) <= HEIGHT) in.add(pl);
+                    if (in.isEmpty())   // 대상이 원 밖으로 도망가면 혼자 다 맞음
+                        for (var re : st.rocks.entrySet()) if (re.getValue() == q && l.getPlayerByUUID(re.getKey()) instanceof ServerPlayer tp && valid(tp)) in.add(tp);
                     l.sendParticles(ParticleTypes.DRAGON_BREATH, q.x, q.y + 0.5, q.z, 60, p.r() / 2, 0.3, p.r() / 2, 0.02);
                     l.playSound(null, BlockPos.containing(q), SoundEvents.GENERIC_EXPLODE, SoundSource.HOSTILE, 1.2f, 0.7f);
                     for (ServerPlayer pl : in) CombatEvents.maxHpHit(mob, pl, p.x("maxPct", 90) / Math.max(1, in.size()));
@@ -957,6 +962,11 @@ public final class Boss {
             if (p instanceof ServerPlayer sp && flat(sp.position(), st.center) <= st.radius + 24 && e.getValue() >= m.maxHp * PART_MIN)
                 part.put(sp, e.getValue());   // 보스 체력 5% 이상 딜한 사람만 참여자
         }
+        // 레이드 보스: 방에 있는 레이드 인원 전부 참여자 (딜 5% 못 넣어도)
+        if (!mob.getPersistentData().getString("rpgRaid").isEmpty() && l.getServer() != null)
+            for (ServerPlayer rp : rpg.core.world.Raids.membersOfBoss(l.getServer(), mob.getUUID()))
+                if (flat(rp.position(), st == null ? mob.position() : st.center) <= (st == null ? 40 : st.radius + 24))
+                    part.putIfAbsent(rp, st == null ? 0.0 : st.dmg.getOrDefault(rp.getUUID(), 0.0));
         if (part.isEmpty() && killer != null) part.put(killer, 1.0);
         // 레이드 보스: 보상은 하루 1번 (오늘 이미 받은 사람은 클리어만 기록)
         String raid = mob.getPersistentData().getString("rpgRaid");
@@ -976,9 +986,11 @@ public final class Boss {
             PlayerData d = RpgData.get(p);
             bestDrop = Math.max(bestDrop, d.dropBonus());
             double share = e.getValue() / Math.max(1, total);
+            int people = Math.max(1, mob.getPersistentData().getInt("rpgRaidPeople"));   // 레이드: 체력이 인원수 배라 경험치·골드도 인원수 배 (평균 1인분)
+            double rewardShare = share * people;
             boolean over = d.level >= m.level + OVER_LEVEL;   // 보스보다 15레벨 이상: 골드 절반 · 보물 없음
-            long exp = Math.max(1, Math.round(m.exp * share * CombatEvents.expLevelMul(m.level, d.level)));
-            long gold = Math.max(1, Math.round(m.gold * share * (1 + d.goldBonus() / 100.0) * (over ? 0.5 : 1)));
+            long exp = Math.max(1, Math.round(m.exp * rewardShare * CombatEvents.expLevelMul(m.level, d.level)));
+            long gold = Math.max(1, Math.round(m.gold * rewardShare * (1 + d.goldBonus() / 100.0) * (over ? 0.5 : 1)));
             d.gold += gold;
             Progress.giveExp(p, exp);
             Net.reward(p, exp, gold);

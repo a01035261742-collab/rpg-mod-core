@@ -59,6 +59,16 @@ public final class Telegraphs {
             float p = (float) Math.min(1, Math.max(0, (now - x.start()) / (double) Math.max(1, x.end() - x.start())));
             Net.Telegraph t = x.t();
             float y = (float) (groundY(mc, t) + 0.06);
+            if (t.shape() >= 50) {   // 독 늪 (탁한 황록, 위험): 차오름 없이 그대로
+                Net.Telegraph b = new Net.Telegraph(t.shape() - 50, t.x(), t.y(), t.z(), t.dx(), t.dz(), t.a(), t.b(), t.ticks());
+                float yy = y + 0.02f;
+                switch (b.shape()) {
+                    case 1 -> line(vc, m, b, yy, 1f, 0x80809018, 0);
+                    case 2 -> cone(vc, m, b, yy, 1f, 0x80809018);
+                    default -> circle(vc, m, b, yy, 1f, 0x80809018);
+                }
+                continue;
+            }
             if (t.shape() >= 40) {   // 보라 예고 (나눠 맞기 등): 차오름
                 Net.Telegraph b = new Net.Telegraph(t.shape() - 40, t.x(), t.y(), t.z(), t.dx(), t.dz(), t.a(), t.b(), t.ticks());
                 switch (b.shape()) {
@@ -68,7 +78,7 @@ public final class Telegraphs {
                 }
                 continue;
             }
-            if (t.shape() >= 30) {   // 초록 (안전 구역 · 독 늪): 차오름 없이 그대로
+            if (t.shape() >= 30) {   // 초록 (안전 구역): 차오름 없이 그대로
                 Net.Telegraph b = new Net.Telegraph(t.shape() - 30, t.x(), t.y(), t.z(), t.dx(), t.dz(), t.a(), t.b(), t.ticks());
                 float yy = y + 0.02f;
                 switch (b.shape()) {
