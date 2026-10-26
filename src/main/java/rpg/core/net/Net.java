@@ -699,8 +699,8 @@ public final class Net {
         CH.send(PacketDistributor.PLAYER.with(() -> p), new MobInfo(mob.getId(), m.level, m.hp, m.maxHp, m.name));
     }
 
-    public static void damageText(Mob mob, double amount, boolean crit) {
-        CH.send(PacketDistributor.TRACKING_ENTITY.with(() -> mob), new DamageText(mob.getId(), amount, crit));
+    public static void damageText(Mob mob, double amount, int type) {
+        CH.send(PacketDistributor.TRACKING_ENTITY.with(() -> mob), new DamageText(mob.getId(), amount, type));
     }
 
     public static void reward(ServerPlayer p, long exp, long gold) {
@@ -718,11 +718,12 @@ public final class Net {
     }
 
     // ───────── 서버 → 클라: 데미지 숫자 ─────────
-    public record DamageText(int id, double amount, boolean crit) {
-        DamageText(FriendlyByteBuf b) { this(b.readVarInt(), b.readDouble(), b.readBoolean()); }
-        void encode(FriendlyByteBuf b) { b.writeVarInt(id); b.writeDouble(amount); b.writeBoolean(crit); }
+    /** type 0 보통 · 1 치명타 · 2 지속 피해 (작은 초록) */
+    public record DamageText(int id, double amount, int type) {
+        DamageText(FriendlyByteBuf b) { this(b.readVarInt(), b.readDouble(), b.readByte()); }
+        void encode(FriendlyByteBuf b) { b.writeVarInt(id); b.writeDouble(amount); b.writeByte(type); }
         void handle(Supplier<NetworkEvent.Context> ctx) {
-            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> rpg.core.client.WorldText.addDamage(id, amount, crit));
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> rpg.core.client.WorldText.addDamage(id, amount, type));
             ctx.get().setPacketHandled(true);
         }
     }

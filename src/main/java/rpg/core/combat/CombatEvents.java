@@ -157,27 +157,37 @@ public final class CombatEvents {
     public static void dotTick(net.minecraftforge.event.TickEvent.ServerTickEvent e) {
         if (e.phase != net.minecraftforge.event.TickEvent.Phase.END || DOTS.isEmpty()) return;
         var it = DOTS.entrySet().iterator();
-        java.util.List<Runnable> run = new java.util.ArrayList<>();
+        java.util.List<Dot> run = new java.util.ArrayList<>();
         while (it.hasNext()) {
             Dot b = it.next().getValue();
             if (!b.owner().isAlive()) { it.remove(); continue; }
             Entity ent = b.owner().serverLevel().getEntity(b.mob());
             long now = b.owner().level().getGameTime();
             if (!(ent instanceof Mob m) || !m.isAlive() || now > b.end()) { it.remove(); continue; }
-            if (now % 20 == 0) run.add(() -> {
-                fixedHit(b.owner(), m, b.dmg());
-                var l = b.owner().serverLevel();
-                double y = m.getY() + m.getBbHeight() * 0.6;
-                switch (b.kind()) {
-                    case "burn" -> l.sendParticles(net.minecraft.core.particles.ParticleTypes.FLAME, m.getX(), y, m.getZ(), 8, 0.25, 0.35, 0.25, 0.02);
-                    case "poison" -> l.sendParticles(new net.minecraft.core.particles.DustParticleOptions(new org.joml.Vector3f(0.3f, 0.8f, 0.2f), 1.2f),
-                            m.getX(), y, m.getZ(), 6, 0.2, 0.3, 0.2, 0);
-                    default -> l.sendParticles(new net.minecraft.core.particles.DustParticleOptions(new org.joml.Vector3f(0.7f, 0f, 0f), 1.2f),
-                            m.getX(), y, m.getZ(), 6, 0.2, 0.3, 0.2, 0);
-                }
-            });
+            if (now % 20 == 0) run.add(b);
         }
-        run.forEach(Runnable::run);   // 피해로 몹이 죽으면서 DOTS 를 건드려도 안전하게 밖에서
+        if (run.isEmpty()) return;
+        // 몹별로 묶어서: 피해는 각자 넣고, 숫자 1개(합계)·체력 동기화 1번·파티클 2개
+        java.util.Map<Integer, java.util.List<Dot>> byMob = new java.util.LinkedHashMap<>();
+        for (Dot b : run) byMob.computeIfAbsent(b.mob(), k -> new java.util.ArrayList<>()).add(b);
+        for (var en : byMob.values()) {
+            Dot first = en.get(0);
+            Entity ent = first.owner().serverLevel().getEntity(first.mob());
+            if (!(ent instanceof Mob m) || !m.isAlive()) continue;
+            dotDealt = 0;
+            DOT_HIT = true;
+            try { for (Dot b : en) if (m.isAlive() && b.owner().isAlive()) fixedHit(b.owner(), m, b.dmg()); }
+            finally { DOT_HIT = false; }
+            Mobs.sync(m);
+            if (dotDealt > 0) Net.damageText(m, dotDealt, 2);
+            var l = first.owner().serverLevel();
+            double y = m.getY() + m.getBbHeight() * 0.6;
+            String kind = en.get(en.size() - 1).kind();
+            if (kind.equals("burn")) l.sendParticles(net.minecraft.core.particles.ParticleTypes.FLAME, m.getX(), y, m.getZ(), 2, 0.25, 0.35, 0.25, 0.02);
+            else l.sendParticles(new net.minecraft.core.particles.DustParticleOptions(
+                    kind.equals("poison") ? new org.joml.Vector3f(0.3f, 0.8f, 0.2f) : new org.joml.Vector3f(0.7f, 0f, 0f), 1.2f),
+                    m.getX(), y, m.getZ(), 2, 0.2, 0.3, 0.2, 0);
+        }
     }
 
     /** 무게중심: 넉백 줄임 */
@@ -352,9 +362,14 @@ public final class CombatEvents {
         m.hp = Math.max(0, m.hp - dmg);
         mirror(e, mob, m.hp, m.maxHp);
         mob.invulnerableTime = 0;   // 무적 시간 없음: 여러 명이 동시에 때려도 타격이 안 씹히게
+        if (DOT_HIT) { dotDealt += dmg; return; }   // 지속 피해: 숫자·체력 동기화는 1초에 한 번 묶어서
         Mobs.sync(mob);
-        if (src instanceof ServerPlayer) Net.damageText(mob, dmg, crit);
+        if (src instanceof ServerPlayer) Net.damageText(mob, dmg, crit ? 1 : 0);
     }
+
+    /** 지속 피해 묶음 처리 중 (숫자·동기화 따로 안 보냄) */
+    private static boolean DOT_HIT;
+    private static double dotDealt;
 
     /** 공격자가 몹 등 뒤(몸이 보는 방향 반대쪽)에 있나 */
     private static boolean behind(Mob mob, Entity a) {
