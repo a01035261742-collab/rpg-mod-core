@@ -8,9 +8,9 @@ jobs:
         with: { distribution: temurin, java-version: '17' }
       - run: |
           curl -sL -o ef.jar https://cdn.modrinth.com/data/vu3NZ5Ma/versions/KEBfkBat/epic-fight-20.14.17-mc1.20.1-forge.jar
-          # 활·석궁·투척 관련 모션
-          javap -p -cp ef.jar yesman.epicfight.gameasset.Animations > all.txt
-          sed -n 's/.* \([A-Z0-9_]*\);.*/\1/p' all.txt | grep -E "BOW|CROSSBOW|THROW|SHOOT|AIM|DODGE|ROLL|STEP|JUMP|KICK|DASH|BACK" | tr '\n' ' ' > out.txt
+          # PlayerPatch 모드 관련 메서드
+          javap -p -cp ef.jar yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch > all.txt
+          grep -i "mode" all.txt | tr '\n' ' ' > out.txt
           wc -l all.txt >> out.txt
           cat out.txt
           msg=$(sed ':a;N;$!ba;s/%/%25/g;s/\r//g;s/\n/%0A/g' out.txt | head -c 60000)
