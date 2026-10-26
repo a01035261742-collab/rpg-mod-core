@@ -41,6 +41,8 @@ import rpg.core.data.RpgData;
 public final class RpgWorld {
     private RpgWorld() {}
 
+    /** RPG 대륙 평지 바로 위 높이 (dimension/rpg_world.json 층과 맞춤) */
+    static final int FLAT_TOP = -60;
     public static final ResourceKey<Level> KEY = ResourceKey.create(Registries.DIMENSION, RpgCore.id("rpg_world"));
     static final String WILD = "wild", RPG = "rpg";
 
@@ -51,7 +53,7 @@ public final class RpgWorld {
 
     // ───────── 저장 데이터 (월드 전체: RPG 스폰, 포탈 설치 여부) ─────────
     public static final class Data extends SavedData {
-        public BlockPos rpgSpawn = new BlockPos(0, -60, 0);
+        public BlockPos rpgSpawn = new BlockPos(0, FLAT_TOP, 0);
         public boolean portalsBuilt;
         @Override public CompoundTag save(CompoundTag t) {
             t.putLong("rpgSpawn", rpgSpawn.asLong()); t.putBoolean("portalsBuilt", portalsBuilt); return t;
@@ -252,9 +254,19 @@ public final class RpgWorld {
         MinecraftServer s = e.getServer();
         Data d = data(s);
         ServerLevel rpg = rpgLevel(s);
-        if (d.portalsBuilt || rpg == null) return;
-        // RPG 대륙: 스폰 (0, 평지 위, 0) 에 9×9 돌바닥 + 문
-        BlockPos base = rpg.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, new BlockPos(0, 0, 0));
+        if (rpg == null) return;
+        // 0.39.0 에서 땅속에 생긴 경우: 스폰·문을 평지 위로 다시
+        boolean buried = d.portalsBuilt && d.rpgSpawn.getY() < FLAT_TOP;
+        if (buried) {
+            d.rpgSpawn = new BlockPos(0, FLAT_TOP, 0);
+            BlockPos b = d.rpgSpawn;
+            for (int x = -4; x <= 4; x++) for (int z = -4; z <= 4; z++) rpg.setBlockAndUpdate(b.offset(x, -1, z), Blocks.SMOOTH_STONE.defaultBlockState());
+            placeGate(rpg, b.offset(0, 0, -3));
+            d.setDirty();
+        }
+        if (d.portalsBuilt) return;
+        // RPG 대륙: 스폰 (0, 평지 위, 0) 에 9×9 돌바닥 + 문. 평지 높이는 고정 (기반암 -64 · 흙 2 · 풀 1 → 위 -60)
+        BlockPos base = new BlockPos(0, FLAT_TOP, 0);
         for (int x = -4; x <= 4; x++) for (int z = -4; z <= 4; z++) rpg.setBlockAndUpdate(base.offset(x, -1, z), Blocks.SMOOTH_STONE.defaultBlockState());
         placeGate(rpg, base.offset(0, 0, -3));
         d.rpgSpawn = base;
