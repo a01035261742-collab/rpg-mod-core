@@ -46,10 +46,19 @@ public final class AimLaser {
         for (var en : AIMS.entrySet()) {
             Entity p = mc.level.getEntity(en.getKey());
             if (p == null) continue;
-            Vec3 eye = p.getEyePosition(pt), look = p.getViewVector(pt);
-            Vec3 right = look.cross(new Vec3(0, 1, 0));
-            right = right.lengthSqr() < 1e-4 ? new Vec3(1, 0, 0) : right.normalize();
-            Vec3 from = eye.add(right.scale(0.25)).add(0, -0.25, 0).add(look.scale(0.4));   // 손 근처에서 시작
+            boolean self = p == mc.getCameraEntity() && mc.options.getCameraType().isFirstPerson();
+            Vec3 eye, look, from;
+            if (self) {   // 1인칭 내 것: 카메라 기준 (움직여도 화면 가운데로 똑바로)
+                eye = e.getCamera().getPosition();
+                look = new Vec3(e.getCamera().getLookVector());
+                Vec3 up = new Vec3(e.getCamera().getUpVector());
+                from = eye.add(look.scale(0.8)).subtract(up.scale(0.22));
+            } else {
+                eye = p.getEyePosition(pt); look = p.getViewVector(pt);
+                Vec3 right = look.cross(new Vec3(0, 1, 0));
+                right = right.lengthSqr() < 1e-4 ? new Vec3(1, 0, 0) : right.normalize();
+                from = eye.add(right.scale(0.25)).add(0, -0.25, 0).add(look.scale(0.4));   // 손 근처에서 시작
+            }
             Vec3 far = eye.add(look.scale(14));
             var hit = mc.level.clip(new ClipContext(eye, far, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, p));
             Vec3 to = hit.getType() == HitResult.Type.MISS ? far : hit.getLocation();
