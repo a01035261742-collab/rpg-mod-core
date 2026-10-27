@@ -59,7 +59,7 @@ public final class AdminPanel {
         say(src, row("캐릭터", btn("Lv.10", "/rpg level 10", a), btn("Lv.30", "/rpg level 30", a), btn("Lv.40", "/rpg level 40", a),
                 btn("골드 +100만", "/rpg gold 1000000", y), btn("회복", "/rpg heal", g), btn("스탯 +50", "/rpg sp 50", a), btn("초기화 주문서", "/rpg resetscroll", a)));
         say(src, row("월드", btn("지점 보기", "/rpg 보기", l), btn("여기를 스폰으로", "/rpg 스폰설정", l), btn("문·창고 받기", "/rpg 포탈", l),
-                btn("사냥터 목록", "/rpg zone list", g), btn("사냥터 지팡이", "/rpg wand", g)));
+                btn("사냥터 목록", "/rpg zone list", g), btn("사냥터 지팡이", "/rpg wand", g), btn("건축 도우미 ▶", "/rpg 건축", ChatFormatting.GOLD)));
         say(src, row("NPC", btn("세우기 ▶", "/rpg 관리 npc", g), btn("퀘스트 NPC ▶", "/rpg 관리 quest", g), btn("삭제 (5칸 안)", "/rpg npc 삭제", r)));
         say(src, row("보스·레이드", btn("보스 ▶", "/rpg 관리 boss", r), btn("레이드 목록", "/rpg 레이드 목록", l),
                 btn("일일 초기화", "/rpg daily reset", y), btn("일일 완료", "/rpg daily complete", y)));

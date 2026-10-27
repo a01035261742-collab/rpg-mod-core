@@ -42,6 +42,7 @@ public final class RpgCommand {
         var root = Commands.literal("rpg");
         ZoneCommand.addTo(root);
         AdminPanel.addTo(root);
+        BuildPanel.addTo(root);
         // 월드 (야생 ↔ RPG 대륙)
         for (String n : new String[]{"이동", "travel"})
             root.then(Commands.literal(n).executes(c -> { rpg.core.world.RpgWorld.command(c.getSource().getPlayerOrException()); return 1; }));
