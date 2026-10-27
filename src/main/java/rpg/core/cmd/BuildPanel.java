@@ -41,7 +41,10 @@ public final class BuildPanel {
                     .executes(c -> { show(c.getSource()); return 1; })
                     .then(Commands.literal("붙이기").then(Commands.argument("deg", IntegerArgumentType.integer(0, 270))
                             .then(Commands.argument("file", StringArgumentType.greedyString()).executes(c -> paste(c.getSource().getPlayerOrException(),
-                                    StringArgumentType.getString(c, "file"), IntegerArgumentType.getInteger(c, "deg")))))));
+                                    StringArgumentType.getString(c, "file"), IntegerArgumentType.getInteger(c, "deg"))))))
+                    .then(Commands.literal("원").executes(c -> circle(c.getSource().getPlayerOrException(), 24))
+                            .then(Commands.argument("r", IntegerArgumentType.integer(2, 64)).executes(c -> circle(c.getSource().getPlayerOrException(), IntegerArgumentType.getInteger(c, "r")))))
+                    .then(Commands.literal("범위").executes(c -> zoneSize(c.getSource().getPlayerOrException()))));
         }
     }
 
@@ -117,10 +120,67 @@ public final class BuildPanel {
         say(src, row("  ", run("언덕 쌓기", "//brush sphere grass_block 4", g, "반지름 4 잔디 공"), run("파내기", "//brush sphere air 4", r, "반지름 4 비우기"),
                 run("부드럽게", "//brush smooth 4", a, "반지름 4 다듬기 (산·언덕 마무리)"), run("평평하게", "//brush cylinder air 4 6", y, "반지름 4 · 높이 6 비우기 (위만 깎을 때 발 높이 맞춰서)"),
                 type("크기 바꾸기", "//brush sphere grass_block 6", "숫자 = 반지름"), run("브러시 끄기", "/none", ChatFormatting.GRAY, "손에 든 아이템 브러시 풀기")));
+        say(src, row("  길", run("흙길 (폭 1)", "//line dirt_path 0", b, "도끼로 찍은 두 점 사이 흙길 (두 점은 땅 블록을 찍기)"),
+                run("흙길 (폭 3)", "//line dirt_path 1", b, "두 점 사이 폭 3 흙길"), run("돌길 (폭 3)", "//line cobblestone 1", ChatFormatting.GRAY, "두 점 사이 폭 3 조약돌 길"),
+                type("다른 길", "//line gravel 1", "블록·굵기(0=1칸,1=3칸,2=5칸) 바꾸기")));
+        // 미리보기
+        say(src, row("미리보기", run("경기장 원 24", "/rpg 건축 원 24", ChatFormatting.LIGHT_PURPLE, "발밑에 반지름 24 원 (보스·레이드 경기장 크기) 20초"),
+                type("원 크기", "/rpg 건축 원 16", "반지름 바꿔서"), run("사냥터 범위", "/rpg 건축 범위", g, "사냥터 지팡이(/rpg wand)로 찍은 범위 크기·몹 밀도 + 테두리 20초"),
+                run("사냥터 지팡이", "/rpg wand", g, "사냥터 범위 찍는 지팡이")));
         // 물·기타
         say(src, row("물·기타", run("호수 (반지름 8)", "//cyl water 8 1", a, "발밑에 반지름 8 물 원판 (먼저 파두기)"),
                 run("물 빼기", "//drain 10", r, "주변 10칸 물 없애기"), run("불 끄기", "//ext 10", ChatFormatting.GRAY, "주변 10칸 불 끄기"),
                 run("위로 올라가기", "/up 5", y, "5칸 위 공중에 유리 받침"), run("◀ 관리 패널", "/rpg 관리", ChatFormatting.WHITE, "관리자 패널")));
+    }
+
+    // ───────── 미리보기 (파티클, 그 사람한테만 20초) ─────────
+    private record Show(net.minecraft.world.phys.Vec3 c, int r, net.minecraft.core.BlockPos a, net.minecraft.core.BlockPos b, long until) {}
+    private static final Map<java.util.UUID, Show> SHOWS = new java.util.HashMap<>();
+
+    static int circle(ServerPlayer p, int r) {
+        SHOWS.put(p.getUUID(), new Show(p.position(), r, null, null, p.level().getGameTime() + 400));
+        p.sendSystemMessage(Component.literal("[건축] 발밑에 반지름 " + r + " 원 (지름 " + (r * 2) + "칸) · 20초").withStyle(ChatFormatting.LIGHT_PURPLE));
+        return 1;
+    }
+
+    static int zoneSize(ServerPlayer p) {
+        net.minecraft.core.BlockPos[] ps = rpg.core.zone.ZoneWand.get(p);
+        if (ps[0] == null || ps[1] == null) { p.sendSystemMessage(Component.literal("[건축] 먼저 사냥터 지팡이(/rpg wand)로 두 점을 찍어 주세요").withStyle(ChatFormatting.RED)); return 0; }
+        int w = Math.abs(ps[0].getX() - ps[1].getX()) + 1, d = Math.abs(ps[0].getZ() - ps[1].getZ()) + 1;
+        int area = w * d, per = area / 8;   // 사냥터 최대 8마리
+        String feel = per < 60 ? "좁음 (몹이 붙어서 나옴)" : per > 250 ? "넓음 (몹 찾으러 걸어야 함)" : "적당함";
+        p.sendSystemMessage(Component.literal("[건축] 사냥터 범위 " + w + " × " + d + " = " + area + "칸 · 몹 최대 8마리 → 1마리당 약 " + per + "칸 · " + feel
+                + " (추천 한 변 20~40칸)").withStyle(ChatFormatting.GREEN));
+        SHOWS.put(p.getUUID(), new Show(null, 0, ps[0], ps[1], p.level().getGameTime() + 400));
+        return 1;
+    }
+
+    @net.minecraftforge.fml.common.Mod.EventBusSubscriber(modid = rpg.core.RpgCore.MODID)
+    public static final class Ticker {
+        @net.minecraftforge.eventbus.api.SubscribeEvent
+        public static void tick(net.minecraftforge.event.TickEvent.PlayerTickEvent e) {
+            if (e.phase != net.minecraftforge.event.TickEvent.Phase.END || !(e.player instanceof ServerPlayer p) || p.tickCount % 10 != 0) return;
+            Show s = SHOWS.get(p.getUUID());
+            if (s == null) return;
+            if (p.level().getGameTime() > s.until()) { SHOWS.remove(p.getUUID()); return; }
+            var l = p.serverLevel();
+            var dust = new net.minecraft.core.particles.DustParticleOptions(new org.joml.Vector3f(0.75f, 0.35f, 1f), 1.6f);
+            if (s.c() != null) {
+                int n = Math.max(24, s.r() * 7);
+                for (int i = 0; i < n; i++) {
+                    double a = Math.PI * 2 * i / n;
+                    l.sendParticles(p, dust, true, s.c().x + Math.cos(a) * s.r(), s.c().y + 0.3, s.c().z + Math.sin(a) * s.r(), 1, 0, 0, 0, 0);
+                }
+                l.sendParticles(p, dust, true, s.c().x, s.c().y + 0.3, s.c().z, 3, 0.1, 0, 0.1, 0);
+            } else {
+                var green = new net.minecraft.core.particles.DustParticleOptions(new org.joml.Vector3f(0.3f, 1f, 0.4f), 1.6f);
+                int x0 = Math.min(s.a().getX(), s.b().getX()), x1 = Math.max(s.a().getX(), s.b().getX()) + 1;
+                int z0 = Math.min(s.a().getZ(), s.b().getZ()), z1 = Math.max(s.a().getZ(), s.b().getZ()) + 1;
+                double y = Math.max(s.a().getY(), s.b().getY()) + 1.2;
+                for (int x = x0; x <= x1; x++) { l.sendParticles(p, green, true, x, y, z0, 1, 0, 0, 0, 0); l.sendParticles(p, green, true, x, y, z1, 1, 0, 0, 0, 0); }
+                for (int z = z0; z <= z1; z++) { l.sendParticles(p, green, true, x0, y, z, 1, 0, 0, 0, 0); l.sendParticles(p, green, true, x1, y, z, 1, 0, 0, 0, 0); }
+            }
+        }
     }
 
     /** 불러오기 + 회전 + 붙이기 (플레이어 이름으로 WorldEdit 명령 실행) */
