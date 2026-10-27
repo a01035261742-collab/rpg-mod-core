@@ -192,16 +192,22 @@ public final class RpgWorld {
 
     public static void portal(ServerPlayer p) {
         long now = p.level().getGameTime();
-        if (ARRIVED.contains(p.getUUID()) || now < PORTAL_CD.getOrDefault(p.getUUID(), 0L)) return;
+        if (ARRIVED.contains(p.getUUID())) return;
+        if (now < PORTAL_CD.getOrDefault(p.getUUID(), 0L) && PORTAL_CD.get(p.getUUID()) - now <= 40) return;   // 2초 대기 (시간이 꼬여 큰 값이면 무시)
+        if (Raids.inRaid(p)) { p.displayClientMessage(Component.literal("레이드 중에는 문을 쓸 수 없어요").withStyle(ChatFormatting.RED), true); return; }
         PORTAL_CD.put(p.getUUID(), now + 40);
         travel(p);
         ARRIVED.add(p.getUUID());
         PORTAL_CD.put(p.getUUID(), p.level().getGameTime() + 40);
     }
 
+    /** 몸(히트박스)이 문 블록에 닿아 있나 (발·눈 칸만 보던 것 → 몸 전체, 얇은 문·반 블록 위도) */
     static boolean inPortal(ServerPlayer p) {
         var b = ModBlocks.WORLD_PORTAL.get();
-        return p.level().getBlockState(p.blockPosition()).is(b) || p.level().getBlockState(BlockPos.containing(p.getEyePosition())).is(b);
+        var box = p.getBoundingBox().deflate(0.05);
+        for (BlockPos q : BlockPos.betweenClosed(BlockPos.containing(box.minX, box.minY, box.minZ), BlockPos.containing(box.maxX, box.maxY, box.maxZ)))
+            if (p.level().getBlockState(q).is(b)) return true;
+        return false;
     }
 
     @SubscribeEvent
@@ -212,6 +218,8 @@ public final class RpgWorld {
             boolean inside = inPortal(p);
             if (!inside) ARRIVED.remove(p.getUUID());
             else if (!ARRIVED.contains(p.getUUID())) portal(p);
+            else if (p.tickCount % 40 == 0)   // 넘어온 자리가 문 안: 왜 안 가는지 알려줌
+                p.displayClientMessage(Component.literal("문 밖으로 한 걸음 나갔다가 다시 들어오면 이동해요").withStyle(ChatFormatting.GRAY), true);
         }
         // Epic Fight: 야생에서도 그대로 씀 (0.43.2 롤백). 예전에 걸어둔 전투 모드 잠금만 처음 몇 초 동안 풀어줌
         if (p.tickCount < 200 && p.tickCount % 20 == 0) rpg.core.compat.EpicFightCompat.forceMode(p, true);
