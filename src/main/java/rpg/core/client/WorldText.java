@@ -91,8 +91,8 @@ public final class WorldText {
         Font font = mc.font;
         float pt = e.getPartialTick();
 
-        // 플레이어 머리 위 칭호: 《 칭호 》 (이름표 위, 32칸 이내, 1인칭 내 것은 안 보임)
-        for (var t : TITLES.values()) {
+        // 플레이어 머리 위 칭호: 《 칭호 》 (이름표 위, 32칸 이내, 1인칭 내 것은 안 보임) · RPG 대륙에서만
+        if (rpg.core.world.RpgWorld.is(mc.level)) for (var t : TITLES.values()) {
             var pl = mc.level.getPlayerByUUID(t.player());
             if (pl == null || pl.isInvisible() || pl.distanceToSqr(c) > 32 * 32) continue;
             if (pl == mc.player && mc.options.getCameraType().isFirstPerson()) continue;
