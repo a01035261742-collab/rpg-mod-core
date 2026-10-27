@@ -302,15 +302,8 @@ public final class RpgWorld {
             placeGate(rpg, b.offset(0, 0, -3));
             d.setDirty();
         }
-        if (d.portalsBuilt) {
-            // RPG 대륙을 새로 만들었으면(폴더 삭제 등) 스폰 문이 없음 → 다시 설치
-            BlockPos g = d.rpgSpawn.offset(0, 0, -3);
-            if (!rpg.getBlockState(g).is(ModBlocks.WORLD_PORTAL.get())) {
-                for (int x = -4; x <= 4; x++) for (int z = -4; z <= 4; z++) rpg.setBlockAndUpdate(d.rpgSpawn.offset(x, -1, z), Blocks.SMOOTH_STONE.defaultBlockState());
-                placeGate(rpg, g);
-            }
-            return;
-        }
+        // 한 번 설치한 뒤에는 다시 안 놓음 (스폰을 옮기거나 문을 옮겨도 맵을 덮어쓰지 않게). 문이 필요하면 OP: /rpg 포탈
+        if (d.portalsBuilt) return;
         // RPG 대륙: 스폰 (0, 평지 위, 0) 에 9×9 돌바닥 + 문. 평지 높이는 고정 (기반암 -64 · 흙 2 · 풀 1 → 위 -60)
         BlockPos base = new BlockPos(0, FLAT_TOP, 0);
         for (int x = -4; x <= 4; x++) for (int z = -4; z <= 4; z++) rpg.setBlockAndUpdate(base.offset(x, -1, z), Blocks.SMOOTH_STONE.defaultBlockState());
