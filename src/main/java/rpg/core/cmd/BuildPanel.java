@@ -33,7 +33,9 @@ public final class BuildPanel {
             Map.entry("start_general_store", "잡화점"), Map.entry("start_gear_shop", "장비점"), Map.entry("start_herb_shop", "약초 가게"),
             Map.entry("start_plaza_fountain", "광장 분수"), Map.entry("start_trainer_warrior", "전사 교관"), Map.entry("start_trainer_archer", "궁수 교관"),
             Map.entry("start_trainer_mage", "마법사 교관"), Map.entry("start_trainer_thief", "도적 교관"),
-            Map.entry("farm_bram_farmhouse", "브람 농가"), Map.entry("farm_barn", "헛간"), Map.entry("farm_farm_field", "밭"));
+            Map.entry("farm_bram_farmhouse", "브람 농가"), Map.entry("farm_barn", "헛간"), Map.entry("farm_farm_field", "밭"),
+            Map.entry("village2_lab", "모리스 버섯 연구소"), Map.entry("village2_alchemy", "네라 연금술 탑"), Map.entry("village2_shop_red", "2마을 상점 (빨강 갓)"),
+            Map.entry("village2_shop_brown", "2마을 상점 (갈색 갓)"), Map.entry("village2_gate", "카엘 경비 초소 입구"));
 
     public static void addTo(LiteralArgumentBuilder<CommandSourceStack> root) {
         for (String n : new String[]{"건축", "build"}) {
