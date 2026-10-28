@@ -144,6 +144,7 @@ public final class Boss {
         List<String> deck = new ArrayList<>();
         String last = "";
         long nextAt;
+        Vec3 jumpFrom; long jumpStart, jumpLand;   // 점프 포물선
         int seen = 1;          // 필드 보스: 싸움에 들어온 최대 인원 (체력 배수)
         int done;             // 끝낸 패턴 수 (정기 휴식용)
         Pattern cur;
@@ -179,7 +180,7 @@ public final class Boss {
             st.init = true;
             var pd = mob.getPersistentData();
             st.center = pd.contains("rpgBossCX") ? new Vec3(pd.getDouble("rpgBossCX"), pd.getDouble("rpgBossCY"), pd.getDouble("rpgBossCZ")) : mob.position();
-            st.radius = pd.contains("rpgBossR") ? pd.getDouble("rpgBossR") : def.arena();
+            st.radius = def.arena();   // 경기장 크기는 항상 mobs.json (예전에 등록한 지점도 바뀐 크기로)
             st.point = pd.getString("rpgBossPoint");
             if (!pd.contains("rpgBossCX")) { pd.putDouble("rpgBossCX", st.center.x); pd.putDouble("rpgBossCY", st.center.y); pd.putDouble("rpgBossCZ", st.center.z); }
             st.phase = m.hp <= m.maxHp * def.phase2() / 100.0 ? 2 : 1;
@@ -226,6 +227,7 @@ public final class Boss {
         ServerLevel l = (ServerLevel) mob.level();
         State st = state(mob, m, def);
         long now = l.getGameTime();
+        if (st.jumpFrom == null) MobAI.gravity(mob, true);   // 점프 도중 끊김·재접속 → 중력 복구
 
         List<ServerPlayer> fighters = new ArrayList<>();
         for (ServerPlayer p : arena(l, st, 0)) if (valid(p)) fighters.add(p);
@@ -307,8 +309,12 @@ public final class Boss {
             mob.getLookControl().setLookAt(t, 30f, 30f);
             return;
         }
-        Pattern p = draw(st, def);
-        if (p != null) start(mob, st, def, p, t, fighters, l, now);
+        // 원거리 견제: 10칸 넘게 떨어진 사람이 있으면 원거리 패턴(ranged) 먼저, far 패턴은 가장 먼 사람을 노림
+        ServerPlayer far = null;
+        for (ServerPlayer f : fighters) if (far == null || flat(mob.position(), f.position()) > flat(mob.position(), far.position())) far = f;
+        boolean someoneFar = far != null && flat(mob.position(), far.position()) > def.g("farDist", 10);
+        Pattern p = draw(st, def, someoneFar);
+        if (p != null) start(mob, st, def, p, p.x("far", 0) > 0 && far != null ? far : t, fighters, l, now);
     }
 
     /** 대상: 도발 > 피해를 가장 많이 준 사람 > 가까운 사람 */
@@ -331,7 +337,7 @@ public final class Boss {
     }
 
     /** 카드 더미: 지금 페이즈 패턴을 한 번씩 다 쓰면 다시 섞음, 같은 패턴 연속 없음 */
-    private static Pattern draw(State st, Def def) {
+    private static Pattern draw(State st, Def def, boolean preferRanged) {
         if (st.deck.isEmpty()) {
             for (Pattern p : def.patterns()) {
                 int only = (int) p.x("only", 0);   // only = 그 페이즈에서만 (여왕: 2페이즈는 패턴 묶음이 바뀜)
@@ -341,7 +347,13 @@ public final class Boss {
             if (st.deck.size() > 1 && st.deck.get(0).equals(st.last)) Collections.swap(st.deck, 0, st.deck.size() - 1);
         }
         if (st.deck.isEmpty()) return null;
-        String id = st.deck.remove(0);
+        String id = null;
+        if (preferRanged) for (int i = 0; i < st.deck.size() && id == null; i++) {   // 멀리 있는 사람 견제: 덱에 남은 원거리 패턴 먼저
+            String c = st.deck.get(i);
+            if (c.equals(st.last)) continue;
+            for (Pattern q : def.patterns()) if (q.id().equals(c) && q.x("ranged", 0) > 0) { id = st.deck.remove(i); break; }
+        }
+        if (id == null) id = st.deck.remove(0);
         st.last = id;
         for (Pattern p : def.patterns()) if (p.id().equals(id)) return p;
         return null;
@@ -362,6 +374,9 @@ public final class Boss {
         st.dir = to.lengthSqr() < 1e-4 ? Vec3.directionFromRotation(0, mob.getYRot()) : to.normalize();
         st.pos = mob.position();
         int dl = ticks(p.delay());
+        // 큰 패턴 (예고 2초 이상): 화면 위 가운데에 이름 (알림이 따로 있는 패턴 빼고)
+        if (p != def.melee() && p.delay() >= 2.0 && !BossX.TYPES.contains(p.type()) && !java.util.Set.of("share", "mark", "counter").contains(p.type()))
+            for (ServerPlayer x : arena(l, st, 16)) Net.alert(x, "◆ " + p.name(), ChatFormatting.YELLOW, 50);
         switch (p.type()) {
             case "cone" -> Net.telegraph(l, st.pos, st.dir, MobAI.CONE, p.r(), p.angle(), dl);
             case "charge" -> { st.repeatLeft = st.phase >= 2 ? Math.max(1, p.repeat2()) : 1; beginCharge(mob, st, p, t, now); return; }
@@ -381,10 +396,11 @@ public final class Boss {
             case "web", "share" -> {   // 거미줄 발사 (2페이즈 2명) · 먹잇감 (한 명, 보라)
                 st.repeatLeft = 1;
                 st.rocks.clear();
-                int n = p.type().equals("web") && st.phase >= 2 ? (int) p.x("targets2", 2) : 1;
+                int n = p.type().equals("web") && st.phase >= 2 ? (int) p.x("targets2", p.x("targets", 1)) : (int) p.x("targets", 1);
                 List<ServerPlayer> pool = new ArrayList<>(fighters);
                 Collections.shuffle(pool);
-                if (pool.contains(t)) { pool.remove(t); pool.add(0, t); }
+                if (p.x("far", 0) > 0) pool.sort((a, b) -> Double.compare(flat(mob.position(), b.position()), flat(mob.position(), a.position())));   // 먼 사람부터
+                else if (pool.contains(t)) { pool.remove(t); pool.add(0, t); }
                 for (int i = 0; i < Math.min(n, pool.size()); i++) st.rocks.put(pool.get(i).getUUID(), pool.get(i).position());
                 beginTrack(mob, st, p, now);
                 if (p.type().equals("share")) for (ServerPlayer x : arena(l, st, 16))
@@ -403,7 +419,7 @@ public final class Boss {
                 st.repeatLeft = st.phase >= 2 ? (int) p.x("hits2", 2) : 1;
                 Net.telegraph(l, st.pos, st.dir, MobAI.CONE, p.r(), p.angle(), dl);
             }
-            case "eggs", "pull", "lanes", "absorb", "collapse", "frenzy" -> { BossX.start(mob, st, def, p, t, l, now); return; }
+            case "eggs", "pull", "lanes", "absorb", "collapse", "frenzy", "barrage", "volley" -> { BossX.start(mob, st, def, p, t, l, now); return; }
             case "delayed", "jump" -> {
                 st.repeatLeft = p.type().equals("jump") && st.phase >= 2 ? Math.max(1, p.repeat2()) : 1;
                 if (p.type().equals("jump") && st.props.isEmpty() && def.g("props", 0) > 0) placeProp(l, st, def);
@@ -433,7 +449,7 @@ public final class Boss {
     /** 판정을 화면보다 조금 늦게 (빨강이 다 찬 걸 보고 맞게) */
     static final int HIT_LAG = 2;
     /** 판정 여유: 몸 폭 0.3 + 0.3 */
-    static final double PAD = 0.6, HEIGHT = 4;
+    static final double PAD = 0.3, HEIGHT = 4;   // 판정 = 그려진 모양 + 몸 반 폭 (몸이 선에 걸치면 맞음)
 
     /** 직선 추적 (돌진·광선): 대상 쪽 노란 선 */
     private static void beginCharge(Mob mob, State st, Pattern p, ServerPlayer t, long now) {
@@ -549,14 +565,25 @@ public final class Boss {
                 Net.track(l, mob.getId(), -1, 0, 0, 0, 0);   // 노랑 지우기
                 if (line) Net.telegraph(l, st.pos, st.dir, MobAI.LINE, p.len(), p.w(), dl);
                 else for (Vec3 q : st.rocks.values()) Net.telegraph(l, q, st.dir, p.type().equals("share") ? 40 + MobAI.CIRCLE : MobAI.CIRCLE, p.r(), 0, dl);
-                if (p.type().equals("jump")) {   // 뛰어오름
-                    mob.setDeltaMovement(0, 1.1, 0);
-                    mob.hurtMarked = true;
+                if (p.type().equals("jump")) {   // 포물선: 앞부분은 웅크리고, 마지막 1초 동안 날아가서 예고가 다 찰 때 착지
+                    st.jumpFrom = mob.position();
+                    st.jumpLand = now + dl;
+                    st.jumpStart = st.jumpLand - Math.min(20, dl);
                     l.playSound(null, mob.blockPosition(), SoundEvents.RAVAGER_ROAR, SoundSource.HOSTILE, 1f, 1.4f);
                 }
                 l.playSound(null, mob.blockPosition(), SoundEvents.NOTE_BLOCK_BASS.value(), SoundSource.HOSTILE, 1f, 0.5f);
             }
             return;
+        }
+        if (st.stage == 1 && p.type().equals("jump") && st.jumpFrom != null && !st.rocks.isEmpty() && now >= st.jumpStart && now < st.jumpLand) {
+            Vec3 q = st.rocks.values().iterator().next();
+            double f = Math.min(1, (now + 1 - st.jumpStart) / (double) Math.max(1, st.jumpLand - st.jumpStart));
+            double h = 4 + flat(st.jumpFrom, q) * 0.12;
+            Vec3 next = st.jumpFrom.lerp(q, f).add(0, 4 * h * f * (1 - f), 0);
+            MobAI.gravity(mob, false);
+            mob.setDeltaMovement(next.subtract(mob.position()));
+            mob.hurtMarked = true;
+            if (now == st.jumpStart) l.sendParticles(ParticleTypes.CLOUD, mob.getX(), mob.getY() + 0.2, mob.getZ(), 12, 1, 0.1, 1, 0.05);
         }
         if (p.type().equals("counter") && st.stage == 1) {   // 카운터: 창 안에 충분히 맞으면 성공
             int people = 0;
@@ -623,6 +650,8 @@ public final class Boss {
     }
 
     static void finish(Mob mob, State st, Def def, long now) {
+        MobAI.gravity(mob, true);
+        st.jumpFrom = null;
         if (st.cur != null && st.stage == 0) Net.track((ServerLevel) mob.level(), mob.getId(), -1, 0, 0, 0, 0);
         if (st.cur != null && st.cur == def.melee()) {   // 기본 공격은 패턴 대기 시간을 안 늘림
             st.cur = null;
@@ -681,7 +710,7 @@ public final class Boss {
             case "fang" -> BossX.cone(mob, m, st, l, p, c, dir);
             case "web" -> {
                 for (Vec3 q : st.rocks.values()) {
-                    l.sendParticles(ParticleTypes.ITEM_SNOWBALL, q.x, q.y + 0.6, q.z, 30, p.r() / 2, 0.3, p.r() / 2, 0.05);
+                    l.sendParticles(p.x("cocoon", 0) > 0 ? ParticleTypes.ITEM_SNOWBALL : ParticleTypes.SPORE_BLOSSOM_AIR, q.x, q.y + 0.6, q.z, 30, p.r() / 2, 0.3, p.r() / 2, 0.05);
                     for (ServerPlayer pl : arena(l, st, 4)) {
                         if (!valid(pl) || flat(pl.position(), q) > p.r() + PAD || Math.abs(pl.getY() - q.y) > HEIGHT) continue;
                         hit(mob, m, st, l, pl, p);
@@ -746,7 +775,9 @@ public final class Boss {
             }
             case "jump" -> {
                 Vec3 q = st.rocks.isEmpty() ? c : st.rocks.values().iterator().next();
-                mob.teleportTo(q.x, q.y, q.z);
+                MobAI.gravity(mob, true);
+                st.jumpFrom = null;
+                mob.teleportTo(q.x, q.y, q.z);   // 거의 다 와 있음 (마지막 보정)
                 mob.setDeltaMovement(Vec3.ZERO);
                 l.sendParticles(ParticleTypes.EXPLOSION, q.x, q.y + 0.2, q.z, 6, p.r() / 3, 0.1, p.r() / 3, 0);
                 l.playSound(null, mob.blockPosition(), SoundEvents.GENERIC_EXPLODE, SoundSource.HOSTILE, 1.2f, 0.6f);
@@ -897,6 +928,7 @@ public final class Boss {
 
     /** 패턴 피해 + 쓰러지면 경기장에 알림 */
     static void hit(Mob mob, MobData m, State st, ServerLevel l, ServerPlayer p, Pattern pt) {
+        if (pt != DEFS.get(m.key).melee()) p.displayClientMessage(Component.literal("◆ " + pt.name() + "에 맞음").withStyle(ChatFormatting.GRAY), true);   // 뭐에 맞았는지
         if (pt.x("maxPct", 0) > 0) CombatEvents.maxHpHit(mob, p, pt.x("maxPct", 0));   // 최대 HP 비율
         else CombatEvents.mobSkillHit(mob, p, pt.pct());
         if (pt.x("poison", 0) > 0) BossX.poison(p, pt.x("poison", 0), l.getGameTime());   // 독 (초)

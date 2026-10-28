@@ -104,6 +104,10 @@ public final class MobAI {
         if (def.look().baby() && mob instanceof AgeableMob am && mob.tickCount % 200 == 0) am.setAge(-24000);
         applySlow(mob, m, now);
         if (Boss.isBoss(m)) { Boss.tick(mob, m, def); return; }   // 보스는 따로
+        if (m.leapFrom == null ? mob.getPersistentData().getBoolean(LEAP_TAG) : m.casting < 0 || m.returning) {
+            gravity(mob, true);   // 도약이 끊겼거나 저장된 채로 다시 불러옴 → 중력 복구
+            m.leapFrom = null;
+        }
         if (m.returning) return;   // 사냥터로 돌아가는 중 (ZoneLeash)
 
         if (m.casting >= 0) {
@@ -117,6 +121,17 @@ public final class MobAI {
             if (now >= m.castEnd) {
                 m.casting = -1;
                 execute(mob, m, sk);
+            } else if ("leap".equals(sk.type()) && now >= m.leapStart && m.castPos != null) {   // 도약: 포물선으로 실제 이동 (벽은 통과 못 함)
+                mob.getNavigation().stop();
+                if (m.leapFrom == null) {
+                    m.leapFrom = mob.position();
+                    gravity(mob, false);
+                    mob.level().playSound(null, mob.blockPosition(), SoundEvents.SLIME_JUMP, SoundSource.HOSTILE, 0.8f, 0.8f);
+                }
+                double f = Math.min(1, (now + 1 - m.leapStart) / (double) Math.max(1, m.castEnd - m.leapStart));
+                double h = 1.5 + flat(m.leapFrom, m.castPos) * 0.15;
+                Vec3 next = m.leapFrom.lerp(m.castPos, f).add(0, 4 * h * f * (1 - f), 0);
+                mob.setDeltaMovement(next.subtract(mob.position()));
             } else {   // 예고 중: 제자리
                 mob.getNavigation().stop();
                 Vec3 v = mob.getDeltaMovement();
@@ -242,6 +257,58 @@ public final class MobAI {
         return best;
     }
 
+    public static final String LEAP_TAG = "rpgLeapNoGrav";
+
+    /** 도약·점프 동안만 중력 끔 (태그로 표시 → 끊기거나 재접속해도 복구) */
+    public static void gravity(Mob mob, boolean on) {
+        if (on) {
+            if (!mob.getPersistentData().getBoolean(LEAP_TAG)) return;
+            mob.getPersistentData().remove(LEAP_TAG);
+            mob.setNoGravity(false);
+        } else {
+            mob.getPersistentData().putBoolean(LEAP_TAG, true);
+            mob.setNoGravity(true);
+        }
+    }
+
+    private static double flat(Vec3 a, Vec3 b) { double dx = a.x - b.x, dz = a.z - b.z; return Math.sqrt(dx * dx + dz * dz); }
+
+    /** 두 점 사이 (몸 절반 높이) 막힌 블록 없음 */
+    private static boolean clear(ServerLevel l, Mob mob, Vec3 a, Vec3 b) {
+        double hy = Math.min(1.0, mob.getBbHeight() * 0.5);
+        return l.clip(new net.minecraft.world.level.ClipContext(a.add(0, hy, 0), b.add(0, hy, 0),
+                net.minecraft.world.level.ClipContext.Block.COLLIDER, net.minecraft.world.level.ClipContext.Fluid.NONE, mob))
+                .getType() == net.minecraft.world.phys.HitResult.Type.MISS;
+    }
+
+    /** 도약 착지점: 사냥터 경계 +2칸 안, 벽 앞에서 멈춤, 바닥 위 */
+    private static Vec3 leapSpot(Mob mob, MobData m, Player t) {
+        ServerLevel l = (ServerLevel) mob.level();
+        Vec3 o = mob.position(), to = t.position();
+        if (!m.zone.isEmpty()) {
+            var z = rpg.core.zone.ZoneData.get(l).zones.get(m.zone);
+            if (z != null) {
+                var b = z.box().inflate(2, 0, 2);
+                to = new Vec3(Math.max(b.minX, Math.min(b.maxX, to.x)), to.y, Math.max(b.minZ, Math.min(b.maxZ, to.z)));
+            }
+        }
+        // 뛰어서 넘을 수 있는 높이(몸 절반 + 1.2칸)에서 직선으로 막히면 벽 앞까지만
+        double hy = mob.getBbHeight() * 0.5 + 1.2;
+        var hit = l.clip(new net.minecraft.world.level.ClipContext(o.add(0, hy, 0), to.add(0, hy, 0),
+                net.minecraft.world.level.ClipContext.Block.COLLIDER, net.minecraft.world.level.ClipContext.Fluid.NONE, mob));
+        if (hit.getType() != net.minecraft.world.phys.HitResult.Type.MISS) {
+            Vec3 d = new Vec3(to.x - o.x, 0, to.z - o.z);
+            double len = d.length(), reach = Math.max(0, flat(o, hit.getLocation()) - mob.getBbWidth() / 2 - 0.4);
+            to = len < 1e-3 ? o : o.add(d.scale(Math.min(1, reach / len)));
+            to = new Vec3(to.x, Math.max(o.y, t.getY()), to.z);
+        }
+        // 바닥 찾기 (공중이면 아래로)
+        var g = l.clip(new net.minecraft.world.level.ClipContext(to.add(0, 1.5, 0), to.add(0, -8, 0),
+                net.minecraft.world.level.ClipContext.Block.COLLIDER, net.minecraft.world.level.ClipContext.Fluid.NONE, mob));
+        if (g.getType() != net.minecraft.world.phys.HitResult.Type.MISS) to = new Vec3(to.x, g.getLocation().y, to.z);
+        return to;
+    }
+
     // ───────── 예고 시작 ─────────
     private static void start(Mob mob, MobData m, Balance.MobSkill sk, int idx, Player t, long now) {
         int delay = (int) Math.max(4, Math.round(sk.delay() * 20));
@@ -254,7 +321,8 @@ public final class MobAI {
         int shape;
         double a, b;
         switch (sk.type()) {
-            case "leap", "zone" -> { m.castPos = t.position(); shape = CIRCLE; a = sk.r(); b = 0; }
+            case "leap" -> { m.castPos = leapSpot(mob, m, t); m.leapFrom = null; m.leapStart = m.castEnd - Math.min(12, delay); shape = CIRCLE; a = sk.r(); b = 0; }
+            case "zone" -> { m.castPos = t.position(); shape = CIRCLE; a = sk.r(); b = 0; }
             case "dash", "shot" -> { m.castPos = mob.position(); shape = LINE; a = sk.len(); b = sk.w(); }
             case "cone" -> { m.castPos = mob.position(); shape = CONE; a = sk.r(); b = sk.angle(); }
             default -> { m.castPos = mob.position(); shape = CIRCLE; a = sk.r(); b = 0; }   // slam
@@ -282,7 +350,11 @@ public final class MobAI {
         double pct = sk.pct() * hits;
         switch (sk.type()) {
             case "leap" -> {
-                mob.teleportTo(p0.x, p0.y, p0.z);
+                gravity(mob, true);
+                m.leapFrom = null;
+                // 거의 다 와 있으면 마지막만 맞춰줌 (사이에 벽 있으면 안 맞춤 → 벽 안 뚫음)
+                if (flat(mob.position(), p0) < 2 && clear(l, mob, mob.position(), p0)) mob.teleportTo(p0.x, p0.y, p0.z);
+                mob.setDeltaMovement(0, Math.min(0, mob.getDeltaMovement().y), 0);
                 l.sendParticles(ParticleTypes.EXPLOSION, p0.x, p0.y + 0.2, p0.z, 2, sk.r() / 3, 0.1, sk.r() / 3, 0);
                 l.playSound(null, mob.blockPosition(), SoundEvents.GENERIC_EXPLODE, SoundSource.HOSTILE, 0.5f, 1.4f);
                 hitCircle(mob, p0, sk.r(), pct, sk.effect());

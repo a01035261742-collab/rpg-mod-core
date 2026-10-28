@@ -29,6 +29,8 @@ public class MobData {
     public transient long castEnd;
     public transient boolean castAnim;          // 패턴 애니메이션 시작했는지
     public transient net.minecraft.world.phys.Vec3 castPos, castDir;
+    public transient net.minecraft.world.phys.Vec3 leapFrom;   // 도약 포물선 시작점 (null = 안 뛰는 중)
+    public transient long leapStart;
     public transient int hitsLeft;
     // 경직 (저장 안 함)
     public transient long stunUntil;            // 이 시각까지 경직

@@ -1610,8 +1610,8 @@
    }
   },
   "boss": {
-   "_설명": "보스. arena = 경기장 반경, respawnSec 처치 후 재등장, resetSec 아무도 없으면 초기화, phase2 = HP % 이하 2페이즈, wait1/wait2 = 패턴 사이 대기(초) 범위, 레벨 낮으면 1레벨당 penaltyPerLevel% 감소 (최대 maxPenalty%). 패턴 type: cone(r·angle) slam(r) charge(len·w, track 추적초, repeat2 = 2페이즈 연속 횟수) rocks(r, 모든 플레이어 발밑 추적) roar(r, push 칸, 피해 없음). delay = 빨강 확정 후 발동까지 초, pct = 공격력 %, phase = 이 페이즈부터. 보상: 경험치·골드(levels)는 피해 비율로 나눔, 드롭 세트를 참여 인원수만큼 (sure 확정 · mats [몹, 굴림 횟수] · fragments 주문서 조각 · scrollChance% 주문서 · ring 장신구 ringChance%, 확률은 참여자 최고 드롭률 보너스 적용) melee = 패턴 사이 기본 근접 공격 (보스 중심에서 r칸 안에 대상이 있으면, cd초마다, 부채꼴)",
-   "arena": 32,
+   "_설명": "보스. arena = 경기장 반경, respawnSec 처치 후 재등장, resetSec 아무도 없으면 초기화, phase2 = HP % 이하 2페이즈, wait1/wait2 = 패턴 사이 대기(초) 범위, 레벨 낮으면 1레벨당 penaltyPerLevel% 감소 (최대 maxPenalty%). 패턴 type: cone(r·angle) slam(r) charge(len·w, track 추적초, repeat2 = 2페이즈 연속 횟수) rocks(r, 모든 플레이어 발밑 추적) roar(r, push 칸, 피해 없음). delay = 빨강 확정 후 발동까지 초, pct = 공격력 %, phase = 이 페이즈부터. 보상: 경험치·골드(levels)는 피해 비율로 나눔, 드롭 세트를 참여 인원수만큼 (sure 확정 · mats [몹, 굴림 횟수] · fragments 주문서 조각 · scrollChance% 주문서 · ring 장신구 ringChance%, 확률은 참여자 최고 드롭률 보너스 적용) melee = 패턴 사이 기본 근접 공격 (보스 중심에서 r칸 안에 대상이 있으면, cd초마다, 부채꼴) barrage(가장 먼 사람 발밑에 interval초마다 count개 원). far 1 = 가장 먼 사람 노림, ranged 1 = 누가 멀리(farDist칸, 기본 10) 떨어져 있으면 먼저 뽑힘 (원거리 견제)",
+   "arena": 36,
    "respawnSec": 1800,
    "resetSec": 30,
    "phase2": 50,
@@ -1639,8 +1639,8 @@
      "id": "slam",
      "name": "내려찍기",
      "type": "slam",
-     "r": 6,
-     "delay": 1.6,
+     "r": 8,
+     "delay": 2.4,
      "pct": 220
     },
     {
@@ -1650,25 +1650,40 @@
      "len": 16,
      "w": 5,
      "track": 1.5,
-     "delay": 1.0,
+     "delay": 1.6,
      "pct": 200,
-     "repeat2": 3
+     "repeat2": 3,
+     "far": 1,
+     "ranged": 1
     },
     {
      "id": "rocks",
      "name": "바위 던지기",
      "type": "rocks",
-     "r": 3,
+     "r": 4,
      "track": 1.5,
-     "delay": 1.5,
-     "pct": 150
+     "delay": 2.0,
+     "pct": 150,
+     "ranged": 1
+    },
+    {
+     "id": "barrage",
+     "name": "바위 연타",
+     "type": "barrage",
+     "r": 3.5,
+     "count": 3,
+     "interval": 0.8,
+     "delay": 1.6,
+     "pct": 120,
+     "far": 1,
+     "ranged": 1
     },
     {
      "id": "roar",
      "name": "포효",
      "type": "roar",
-     "r": 20,
-     "delay": 2.0,
+     "r": 22,
+     "delay": 3.0,
      "push": 8,
      "phase": 2
     }
@@ -1772,7 +1787,7 @@
   },
   "boss": {
    "_설명": "거대버섯 수호자. 패턴 type 추가: combo(hits·hits2 연속, delay2 다음 타 예고, altChance% 확률로 마지막 타가 altR 원) · delayed(대상 추적 원 → 빨강 → hold초 멈췄다 폭발) · jump(대상 추적 원 → 뛰어서 착지, repeat2 = 2페이즈 연속, 착지 원 안 단단한 버섯 → 기절 propStun초) · counter(파란 원 window초, 그 안에 최대 HP need% 피해 → 기절 stun초 + 받는 피해 counterVuln%, 실패 → 폭발) · beam(대상 추적 선 → 빨강 → 발사, count발, maxPct = 최대 HP 비율 피해). gimmick: props 단단한 버섯 최대 개수 · propEvery초마다 · 중앙에서 propMin~propMax칸 · pillar 기둥 몹 키 · pillarAt HP% · pillarCount · pillarDist · pillarReduce% 받는 피해 감소 counter needPer = 경기장 인원 1명당 최대 HP %",
-   "arena": 32,
+   "arena": 36,
    "respawnSec": 1800,
    "resetSec": 30,
    "phase2": 50,
@@ -1811,16 +1826,16 @@
      "hits": 3,
      "hits2": 4,
      "altChance": 50,
-     "altR": 6,
+     "altR": 7,
      "pct": 160
     },
     {
      "id": "delayed",
      "name": "지연 내려찍기",
      "type": "delayed",
-     "r": 6,
+     "r": 8,
      "track": 1.2,
-     "delay": 1.5,
+     "delay": 2.2,
      "hold": 0.6,
      "pct": 220
     },
@@ -1828,17 +1843,33 @@
      "id": "jump",
      "name": "점프 압착",
      "type": "jump",
-     "r": 7,
+     "r": 9,
      "track": 2.0,
-     "delay": 1.2,
+     "delay": 2.0,
      "pct": 220,
-     "repeat2": 2
+     "repeat2": 2,
+     "far": 1,
+     "ranged": 1
+    },
+    {
+     "id": "spore_shot",
+     "name": "포자탄",
+     "type": "web",
+     "r": 4,
+     "track": 1.5,
+     "delay": 2.0,
+     "pct": 150,
+     "cocoon": 0,
+     "targets": 2,
+     "poison": 3,
+     "far": 1,
+     "ranged": 1
     },
     {
      "id": "counter",
      "name": "기 모으기",
      "type": "counter",
-     "r": 10,
+     "r": 11,
      "window": 5.0,
      "stun": 5,
      "pct": 250,
@@ -1851,11 +1882,13 @@
      "len": 40,
      "w": 3,
      "track": 0.8,
-     "delay": 1.0,
+     "delay": 1.6,
      "count": 4,
      "maxPct": 25,
      "pct": 0,
-     "phase": 2
+     "phase": 2,
+     "far": 1,
+     "ranged": 1
     }
    ],
    "reward": {
@@ -1971,8 +2004,8 @@
    }
   },
   "boss": {
-   "_설명": "레이드 보스 어둠거미여왕. only = 그 페이즈에서만 나오는 패턴 (2페이즈는 패턴 묶음이 바뀜). 새 type: fang(부채꼴, 2페이즈 hits2번 반대 방향, poison초 독) · web(추적 원 → 맞으면 cocoon초 고치, 2페이즈 targets2명) · eggs(count개 알, hatch초 뒤 부화 → 새끼 hatchCount마리) · pull(중앙으로 끌어당김 pull 세기, 끝날 때 r칸 안 maxPct%) · lanes(줄 3개 중 2개, pct) · absorb(count개 알, absorbSec초 뒤 남은 알 1개당 absorbHeal% 회복) · mark(모두 추적 원 → 각자 폭발, 겹치면 ×2) · share(한 명 보라 원 → 원 안 인원수로 maxPct% 나눔) · collapse(4등분 순서대로 delay초씩, 독 늪 linger초) · frenzy(독니 hits번 → 경기장 전체, 여왕 주변 safeR칸만 안전, finalPct%). gimmick: poisonPct 독 1초당 최대 HP %, zonePct 독 늪 0.5초당 최대 HP %, hatchCount, absorbHeal. 레이드 인원수만큼 체력 배수 (알도)",
-   "arena": 24,
+   "_설명": "레이드 보스 어둠거미여왕. only = 그 페이즈에서만 나오는 패턴 (2페이즈는 패턴 묶음이 바뀜). 새 type: fang(부채꼴, 2페이즈 hits2번 반대 방향, poison초 독) · web(추적 원 → 맞으면 cocoon초 고치, 2페이즈 targets2명) · eggs(count개 알, hatch초 뒤 부화 → 새끼 hatchCount마리) · pull(중앙으로 끌어당김 pull 세기, 끝날 때 r칸 안 maxPct%) · lanes(줄 3개 중 2개, pct) · absorb(count개 알, absorbSec초 뒤 남은 알 1개당 absorbHeal% 회복) · mark(모두 추적 원 → 각자 폭발, 겹치면 ×2) · share(한 명 보라 원 → 원 안 인원수로 maxPct% 나눔) · collapse(4등분 순서대로 delay초씩, 독 늪 linger초) · frenzy(독니 hits번 → 경기장 전체, 여왕 주변 safeR칸만 안전, finalPct%). gimmick: poisonPct 독 1초당 최대 HP %, zonePct 독 늪 0.5초당 최대 HP %, hatchCount, absorbHeal. 레이드 인원수만큼 체력 배수 (알도) volley(가장 먼 사람 쪽 직선 lines개, spread도씩 벌어짐, len·w)",
+   "arena": 28,
    "respawnSec": 600,
    "resetSec": 60,
    "phase2": 50,
@@ -2010,12 +2043,14 @@
      "id": "web",
      "name": "거미줄 발사",
      "type": "web",
-     "r": 2.5,
+     "r": 3.5,
      "track": 1.5,
-     "delay": 1.4,
+     "delay": 2.0,
      "pct": 100,
      "cocoon": 4,
-     "only": 1
+     "only": 1,
+     "far": 1,
+     "ranged": 1
     },
     {
      "id": "eggs",
@@ -2029,17 +2064,19 @@
      "id": "leap",
      "name": "도약",
      "type": "jump",
-     "r": 6,
+     "r": 8,
      "track": 1.5,
-     "delay": 1.6,
+     "delay": 2.4,
      "pct": 250,
-     "only": 1
+     "only": 1,
+     "far": 1,
+     "ranged": 1
     },
     {
      "id": "pull",
      "name": "실 당기기",
      "type": "pull",
-     "r": 8,
+     "r": 9,
      "delay": 4,
      "maxPct": 70,
      "pull": 0.07,
@@ -2049,7 +2086,7 @@
      "id": "lanes",
      "name": "새끼 거미 떼 돌진",
      "type": "lanes",
-     "delay": 2.9,
+     "delay": 3.5,
      "pct": 200,
      "only": 1
     },
@@ -2070,12 +2107,29 @@
      "id": "web2",
      "name": "거미줄 발사",
      "type": "web",
-     "r": 2.5,
+     "r": 3.5,
      "track": 1.5,
-     "delay": 1.4,
+     "delay": 2.0,
      "pct": 100,
      "cocoon": 4,
      "targets2": 2,
+     "only": 2,
+     "far": 1,
+     "ranged": 1
+    },
+    {
+     "id": "needle",
+     "name": "독침 사격",
+     "type": "volley",
+     "len": 22,
+     "w": 2.5,
+     "spread": 20,
+     "lines": 3,
+     "delay": 2.0,
+     "pct": 130,
+     "poison": 3,
+     "far": 1,
+     "ranged": 1,
      "only": 2
     },
     {
@@ -2090,9 +2144,9 @@
      "id": "mark",
      "name": "독 표식",
      "type": "mark",
-     "r": 5,
+     "r": 6,
      "track": 2.0,
-     "delay": 1.4,
+     "delay": 2.2,
      "pct": 150,
      "poison": 3,
      "only": 2
@@ -2101,9 +2155,9 @@
      "id": "share",
      "name": "먹잇감",
      "type": "share",
-     "r": 5,
+     "r": 6,
      "track": 2.5,
-     "delay": 1.4,
+     "delay": 2.4,
      "maxPct": 90,
      "only": 2,
      "maxPctSolo": 50
@@ -2112,7 +2166,7 @@
      "id": "collapse",
      "name": "둥지 붕괴",
      "type": "collapse",
-     "delay": 1.9,
+     "delay": 2.4,
      "linger": 3,
      "pct": 150,
      "only": 2
@@ -2126,8 +2180,8 @@
      "pct": 200,
      "hits": 3,
      "fangDelay": 1.2,
-     "finalDelay": 2.4,
-     "safeR": 6,
+     "finalDelay": 3.5,
+     "safeR": 7,
      "finalPct": 300,
      "only": 2
     }
