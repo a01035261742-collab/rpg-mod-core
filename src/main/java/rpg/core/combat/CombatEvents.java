@@ -148,6 +148,19 @@ public final class CombatEvents {
         FIXED.remove(t.getId());
     }
 
+    /** 화살 하나는 같은 대상을 한 번만 (꿰뚫기로 관통이 붙으면 큰 보스 몸에 두 번 맞던 것 막음) */
+    @SubscribeEvent(priority = net.minecraftforge.eventbus.api.EventPriority.HIGH)
+    public static void arrowOncePerTarget(net.minecraftforge.event.entity.living.LivingAttackEvent e) {
+        if (e.getEntity().level().isClientSide || !(e.getSource().getDirectEntity() instanceof net.minecraft.world.entity.projectile.AbstractArrow a)) return;
+        var tag = a.getPersistentData();
+        int[] hit = tag.getIntArray("rpgHitIds");
+        int id = e.getEntity().getId();
+        for (int h : hit) if (h == id) { e.setCanceled(true); return; }
+        int[] more = java.util.Arrays.copyOf(hit, hit.length + 1);
+        more[hit.length] = id;
+        tag.putIntArray("rpgHitIds", more);
+    }
+
     /** 스킬 화살은 연속으로 맞아도 다 들어가게 */
     @SubscribeEvent
     public static void skillArrowIframes(net.minecraftforge.event.entity.living.LivingAttackEvent e) {
