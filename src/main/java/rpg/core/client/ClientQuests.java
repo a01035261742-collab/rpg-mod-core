@@ -46,13 +46,12 @@ public final class ClientQuests {
         return true;
     }
 
-    /** 우상단에 띄울 퀘스트 (최대 3): 목표 다 채운 것 먼저 (자동) → 고정한 것 → 고정이 하나도 없으면 받은 순서 */
+    /** 우상단에 띄울 퀘스트: 목표 다 채운 것 (자동) + 고정한 것. 고정 안 한 진행 중 퀘스트는 안 보임 */
     public static List<Quests.Quest> tracked() {
         loadPins();
         List<Quests.Quest> all = active(), out = new java.util.ArrayList<>();
         for (Quests.Quest q : all) if (complete(q)) out.add(q);
-        boolean anyPin = all.stream().anyMatch(q -> PINS.contains(q.id()));
-        for (Quests.Quest q : all) if (!out.contains(q) && (anyPin ? PINS.contains(q.id()) : true)) out.add(q);
+        for (Quests.Quest q : all) if (!out.contains(q) && PINS.contains(q.id())) out.add(q);   // 고정 안 한 건 안 보임
         return out;
     }
 
