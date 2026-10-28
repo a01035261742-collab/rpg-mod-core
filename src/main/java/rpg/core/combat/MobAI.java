@@ -104,6 +104,7 @@ public final class MobAI {
         if (def.look().baby() && mob instanceof AgeableMob am && mob.tickCount % 200 == 0) am.setAge(-24000);
         applySlow(mob, m, now);
         if (Boss.isBoss(m)) { Boss.tick(mob, m, def); return; }   // 보스는 따로
+        if (m.returning) return;   // 사냥터로 돌아가는 중 (ZoneLeash)
 
         if (m.casting >= 0) {
             if (m.casting >= def.skills().size()) { m.casting = -1; return; }

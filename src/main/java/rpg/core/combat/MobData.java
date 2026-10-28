@@ -15,6 +15,8 @@ public class MobData {
     public String key = "";      // mobs.json 의 키
     public String name = "";
     public String zone = "";     // 소속 사냥터 이름
+    public transient boolean returning;   // 구역으로 돌아가는 중 (무적 · 안 노림)
+    public transient long returnSince;
     public int level;
     public double hp, maxHp, atk;
     public long exp, gold;

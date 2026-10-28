@@ -21,6 +21,8 @@ public class QuestScreen extends Screen {
     private static final String[] TABS = {"진행 중", "받을 수 있음", "완료"};
     private int x, y, tab, scroll;
     private String sel;
+    private net.minecraft.client.gui.components.Button pin;
+    private long pinFullUntil;
     private Button abandon;
     private long confirmUntil;
 
@@ -63,6 +65,10 @@ public class QuestScreen extends Screen {
                 confirmUntil = 0;
             } else confirmUntil = now + 3000;
         }).bounds(x + W - 104, y + H - Ui.FOOT, 48, Ui.BTN_H).build());
+        pin = addRenderableWidget(Ui.button(Component.literal("고정"), b -> {
+            if (sel == null) return;
+            if (!ClientQuests.togglePin(sel)) pinFullUntil = System.currentTimeMillis() + 2000;
+        }).bounds(x + W - 166, y + H - Ui.FOOT, 58, Ui.BTN_H).build());
         addRenderableWidget(Ui.menu(x, y, H));
         addRenderableWidget(Ui.close(x, y, W, H, this::onClose));
     }
@@ -86,13 +92,15 @@ public class QuestScreen extends Screen {
             boolean hover = mx >= x + 6 && mx < x + 6 + LW && my >= ry && my < ry + ROW;
             if (q.id().equals(sel)) g.fill(x + 6, ry, x + 6 + LW, ry + ROW, 0x60FFE070);
             else if (hover) g.fill(x + 6, ry, x + 6 + LW, ry + ROW, 0x30FFFFFF);
-            String mark = tab == 0 ? (ClientQuests.complete(q) ? "§a✔ " : "§7· ") : tab == 1 ? "§e! " : "§8✔ ";
+            String mark = tab == 0 ? (ClientQuests.complete(q) ? "§a✔ " : ClientQuests.pinned(q.id()) ? "§e◆ " : "§7· ") : tab == 1 ? "§e! " : "§8✔ ";
             String nm = mark + "§fLv." + q.minLevel() + " " + q.name();
             g.drawString(font, Ui.cut(font, nm, LW - 6), x + 9, ry + 3, 0xFFFFFFFF, false);
         }
         if (l.isEmpty()) g.drawString(font, tab == 1 ? "받을 수 있는 퀘스트 없음" : "없음", x + 10, ly + 2, 0xFF808080, false);
 
         abandon.visible = tab == 0 && sel != null;
+        pin.visible = tab == 0 && sel != null;
+        if (sel != null) pin.setMessage(Component.literal(System.currentTimeMillis() < pinFullUntil ? "§c최대 3개" : ClientQuests.pinned(sel) ? "§e고정 풀기" : "고정"));
         abandon.setMessage(Component.literal(System.currentTimeMillis() < confirmUntil ? "§c정말?" : "포기"));
 
         Quests.Quest q = sel == null ? null : Quests.QUESTS.get(sel);

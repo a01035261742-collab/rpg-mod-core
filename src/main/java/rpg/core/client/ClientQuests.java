@@ -23,6 +23,39 @@ public final class ClientQuests {
     public record Pt(String dim, net.minecraft.core.BlockPos pos) {}
     public static final Map<String, Pt> POINTS = new LinkedHashMap<>();
 
+    // ───────── 우상단 고정 (내 PC 에 저장: config/rpgcore_quest_pins.txt) ─────────
+    public static final java.util.LinkedHashSet<String> PINS = new java.util.LinkedHashSet<>();
+    private static boolean pinsLoaded;
+    private static java.nio.file.Path pinFile() { return net.minecraftforge.fml.loading.FMLPaths.CONFIGDIR.get().resolve("rpgcore_quest_pins.txt"); }
+    private static void loadPins() {
+        if (pinsLoaded) return;
+        pinsLoaded = true;
+        try { for (String l : java.nio.file.Files.readAllLines(pinFile())) if (!l.isBlank()) PINS.add(l.trim()); } catch (Exception ignored) {}
+    }
+    public static boolean pinned(String id) { loadPins(); return PINS.contains(id); }
+    /** 고정 바꾸기 (최대 3개). 꽉 차 있으면 false */
+    public static boolean togglePin(String id) {
+        loadPins();
+        if (PINS.contains(id)) PINS.remove(id);
+        else {
+            PINS.removeIf(x -> !ACTIVE.containsKey(x));   // 끝난·포기한 퀘스트는 정리
+            if (PINS.size() >= 3) return false;
+            PINS.add(id);
+        }
+        try { java.nio.file.Files.write(pinFile(), PINS); } catch (Exception ignored) {}
+        return true;
+    }
+
+    /** 우상단에 띄울 퀘스트 (최대 3): 목표 다 채운 것 먼저 (자동) → 고정한 것 → 고정이 하나도 없으면 받은 순서 */
+    public static List<Quests.Quest> tracked() {
+        loadPins();
+        List<Quests.Quest> all = active(), out = new java.util.ArrayList<>();
+        for (Quests.Quest q : all) if (complete(q)) out.add(q);
+        boolean anyPin = all.stream().anyMatch(q -> PINS.contains(q.id()));
+        for (Quests.Quest q : all) if (!out.contains(q) && (anyPin ? PINS.contains(q.id()) : true)) out.add(q);
+        return out;
+    }
+
     public static void setPoints(Map<String, String> raw) {
         POINTS.clear();
         raw.forEach((k, v) -> {

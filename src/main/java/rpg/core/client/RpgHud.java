@@ -247,7 +247,7 @@ public final class RpgHud {
     /** 오른쪽: 진행 중 퀘스트 목표 (최대 3개) */
     private static void questTracker(GuiGraphics g, Font font, int w, int h) {
         if (Minecraft.getInstance().screen != null) return;
-        var list = ClientQuests.active();
+        var list = ClientQuests.tracked();   // 끝난 것 자동 → 고정한 것 (J창 [고정])
         if (list.isEmpty()) return;
         // 줄 모으기 (글자, 색, 제목 여부) → 배경 판 크기 계산 → 그리기
         java.util.List<Object[]> lines = new java.util.ArrayList<>();
@@ -267,7 +267,8 @@ public final class RpgHud {
             }
             shown++;
         }
-        if (list.size() > 3) lines.add(new Object[]{"+" + (list.size() - 3) + "개 더 (J)", 0xFF909090, false});
+        int more = ClientQuests.active().size() - shown;
+        if (more > 0) lines.add(new Object[]{"+" + more + "개 더 (J에서 고정)", 0xFF909090, false});
         int width = font.width("퀘스트");
         for (Object[] l : lines) width = Math.max(width, font.width((String) l[0]) + ((boolean) l[2] ? 0 : 6));
         int pad = 6, right = w - 4, x0 = right - width - pad * 2, y = topY + 4;
