@@ -447,7 +447,7 @@ public final class CombatEvents {
         if (mob.getPersistentData().getBoolean("rpgPillar")) return;   // 보스 기둥: 보상 없음   // 보스: 기여도 분배 · 드롭 세트
         // 연속 처치 콤보 (골드 주는 몹만, 보스방 밖에서만): 10초 안에 다음 처치
         long now = killer.level().getGameTime();
-        if (m.gold > 0 && !Boss.inArena(killer)) {
+        if (m.gold > 0 && !Boss.inArena(killer) && m.level >= d.level - 5) {   // 내 레벨 -5 이상 몹만 콤보
             d.killCombo = now < d.killComboUntil ? d.killCombo + 1 : 1;
             d.killComboUntil = now + 200;
             if (d.killCombo >= 10 && d.killCombo % 10 == 0)

@@ -44,6 +44,7 @@ public final class JobSkills {
     /** 스킬 효과 실행. false = 안 씀 (MP·쿨 안 깎음) */
     public static boolean use(ServerPlayer p, PlayerData d, Defs.SkillDef s, int lv, long now) {
         return switch (s.id()) {
+            case "power_strike" -> { releaseCharge(p, d, s, lv, 0); yield true; }   // 강타: 모으기 없이 바로
             case "iron_body" -> {
                 WarriorSkills.burst(p, ParticleTypes.CRIT, SoundEvents.ARMOR_EQUIP_IRON, 0.7f);
                 yield buff(p, d, s, lv, now, ParticleTypes.CRIT, SoundEvents.ANVIL_PLACE);

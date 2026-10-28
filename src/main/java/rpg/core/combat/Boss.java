@@ -144,6 +144,7 @@ public final class Boss {
         List<String> deck = new ArrayList<>();
         String last = "";
         long nextAt;
+        int seen = 1;          // 필드 보스: 싸움에 들어온 최대 인원 (체력 배수)
         int done;             // 끝낸 패턴 수 (정기 휴식용)
         Pattern cur;
         int stage;            // 0 추적 · 1 확정 · 2 돌진 중
@@ -240,6 +241,16 @@ public final class Boss {
             return;
         }
         st.emptySince = -1;
+
+        // 필드 보스: 싸우는 사람이 늘면 1명당 체력 +70% (최대 4명, 레이드는 입장 때 따로)
+        if (mob.getPersistentData().getString("rpgRaid").isEmpty() && fighters.size() > st.seen && st.seen < 4) {
+            int n = Math.min(4, fighters.size());
+            double base = m.maxHp / (1 + 0.7 * (st.seen - 1)), add = base * 0.7 * (n - st.seen);
+            m.maxHp += add; m.hp += add; st.seen = n;
+            Mobs.sync(mob);
+            for (ServerPlayer x : arena(l, st, 16))
+                x.displayClientMessage(Component.literal(m.name + " 체력 증가 (" + n + "명)").withStyle(ChatFormatting.GOLD), true);
+        }
 
         // 2페이즈
         if (st.phase == 1 && m.hp <= m.maxHp * def.phase2() / 100.0) {
@@ -687,7 +698,10 @@ public final class Boss {
                         for (var re : st.rocks.entrySet()) if (re.getValue() == q && l.getPlayerByUUID(re.getKey()) instanceof ServerPlayer tp && valid(tp)) in.add(tp);
                     l.sendParticles(ParticleTypes.DRAGON_BREATH, q.x, q.y + 0.5, q.z, 60, p.r() / 2, 0.3, p.r() / 2, 0.02);
                     l.playSound(null, BlockPos.containing(q), SoundEvents.GENERIC_EXPLODE, SoundSource.HOSTILE, 1.2f, 0.7f);
-                    for (ServerPlayer pl : in) CombatEvents.maxHpHit(mob, pl, p.x("maxPct", 90) / Math.max(1, in.size()));
+                    int alone = 0;
+                    for (ServerPlayer x : arena(l, st, 0)) if (valid(x)) alone++;
+                    double total = alone <= 1 ? p.x("maxPctSolo", p.x("maxPct", 90)) : p.x("maxPct", 90);   // 혼자 싸우면 약하게
+                    for (ServerPlayer pl : in) CombatEvents.maxHpHit(mob, pl, total / Math.max(1, in.size()));
                     for (ServerPlayer x : arena(l, st, 16))
                         x.displayClientMessage(Component.literal(p.name() + ": " + in.size() + "명이 나눠 맞음").withStyle(ChatFormatting.LIGHT_PURPLE), true);
                 }
@@ -905,6 +919,7 @@ public final class Boss {
     private static void reset(Mob mob, MobData m, State st) {
         clearGimmicks((ServerLevel) mob.level(), st);
         mob.setGlowingTag(false);
+        if (st.seen > 1) { m.maxHp = m.maxHp / (1 + 0.7 * (st.seen - 1)); st.seen = 1; }   // 인원 배수 원래대로
         m.hp = m.maxHp;
         mob.setHealth(mob.getMaxHealth());
         st.phase = 1;
@@ -943,7 +958,7 @@ public final class Boss {
     // ───────── 처치 ─────────
     /** 참여 기준 (보스 최대 체력 비율), 보물·골드 제한 레벨 차이 */
     public static final double PART_MIN = 0.05;
-    public static final int OVER_LEVEL = 15;
+    public static final int OVER_LEVEL = 8;
 
     public static void onDeath(Mob mob, MobData m, ServerPlayer killer) {
         Def def = DEFS.get(m.key);
