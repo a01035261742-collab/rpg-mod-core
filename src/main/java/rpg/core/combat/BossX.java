@@ -304,8 +304,8 @@ final class BossX {
                 // 공중에선 마찰이 없어서 확 끌려옴 → 공중일 땐 30%만, 그리고 끌리는 속도 상한
                 double f = p.x("pull", 0.07) * (pl.onGround() ? 1.0 : 0.3);
                 Vec3 d = to.normalize().scale(f);
-                Vec3 v = pl.getDeltaMovement();
-                double along = v.x * to.normalize().x + v.z * to.normalize().z;   // 이미 중앙 쪽으로 가는 속도
+                Vec3 pv = pl.getDeltaMovement();
+                double along = pv.x * to.normalize().x + pv.z * to.normalize().z;   // 이미 중앙 쪽으로 가는 속도
                 if (along < 0.25) { pl.push(d.x, 0, d.z); pl.hurtMarked = true; }
             }
             if (now % 5 == 0) l.sendParticles(ParticleTypes.ITEM_SNOWBALL, st.pos.x, st.pos.y + 1, st.pos.z, 10, p.r() / 2, 0.5, p.r() / 2, 0.1);
