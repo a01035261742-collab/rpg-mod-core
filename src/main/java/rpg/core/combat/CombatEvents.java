@@ -148,13 +148,20 @@ public final class CombatEvents {
         FIXED.remove(t.getId());
     }
 
-    /** 화살 하나는 같은 대상을 한 번만 (꿰뚫기로 관통이 붙으면 큰 보스 몸에 두 번 맞던 것 막음) */
+    /**
+     * 화살 충돌 전에 거름 (공격 취소로 막으면 화살이 튕겨 나와 쏜 사람이 맞음 → 충돌 자체를 없애서 그냥 지나가게):
+     * - 플레이어가 쏜 화살은 플레이어(나·파티원)를 그냥 지나감
+     * - 화살 하나는 같은 대상을 한 번만 (꿰뚫기로 관통이 붙으면 큰 보스 몸에 두 번 맞던 것)
+     */
     @SubscribeEvent(priority = net.minecraftforge.eventbus.api.EventPriority.HIGH)
-    public static void arrowOncePerTarget(net.minecraftforge.event.entity.living.LivingAttackEvent e) {
-        if (e.getEntity().level().isClientSide || !(e.getSource().getDirectEntity() instanceof net.minecraft.world.entity.projectile.AbstractArrow a)) return;
+    public static void arrowImpact(net.minecraftforge.event.entity.ProjectileImpactEvent e) {
+        if (!(e.getProjectile() instanceof net.minecraft.world.entity.projectile.AbstractArrow a) || a.level().isClientSide) return;
+        if (!(e.getRayTraceResult() instanceof net.minecraft.world.phys.EntityHitResult eh)) return;
+        Entity target = eh.getEntity();
+        if (a.getOwner() instanceof net.minecraft.world.entity.player.Player && target instanceof net.minecraft.world.entity.player.Player) { e.setCanceled(true); return; }
         var tag = a.getPersistentData();
         int[] hit = tag.getIntArray("rpgHitIds");
-        int id = e.getEntity().getId();
+        int id = target.getId();
         for (int h : hit) if (h == id) { e.setCanceled(true); return; }
         int[] more = java.util.Arrays.copyOf(hit, hit.length + 1);
         more[hit.length] = id;

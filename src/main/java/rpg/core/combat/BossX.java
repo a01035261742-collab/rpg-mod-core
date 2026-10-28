@@ -301,9 +301,12 @@ final class BossX {
                 if (!Boss.valid(pl)) continue;
                 Vec3 to = new Vec3(st.pos.x - pl.getX(), 0, st.pos.z - pl.getZ());
                 if (to.lengthSqr() < 1) continue;
-                Vec3 d = to.normalize().scale(p.x("pull", 0.07));
-                pl.push(d.x, 0, d.z);
-                pl.hurtMarked = true;
+                // 공중에선 마찰이 없어서 확 끌려옴 → 공중일 땐 30%만, 그리고 끌리는 속도 상한
+                double f = p.x("pull", 0.07) * (pl.onGround() ? 1.0 : 0.3);
+                Vec3 d = to.normalize().scale(f);
+                Vec3 v = pl.getDeltaMovement();
+                double along = v.x * to.normalize().x + v.z * to.normalize().z;   // 이미 중앙 쪽으로 가는 속도
+                if (along < 0.25) { pl.push(d.x, 0, d.z); pl.hurtMarked = true; }
             }
             if (now % 5 == 0) l.sendParticles(ParticleTypes.ITEM_SNOWBALL, st.pos.x, st.pos.y + 1, st.pos.z, 10, p.r() / 2, 0.5, p.r() / 2, 0.1);
         }
