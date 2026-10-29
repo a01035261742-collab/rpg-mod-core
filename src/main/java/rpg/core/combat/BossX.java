@@ -324,11 +324,8 @@ final class BossX {
             }
             case "frenzy" -> {
                 st.repeatLeft = (int) p.x("hits", 3);
-                // 처음부터 안전 원(여왕 품) 표시: 멀리 있어도 미리 들어올 수 있게
-                st.pos = mob.position();
-                int fangs = st.repeatLeft * (Boss.ticks(p.x("fangDelay", 0.8)) + Boss.HIT_LAG);
-                Net.telegraph(l, st.pos, st.dir, 30 + MobAI.CIRCLE, p.x("safeR", 6), 0, fangs + 4);
-                say(l, st, "◆ " + p.name() + " — 독니 " + st.repeatLeft + "번 뒤 전체 공격! 초록 원(여왕 품)으로", ChatFormatting.RED);
+                // 안전 원(초록)은 마지막 전체 공격 예고 때만 (연타 중엔 여왕 품도 독니에 맞음)
+                say(l, st, "◆ " + p.name() + " — 독니 " + st.repeatLeft + "번 뒤 전체 공격!", ChatFormatting.RED);
                 l.playSound(null, mob.blockPosition(), SoundEvents.RAVAGER_ROAR, SoundSource.HOSTILE, 2.5f, 0.7f);
                 frenzyFang(mob, st, p, t, l, now);
             }
