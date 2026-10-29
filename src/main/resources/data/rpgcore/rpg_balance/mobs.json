@@ -1610,7 +1610,7 @@
    }
   },
   "boss": {
-   "_설명": "보스. arena = 경기장 반경, respawnSec 처치 후 재등장, resetSec 아무도 없으면 초기화, phase2 = HP % 이하 2페이즈, wait1/wait2 = 패턴 사이 대기(초) 범위, 레벨 낮으면 1레벨당 penaltyPerLevel% 감소 (최대 maxPenalty%). 패턴 type: cone(r·angle) slam(r) charge(len·w, track 추적초, repeat2 = 2페이즈 연속 횟수) rocks(r, 모든 플레이어 발밑 추적) roar(r, push 칸, 피해 없음). delay = 빨강 확정 후 발동까지 초, pct = 공격력 %, phase = 이 페이즈부터. 보상: 경험치·골드(levels)는 피해 비율로 나눔, 드롭 세트를 참여 인원수만큼 (sure 확정 · mats [몹, 굴림 횟수] · fragments 주문서 조각 · scrollChance% 주문서 · ring 장신구 ringChance%, 확률은 참여자 최고 드롭률 보너스 적용) melee = 패턴 사이 기본 근접 공격 (보스 중심에서 r칸 안에 대상이 있으면, cd초마다, 부채꼴) barrage(가장 먼 사람 발밑에 interval초마다 count개 원). far 1 = 가장 먼 사람 노림, ranged 1 = 누가 멀리(farDist칸, 기본 10) 떨어져 있으면 먼저 뽑힘 (원거리 견제)",
+   "_설명": "보스. arena = 경기장 반경, respawnSec 처치 후 재등장, resetSec 아무도 없으면 초기화, phase2 = HP % 이하 2페이즈, wait1/wait2 = 패턴 사이 대기(초) 범위, 레벨 낮으면 1레벨당 penaltyPerLevel% 감소 (최대 maxPenalty%). 패턴 type: cone(r·angle) slam(r) charge(len·w, track 추적초, repeat2 = 2페이즈 연속 횟수) rocks(r, 모든 플레이어 발밑 추적) roar(r, push 칸, 피해 없음). delay = 빨강 확정 후 발동까지 초, pct = 공격력 %, phase = 이 페이즈부터. 보상: 경험치·골드(levels)는 피해 비율로 나눔, 드롭 세트를 참여 인원수만큼 (sure 확정 · mats [몹, 굴림 횟수] · fragments 주문서 조각 · scrollChance% 주문서 · ring 장신구 ringChance%, 확률은 참여자 최고 드롭률 보너스 적용) melee = 패턴 사이 기본 근접 공격 (보스 중심에서 r칸 안에 대상이 있으면, cd초마다, 부채꼴) barrage(가장 먼 사람 발밑에 interval초마다 count개 원). far 1 = 가장 먼 사람 노림, ranged 1 = 누가 멀리(farDist칸, 기본 10) 떨어져 있으면 먼저 뽑힘 (원거리 견제) poke = 원거리 평타 (대상이 평타 거리 밖일 때 패턴 사이, 발밑 원 r · delay · pct · cd초), gap = 뛰어 붙기 (대상이 dist칸 넘게 멀면, 착지 원 r · cd초). 노리는 대상 = 피해 점수 (rangedDist칸 넘게 떨어져서 준 피해는 rangedThreat배, 기본 8칸 · 1.5배)",
    "arena": 36,
    "respawnSec": 1800,
    "resetSec": 30,
@@ -1768,6 +1768,21 @@
     "delay": 0.8,
     "pct": 120,
     "cd": 2.5
+   },
+   "poke": {
+    "name": "돌 던지기",
+    "r": 2.5,
+    "delay": 1.0,
+    "pct": 100,
+    "cd": 3
+   },
+   "gap": {
+    "name": "덮치기",
+    "r": 3,
+    "delay": 1.2,
+    "pct": 120,
+    "cd": 8,
+    "dist": 12
    }
   }
  },
@@ -1971,6 +1986,21 @@
       50000
      ]
     ]
+   },
+   "poke": {
+    "name": "포자 한 발",
+    "r": 2.5,
+    "delay": 1.0,
+    "pct": 100,
+    "cd": 3
+   },
+   "gap": {
+    "name": "뛰어 덮치기",
+    "r": 3,
+    "delay": 1.2,
+    "pct": 120,
+    "cd": 8,
+    "dist": 12
    }
   }
  },
@@ -2328,6 +2358,21 @@
       100000
      ]
     ]
+   },
+   "poke": {
+    "name": "독침 한 발",
+    "r": 2.5,
+    "delay": 1.0,
+    "pct": 100,
+    "cd": 3
+   },
+   "gap": {
+    "name": "달려들기",
+    "r": 3,
+    "delay": 1.2,
+    "pct": 120,
+    "cd": 8,
+    "dist": 12
    }
   }
  },

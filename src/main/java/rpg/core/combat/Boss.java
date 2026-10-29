@@ -63,7 +63,10 @@ public final class Boss {
     public static final Map<String, Def> DEFS = new HashMap<>();
 
     // ───────── 읽기 (Balance 가 mobs.json 읽을 때) ─────────
-    public static void clear() { DEFS.clear(); TREASURE.clear(); }
+    public static void clear() { DEFS.clear(); TREASURE.clear(); POKE.clear(); GAP.clear(); }
+
+    /** 원거리 평타 (대상이 평타 거리 밖일 때, 패턴 사이) · 뛰어 붙기 (대상이 dist칸 넘게 멀 때) — 보스 키별 */
+    static final Map<String, Pattern> POKE = new HashMap<>(), GAP = new HashMap<>();
 
     /** 보스 보물 열기 표: 보물 아이템 id → [보스 키, 줄들]. 줄 = {아이템 id, 비중, 개수}. 특수 id: gold(개수 = 골드) · scroll(보스 레벨 무작위 주문서) · job:a|b|c|d(내 직업 것, 초보자는 무작위) */
     public record TreasureRow(String id, double weight, int count) {}
@@ -84,6 +87,16 @@ public final class Boss {
                 JsonObject p = o.getAsJsonObject("melee");
                 melee = new Pattern("melee", s(p, "name", "공격"), "cone", d(p, "r", 5.5), d(p, "angle", 100), 0, 0, 0,
                         d(p, "delay", 0.8), d(p, "pct", 100), 0, 1, 1, null);
+            }
+            if (o.has("poke")) {   // 원거리 평타: 대상 발밑 원
+                JsonObject p = o.getAsJsonObject("poke");
+                POKE.put(key, new Pattern("poke", s(p, "name", "원거리 공격"), "poke", d(p, "r", 2.5), 0, 0, 0, 0,
+                        d(p, "delay", 1.0), d(p, "pct", 100), 0, 1, 1, nums(p)));
+            }
+            if (o.has("gap")) {    // 뛰어 붙기: 대상 자리로 점프
+                JsonObject p = o.getAsJsonObject("gap");
+                GAP.put(key, new Pattern("gap", s(p, "name", "덮치기"), "jump", d(p, "r", 3), 0, 0, 0, d(p, "track", 0),
+                        d(p, "delay", 1.2), d(p, "pct", 120), 0, 1, 1, nums(p)));
             }
             JsonObject rw = o.has("reward") ? o.getAsJsonObject("reward") : new JsonObject();
             List<Mats> mats = new ArrayList<>();
@@ -160,6 +173,8 @@ public final class Boss {
         Vec3 pos, dir;
         final Map<UUID, Vec3> rocks = new LinkedHashMap<>();
         final Map<UUID, Double> dmg = new HashMap<>();
+        final Map<UUID, Double> threat = new HashMap<>();   // 노릴 대상 점수: 피해량 (멀리서 준 피해는 rangedThreat 배)
+        long pokeReady, gapReady;
         long emptySince = -1;
         ServerBossEvent bar;
         long meleeReady;
@@ -322,6 +337,17 @@ public final class Boss {
                 start(mob, st, def, def.melee(), t, fighters, l, now);
                 return;
             }
+            // 멀리 있는 대상: 뛰어 붙기 (dist칸 넘게) → 원거리 평타 (평타 거리 밖)
+            double td = flat(mob.position(), t.position());
+            Pattern gap = GAP.get(def.key()), poke = POKE.get(def.key());
+            if (gap != null && now >= st.gapReady && now >= m.stunUntil && td > gap.x("dist", 12)) {
+                start(mob, st, def, gap, t, fighters, l, now);
+                return;
+            }
+            if (poke != null && now >= st.pokeReady && now >= m.stunUntil && td > (def.melee() != null ? def.melee().r() + 1 : 6)) {
+                start(mob, st, def, poke, t, fighters, l, now);
+                return;
+            }
             if (mob.tickCount % 10 == 0) {
                 if (mob.distanceTo(t) > 5) mob.getNavigation().moveTo(t, 1.0);
                 else mob.getNavigation().stop();
@@ -340,6 +366,11 @@ public final class Boss {
         start(mob, st, def, p, far != null ? far : t, fighters, l, now);
     }
 
+    /** 기본 공격 (패턴 아님): 근접 평타 · 원거리 평타 · 뛰어 붙기 */
+    static boolean basic(Def def, Pattern p) {
+        return p != null && (p == def.melee() || p == POKE.get(def.key()) || p == GAP.get(def.key()));
+    }
+
     /** 고치에 안 갇힘 (패턴 대상이 될 수 있음) */
     static boolean free(State st, Player p) { return !st.x.cocoons.containsKey(p.getUUID()); }
 
@@ -354,7 +385,7 @@ public final class Boss {
         return pool.get(0);
     }
 
-    /** 대상: 도발 > 피해를 가장 많이 준 사람 > 가까운 사람 */
+    /** 대상: 도발 > 위협 점수 (피해량, 멀리서 준 피해는 1.5배) 가장 높은 사람 > 가까운 사람 */
     private static ServerPlayer pickTarget(Mob mob, MobData m, State st, List<ServerPlayer> fighters, long now) {
         Player tt = MobAI.taunter(mob, m, now);
         if (tt instanceof ServerPlayer sp && fighters.contains(sp)) return sp;
@@ -364,7 +395,7 @@ public final class Boss {
         for (ServerPlayer p : fighters) if (free(st, p)) freeF.add(p);
         if (!freeF.isEmpty()) fighters = freeF;   // 고치에 갇힌 사람은 안 노림
         for (ServerPlayer p : fighters) {
-            double v = st.dmg.getOrDefault(p.getUUID(), 0.0);
+            double v = st.threat.getOrDefault(p.getUUID(), 0.0);
             if (v > bd) { bd = v; best = p; }
         }
         if (bd > 0) return best;
@@ -418,7 +449,7 @@ public final class Boss {
         st.pos = mob.position();
         int dl = ticks(p.delay());
         // 큰 패턴 (예고 2초 이상): 화면 위 가운데에 이름 (알림이 따로 있는 패턴 빼고)
-        if (p != def.melee() && p.delay() >= 2.0 && !BossX.TYPES.contains(p.type()) && !java.util.Set.of("share", "mark", "counter").contains(p.type()))
+        if (!basic(def, p) && p.delay() >= 2.0 && !BossX.TYPES.contains(p.type()) && !java.util.Set.of("share", "mark", "counter").contains(p.type()))
             for (ServerPlayer x : arena(l, st, 16)) Net.alert(x, "◆ " + p.name(), ChatFormatting.YELLOW, 50);
         switch (p.type()) {
             case "cone" -> Net.telegraph(l, st.pos, st.dir, MobAI.CONE, p.r(), p.angle(), dl);
@@ -485,7 +516,7 @@ public final class Boss {
             case "eggs", "pull", "lanes", "absorb", "collapse", "frenzy", "barrage", "volley", "webrain", "burst" -> { BossX.start(mob, st, def, p, t, l, now); return; }
             case "delayed", "jump" -> {
                 st.repeatLeft = p.type().equals("jump") && st.phase >= 2 ? Math.max(1, p.repeat2()) : 1;
-                if (p.type().equals("jump") && st.props.isEmpty() && def.g("props", 0) > 0) placeProp(l, st, def);
+                if (p.type().equals("jump") && !basic(def, p) && st.props.isEmpty() && def.g("props", 0) > 0) placeProp(l, st, def);
                 st.rocks.clear();
                 st.rocks.put(t.getUUID(), t.position());
                 beginTrack(mob, st, p, now);
@@ -503,6 +534,12 @@ public final class Boss {
                 return;
             }
             case "roar" -> { Net.telegraph(l, st.pos, st.dir, MobAI.CIRCLE, p.r(), 0, dl); standing(mob, true); }
+            case "poke" -> {   // 원거리 평타: 대상 발밑 원 (추적 없음)
+                st.rocks.clear();
+                st.rocks.put(t.getUUID(), t.position());
+                Net.telegraph(l, t.position(), st.dir, MobAI.CIRCLE, p.r(), 0, dl);
+                l.playSound(null, mob.blockPosition(), SoundEvents.LLAMA_SPIT, SoundSource.HOSTILE, 1.5f, 0.6f);
+            }
             default -> { Net.telegraph(l, st.pos, st.dir, MobAI.CIRCLE, p.r(), 0, dl); standing(mob, true); }   // slam
         }
         st.stageEnd = now + dl + HIT_LAG;
@@ -729,9 +766,12 @@ public final class Boss {
         st.jumpFrom = null;
         st.back = false;
         if (st.cur != null && st.stage == 0) Net.track((ServerLevel) mob.level(), mob.getId(), -1, 0, 0, 0, 0);
-        if (st.cur != null && st.cur == def.melee()) {   // 기본 공격은 패턴 대기 시간을 안 늘림
+        if (st.cur != null && basic(def, st.cur)) {   // 기본 공격 (근접·원거리·뛰어 붙기)은 패턴 대기 시간을 안 늘림
+            if (st.cur == def.melee()) st.meleeReady = now + Math.round(def.meleeCd() * 20);
+            else if (st.cur.id().equals("poke")) st.pokeReady = now + Math.round(st.cur.x("cd", 3) * 20);
+            else st.gapReady = now + Math.round(st.cur.x("cd", 8) * 20);
             st.cur = null;
-            st.meleeReady = now + Math.round(def.meleeCd() * 20);
+            st.rocks.clear();
             st.nextAt = Math.max(st.nextAt, now + 10);
             standing(mob, false);
             return;
@@ -797,12 +837,10 @@ public final class Boss {
             }
             case "share" -> {
                 java.util.Set<ServerPlayer> inAll = new java.util.HashSet<>();
-                int fightersN = 0;
-                for (ServerPlayer x : arena(l, st, 0)) if (valid(x)) fightersN++;
                 for (Vec3 q : st.rocks.values()) {
                     List<ServerPlayer> in = new ArrayList<>();
                     for (ServerPlayer pl : arena(l, st, 4)) if (valid(pl) && flat(pl.position(), q) <= p.r() + PAD && Math.abs(pl.getY() - q.y) <= HEIGHT) in.add(pl);
-                    if (in.isEmpty())   // 대상이 원 밖으로 도망가면 혼자 다 맞음
+                    if (in.isEmpty() && p.x("outPct", 0) <= 0)   // 대상이 원 밖으로 도망가면 혼자 다 맞음 (outPct 있으면 원 밖 규칙)
                         for (var re : st.rocks.entrySet()) if (re.getValue() == q && l.getPlayerByUUID(re.getKey()) instanceof ServerPlayer tp && valid(tp)) in.add(tp);
                     l.sendParticles(ParticleTypes.DRAGON_BREATH, q.x, q.y + 0.5, q.z, 60, p.r() / 2, 0.3, p.r() / 2, 0.02);
                     l.playSound(null, BlockPos.containing(q), SoundEvents.GENERIC_EXPLODE, SoundSource.HOSTILE, 1.2f, 0.7f);
@@ -811,11 +849,11 @@ public final class Boss {
                     double total = alone <= 1 ? p.x("maxPctSolo", p.x("maxPct", 90)) : p.x("maxPct", 90);   // 혼자 싸우면 약하게
                     for (ServerPlayer pl : in) CombatEvents.maxHpHit(mob, pl, total / Math.max(1, in.size()));
                     inAll.addAll(in);
-                    for (ServerPlayer x : arena(l, st, 16))
+                    if (!in.isEmpty()) for (ServerPlayer x : arena(l, st, 16))
                         x.displayClientMessage(Component.literal(p.name() + ": " + in.size() + "명이 나눠 맞음").withStyle(ChatFormatting.LIGHT_PURPLE), true);
                 }
-                // 원 밖에 있던 사람: 최대 HP outPct% + 독 (같이 싸울 때만)
-                if (p.x("outPct", 0) > 0 && fightersN >= 2) for (ServerPlayer pl : arena(l, st, 0)) {
+                // 원 밖에 있던 사람: 최대 HP outPct% + 독 (혼자여도: 원 안 maxPctSolo · 밖 outPct)
+                if (p.x("outPct", 0) > 0) for (ServerPlayer pl : arena(l, st, 0)) {
                     if (!valid(pl) || inAll.contains(pl)) continue;
                     hitAs(mob, m, st, l, pl, p.name() + " (원 밖)", 0, p.x("outPct", 0), p.x("outPoison", 0));
                 }
@@ -849,6 +887,14 @@ public final class Boss {
                     if (along >= -1 && along <= p.len() + PAD && Math.abs(side) <= p.w() / 2 + PAD && Math.abs(pl.getY() - c.y) <= HEIGHT) hit(mob, m, st, l, pl, p);
                 }
             }
+            case "poke" -> {
+                for (Vec3 q : st.rocks.values()) {
+                    l.sendParticles(ParticleTypes.ITEM_SLIME, q.x, q.y + 0.4, q.z, 16, p.r() / 2, 0.2, p.r() / 2, 0.05);
+                    l.sendParticles(ParticleTypes.CRIT, q.x, q.y + 0.4, q.z, 10, p.r() / 2, 0.2, p.r() / 2, 0.1);
+                    l.playSound(null, BlockPos.containing(q), SoundEvents.SLIME_SQUISH_SMALL, SoundSource.HOSTILE, 1.5f, 0.6f);
+                    hitCircle(mob, m, st, l, q, p.r(), p);
+                }
+            }
             case "rocks", "delayed" -> {
                 l.playSound(null, mob.blockPosition(), SoundEvents.GENERIC_EXPLODE, SoundSource.HOSTILE, 0.8f, 0.8f);
                 for (Vec3 q : st.rocks.values()) {
@@ -867,8 +913,8 @@ public final class Boss {
                 l.sendParticles(ParticleTypes.EXPLOSION, q.x, q.y + 0.2, q.z, 6, p.r() / 3, 0.1, p.r() / 3, 0);
                 l.playSound(null, mob.blockPosition(), SoundEvents.GENERIC_EXPLODE, SoundSource.HOSTILE, 1.2f, 0.6f);
                 hitCircle(mob, m, st, l, q, p.r(), p);
-                // 단단한 버섯이 범위 안에 있으면 부서지면서 보스 기절
-                for (BlockPos bp : new ArrayList<>(st.props)) {
+                // 단단한 버섯이 범위 안에 있으면 부서지면서 보스 기절 (뛰어 붙기는 제외)
+                if (!basic(def, p)) for (BlockPos bp : new ArrayList<>(st.props)) {
                     if (flat(Vec3.atBottomCenterOf(bp), q) > p.r() + 0.5) continue;
                     removeProp(l, st, bp);
                     long stun = Math.round(def.g("propStun", 10) * 20);
@@ -1062,6 +1108,7 @@ public final class Boss {
         st.deck.clear();
         st.cur = null;
         st.dmg.clear();
+        st.threat.clear();
         st.transUntil = 0;
         st.lastFar = null;
         st.back = false;
@@ -1095,6 +1142,8 @@ public final class Boss {
             }
             if (st.cur != null && st.cur.type().equals("counter")) st.counterDmg += dmg;
             st.dmg.merge(p.getUUID(), Math.min(dmg, m.hp), Double::sum);
+            double far = flat(mob.position(), p.position()) > def.g("rangedDist", 8) ? def.g("rangedThreat", 1.5) : 1;   // 멀리서 때리면 위협 더 큼
+            st.threat.merge(p.getUUID(), dmg * far, Double::sum);
         }
         return dmg;
     }
