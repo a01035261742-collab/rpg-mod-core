@@ -45,6 +45,17 @@ V[rock[None] & (Y <= Hc) & mix & (V == I['andesite']) & (rng.random((TOP + 1, D,
 # 물: 바닥 위 ~ 수면
 wm = (MAT == 'water')[None]
 V[wm & (Y > Hc) & (Y <= WATER)] = I['water']
+
+# 길 자연스럽게: 가운데는 흙길 위주 + 거친 흙·자갈 섞임, 가장자리는 흙길·거친 흙·풀이 들쭉날쭉
+from scipy.ndimage import distance_transform_edt as _edt
+_pm = (MAT == 'path')
+_dp = _edt(_pm)
+_r = np.random.default_rng(77).random(_pm.shape)
+_core = _pm & (_dp > 1.5); _edge = _pm & (_dp <= 1.5)
+for z, x in zip(*np.nonzero(_core)):
+    V[H[z, x], z, x] = I['dirt_path'] if _r[z, x] < 0.78 else I['coarse_dirt'] if _r[z, x] < 0.92 else I['gravel']
+for z, x in zip(*np.nonzero(_edge)):
+    V[H[z, x], z, x] = I['dirt_path'] if _r[z, x] < 0.45 else I['coarse_dirt'] if _r[z, x] < 0.7 else I['grass_block']
 # 동쪽 끝 강물: 맵 밖으로 안 흐르게 돌로 막음
 edge = (MAT[:, W - 1] == 'water')
 V[:WATER + 2, edge, W - 1] = I['stone']

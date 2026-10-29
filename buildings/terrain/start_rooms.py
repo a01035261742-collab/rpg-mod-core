@@ -146,8 +146,8 @@ BRIDGES = []
 
 # 길
 road = np.zeros((D, W), bool)
-PX = X + (fbm(501) - 0.5) * 7 + (vnoise(4, 503) - 0.5) * 1.2   # 길 구불구불 (좌표 비틀기)
-PZ = Z + (fbm(502) - 0.5) * 7 + (vnoise(4, 504) - 0.5) * 1.2
+PX = X + (fbm(501) - 0.5) * 7   # 길 구불구불 (크게 휘기만, 잔물결 없음)
+PZ = Z + (fbm(502) - 0.5) * 7
 near_walk = distance_transform_edt(~walk) / SC < 2.5
 def spline(pts, n=10):   # Catmull-Rom: 꺾인 곳 없이 부드럽게
     P = [pts[0]] + list(pts) + [pts[-1]]
