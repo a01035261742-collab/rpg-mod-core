@@ -2,11 +2,12 @@
 import heapq, numpy as np
 from scipy.ndimage import distance_transform_edt
 
-def make_cost(H, walk, water, noise, water_cost=25.0):
+def make_cost(H, walk, water, noise, water_cost=25.0, center=0):
     clear = distance_transform_edt(walk | water)          # 벽까지 거리 (칸)
     gx, gz = np.gradient(H.astype(float)); slope = np.sqrt(gx ** 2 + gz ** 2)
     cost = 1.0 + 3.0 * np.clip(slope, 0, 3) + 1.2 * noise   # 경사·약간의 노이즈 (자연스럽게 휨)
     cost += np.where(clear < 2, 60, np.where(clear < 4, 12, np.where(clear < 6, 3, 0)))   # 벽 가까이는 피함
+    cost += center / (clear + 1)                            # 가운데 쪽으로 (벽 따라 붙지 않게)
     cost = np.where(water, water_cost, cost)               # 강은 다리 놓을 곳만 건넘
     cost = np.where(walk | water, cost, np.inf)
     return cost

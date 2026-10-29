@@ -45,7 +45,6 @@ ARENAS = {   # 보스 경기장 (둥글고 평평, 반지름 = 설계 칸): 중�
 }
 PASS = [   # 통로
     ([ENTRY, (98, 224)], 8),
-    ([(84, 214), (62, 232), (34, 236), (12, 220), (6, 192), (12, 164), (20, 150)], 7),   # 숲길 → 숲의 군주 (멀리 돌아가는 골짜기)
     ([(104, 200), (108, 176)], 8),          # 숲길 → 마을
     ([(152, 152), (180, 158)], 8),          # 마을 → 5
     ([(232, 142), (250, 120)], 7),          # 5 → 6
@@ -65,6 +64,17 @@ for pts, w in PASS:
     for a, b in zip(pts, pts[1:]): d = np.minimum(d, seg(X, Z, a, b))
     walk |= (d + edge * 3 < w / 2) | (d < w / 2 - 1.5)   # 가운데는 노이즈 없이 꼭 뚫림
     passm |= d < w / 2 + 4
+# 숲길 → 숲의 군주: 폭이 좁았다 넓었다 하는 구불구불한 골짜기 (중간중간 작은 공터)
+VAL = [((86, 212), 8), ((70, 222), 13), ((54, 230), 6), ((36, 230), 16), ((20, 222), 7), ((12, 208), 6), ((8, 192), 14), ((12, 176), 6), ((16, 162), 10), ((20, 150), 7)]
+vd = np.full((D, W), 999.0); vw = np.full((D, W), 7.0)
+for (a, wa), (b, wb) in zip(VAL, VAL[1:]):
+    ax, az = a; bx, bz = b; L2 = (bx - ax) ** 2 + (bz - az) ** 2
+    t = np.clip(((X - ax) * (bx - ax) + (Z - az) * (bz - az)) / L2, 0, 1)
+    dd = np.hypot(X - ax - t * (bx - ax), Z - az - t * (bz - az))
+    ww = wa + (wb - wa) * (t * t * (3 - 2 * t))
+    upd = dd < vd; vd = np.where(upd, dd, vd); vw = np.where(upd, ww, vw)
+walk |= (vd + edge * 4 < vw / 2) | (vd < vw / 2 - 2)
+passm |= vd < vw / 2 + 4
 np.save('R2_pass.npy', passm)
 ROCKS = [(124, 140, 3), (196, 170, 4), (270, 108, 4), (164, 46, 3), (60, 60, 4), (92, 44, 3)]
 rock = np.zeros((D, W))
@@ -142,7 +152,7 @@ _pcost = None
 def path(pts, width):
     """실제 지형 위 길 찾기 (공터 가운데·완만한 곳으로), 폭 일정, 둥글게 다듬음"""
     global road, _pcost
-    if _pcost is None: _pcost = pathing.make_cost(H, walk, WATER, fbm(701))
+    if _pcost is None: _pcost = pathing.make_cost(H, walk, WATER, fbm(701), center=30)
     cells = []
     for a, b in zip(pts, pts[1:]):
         r_ = pathing.route(_pcost, G(*a), G(*b)); cells += r_ if not cells else r_[1:]
@@ -152,7 +162,7 @@ def path(pts, width):
     if hit.any(): zz, xx = np.nonzero(hit); BRIDGES.append((xx.mean() / SC - OFFX, zz.mean() / SC - OFFZ) if 'OFFX' in globals() else (xx.mean() / SC - OX, zz.mean() / SC - OZ))
     road |= m & ~WATER
 path([ENTRY, (98, 214), (104, 196), (110, 176), (112, 152), (150, 152), (182, 158), (206, 160), (234, 140), (250, 118), (262, 96), (234, 80), (210, 64), (176, 54), (140, 54), (108, 54), (72, 52), (64, 30), EXIT], 1.6)
-path([(98, 214), (84, 214), (62, 232), (34, 236), (12, 220), (6, 192), (12, 164), (24, 126)], 1.1)      # 숲의 군주 경기장
+path([(98, 214)] + [p for p, _ in VAL] + [(24, 126)], 1.1)      # 숲의 군주 경기장
 path([(262, 96), (292, 108), (316, 104), (326, 82), (320, 58), (306, 44), (290, 20)], 1.1)      # 수호자 경기장
 plaza = np.sqrt((X - 112) ** 2 + (Z - 152) ** 2) < 8
 
