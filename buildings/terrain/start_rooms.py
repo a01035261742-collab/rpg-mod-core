@@ -146,13 +146,28 @@ BRIDGES = []
 
 # 길
 road = np.zeros((D, W), bool)
+PX = X + (fbm(501) - 0.5) * 7 + (vnoise(4, 503) - 0.5) * 1.2   # 길 구불구불 (좌표 비틀기)
+PZ = Z + (fbm(502) - 0.5) * 7 + (vnoise(4, 504) - 0.5) * 1.2
+near_walk = distance_transform_edt(~walk) / SC < 2.5
+def spline(pts, n=10):   # Catmull-Rom: 꺾인 곳 없이 부드럽게
+    P = [pts[0]] + list(pts) + [pts[-1]]
+    out = []
+    for i in range(1, len(P) - 2):
+        p0, p1, p2, p3 = (np.array(P[j], float) for j in (i - 1, i, i + 1, i + 2))
+        for t in np.linspace(0, 1, n, endpoint=False):
+            out.append(0.5 * ((2 * p1) + (-p0 + p2) * t + (2 * p0 - 5 * p1 + 4 * p2 - p3) * t * t + (-p0 + 3 * p1 - 3 * p2 + p3) * t ** 3))
+    out.append(np.array(pts[-1], float))
+    return [tuple(p) for p in out]
 def path(pts, width):
     global road
     d = np.full((D, W), 999.0)
-    for a, b in zip(pts, pts[1:]): d = np.minimum(d, seg(X, Z, a, b))
+    sp = spline(pts)
+    for a, b in zip(sp, sp[1:]):
+        if a != b: d = np.minimum(d, seg(PX, PZ, a, b))
+    wd = width / SC * 1.25 * (0.85 + 0.3 * fbm(505))   # 폭도 조금씩 달라짐
     hit = (d < width) & water
     if hit.any(): zz, xx = np.nonzero(hit); BRIDGES.append((xx.mean() / SC - OFFX, zz.mean() / SC - OFFZ))
-    road |= (d < width / SC * 1.25) & walk & ~water
+    road |= (d < wd) & (walk | near_walk) & ~water
 VC = ROOMS['village'][0]
 path([VC, (84, 97), T((106, 101)), T((140, 104))], 1.8)
 path([T((140, 104)), (196, 112), (212, 116), (224, 112), MILL], 1.3)   # 풍차 가는 길 (구불)
@@ -239,7 +254,7 @@ for z in range(D - 1):          # 등고선 3칸마다 (벽 쪽)
                 d.point((x * S + 2, 60 + z * S + 2), fill=(45, 45, 45))
 if fall_g: d.rectangle((fall_g[0] * S, 60 + fall_g[1] * S - 4, G(pond_c[0] - 6, 0)[0] * S, 60 + fall_g[1] * S + 4), fill=(110, 160, 235))
 
-d.text((12, 10), f'시작 마을 지역 v18 — 밭 다양하게 · 풀숲 남쪽 확장 · 강 협곡 완만 · {W} × {D}칸', font=fb, fill=(240, 230, 200))
+d.text((12, 10), f'시작 마을 지역 v19 — 길 구불구불 · 끊김 없이 · {W} × {D}칸', font=fb, fill=(240, 230, 200))
 d.text((12, 38), f'공터 높이 {BASE} 기준 · 벽은 바깥으로 갈수록 완만하게 올라감 (최대 +{int(H.max() - BASE)}칸) · 식물 없음 · 방벽은 직접', font=fs, fill=(170, 170, 180))
 def lab(x, z, t, col=(255, 255, 255)):
     gx_, gz_ = G(x, z)
