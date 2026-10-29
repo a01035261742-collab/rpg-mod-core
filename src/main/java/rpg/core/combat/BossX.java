@@ -28,12 +28,14 @@ import rpg.core.net.Net;
 final class BossX {
     private BossX() {}
 
-    static final Set<String> TYPES = Set.of("eggs", "pull", "lanes", "absorb", "collapse", "frenzy", "barrage", "volley");
+    static final Set<String> TYPES = Set.of("eggs", "pull", "lanes", "absorb", "collapse", "frenzy", "barrage", "volley", "webrain", "burst");
 
     record Cocoon(UUID entity, Vec3 pos, long until) {}
     record Zone(Vec3 c, Vec3 dir, double r, double angle, long until) {}
     /** 떨어지는 바위 (바위 연타): 굳은 원, land 틱에 터짐 */
     record Shot(Vec3 c, double r, long land, Boss.Pattern p) {}
+    /** 거미줄 장판 (거미줄 비): 밟으면 느려짐 */
+    record Web(Vec3 c, double r, long until) {}
 
     static final class X {
         final Map<UUID, Long> hatch = new HashMap<>();      // 알 → 부화 시각
@@ -43,6 +45,7 @@ final class BossX {
         final List<Zone> zones = new ArrayList<>();         // 독 구역 (둥지 붕괴)
         final List<Shot> shots = new ArrayList<>();         // 떨어질 바위 (바위 연타)
         final List<Vec3> lines = new ArrayList<>();         // 독침 사격 방향들
+        final List<Web> webs = new ArrayList<>();           // 거미줄 장판
         int step;
         int safeLane;
         double baseAngle;
@@ -151,10 +154,30 @@ final class BossX {
             Shot s = it.next();
             if (now < s.land()) continue;
             it.remove();
-            l.sendParticles(ParticleTypes.EXPLOSION, s.c().x, s.c().y + 0.3, s.c().z, 2, s.r() / 3, 0.1, s.r() / 3, 0);
-            l.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, s.c().x, s.c().y + 0.3, s.c().z, 6, s.r() / 3, 0.2, s.r() / 3, 0.01);
-            l.playSound(null, BlockPos.containing(s.c()), SoundEvents.GENERIC_EXPLODE, SoundSource.HOSTILE, 1f, 1.2f);
+            double web = s.p().x("web", 0);
+            if (web > 0) {   // 거미줄 덩어리: 떨어진 자리에 장판
+                l.sendParticles(new net.minecraft.core.particles.BlockParticleOption(ParticleTypes.BLOCK,
+                        net.minecraft.world.level.block.Blocks.COBWEB.defaultBlockState()), s.c().x, s.c().y + 0.4, s.c().z, 40, s.r() / 2, 0.2, s.r() / 2, 0.1);
+                l.playSound(null, BlockPos.containing(s.c()), SoundEvents.WOOL_PLACE, SoundSource.HOSTILE, 2f, 0.5f);
+                long until = now + Math.round(web * 20);
+                x.webs.add(new Web(s.c(), s.r(), until));
+                Net.telegraph(l, s.c(), new Vec3(1, 0, 0), 60 + MobAI.CIRCLE, s.r(), 0, (int) (until - now));
+            } else {
+                l.sendParticles(ParticleTypes.EXPLOSION, s.c().x, s.c().y + 0.3, s.c().z, 2, s.r() / 3, 0.1, s.r() / 3, 0);
+                l.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, s.c().x, s.c().y + 0.3, s.c().z, 6, s.r() / 3, 0.2, s.r() / 3, 0.01);
+                l.playSound(null, BlockPos.containing(s.c()), SoundEvents.GENERIC_EXPLODE, SoundSource.HOSTILE, 1f, 1.2f);
+            }
             Boss.hitCircle(mob, m, st, l, s.c(), s.r(), s.p());
+        }
+        // 거미줄 장판: 밟으면 느려짐 (구속 III = 45%)
+        x.webs.removeIf(w -> now >= w.until());
+        if (now % 5 == 0 && !x.webs.isEmpty()) for (ServerPlayer p : Boss.arena(l, st, 4)) {
+            if (!Boss.valid(p)) continue;
+            for (Web w : x.webs) {
+                if (Boss.flat(p.position(), w.c()) > w.r() || Math.abs(p.getY() - w.c().y) > 3) continue;
+                p.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.MOVEMENT_SLOWDOWN, 12, (int) def.g("webSlow", 2), false, false, true));
+                break;
+            }
         }
     }
 
@@ -224,7 +247,10 @@ final class BossX {
             Vec3 to = new Vec3(pl.getX() - c.x, 0, pl.getZ() - c.z);
             double dd = to.length();
             if (dd > p.r() + Boss.PAD || Math.abs(pl.getY() - c.y) > Boss.HEIGHT) continue;
-            if (dd < 0.8 || to.normalize().dot(dir) >= cos) Boss.hit(mob, m, st, l, pl, p);
+            if (dd < 0.8 || to.normalize().dot(dir) >= cos) {
+                Boss.hit(mob, m, st, l, pl, p);
+                if (p.push() > 0) Boss.push(pl, dd < 0.8 ? dir : to.normalize(), p.push());   // 뒷다리 차기: 밀침
+            }
         }
     }
 
@@ -268,7 +294,8 @@ final class BossX {
                 int dl = Boss.ticks(p.delay());
                 st.pos = mob.position();
                 Net.telegraph(l, st.pos, st.dir, MobAI.CIRCLE, p.r(), 0, dl);
-                say(l, st, "◆ " + p.name() + " — 중앙에서 멀어지세요! (" + (int) p.delay() + "초)", ChatFormatting.RED);
+                say(l, st, "◆ " + p.name() + " — 끌려가요! 바깥쪽으로 걸어서 버티세요 (" + (int) p.delay() + "초)", ChatFormatting.RED);
+                l.playSound(null, mob.blockPosition(), SoundEvents.FISHING_BOBBER_RETRIEVE, SoundSource.HOSTILE, 2f, 0.5f);
                 l.playSound(null, mob.blockPosition(), SoundEvents.SPIDER_AMBIENT, SoundSource.HOSTILE, 2f, 0.3f);
                 st.stageEnd = now + dl + Boss.HIT_LAG;
             }
@@ -291,12 +318,57 @@ final class BossX {
             }
             case "collapse" -> {
                 x.baseAngle = ThreadLocalRandom.current().nextInt(4) * Math.PI / 2;
-                say(l, st, "◆ " + p.name() + " — 둥지가 무너져요! 독 늪을 피해 돌아가세요", ChatFormatting.DARK_GREEN);
+                say(l, st, "◆ " + p.name() + " — 1→2→3→4 순서로 무너져요! 독 끝난 칸으로 따라가세요", ChatFormatting.DARK_GREEN);
+                l.playSound(null, mob.blockPosition(), SoundEvents.WITHER_BREAK_BLOCK, SoundSource.HOSTILE, 1.5f, 0.5f);
                 collapseStep(mob, st, p, l, now);
             }
             case "frenzy" -> {
                 st.repeatLeft = (int) p.x("hits", 3);
+                // 처음부터 안전 원(여왕 품) 표시: 멀리 있어도 미리 들어올 수 있게
+                st.pos = mob.position();
+                int fangs = st.repeatLeft * (Boss.ticks(p.x("fangDelay", 0.8)) + Boss.HIT_LAG);
+                Net.telegraph(l, st.pos, st.dir, 30 + MobAI.CIRCLE, p.x("safeR", 6), 0, fangs + 4);
+                say(l, st, "◆ " + p.name() + " — 독니 " + st.repeatLeft + "번 뒤 전체 공격! 초록 원(여왕 품)으로", ChatFormatting.RED);
+                l.playSound(null, mob.blockPosition(), SoundEvents.RAVAGER_ROAR, SoundSource.HOSTILE, 2.5f, 0.7f);
                 frenzyFang(mob, st, p, t, l, now);
+            }
+            case "webrain" -> {   // 거미줄 비: count 곳 원 (onPlayers 곳은 사람 발밑), 떨어진 자리에 거미줄 장판
+                int dl = Boss.ticks(p.delay());
+                double r = p.r();
+                List<Vec3> spots = new ArrayList<>();
+                List<ServerPlayer> ps = new ArrayList<>();
+                for (ServerPlayer f : Boss.arena(l, st, 0)) if (Boss.valid(f) && Boss.free(st, f)) ps.add(f);
+                java.util.Collections.shuffle(ps);
+                for (int i = 0; i < Math.min((int) p.x("onPlayers", 2), ps.size()); i++) spots.add(ps.get(i).position());
+                ThreadLocalRandom rnd = ThreadLocalRandom.current();
+                for (int tries = 0; spots.size() < (int) p.x("count", 5) && tries < 80; tries++) {
+                    double ang = rnd.nextDouble() * Math.PI * 2, dist = Math.sqrt(rnd.nextDouble()) * Math.max(1, st.radius - r);
+                    Vec3 q = new Vec3(st.center.x + Math.cos(ang) * dist, st.center.y, st.center.z + Math.sin(ang) * dist);
+                    boolean near = false;
+                    for (Vec3 o : spots) if (Boss.flat(o, q) < r * 1.6) near = true;
+                    if (!near) spots.add(q);
+                }
+                for (Vec3 q : spots) {
+                    Net.telegraph(l, q, st.dir, MobAI.CIRCLE, r, 0, dl);
+                    x.shots.add(new Shot(q, r, now + dl + Boss.HIT_LAG, p));
+                }
+                say(l, st, "◆ " + p.name() + " — 원을 피하세요! 떨어진 자리는 거미줄 (밟으면 느려짐)", ChatFormatting.GRAY);
+                l.playSound(null, mob.blockPosition(), SoundEvents.SPIDER_AMBIENT, SoundSource.HOSTILE, 2f, 0.8f);
+                l.playSound(null, mob.blockPosition(), SoundEvents.WOOL_BREAK, SoundSource.HOSTILE, 2f, 0.5f);
+                st.stageEnd = now + dl + Boss.HIT_LAG;
+            }
+            case "burst" -> {   // 독 분출 (도넛 rIn~rOut) → 바로 내려찍기 (안쪽 r2)
+                st.pos = mob.position();
+                x.step = 0;
+                int dl = Boss.ticks(p.delay());
+                double rin = p.x("rIn", 6), rout = p.x("rOut", 20);
+                Net.telegraph(l, st.pos, st.dir, MobAI.RING, rout, rin, dl);                     // 빨강 도넛 (안에서 밖으로 차오름)
+                Net.telegraph(l, st.pos, st.dir, 30 + MobAI.CIRCLE, rin, 0, dl);                // 안쪽 안전
+                Net.telegraph(l, st.pos, st.dir, 30 + MobAI.RING, rout + 10, rout, dl);         // 바깥 안전
+                say(l, st, "◆ " + p.name() + " — 여왕 품(" + (int) rin + "칸) 또는 " + (int) rout + "칸 밖으로! 그다음 안쪽이 터져요", ChatFormatting.DARK_GREEN);
+                l.playSound(null, mob.blockPosition(), SoundEvents.PUFFER_FISH_BLOW_UP, SoundSource.HOSTILE, 2.5f, 0.5f);
+                l.playSound(null, mob.blockPosition(), SoundEvents.BUBBLE_COLUMN_WHIRLPOOL_INSIDE, SoundSource.HOSTILE, 2f, 0.6f);
+                st.stageEnd = now + dl + Boss.HIT_LAG;
             }
             case "barrage" -> {   // 바위 연타: 가장 먼 사람 발밑에 interval 초마다 count 개
                 x.step = 0;
@@ -365,6 +437,13 @@ final class BossX {
                 Vec3 pv = pl.getDeltaMovement();
                 double along = pv.x * to.normalize().x + pv.z * to.normalize().z;   // 이미 중앙 쪽으로 가는 속도
                 if (along < 0.25) { pl.push(d.x, 0, d.z); pl.hurtMarked = true; }
+                if (now % 4 == 0) {   // 끌리는 방향 화살표 (발밑에서 중앙 쪽으로 날아가는 불꽃)
+                    Vec3 dn = to.normalize();
+                    for (int k = 0; k < 3; k++) {
+                        double off = 0.5 + k * 0.8;
+                        l.sendParticles(ParticleTypes.CRIT, pl.getX() + dn.x * off, pl.getY() + 0.3, pl.getZ() + dn.z * off, 0, dn.x, 0, dn.z, 0.5);
+                    }
+                }
             }
             if (now % 5 == 0) l.sendParticles(ParticleTypes.ITEM_SNOWBALL, st.pos.x, st.pos.y + 1, st.pos.z, 10, p.r() / 2, 0.5, p.r() / 2, 0.1);
         }
@@ -433,6 +512,36 @@ final class BossX {
                 }
                 Boss.finish(mob, st, def, now);
             }
+            case "burst" -> {
+                double rin = p.x("rIn", 6), rout = p.x("rOut", 20), r2 = p.x("r2", rin);
+                if (x.step == 0) {   // 독 분출 (도넛)
+                    for (int k = 0; k < 20; k++) {
+                        double a = Math.PI * 2 * k / 20;
+                        for (double rr = rin + 1.5; rr <= rout; rr += 3.5)
+                            l.sendParticles(ParticleTypes.ITEM_SLIME, st.pos.x + Math.cos(a) * rr, st.pos.y + 0.6, st.pos.z + Math.sin(a) * rr, 2, 0.4, 0.5, 0.4, 0);
+                    }
+                    l.playSound(null, mob.blockPosition(), SoundEvents.PUFFER_FISH_BLOW_OUT, SoundSource.HOSTILE, 2.5f, 0.5f);
+                    for (ServerPlayer pl : Boss.arena(l, st, 4)) {
+                        if (!Boss.valid(pl) || Math.abs(pl.getY() - st.pos.y) > Boss.HEIGHT) continue;
+                        double d = Boss.flat(pl.position(), st.pos);
+                        if (d >= rin - Boss.PAD && d <= rout + Boss.PAD) Boss.hit(mob, m, st, l, pl, p);
+                    }
+                    x.step = 1;   // 바로 안쪽 내려찍기 예고
+                    int dl2 = Boss.ticks(p.x("delay2", 1.6));
+                    Net.telegraph(l, st.pos, st.dir, MobAI.CIRCLE, r2, 0, dl2);
+                    say(l, st, "◆ 내려찍기 — 밖으로!", ChatFormatting.RED);
+                    l.playSound(null, mob.blockPosition(), SoundEvents.RAVAGER_ROAR, SoundSource.HOSTILE, 1.5f, 1.2f);
+                    st.stageEnd = now + dl2 + Boss.HIT_LAG;
+                    return;
+                }
+                l.sendParticles(ParticleTypes.EXPLOSION, st.pos.x, st.pos.y + 0.2, st.pos.z, 6, r2 / 3, 0.1, r2 / 3, 0);
+                l.playSound(null, mob.blockPosition(), SoundEvents.GENERIC_EXPLODE, SoundSource.HOSTILE, 1.5f, 0.7f);
+                for (ServerPlayer pl : Boss.arena(l, st, 4)) {
+                    if (!Boss.valid(pl) || Math.abs(pl.getY() - st.pos.y) > Boss.HEIGHT) continue;
+                    if (Boss.flat(pl.position(), st.pos) <= r2 + Boss.PAD) Boss.hitAs(mob, m, st, l, pl, "내려찍기", p.x("pct2", 220), 0, 0);
+                }
+                Boss.finish(mob, st, def, now);
+            }
             case "barrage" -> {
                 if (++x.step < (int) p.x("count", 3)) {
                     throwRock(mob, st, p, farthest(mob, l, st), l, now);
@@ -463,6 +572,12 @@ final class BossX {
         for (ServerPlayer p : Boss.arena(l, st, 16)) Net.alert(p, s, c, 70);   // 화면 위 가운데
     }
 
+    /** 바닥 정리 (페이즈 전환): 독 늪 · 거미줄 장판 · 떨어지는 것 + 클라 바닥 예고 지움 */
+    static void clearFloor(ServerLevel l, Boss.State st) {
+        st.x.zones.clear(); st.x.webs.clear(); st.x.shots.clear();
+        Net.telegraph(l, st.center, new Vec3(1, 0, 0), 99, 0, 0, 1);
+    }
+
     /** 리셋·처치·사라짐: 알·새끼·고치·독 구역 정리 */
     static void clear(ServerLevel l, Boss.State st) {
         X x = st.x;
@@ -470,7 +585,8 @@ final class BossX {
         for (UUID id : new ArrayList<>(x.absorb.keySet())) { Entity e = l.getEntity(id); if (e != null) e.discard(); }
         for (UUID id : x.adds) { Entity e = l.getEntity(id); if (e != null) e.discard(); }
         for (Cocoon c : x.cocoons.values()) { Entity e = l.getEntity(c.entity()); if (e != null) e.discard(); }
-        x.hatch.clear(); x.absorb.clear(); x.adds.clear(); x.cocoons.clear(); x.zones.clear(); x.shots.clear(); x.lines.clear();
+        if (!x.zones.isEmpty() || !x.webs.isEmpty()) Net.telegraph(l, st.center, new Vec3(1, 0, 0), 99, 0, 0, 1);
+        x.hatch.clear(); x.absorb.clear(); x.adds.clear(); x.cocoons.clear(); x.zones.clear(); x.shots.clear(); x.lines.clear(); x.webs.clear();
         for (ServerPlayer p : Boss.arena(l, st, 24)) POISON.remove(p.getUUID());   // 독도 끝
     }
 }

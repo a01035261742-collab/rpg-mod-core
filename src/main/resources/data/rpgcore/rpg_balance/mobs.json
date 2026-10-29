@@ -2004,7 +2004,7 @@
    }
   },
   "boss": {
-   "_설명": "레이드 보스 어둠거미여왕. only = 그 페이즈에서만 나오는 패턴 (2페이즈는 패턴 묶음이 바뀜). 새 type: fang(부채꼴, 2페이즈 hits2번 반대 방향, poison초 독) · web(추적 원 → 맞으면 cocoon초 고치, 2페이즈 targets2명) · eggs(count개 알, hatch초 뒤 부화 → 새끼 hatchCount마리) · pull(중앙으로 끌어당김 pull 세기, 끝날 때 r칸 안 maxPct%) · lanes(줄 3개 중 2개, pct) · absorb(count개 알, absorbSec초 뒤 남은 알 1개당 absorbHeal% 회복) · mark(모두 추적 원 → 각자 폭발, 겹치면 ×2) · share(한 명 보라 원 → 원 안 인원수로 maxPct% 나눔) · collapse(4등분 순서대로 delay초씩, 독 늪 linger초) · frenzy(독니 hits번 → 경기장 전체, 여왕 주변 safeR칸만 안전, finalPct%). gimmick: poisonPct 독 1초당 최대 HP %, zonePct 독 늪 0.5초당 최대 HP %, hatchCount, absorbHeal. 레이드 인원수만큼 체력 배수 (알도) volley(가장 먼 사람 쪽 직선 lines개, spread도씩 벌어짐, len·w)",
+   "_설명": "레이드 보스 어둠거미여왕 (2026-10-29 리워크). only = 그 페이즈에서만 나오는 패턴. fang(부채꼴 r·angle, back 1 = 앞을 본 채 뒤를 참 + push칸 밀침, hits = 앞·뒤 번갈아 몇 번 — 뒤 타는 이 보스의 back 패턴, delay2 = 다음 타 예고) · web(추적 원 → 고치 cocoon초, targets명) · jump(추적 원 → 포물선 착지, repeat2 = 2페이즈 연속, delay2 = 두 번째부터 예고) · volley(먼 사람 쪽 직선 lines개, spread도 간격) · eggs(count개 알, hatch초 뒤 부화) · pull(중앙으로 끌림, 끝에 r칸 maxPct%) · mark(모두 추적 원, 겹치면 ×2) · share(한 명 보라 원 → 원 안 인원수로 maxPct% 나눔, 혼자 maxPctSolo, 원 밖 = 최대 HP outPct% + outPoison초 독, center 1 = 모두의 가운데에 가장 가까운 사람) · webrain(count곳 원 r, onPlayers곳은 사람 발밑, 떨어진 자리 거미줄 web초 = 구속 webSlow단계) · burst(도넛 rIn~rOut → 바로 안쪽 r2 내려찍기 delay2·pct2) · collapse(4등분 순서대로 delay초씩, 독 늪 linger초) · absorb(알 count개 absorbSec초, 남은 알당 absorbHeal%) · frenzy(독니 hits번 → 전체, 여왕 safeR칸 안전, 처음부터 초록 원). far 1 = 가장 먼 사람 (방금 노린 사람은 건너뜀), ranged 1 = 누가 farDist칸 넘게 떨어지면 먼저. 고치에 갇힌 사람은 대상에서 빠짐. gimmick: poisonPct 독 1초당 최대 HP %, zonePct 독 늪 0.5초당 최대 HP %, hatchCount, absorbHeal, restEvery·restSec 정기 휴식, transSec = 2페이즈 전환 연출 초 (무적, 바닥 정리, 전환 전엔 HP 가 경계에서 멈춤). 레이드 인원수만큼 체력 배수 (알도)",
    "arena": 28,
    "respawnSec": 600,
    "resetSec": 60,
@@ -2014,8 +2014,8 @@
     4.5
    ],
    "wait2": [
-    2,
-    3
+    1.5,
+    2.5
    ],
    "penaltyPerLevel": 5,
    "maxPenalty": 90,
@@ -2025,14 +2025,16 @@
     "hatchCount": 4,
     "absorbHeal": 3,
     "restEvery": 3,
-    "restSec": 4
+    "restSec": 4,
+    "transSec": 3,
+    "webSlow": 2
    },
    "patterns": [
     {
      "id": "fang",
      "name": "독니 찌르기",
      "type": "fang",
-     "r": 8,
+     "r": 9,
      "angle": 120,
      "delay": 1.6,
      "pct": 220,
@@ -2040,24 +2042,29 @@
      "only": 1
     },
     {
+     "id": "kick",
+     "name": "뒷다리 차기",
+     "type": "fang",
+     "back": 1,
+     "r": 8,
+     "angle": 140,
+     "delay": 1.4,
+     "pct": 180,
+     "push": 3,
+     "only": 1
+    },
+    {
      "id": "web",
      "name": "거미줄 발사",
      "type": "web",
-     "r": 3.5,
+     "r": 4,
      "track": 1.5,
      "delay": 2.0,
      "pct": 100,
      "cocoon": 4,
-     "only": 1,
+     "targets": 2,
      "far": 1,
-     "ranged": 1
-    },
-    {
-     "id": "eggs",
-     "name": "알 낳기",
-     "type": "eggs",
-     "count": 3,
-     "hatch": 20,
+     "ranged": 1,
      "only": 1
     },
     {
@@ -2068,54 +2075,9 @@
      "track": 1.5,
      "delay": 2.4,
      "pct": 250,
-     "only": 1,
      "far": 1,
-     "ranged": 1
-    },
-    {
-     "id": "pull",
-     "name": "실 당기기",
-     "type": "pull",
-     "r": 9,
-     "delay": 4,
-     "maxPct": 70,
-     "pull": 0.07,
+     "ranged": 1,
      "only": 1
-    },
-    {
-     "id": "lanes",
-     "name": "새끼 거미 떼 돌진",
-     "type": "lanes",
-     "delay": 3.5,
-     "pct": 200,
-     "only": 1
-    },
-    {
-     "id": "fang2",
-     "name": "독니 찌르기",
-     "type": "fang",
-     "r": 8,
-     "angle": 120,
-     "delay": 1.4,
-     "delay2": 1.2,
-     "hits2": 2,
-     "pct": 220,
-     "poison": 4,
-     "only": 2
-    },
-    {
-     "id": "web2",
-     "name": "거미줄 발사",
-     "type": "web",
-     "r": 3.5,
-     "track": 1.5,
-     "delay": 2.0,
-     "pct": 100,
-     "cocoon": 4,
-     "targets2": 2,
-     "only": 2,
-     "far": 1,
-     "ranged": 1
     },
     {
      "id": "needle",
@@ -2130,14 +2092,37 @@
      "poison": 3,
      "far": 1,
      "ranged": 1,
-     "only": 2
+     "only": 1
     },
     {
-     "id": "absorb",
-     "name": "알 흡수",
-     "type": "absorb",
-     "count": 2,
-     "absorbSec": 8,
+     "id": "eggs",
+     "name": "알 낳기",
+     "type": "eggs",
+     "count": 3,
+     "hatch": 20,
+     "only": 1
+    },
+    {
+     "id": "pull",
+     "name": "실 당기기",
+     "type": "pull",
+     "r": 9,
+     "delay": 4,
+     "maxPct": 70,
+     "pull": 0.07,
+     "only": 1
+    },
+    {
+     "id": "combo",
+     "name": "앞뒤 연타",
+     "type": "fang",
+     "hits": 3,
+     "r": 9,
+     "angle": 120,
+     "delay": 1.4,
+     "delay2": 1.2,
+     "pct": 220,
+     "poison": 4,
      "only": 2
     },
     {
@@ -2156,19 +2141,71 @@
      "name": "먹잇감",
      "type": "share",
      "r": 6,
-     "track": 2.5,
-     "delay": 2.4,
+     "track": 2.0,
+     "delay": 3.0,
      "maxPct": 90,
-     "only": 2,
-     "maxPctSolo": 50
+     "maxPctSolo": 50,
+     "outPct": 70,
+     "outPoison": 3,
+     "center": 1,
+     "only": 2
+    },
+    {
+     "id": "webrain",
+     "name": "거미줄 비",
+     "type": "webrain",
+     "count": 5,
+     "onPlayers": 2,
+     "r": 4,
+     "delay": 2.0,
+     "pct": 120,
+     "web": 15,
+     "only": 2
+    },
+    {
+     "id": "burst",
+     "name": "독 분출",
+     "type": "burst",
+     "rIn": 6,
+     "rOut": 20,
+     "delay": 2.6,
+     "pct": 200,
+     "poison": 3,
+     "r2": 6,
+     "delay2": 1.6,
+     "pct2": 220,
+     "only": 2
     },
     {
      "id": "collapse",
      "name": "둥지 붕괴",
      "type": "collapse",
      "delay": 2.4,
-     "linger": 3,
+     "linger": 1.5,
      "pct": 150,
+     "only": 2
+    },
+    {
+     "id": "absorb",
+     "name": "알 흡수",
+     "type": "absorb",
+     "count": 2,
+     "absorbSec": 8,
+     "only": 2
+    },
+    {
+     "id": "needle2",
+     "name": "독침 사격",
+     "type": "volley",
+     "len": 22,
+     "w": 2.5,
+     "spread": 24,
+     "lines": 5,
+     "delay": 2.4,
+     "pct": 130,
+     "poison": 3,
+     "far": 1,
+     "ranged": 1,
      "only": 2
     },
     {
@@ -2183,6 +2220,20 @@
      "finalDelay": 3.5,
      "safeR": 7,
      "finalPct": 300,
+     "only": 2
+    },
+    {
+     "id": "leap2",
+     "name": "도약 2연속",
+     "type": "jump",
+     "r": 8,
+     "track": 1.5,
+     "delay": 2.4,
+     "delay2": 2.0,
+     "pct": 250,
+     "repeat2": 2,
+     "far": 1,
+     "ranged": 1,
      "only": 2
     }
    ],

@@ -25,6 +25,7 @@ public final class Telegraphs {
     private static final List<T> LIST = new ArrayList<>();
 
     public static void add(Net.Telegraph t) {
+        if (t.shape() == 99) { LIST.clear(); return; }   // 바닥 정리 (보스 페이즈 전환 등)
         long now = System.currentTimeMillis();
         LIST.add(new T(t, now, now + t.ticks() * 50L));
     }
@@ -59,12 +60,19 @@ public final class Telegraphs {
             float p = (float) Math.min(1, Math.max(0, (now - x.start()) / (double) Math.max(1, x.end() - x.start())));
             Net.Telegraph t = x.t();
             float y = (float) (groundY(mc, t) + 0.06);
+            if (t.shape() >= 60) {   // 거미줄 장판 (회색, 밟으면 느려짐): 그대로
+                Net.Telegraph b = new Net.Telegraph(t.shape() - 60, t.x(), t.y(), t.z(), t.dx(), t.dz(), t.a(), t.b(), t.ticks());
+                float yy = y + 0.03f;
+                if (b.shape() == 3) ring(vc, m, b, yy, 1f, 0x80C8C8D2); else circle(vc, m, b, yy, 1f, 0x80C8C8D2);
+                continue;
+            }
             if (t.shape() >= 50) {   // 독 늪 (탁한 황록, 위험): 차오름 없이 그대로
                 Net.Telegraph b = new Net.Telegraph(t.shape() - 50, t.x(), t.y(), t.z(), t.dx(), t.dz(), t.a(), t.b(), t.ticks());
                 float yy = y + 0.02f;
                 switch (b.shape()) {
                     case 1 -> line(vc, m, b, yy, 1f, 0x80809018, 0);
                     case 2 -> cone(vc, m, b, yy, 1f, 0x80809018);
+                    case 3 -> ring(vc, m, b, yy, 1f, 0x80809018);
                     default -> circle(vc, m, b, yy, 1f, 0x80809018);
                 }
                 continue;
@@ -74,6 +82,7 @@ public final class Telegraphs {
                 switch (b.shape()) {
                     case 1 -> { line(vc, m, b, y, 1f, 0x55B050FF, 0); line(vc, m, b, y + 0.01f, p, 0x99A030F0, 0); }
                     case 2 -> { cone(vc, m, b, y, 1f, 0x55B050FF); cone(vc, m, b, y + 0.01f, p, 0x99A030F0); }
+                    case 3 -> { ring(vc, m, b, y, 1f, 0x55B050FF); ring(vc, m, b, y + 0.01f, p, 0x99A030F0); }
                     default -> { circle(vc, m, b, y, 1f, 0x55B050FF); circle(vc, m, b, y + 0.01f, p, 0x99A030F0); }
                 }
                 continue;
@@ -84,6 +93,7 @@ public final class Telegraphs {
                 switch (b.shape()) {
                     case 1 -> line(vc, m, b, yy, 1f, 0x7040E060, 0);
                     case 2 -> cone(vc, m, b, yy, 1f, 0x7040E060);
+                    case 3 -> ring(vc, m, b, yy, 1f, 0x7040E060);
                     default -> circle(vc, m, b, yy, 1f, 0x7040E060);
                 }
                 continue;
@@ -93,6 +103,7 @@ public final class Telegraphs {
                 switch (b.shape()) {
                     case 1 -> line(vc, m, b, y, 1f, 0x66FFD020, 0);
                     case 2 -> cone(vc, m, b, y, 1f, 0x66FFD020);
+                    case 3 -> ring(vc, m, b, y, 1f, 0x66FFD020);
                     default -> circle(vc, m, b, y, 1f, 0x66FFD020);
                 }
                 continue;
@@ -102,6 +113,7 @@ public final class Telegraphs {
                 switch (b.shape()) {
                     case 1 -> { line(vc, m, b, y, 1f, 0x5530A0FF, 0); line(vc, m, b, y + 0.01f, p, 0x992080FF, 0); }
                     case 2 -> { cone(vc, m, b, y, 1f, 0x5530A0FF); cone(vc, m, b, y + 0.01f, p, 0x992080FF); }
+                    case 3 -> { ring(vc, m, b, y, 1f, 0x5530A0FF); ring(vc, m, b, y + 0.01f, p, 0x992080FF); }
                     default -> { circle(vc, m, b, y, 1f, 0x5530A0FF); circle(vc, m, b, y + 0.01f, p, 0x992080FF); }
                 }
                 continue;
@@ -109,6 +121,7 @@ public final class Telegraphs {
             switch (t.shape()) {
                 case 1 -> { line(vc, m, t, y, 1f, 0x55FF2020, 0); line(vc, m, t, y + 0.01f, p, 0x99FF1010, 0); }
                 case 2 -> { cone(vc, m, t, y, 1f, 0x55FF2020); cone(vc, m, t, y + 0.01f, p, 0x99FF1010); }
+                case 3 -> { ring(vc, m, t, y, 1f, 0x55FF2020); ring(vc, m, t, y + 0.01f, p, 0x99FF1010); }
                 default -> { circle(vc, m, t, y, 1f, 0x55FF2020); circle(vc, m, t, y + 0.01f, p, 0x99FF1010); }
             }
         }
@@ -165,6 +178,21 @@ public final class Telegraphs {
             float x2 = cx + (float) Math.cos(a2) * r, z2 = cz + (float) Math.sin(a2) * r;
             quad(vc, m, cx, cz, x2, z2, x1, z1, cx, cz, y, col);   // 위에서 보이게 (반시계)
             quad(vc, m, cx, cz, x1, z1, x2, z2, cx, cz, y, col);   // 아래에서도
+        }
+    }
+
+    /** 도넛: 안쪽 반경 b ~ 바깥 반경 a. 진행도만큼 안에서 밖으로 차오름 */
+    private static void ring(VertexConsumer vc, Matrix4f m, Net.Telegraph t, float y, float p, int col) {
+        float ri = Math.min(t.a(), t.b()), ro = ri + (Math.max(t.a(), t.b()) - ri) * p, cx = (float) t.x(), cz = (float) t.z();
+        if (ro - ri < 0.01f) return;
+        int n = 48;
+        for (int i = 0; i < n; i++) {
+            double a1 = Math.PI * 2 * i / n, a2 = Math.PI * 2 * (i + 1) / n;
+            float c1 = (float) Math.cos(a1), s1 = (float) Math.sin(a1), c2 = (float) Math.cos(a2), s2 = (float) Math.sin(a2);
+            float ix1 = cx + c1 * ri, iz1 = cz + s1 * ri, ix2 = cx + c2 * ri, iz2 = cz + s2 * ri;
+            float ox1 = cx + c1 * ro, oz1 = cz + s1 * ro, ox2 = cx + c2 * ro, oz2 = cz + s2 * ro;
+            quad(vc, m, ix1, iz1, ix2, iz2, ox2, oz2, ox1, oz1, y, col);
+            quad(vc, m, ix1, iz1, ox1, oz1, ox2, oz2, ix2, iz2, y, col);
         }
     }
 

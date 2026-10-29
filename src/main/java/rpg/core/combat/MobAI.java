@@ -33,7 +33,7 @@ import rpg.core.net.Net;
 public final class MobAI {
     private MobAI() {}
 
-    public static final int CIRCLE = 0, LINE = 1, CONE = 2;
+    public static final int CIRCLE = 0, LINE = 1, CONE = 2, RING = 3;   // RING: a = 바깥 반경, b = 안쪽 반경 (도넛)
 
     // ───────── 스폰할 때 ─────────
     public static void setup(Mob mob, Balance.MobDef def) {
