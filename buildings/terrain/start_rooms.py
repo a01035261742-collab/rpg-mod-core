@@ -1,5 +1,5 @@
 """시작 마을 지역 v2: 공터(구역) + 자연스러운 바위 언덕 벽 + 좁은 통로. 식물 없음."""
-import numpy as np, sys
+import numpy as np, sys, json
 from scipy.ndimage import distance_transform_edt, gaussian_filter
 from PIL import Image, ImageDraw, ImageFont
 
@@ -142,7 +142,22 @@ _, fzg = G(0, fall_z)
 fall_g = None
 for xg in range(G(pond_c[0] - 6, 0)[0], 0, -1):          # 연못 서쪽으로 가다가 처음 높아지는 곳 = 폭포
     if H[fzg, xg] >= BASE + 6: fall_g = (xg, fzg); fall_x = xg / SC - OFF; break
+# 폭포 → 연못: 계단식 개울 (폭 3, 물은 둑보다 1칸 아래, 바닥 2칸 아래, 양옆 둑은 윗계단 높이까지 → 안 넘침)
+WLV2 = np.where(water, WATER, 0); CH_BANK = np.zeros((D, W), bool)
+if fall_g:
+    fxg, fzg_ = fall_g
+    x = fxg; prev = H[fzg_, fxg] + 1
+    while x < W and not water[fzg_, x]:
+        h = min(int(H[fzg_, x]), prev - (x > fxg) * 0)      # 내려가기만 (중간에 솟은 곳 없게)
+        h = min(h, prev if x > fxg else h)
+        for dz in (-1, 0, 1):
+            H[fzg_ + dz, x] = h - 2; water[fzg_ + dz, x] = True; WLV2[fzg_ + dz, x] = h - 1
+        for dz in (-3, -2, 2, 3):
+            H[fzg_ + dz, x] = max(int(H[fzg_ + dz, x]), h, prev); CH_BANK[fzg_ + dz, x] = True
+        prev = h; x += 1
+    for dz in range(-3, 4): H[fzg_ + dz, fxg - 1] = max(int(H[fzg_ + dz, fxg - 1]), H[fzg_, fxg] + 4)   # 뒤 벽
 BRIDGES = []
+PCEN = []
 
 # 길
 road = np.zeros((D, W), bool)
@@ -171,7 +186,8 @@ def path(pts, width):
     for a, b in zip(pts, pts[1:]):
         r_ = pathing.route(_pcost, G(*a), G(*b)); cells += r_ if not cells else r_[1:]
     poly = pathing.smooth(cells)
-    m = pathing.stamp(road.shape, poly, 1.0 + width * 0.6)
+    m = pathing.stamp(road.shape, poly, 1.6)   # 폭 일정 (3칸)
+    PCEN.append(poly)
     hit = m & water
     if hit.any(): zz, xx = np.nonzero(hit); BRIDGES.append((xx.mean() / SC - OFFX, zz.mean() / SC - OFFZ) if 'OFFX' in globals() else (xx.mean() / SC - OX, zz.mean() / SC - OZ))
     road |= m & ~water
@@ -222,7 +238,8 @@ farm2 = np.zeros((D, W), bool)
 MAT[farm] = 'farm'
 MAT[farm2] = 'farm2'
 MAT[water] = 'water'
-np.save('H2.npy', H); np.save('MAT2.npy', MAT); np.save('walk2.npy', walk)
+MAT[CH_BANK & ~water] = 'stone'   # 개울 둑 = 바위
+json.dump([[list(map(float, p)) for p in poly] for poly in PCEN], open('polys2.json', 'w')); np.save('pcen2.npy', np.any([pathing.stamp(road.shape, p, 0.75) for p in PCEN], axis=0)); np.save('WLV2.npy', WLV2); np.save('H2.npy', H); np.save('MAT2.npy', MAT); np.save('walk2.npy', walk)
 import json
 json.dump({'SC': SC, 'OFFX': OFFX, 'OFFZ': OFFZ, 'plaza': G(*ROOMS['village'][0]), 'fall': fall_g and [int(v) for v in fall_g],
            'bridge': [G(64, 112), G(66, 132)], 'pond_x': G(pond_c[0], 0)[0], 'K': K}, open('meta.json', 'w'))

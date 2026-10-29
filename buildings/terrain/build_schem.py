@@ -17,7 +17,7 @@ P = ['minecraft:air', 'minecraft:barrier', 'minecraft:stone', 'minecraft:dirt', 
      'minecraft:coarse_dirt', 'minecraft:andesite', 'minecraft:gravel', 'minecraft:sand', 'minecraft:water[level=0]',
      'minecraft:polished_andesite', 'minecraft:stone_bricks', 'minecraft:cracked_stone_bricks', 'minecraft:mossy_stone_bricks',
      'minecraft:stone_brick_wall[east=none,north=low,south=low,up=true,waterlogged=false,west=none]', 'minecraft:cobblestone',
-     'minecraft:stone_brick_slab[type=bottom,waterlogged=false]']
+     'minecraft:stone_brick_slab[type=bottom,waterlogged=false]', 'minecraft:tuff', 'minecraft:clay']
 I = {n.split(':')[1].split('[')[0]: i for i, n in enumerate(P)}
 V = np.zeros((TOP + 1, D, W), np.uint8)   # y, z, x
 Y = np.arange(TOP + 1)[:, None, None]
@@ -37,39 +37,26 @@ zz, xx = np.nonzero(pl)
 for z, x in zip(zz, xx):
     r = rng.random()
     V[H[z, x], z, x] = I['stone_bricks'] if (x + z) % 4 == 0 else I['cracked_stone_bricks'] if r < 0.08 else I['polished_andesite']
-# 바위 비탈: 돌 · 안산암 섞기
+# 바위 비탈: 지층 (점박이 없이 띠·덩어리)
+import blockmix
 rock = (MAT == 'stone') | (MAT == 'andesite')
-mix = rng.random((TOP + 1, D, W)) < 0.18
-V[rock[None] & (Y <= Hc) & mix & (V == I['stone'])] = I['andesite']
-V[rock[None] & (Y <= Hc) & mix & (V == I['andesite']) & (rng.random((TOP + 1, D, W)) < 0.3)] = I['cobblestone']
+blockmix.strata(V, H, rock, I, blockmix.LIGHT, 11)
 # 물: 바닥 위 ~ 수면
-wm = (MAT == 'water')[None]
-V[wm & (Y > Hc) & (Y <= WATER)] = I['water']
+WLV2 = np.load('WLV2.npy')
+wm = (MAT == 'water')
+blockmix.lakebed(V, H, wm, I, [('gravel', .45), ('clay', .3), ('sand', .25)], 12)
+V[wm[None] & (Y > Hc) & (Y <= WLV2[None])] = I['water']
 
-# 길 자연스럽게: 가운데는 흙길 위주 + 거친 흙·자갈 섞임, 가장자리는 흙길·거친 흙·풀이 들쭉날쭉
-from scipy.ndimage import distance_transform_edt as _edt
-_pm = (MAT == 'path')
-_dp = _edt(_pm)
-_r = np.random.default_rng(77).random(_pm.shape)
-_core = _pm & (_dp > 1.5); _edge = _pm & (_dp <= 1.5)
-for z, x in zip(*np.nonzero(_core)):
-    V[H[z, x], z, x] = I['dirt_path'] if _r[z, x] < 0.78 else I['coarse_dirt'] if _r[z, x] < 0.92 else I['gravel']
-for z, x in zip(*np.nonzero(_edge)):
-    V[H[z, x], z, x] = I['dirt_path'] if _r[z, x] < 0.45 else I['coarse_dirt'] if _r[z, x] < 0.7 else I['grass_block']
+# 길: 가운데 줄 흙길 + 양옆 거친 흙 · 마을 광장 근처는 돌 포장 (안산암 + 조약돌)
+d_v = blockmix.zone_dist((D, W), [PLAZA]) + (blockmix.blob((D, W), 4, 41) - 0.5) * 8
+okm = WALK & np.isin(MAT, ['path', 'grass', 'coarse'])
+blockmix.natural_paths(V, H, MAT, I, json.load(open('polys2.json')), lambda z, x: ('cobblestone', 'andesite', 'gravel') if d_v[z, x] < 58 else ('dirt_path', 'coarse_dirt', 'gravel'), okm)
 # 동쪽 끝 강물: 맵 밖으로 안 흐르게 돌로 막음
 edge = (MAT[:, W - 1] == 'water')
 V[:WATER + 2, edge, W - 1] = I['stone']
 
-# 폭포: 연못 서쪽 절벽 꼭대기에 물 원본 (양옆·뒤 막고 연못 쪽으로만 흐름)
-fx = fz = None
-if M['fall']:
-    fx, fz = M['fall']
-    h = H[fz, fx]
-    V[h, fz, fx] = I['water']
-    for dz in (-1, 1): V[h:h + 2, fz + dz, fx] = I['stone']
-    V[h:h + 2, fz, fx - 1] = I['stone']
-    V[h + 1:, fz, fx] = 0
-
+# 폭포: 개울 맨 위 (start_rooms 에서 물길·둑·뒤 벽 만듦) — 물은 모두 고인 물, 둑보다 1칸 아래
+fx = fz = M['fall'] and M['fall'][0]
 # 다리: 광장 → 아랫마을 길이 강을 건너는 곳 (돌다리, 폭 5, 난간)
 (bx0, bz0), (bx1, bz1) = M['bridge']
 def xline(z):

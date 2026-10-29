@@ -49,7 +49,7 @@ PASS = [   # 통로
     ([(152, 152), (180, 158)], 8),          # 마을 → 5
     ([(232, 142), (250, 120)], 7),          # 5 → 6
     ([(234, 80), (212, 66)], 7),            # 6 → 7
-    ([(292, 108), (316, 104), (326, 82), (320, 58), (306, 44)], 7),   # 6 → 수호자 (멀리 돌아가는 골짜기)
+    ([(292, 108), (310, 102), (316, 82), (312, 60), (302, 46)], 7),   # 6 → 수호자 (멀리 돌아가는 골짜기)
     ([(146, 54), (94, 54)], 7),             # 7 → 8
     ([(66, 44), EXIT], 7),                  # 8 → 출구
 ]
@@ -132,8 +132,8 @@ bog = np.zeros((D, W), bool)
 for (bx, bz, br) in [(58, 48, 6), (84, 62, 5), (44, 64, 4)]:
     bog |= np.sqrt((X - bx) ** 2 + (Z - bz) ** 2) + edge * 4 < br
 bog &= walk
-WATER |= bog; WLV[bog] = BASE - 3
-H = np.where(bog, BASE - 4, H)
+WATER |= bog; WLV[bog] = BASE - 4
+H = np.where(bog, BASE - 5, H)
 
 # 길: 구불구불
 PX = X + (fbm(501) - 0.5) * 7; PZ = Z + (fbm(502) - 0.5) * 7
@@ -148,6 +148,7 @@ def spline(pts, n=10):
     out.append(np.array(pts[-1], float)); return [tuple(p) for p in out]
 import pathing
 BRIDGES = []
+PCEN = []
 _pcost = None
 def path(pts, width):
     """실제 지형 위 길 찾기 (공터 가운데·완만한 곳으로), 폭 일정, 둥글게 다듬음"""
@@ -157,13 +158,14 @@ def path(pts, width):
     for a, b in zip(pts, pts[1:]):
         r_ = pathing.route(_pcost, G(*a), G(*b)); cells += r_ if not cells else r_[1:]
     poly = pathing.smooth(cells)
-    m = pathing.stamp(road.shape, poly, 1.0 + width * 0.6)
+    m = pathing.stamp(road.shape, poly, 1.6)   # 폭 일정 (3칸)
+    PCEN.append(poly)
     hit = m & WATER
     if hit.any(): zz, xx = np.nonzero(hit); BRIDGES.append((xx.mean() / SC - OFFX, zz.mean() / SC - OFFZ) if 'OFFX' in globals() else (xx.mean() / SC - OX, zz.mean() / SC - OZ))
     road |= m & ~WATER
 path([ENTRY, (98, 214), (104, 196), (110, 176), (112, 152), (150, 152), (182, 158), (206, 160), (234, 140), (250, 118), (262, 96), (234, 80), (210, 64), (176, 54), (140, 54), (108, 54), (72, 52), (64, 30), EXIT], 1.6)
 path([(98, 214)] + [p for p, _ in VAL] + [(24, 126)], 1.1)      # 숲의 군주 경기장
-path([(262, 96), (292, 108), (316, 104), (326, 82), (320, 58), (306, 44), (290, 20)], 1.1)      # 수호자 경기장
+path([(262, 96), (292, 108), (310, 102), (316, 82), (312, 60), (302, 46), (290, 20)], 1.1)      # 수호자 경기장
 plaza = np.sqrt((X - 112) ** 2 + (Z - 152) ** 2) < 8
 
 # 재질
@@ -172,10 +174,11 @@ MAT = np.full((D, W), 'grass', dtype=object)
 fl = fbm(611)
 zone = np.where(dout < 4, zone0, zone)
 zone_full = zone.copy()   # 고원 위까지 구역 땅 (위에서 봐도 구역이 구분됨)
-MAT[zone == 'g5'] = np.where(fl[zone == 'g5'] > 0.62, 'coarse', np.where(fl[zone == 'g5'] > 0.42, 'podzol', 'grass'))
-MAT[zone == 'g6'] = np.where(fl[zone == 'g6'] > 0.45, 'mycelium', 'podzol')
-MAT[zone == 'g7'] = np.where(fl[zone == 'g7'] > 0.35, 'mycelium', 'coarse')
-MAT[zone == 'g8'] = np.where(fl[zone == 'g8'] > 0.5, 'mud', 'deepdirt')
+q = lambda g, p: np.quantile(fl[zone_full == g], p)   # 구역 안에서 비율대로
+MAT[zone == 'g5'] = np.where(fl[zone == 'g5'] > q('g5', 0.55), 'mycelium', 'grass')
+MAT[zone == 'g6'] = np.where(fl[zone == 'g6'] > q('g6', 0.18), 'mycelium', 'podzol')
+MAT[zone == 'g7'] = np.where(fl[zone == 'g7'] > q('g7', 0.08), 'mycelium', 'podzol')
+MAT[zone == 'g8'] = np.where(fl[zone == 'g8'] > q('g8', 0.5), 'mud', 'podzol')
 MAT[zone == 'arena1'] = 'grass'
 MAT[zone == 'arena2'] = 'mycelium'
 dark = np.isin(zone_full, ['g7', 'g8', 'arena2']) & (dout < 16)
@@ -196,7 +199,7 @@ for nm, (c, r, h, gnd) in ARENAS.items():
     rr = np.sqrt((X - c[0]) ** 2 + (Z - c[1]) ** 2)
     MAT[(np.abs(rr - 24) < 0.5) & walk & ~road] = 'ring'
 
-np.save('R2_H.npy', H); np.save('R2_MAT.npy', MAT); np.save('R2_walk.npy', walk); np.save('R2_WLV.npy', WLV)
+json.dump([[list(map(float, p)) for p in poly] for poly in PCEN], open('R2_polys.json', 'w')); np.save('R2_pcen.npy', np.any([pathing.stamp(road.shape, p, 0.75) for p in PCEN], axis=0)); np.save('R2_zone.npy', zone_full.astype(str)); np.save('R2_H.npy', H); np.save('R2_MAT.npy', MAT); np.save('R2_walk.npy', walk); np.save('R2_WLV.npy', WLV)
 json.dump({'SC': SC, 'entry': G(*ENTRY), 'exit': G(*EXIT), 'arenas': {k: G(*v[0]) for k, v in ARENAS.items()}, 'arena_r': {k: v[1] * SC for k, v in ARENAS.items()}}, open('R2_meta.json', 'w'))
 print('H', H.min(), H.max(), 'size', W, D)
 

@@ -20,8 +20,8 @@ TOP = int(max(H.max(), WLV.max())) + 6
 P = ['minecraft:air', 'minecraft:barrier', 'minecraft:stone', 'minecraft:dirt', 'minecraft:grass_block[snowy=false]', 'minecraft:dirt_path',
      'minecraft:coarse_dirt', 'minecraft:andesite', 'minecraft:podzol[snowy=false]', 'minecraft:mycelium[snowy=false]', 'minecraft:mud',
      'minecraft:rooted_dirt', 'minecraft:tuff', 'minecraft:deepslate[axis=y]', 'minecraft:water[level=0]', 'minecraft:polished_andesite',
-     'minecraft:stone_bricks', 'minecraft:cobblestone', 'minecraft:cobbled_deepslate', 'minecraft:packed_mud', 'minecraft:gravel', 'minecraft:sand']
-import arena_deco
+     'minecraft:stone_bricks', 'minecraft:cobblestone', 'minecraft:cobbled_deepslate', 'minecraft:packed_mud', 'minecraft:gravel', 'minecraft:sand', 'minecraft:smooth_basalt', 'minecraft:clay', 'minecraft:cracked_stone_bricks', 'minecraft:deepslate_bricks', 'minecraft:cracked_deepslate_bricks', 'minecraft:mossy_stone_bricks']
+import arena_deco, blockmix
 P += [n for n in arena_deco.blocks() if n not in P]
 I = {n.split(':')[1].split('[')[0]: i for i, n in enumerate(P)}
 IF = {n: i for i, n in enumerate(P)}
@@ -38,23 +38,29 @@ for k in surf:
     m = (MAT == k)[None]
     V[m & (Y < Hc) & (Y >= Hc - 3)] = I[sub[k]]
     V[m & (Y == Hc)] = I[surf[k]]
-mix = rng.random((TOP + 1, D, W)) < 0.15
-V[np.isin(MAT, ['stone', 'andesite'])[None] & (Y <= Hc) & mix] = I['cobblestone']
-V[np.isin(MAT, ['tuff', 'deepslate'])[None] & (Y <= Hc) & mix] = I['cobbled_deepslate']
+import blockmix
+blockmix.strata(V, H, np.isin(MAT, ['stone', 'andesite']), I, blockmix.LIGHT, 21)
+blockmix.strata(V, H, np.isin(MAT, ['tuff', 'deepslate']), I, blockmix.DARK, 22)
+blockmix.lakebed(V, H, MAT == 'water', I, [('gravel', .4), ('clay', .35), ('sand', .25)], 23)
 wm = np.isin(MAT, ['water', 'bog'])
 V[wm[None] & (Y > Hc) & (Y <= WLV[None])] = I['water']
 
 
-# 길 자연스럽게: 가운데는 흙길 위주 + 거친 흙·자갈 섞임, 가장자리는 흙길·거친 흙·풀이 들쭉날쭉
-from scipy.ndimage import distance_transform_edt as _edt
-_pm = (MAT == 'path')
-_dp = _edt(_pm)
-_r = np.random.default_rng(77).random(_pm.shape)
-_core = _pm & (_dp > 1.5); _edge = _pm & (_dp <= 1.5)
-for z, x in zip(*np.nonzero(_core)):
-    V[H[z, x], z, x] = I['dirt_path'] if _r[z, x] < 0.78 else I['coarse_dirt'] if _r[z, x] < 0.92 else I['gravel']
-for z, x in zip(*np.nonzero(_edge)):
-    V[H[z, x], z, x] = I['dirt_path'] if _r[z, x] < 0.45 else I['coarse_dirt'] if _r[z, x] < 0.7 else I['grass_block']
+# 길: 가운데 줄 + 양옆 줄 (구역별) · 마을 근처는 돌 포장 · 경기장 입구 앞은 옛 벽돌 포장
+ZN = np.load('R2_zone.npy'); MM0 = json.load(open('R2_meta.json'))
+PLZ = [(int(round((112 + 12) * 1.5)), int(round((152 + 16) * 1.5)))]
+d_v = blockmix.zone_dist((D, W), PLZ) + (blockmix.blob((D, W), 4, 41) - 0.5) * 8
+d_a = {k: blockmix.zone_dist((D, W), [tuple(v)]) for k, v in MM0['arenas'].items()}
+WILD = {'grass': ('dirt_path', 'coarse_dirt', 'gravel'), 'arena1': ('dirt_path', 'coarse_dirt', 'gravel'), 'g5': ('dirt_path', 'coarse_dirt', 'gravel'),
+        'g6': ('coarse_dirt', 'podzol', 'packed_mud'), 'g7': ('coarse_dirt', 'podzol', 'packed_mud'), 'arena2': ('coarse_dirt', 'podzol', 'packed_mud'),
+        'g8': ('packed_mud', 'mud', 'gravel')}
+def pick(z, x):
+    if d_a['boss1'][z, x] < 54: return ('stone_bricks', 'cracked_stone_bricks', 'mossy_stone_bricks')
+    if d_a['boss2'][z, x] < 54: return ('deepslate_bricks', 'cracked_deepslate_bricks', 'cobbled_deepslate')
+    if d_v[z, x] < 62: return ('cobblestone', 'andesite', 'gravel')
+    return WILD.get(ZN[z, x], WILD['grass'])
+okm = WALK & np.isin(MAT, ['path', 'grass', 'podzol', 'mycelium', 'coarse', 'mud', 'deepdirt'])
+print('길', blockmix.natural_paths(V, H, MAT, I, json.load(open('R2_polys.json')), pick, okm))
 MM = json.load(open('R2_meta.json'))
 arena_deco.deco(V, H, IF, MAT == 'path', {k: tuple(v) for k, v in MM['arenas'].items()}, MM['arena_r'])
 # 투명 방벽 (시작 마을과 같은 방식: 공터에서 9~11칸 바깥 + 얇은 벽은 능선, 땅 위 4칸)
