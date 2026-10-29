@@ -8,7 +8,9 @@ def G(x,z): return int(round((x+OX)*SC)), int(round((z+OZ)*SC))
 T=lambda p:(62+(p[0]-62)*K,92+(p[1]-92)*K)
 wallz = gaussian_filter((distance_transform_edt(~WALK) >= 4.5).astype(float), 3) > 0.5
 allowed = WALK | ((MAT == 'water') & ~wallz)
-dA = distance_transform_edt(~allowed); ring=(dA>5)&(dA<=7)
+dA = distance_transform_edt(~allowed); from scipy.ndimage import maximum_filter
+crest=(dA>=maximum_filter(dA,5)-0.5)&(dA>3)&(dA<=11)
+ring=((dA>9)&(dA<=11))|crest
 def bfs(Hm):
     src=G(62,92); seen=np.zeros((D,W),bool); q=deque([src]); seen[src[1],src[0]]=True
     while q:
@@ -18,7 +20,7 @@ def bfs(Hm):
             if 0<=nx<W and 0<=nz<D and not seen[nz,nx] and not ring[nz,nx] and Hm[nz,nx]-Hm[z,x]<=1: seen[nz,nx]=True; q.append((nx,nz))
     return seen
 s=bfs(H)
-print('바깥 고원 도달 칸', int((s & (dA>8)).sum()), ' / 다닐 곳', int(s.sum()))
+print('바깥 고원 도달 칸', int((s & (dA>12)).sum()), ' / 다닐 곳', int(s.sum()))
 H2=H.copy()
 for p in [(148,92),(154,76),(158,58)]:
     c=G(*T(p)); H2[c[1]-14:c[1]+14, c[0]-14:c[0]+14]=999

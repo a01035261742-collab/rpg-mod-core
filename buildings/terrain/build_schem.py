@@ -97,13 +97,15 @@ def save(path, x0, z0, x1, z1):
 wallz = gaussian_filter((distance_transform_edt(~WALK) >= 4.5).astype(float), 3) > 0.5
 allowed = WALK | ((MAT == 'water') & ~wallz)
 dA = distance_transform_edt(~allowed)
-ring = (dA > 5) & (dA <= 7)
+from scipy.ndimage import maximum_filter
+crest = (dA >= maximum_filter(dA, 5) - 0.5) & (dA > 3) & (dA <= 11)   # 얇은 벽: 능선 꼭대기
+ring = ((dA > 9) & (dA <= 11)) | crest
 
 zz, xx = np.nonzero(ring)
 for z, x in zip(zz, xx):
     h = H[z, x]
     top = max(h, WATER) if MAT[z, x] == 'water' else h
-    V[h + 1:top + 4, z, x] = I['barrier']
+    V[h + 1:top + 5, z, x] = I["barrier"]
 print('방벽 칸', len(zz))
 
 import shutil
