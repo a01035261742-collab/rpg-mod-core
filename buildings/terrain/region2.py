@@ -73,15 +73,21 @@ for (rx, rz, rr) in ROCKS:
     rock = np.maximum(rock, sstep(rr + 1.5, 0, dd) * rr * 1.5)
 
 # 바닥 높이 (구역마다, 통로는 자연스러운 경사) + 어느 구역 땅인지
+XW = X + (fbm(831) - 0.5) * 40; ZW = Z + (fbm(832) - 0.5) * 40   # 구역 경계 구불구불
 wsum = np.zeros((D, W)); hsum = np.zeros((D, W)); near = np.full((D, W), 1e9); zone = np.full((D, W), '', dtype=object)
+near0 = np.full((D, W), 1e9); zone0 = np.full((D, W), '', dtype=object)   # 공터 안은 휘지 않은 경계
 for nm, (c, r, h, rough, gnd, boxes) in ROOMS.items():
     dist = np.sqrt(((X - c[0]) / r[0]) ** 2 + ((Z - c[1]) / r[1]) ** 2)
     wt = 1 / (dist ** 4 + 0.05); hh = h + (fbm(hash(nm) % 97) - 0.5) * 2 * rough
     wsum += wt; hsum += wt * hh
+    u0 = dist < near0; zone0[u0] = gnd; near0 = np.where(u0, dist, near0)
+    dist = np.sqrt(((XW - c[0]) / r[0]) ** 2 + ((ZW - c[1]) / r[1]) ** 2)
     upd = dist < near; zone[upd] = gnd; near = np.where(upd, dist, near)
 for nm, (c, r, h, gnd) in ARENAS.items():
     dist = np.sqrt((X - c[0]) ** 2 + (Z - c[1]) ** 2) / r
     wt = 1 / (dist ** 4 + 0.05); wsum += wt; hsum += wt * h
+    u0 = dist < near0; zone0[u0] = gnd; near0 = np.where(u0, dist, near0)
+    dist = np.sqrt((XW - c[0]) ** 2 + (ZW - c[1]) ** 2) / r
     upd = dist < near; zone[upd] = gnd; near = np.where(upd, dist, near)
 base = hsum / wsum
 for nm, (c, r, h, rough, gnd, boxes) in ROOMS.items():
@@ -100,9 +106,18 @@ H = np.round(H).astype(int)
 
 # 물: 마을 연못 + 8 어둠 경계의 검은 늪 웅덩이
 WATER = np.zeros((D, W), bool); WLV = np.zeros((D, W), int)
-pond = np.sqrt(((X - 92) / 9) ** 2 + ((Z - 162) / 6) ** 2) + edge * 0.4 < 1
+# 연못: 둥근 덩어리 3개 겹침 + 물가 들쭉날쭉 + 가운데 깊음 + 작은 섬 + 모래·자갈 물가
+def _lobe(cx, cz, rx, rz): return np.sqrt(((X - cx) / rx) ** 2 + ((Z - cz) / rz) ** 2)
+pd = np.minimum.reduce([_lobe(92, 162, 9, 6), _lobe(82, 156, 5.5, 4.5), _lobe(100, 168, 6, 4), _lobe(86, 168, 4, 3)])
+pd = pd + (fbm(811) - 0.5) * 0.5 + edge * 0.15
+pond = pd < 1
+islet = (_lobe(89, 161, 3.2, 2.2) + (fbm(812) - 0.5) * 0.4) < 1
+pond &= ~islet
 WATER |= pond; WLV[pond] = BASE + 1
-H = np.where(pond, BASE, H)
+deep = np.clip((1 - pd) * 3.2, 0, 3).astype(int)            # 물가 1칸 → 가운데 3칸 깊이
+H = np.where(pond, BASE + 1 - 1 - deep, H)
+H = np.where(islet, BASE + 2, H)
+shore = (pd < 1.28) & ~pond & ~islet
 bog = np.zeros((D, W), bool)
 for (bx, bz, br) in [(58, 48, 6), (84, 62, 5), (44, 64, 4)]:
     bog |= np.sqrt((X - bx) ** 2 + (Z - bz) ** 2) + edge * 4 < br
@@ -145,10 +160,9 @@ plaza = np.sqrt((X - 112) ** 2 + (Z - 152) ** 2) < 8
 gx, gz = np.gradient(H.astype(float)); slope = np.sqrt(gx ** 2 + gz ** 2)
 MAT = np.full((D, W), 'grass', dtype=object)
 fl = fbm(611)
-inroom = dout < 4   # 구역 땅 종류는 공터·비탈 아래쪽만 (바깥 고원은 잔디)
-zone_full = zone.copy()
-zone = np.where(inroom, zone, '')
-MAT[zone == 'g5'] = np.where(fl[zone == 'g5'] > 0.55, 'podzol', 'grass')
+zone = np.where(dout < 4, zone0, zone)
+zone_full = zone.copy()   # 고원 위까지 구역 땅 (위에서 봐도 구역이 구분됨)
+MAT[zone == 'g5'] = np.where(fl[zone == 'g5'] > 0.62, 'coarse', np.where(fl[zone == 'g5'] > 0.42, 'podzol', 'grass'))
 MAT[zone == 'g6'] = np.where(fl[zone == 'g6'] > 0.45, 'mycelium', 'podzol')
 MAT[zone == 'g7'] = np.where(fl[zone == 'g7'] > 0.35, 'mycelium', 'coarse')
 MAT[zone == 'g8'] = np.where(fl[zone == 'g8'] > 0.5, 'mud', 'deepdirt')
@@ -160,6 +174,10 @@ steep = slope >= 1.0
 MAT[steep & ~dark & (rockn > 0.5)] = 'andesite'; MAT[steep & ~dark & (rockn <= 0.5)] = 'stone'
 MAT[steep & dark & (rockn > 0.5)] = 'tuff'; MAT[steep & dark & (rockn <= 0.5)] = 'deepslate'
 MAT[walk & (rock >= 1.5)] = np.where(dark[walk & (rock >= 1.5)], 'deepslate', 'stone')
+shn = fbm(813)
+sh = shore & walk & (shn > 0.38)
+MAT[sh] = np.where(shn[sh] > 0.6, 'sand', 'gravel')
+MAT[islet] = 'grass'
 MAT[road] = 'path'; MAT[plaza] = 'plaza'; MAT[WATER] = np.where(bog[WATER], 'bog', 'water')
 # 경기장 테두리 (원 표시용 돌 고리, 반지름 = 실제 경기장)
 for nm, (c, r, h, gnd) in ARENAS.items():
@@ -176,10 +194,11 @@ fb = ImageFont.truetype(F, 22, index=1); fs = ImageFont.truetype(F, 14, index=1)
 S = 3
 COL = {'grass': (98, 156, 64), 'stone': (122, 122, 126), 'andesite': (146, 146, 142), 'coarse': (120, 92, 66), 'podzol': (112, 82, 40),
        'mycelium': (118, 100, 120), 'mud': (60, 56, 60), 'deepdirt': (82, 66, 52), 'tuff': (100, 104, 92), 'deepslate': (66, 66, 72),
-       'path': (178, 148, 98), 'plaza': (172, 172, 178), 'water': (60, 110, 205), 'bog': (52, 70, 60), 'ring': (200, 200, 200)}
+       'path': (178, 148, 98), 'plaza': (172, 172, 178), 'water': (60, 110, 205), 'bog': (52, 70, 60), 'ring': (200, 200, 200), 'sand': (218, 206, 150), 'gravel': (136, 128, 124)}
 arr = np.zeros((D, W, 3))
 for k, c in COL.items(): arr[MAT == k] = c
 lum = 0.82 + 0.018 * (H - BASE); shade = 1 + 0.30 * (-gx - 1.2 * gz) / 1.56
+arr[MAT == 'water'] = arr[MAT == 'water'] * (1 - 0.12 * (WLV - H)[MAT == 'water'].clip(0, 4))[:, None]
 arr = np.clip(arr * np.where(np.isin(MAT, ['water', 'bog']), 1, lum * shade)[..., None], 0, 255).astype(np.uint8)
 img = Image.new('RGB', (W * S + 290, D * S + 70), (20, 22, 28))
 img.paste(Image.fromarray(arr).resize((W * S, D * S), Image.NEAREST), (0, 60))

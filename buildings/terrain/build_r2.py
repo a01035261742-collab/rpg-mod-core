@@ -20,13 +20,13 @@ TOP = int(max(H.max(), WLV.max())) + 6
 P = ['minecraft:air', 'minecraft:barrier', 'minecraft:stone', 'minecraft:dirt', 'minecraft:grass_block[snowy=false]', 'minecraft:dirt_path',
      'minecraft:coarse_dirt', 'minecraft:andesite', 'minecraft:podzol[snowy=false]', 'minecraft:mycelium[snowy=false]', 'minecraft:mud',
      'minecraft:rooted_dirt', 'minecraft:tuff', 'minecraft:deepslate[axis=y]', 'minecraft:water[level=0]', 'minecraft:polished_andesite',
-     'minecraft:stone_bricks', 'minecraft:cobblestone', 'minecraft:cobbled_deepslate', 'minecraft:packed_mud', 'minecraft:gravel']
+     'minecraft:stone_bricks', 'minecraft:cobblestone', 'minecraft:cobbled_deepslate', 'minecraft:packed_mud', 'minecraft:gravel', 'minecraft:sand']
 I = {n.split(':')[1].split('[')[0]: i for i, n in enumerate(P)}
 surf = {'grass': 'grass_block', 'path': 'dirt_path', 'plaza': 'polished_andesite', 'stone': 'stone', 'andesite': 'andesite', 'coarse': 'coarse_dirt',
         'podzol': 'podzol', 'mycelium': 'mycelium', 'mud': 'mud', 'deepdirt': 'rooted_dirt', 'tuff': 'tuff', 'deepslate': 'deepslate',
-        'water': 'dirt', 'bog': 'mud', 'ring': 'polished_andesite'}
+        'water': 'dirt', 'bog': 'mud', 'ring': 'polished_andesite', 'sand': 'sand', 'gravel': 'gravel'}
 sub = {'grass': 'dirt', 'path': 'dirt', 'plaza': 'stone', 'stone': 'stone', 'andesite': 'andesite', 'coarse': 'dirt', 'podzol': 'dirt',
-       'mycelium': 'dirt', 'mud': 'packed_mud', 'deepdirt': 'dirt', 'tuff': 'tuff', 'deepslate': 'deepslate', 'water': 'dirt', 'bog': 'packed_mud', 'ring': 'stone'}
+       'mycelium': 'dirt', 'mud': 'packed_mud', 'deepdirt': 'dirt', 'tuff': 'tuff', 'deepslate': 'deepslate', 'water': 'dirt', 'bog': 'packed_mud', 'ring': 'stone', 'sand': 'sand', 'gravel': 'gravel'}
 rng = np.random.default_rng(3)
 V = np.zeros((TOP + 1, D, W), np.uint8)
 Y = np.arange(TOP + 1)[:, None, None]; Hc = H[None]
@@ -57,6 +57,7 @@ allowed = WALK | wm
 dA = distance_transform_edt(~allowed)
 crest = (dA >= maximum_filter(dA, 5) - 0.5) & (dA > 3) & (dA <= 11)
 ring = (((dA > 9) & (dA <= 11)) | crest) & ~np.load('R2_pass.npy')   # 통로 위엔 안 세움
+ring[:, [0, -1]] |= (dA[:, [0, -1]] <= 11)   # 맵 좌우 끝 (경기장 길이 맵 끝에 붙은 곳) 막음
 for z, x in zip(*np.nonzero(ring)): V[H[z, x] + 1:H[z, x] + 5, z, x] = I['barrier']
 print('방벽 칸', int(ring.sum()))
 

@@ -1,10 +1,11 @@
 """3D 미리보기 (비스듬히, 남동쪽 위에서)"""
 import numpy as np, sys
 from PIL import Image, ImageDraw, ImageFont
-H = np.load('H2.npy'); MAT = np.load('MAT2.npy', allow_pickle=True)
+pre = sys.argv[2] if len(sys.argv) > 2 else ''
+H = np.load(pre + 'H.npy' if pre else 'H2.npy'); MAT = np.load(pre + 'MAT.npy' if pre else 'MAT2.npy', allow_pickle=True)
 D, W = H.shape
 COL = {'grass': (98, 156, 64), 'stone': (122, 122, 126), 'andesite': (146, 146, 142), 'coarse': (120, 92, 66), 'sand': (214, 200, 150),
-       'path': (178, 148, 98), 'plaza': (172, 172, 178), 'farm': (110, 76, 50), 'farm2': (88, 62, 42), 'water': (60, 110, 205)}
+       'path': (178, 148, 98), 'plaza': (172, 172, 178), 'farm': (110, 76, 50), 'farm2': (88, 62, 42), 'podzol': (112, 82, 40), 'mycelium': (118, 100, 120), 'mud': (60, 56, 60), 'deepdirt': (82, 66, 52), 'tuff': (100, 104, 92), 'deepslate': (66, 66, 72), 'bog': (52, 70, 60), 'ring': (200, 200, 200), 'gravel': (136, 128, 124), 'water': (60, 110, 205)}
 s = 2.1; k = 2.0      # 가로 크기, 높이 배율
 base = H.min() - 2
 ox = D * s * 1.0 + 20; oy = 120
@@ -16,7 +17,7 @@ for sm in range(W + D - 1):
     for x in range(max(0, sm - D + 1), min(W, sm + 1)):
         z = sm - x
         h = H[z, x]; c = COL[MAT[z, x]]
-        if MAT[z, x] == 'water': h = max(h, 8)
+        
         t = [P(x, z, h + 1), P(x + 1, z, h + 1), P(x + 1, z + 1, h + 1), P(x, z + 1, h + 1)]
         # 옆면 (남쪽·동쪽으로 보이는 면): 앞 칸보다 높은 만큼
         hs = H[z + 1, x] if z + 1 < D else base
@@ -25,5 +26,5 @@ for sm in range(W + D - 1):
         if h > he: d.polygon([P(x + 1, z, h + 1), P(x + 1, z + 1, h + 1), P(x + 1, z + 1, he + 1), P(x + 1, z, he + 1)], fill=dim(COL['stone'] if h - he > 1 else c, 0.78))
         d.polygon(t, fill=dim(c, 0.9 + 0.012 * (h - 10)))
 F = '/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc'
-d.text((16, 12), '시작 마을 지역 — 3D 미리보기 (북서쪽이 위, 높이 ×2 과장)', font=ImageFont.truetype(F, 24, index=1), fill=(20, 30, 50))
+d.text((16, 12), '3D 미리보기 (북서쪽이 위, 높이 ×2 과장)', font=ImageFont.truetype(F, 24, index=1), fill=(20, 30, 50))
 img.save(sys.argv[1])
