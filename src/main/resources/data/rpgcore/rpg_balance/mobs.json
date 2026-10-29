@@ -2180,8 +2180,8 @@
      "id": "collapse",
      "name": "둥지 붕괴",
      "type": "collapse",
-     "delay": 2.4,
-     "linger": 1.5,
+     "delay": 1.9,
+     "linger": 3,
      "pct": 150,
      "only": 2
     },

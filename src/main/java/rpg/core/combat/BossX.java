@@ -318,7 +318,7 @@ final class BossX {
             }
             case "collapse" -> {
                 x.baseAngle = ThreadLocalRandom.current().nextInt(4) * Math.PI / 2;
-                say(l, st, "◆ " + p.name() + " — 1→2→3→4 순서로 무너져요! 독 끝난 칸으로 따라가세요", ChatFormatting.DARK_GREEN);
+                say(l, st, "◆ " + p.name() + " — 둥지가 무너져요! 독 늪을 피해 돌아가세요", ChatFormatting.DARK_GREEN);
                 l.playSound(null, mob.blockPosition(), SoundEvents.WITHER_BREAK_BLOCK, SoundSource.HOSTILE, 1.5f, 0.5f);
                 collapseStep(mob, st, p, l, now);
             }
