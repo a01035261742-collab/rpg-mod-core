@@ -175,6 +175,7 @@ public final class Boss {
         final Map<UUID, Double> dmg = new HashMap<>();
         final Map<UUID, Double> threat = new HashMap<>();   // 노릴 대상 점수: 피해량 (멀리서 준 피해는 rangedThreat 배)
         long pokeReady, gapReady;
+        final java.util.Set<String> usedHp = new java.util.HashSet<>();   // HP 조건 패턴 (천장 숨기 등) 쓴 것
         long emptySince = -1;
         ServerBossEvent bar;
         long meleeReady;
@@ -330,6 +331,15 @@ public final class Boss {
         ServerPlayer t = pickTarget(mob, m, st, fighters, now);
         if (t == null) return;
         st.target = t.getUUID();
+        // HP 조건 패턴 (hpAt%, 한 번): 하던 패턴 끝나면 바로
+        for (Pattern hp : def.patterns()) {
+            if (hp.x("hpAt", 0) <= 0 || st.usedHp.contains(hp.id()) || !inPhase(st, hp)) continue;
+            if (m.hp <= m.maxHp * hp.x("hpAt", 0) / 100.0 + 1) {
+                st.usedHp.add(hp.id());
+                start(mob, st, def, hp, t, fighters, l, now);
+                return;
+            }
+        }
         if (now < st.nextAt || now < m.stunUntil) {
             // 패턴 사이: 붙어 있으면 기본 근접 공격
             if (def.melee() != null && now >= st.meleeReady && now >= m.stunUntil
@@ -364,6 +374,12 @@ public final class Boss {
         ServerPlayer far = p.x("far", 0) > 0 ? farPick(mob, l, st, st.lastFar) : null;
         if (far != null) st.lastFar = far.getUUID();
         start(mob, st, def, p, far != null ? far : t, fighters, l, now);
+    }
+
+    /** 지금 페이즈에 나올 수 있는 패턴 */
+    static boolean inPhase(State st, Pattern p) {
+        int only = (int) p.x("only", 0);
+        return only > 0 ? only == st.phase : p.phase() <= st.phase;
     }
 
     /** 기본 공격 (패턴 아님): 근접 평타 · 원거리 평타 · 뛰어 붙기 */
@@ -410,10 +426,8 @@ public final class Boss {
     /** 카드 더미: 지금 페이즈 패턴을 한 번씩 다 쓰면 다시 섞음, 같은 패턴 연속 없음 */
     private static Pattern draw(State st, Def def, boolean preferRanged) {
         if (st.deck.isEmpty()) {
-            for (Pattern p : def.patterns()) {
-                int only = (int) p.x("only", 0);   // only = 그 페이즈에서만 (여왕: 2페이즈는 패턴 묶음이 바뀜)
-                if (only > 0 ? only == st.phase : p.phase() <= st.phase) st.deck.add(p.id());
-            }
+            for (Pattern p : def.patterns())   // only = 그 페이즈에서만 (여왕: 2페이즈는 패턴 묶음이 바뀜), hpAt 패턴은 덱에 안 넣음
+                if (p.x("hpAt", 0) <= 0 && inPhase(st, p)) st.deck.add(p.id());
             Collections.shuffle(st.deck);
             if (st.deck.size() > 1 && st.deck.get(0).equals(st.last)) Collections.swap(st.deck, 0, st.deck.size() - 1);
         }
@@ -762,6 +776,7 @@ public final class Boss {
     }
 
     static void finish(Mob mob, State st, Def def, long now) {
+        if (st.x.hidePos != null) BossX.hideEnd(mob, st, (ServerLevel) mob.level());   // 천장 숨기 도중 끝남 (아무도 없음 등)
         MobAI.gravity(mob, true);
         st.jumpFrom = null;
         st.back = false;
@@ -1099,6 +1114,7 @@ public final class Boss {
     }
 
     private static void reset(Mob mob, MobData m, State st) {
+        if (st.x.hidePos != null) BossX.hideEnd(mob, st, (ServerLevel) mob.level());
         clearGimmicks((ServerLevel) mob.level(), st);
         mob.setGlowingTag(false);
         if (st.seen > 1) { m.maxHp = m.maxHp / (1 + 0.7 * (st.seen - 1)); st.seen = 1; }   // 인원 배수 원래대로
@@ -1109,6 +1125,7 @@ public final class Boss {
         st.cur = null;
         st.dmg.clear();
         st.threat.clear();
+        st.usedHp.clear();
         st.transUntil = 0;
         st.lastFar = null;
         st.back = false;
@@ -1134,11 +1151,17 @@ public final class Boss {
             ServerLevel l = (ServerLevel) mob.level();
             long now = l.getGameTime();
             if (now < st.transUntil) return 0;   // 페이즈 전환 연출 중 무적
+            if (st.x.hidePos != null) return 0;   // 천장 숨기 중 무적
             if (!st.pillars.isEmpty() && pillarsAlive(l, st)) dmg = Math.max(1, Math.round(dmg * (1 - def.g("pillarReduce", 80) / 100.0)));   // 기둥
             if (now < st.vulnUntil) dmg = Math.round(dmg * (1 + def.g("counterVuln", 30) / 100.0));                                            // 카운터 성공
             if (st.phase == 1 && def.g("transSec", 0) > 0) {   // 전환 전엔 경계 HP 아래로 안 내려감
                 double floor = m.maxHp * def.phase2() / 100.0;
                 if (m.hp - dmg < floor) dmg = Math.max(0, Math.floor(m.hp - floor));
+            }
+            for (Pattern hp : def.patterns()) {   // HP 조건 패턴 (천장 숨기): 나오기 전엔 그 HP 아래로 안 내려감
+                if (hp.x("hpAt", 0) <= 0 || st.usedHp.contains(hp.id()) || !inPhase(st, hp)) continue;
+                double floor = m.maxHp * hp.x("hpAt", 0) / 100.0;
+                if (m.hp > floor && m.hp - dmg < floor) dmg = Math.max(0, Math.floor(m.hp - floor));
             }
             if (st.cur != null && st.cur.type().equals("counter")) st.counterDmg += dmg;
             st.dmg.merge(p.getUUID(), Math.min(dmg, m.hp), Double::sum);

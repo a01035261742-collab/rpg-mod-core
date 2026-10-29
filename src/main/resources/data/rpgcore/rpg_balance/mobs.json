@@ -2034,7 +2034,7 @@
    }
   },
   "boss": {
-   "_설명": "레이드 보스 어둠거미여왕 (2026-10-29 리워크). only = 그 페이즈에서만 나오는 패턴. fang(부채꼴 r·angle, back 1 = 앞을 본 채 뒤를 참 + push칸 밀침, hits = 앞·뒤 번갈아 몇 번 — 뒤 타는 이 보스의 back 패턴, delay2 = 다음 타 예고) · web(추적 원 → 고치 cocoon초, targets명) · jump(추적 원 → 포물선 착지, repeat2 = 2페이즈 연속, delay2 = 두 번째부터 예고) · volley(먼 사람 쪽 직선 lines개, spread도 간격) · eggs(count개 알, hatch초 뒤 부화) · pull(중앙으로 끌림, 끝에 r칸 maxPct%) · mark(모두 추적 원, 겹치면 ×2) · share(한 명 보라 원 → 원 안 인원수로 maxPct% 나눔, 혼자 maxPctSolo, 원 밖 = 최대 HP outPct% + outPoison초 독, center 1 = 모두의 가운데에 가장 가까운 사람) · webrain(count곳 원 r, onPlayers곳은 사람 발밑, 떨어진 자리 거미줄 web초 = 구속 webSlow단계) · burst(도넛 rIn~rOut → 바로 안쪽 r2 내려찍기 delay2·pct2) · collapse(4등분 순서대로 delay초씩, 독 늪 linger초) · absorb(알 count개 absorbSec초, 남은 알당 absorbHeal%) · frenzy(독니 hits번 → 전체, 여왕 safeR칸 안전, 처음부터 초록 원). far 1 = 가장 먼 사람 (방금 노린 사람은 건너뜀), ranged 1 = 누가 farDist칸 넘게 떨어지면 먼저. 고치에 갇힌 사람은 대상에서 빠짐. gimmick: poisonPct 독 1초당 최대 HP %, zonePct 독 늪 0.5초당 최대 HP %, hatchCount, absorbHeal, restEvery·restSec 정기 휴식, transSec = 2페이즈 전환 연출 초 (무적, 바닥 정리, 전환 전엔 HP 가 경계에서 멈춤). 레이드 인원수만큼 체력 배수 (알도)",
+   "_설명": "레이드 보스 어둠거미여왕 (2026-10-29 리워크). only = 그 페이즈에서만 나오는 패턴. fang(부채꼴 r·angle, back 1 = 앞을 본 채 뒤를 참 + push칸 밀침, hits = 앞·뒤 번갈아 몇 번 — 뒤 타는 이 보스의 back 패턴, delay2 = 다음 타 예고) · web(추적 원 → 고치 cocoon초, targets명) · jump(추적 원 → 포물선 착지, repeat2 = 2페이즈 연속, delay2 = 두 번째부터 예고) · volley(먼 사람 쪽 직선 lines개, spread도 간격) · eggs(count개 알, hatch초 뒤 부화) · pull(중앙으로 끌림, 끝에 r칸 maxPct%) · mark(모두 추적 원, 겹치면 ×2) · share(한 명 보라 원 → 원 안 인원수로 maxPct% 나눔, 혼자 maxPctSolo, 원 밖 = 최대 HP outPct% + outPoison초 독, center 1 = 모두의 가운데에 가장 가까운 사람) · webrain(count곳 원 r, onPlayers곳은 사람 발밑, 떨어진 자리 거미줄 web초 = 구속 webSlow단계) · burst(도넛 rIn~rOut → 바로 안쪽 r2 내려찍기 delay2·pct2) · collapse(4등분 순서대로 delay초씩, 독 늪 linger초) · absorb(알 count개 absorbSec초, 남은 알당 absorbHeal%) · frenzy(독니 hits번 → 전체, 여왕 safeR칸 안전, 처음부터 초록 원). far 1 = 가장 먼 사람 (방금 노린 사람은 건너뜀), ranged 1 = 누가 farDist칸 넘게 떨어지면 먼저. 고치에 갇힌 사람은 대상에서 빠짐. gimmick: poisonPct 독 1초당 최대 HP %, zonePct 독 늪 0.5초당 최대 HP %, hatchCount, absorbHeal, restEvery·restSec 정기 휴식, transSec = 2페이즈 전환 연출 초 (무적, 바닥 정리, 전환 전엔 HP 가 경계에서 멈춤). 레이드 인원수만큼 체력 배수 (알도) hide(hpAt% 에서 한 번: 위로 올라가 time초 무적, 실 기둥 = 2명 이하 pillars개 · 3명+ pillars3개 (여왕 자리에서 pillarDist칸), shadowEvery초마다 무작위 한 명 발밑 그림자 낙하 원 shadowR (shadowDelay초, 최대 HP maxPct%), 다 끊으면 stun초 기절 + 받는 피해 counterVuln%, 못 끊으면 전체 최대 HP failMaxPct%). hpAt 패턴은 덱에 안 들어가고, 나오기 전엔 그 HP 아래로 안 내려감. 오브젝트(알·실 기둥) 체력 = 기본 × (1 + 0.7 × (인원 − 1))",
    "arena": 28,
    "respawnSec": 600,
    "resetSec": 60,
@@ -2265,6 +2265,23 @@
      "far": 1,
      "ranged": 1,
      "only": 2
+    },
+    {
+     "id": "hide",
+     "name": "천장 숨기",
+     "type": "hide",
+     "hpAt": 25,
+     "time": 12,
+     "pillars": 2,
+     "pillars3": 4,
+     "pillarDist": 11,
+     "shadowR": 5,
+     "shadowEvery": 2,
+     "shadowDelay": 1.8,
+     "maxPct": 30,
+     "stun": 8,
+     "failMaxPct": 60,
+     "only": 2
     }
    ],
    "melee": {
@@ -2415,6 +2432,21 @@
   "levels": {
    "45": {
     "hp": 1000,
+    "atk": 0,
+    "exp": 0,
+    "gold": 0
+   }
+  }
+ },
+ "web_pillar": {
+  "entity": "minecraft:zombie",
+  "name": "실 기둥",
+  "area": "레이드 기믹 (어둠거미여왕 천장 숨기)",
+  "stunArmor": 99,
+  "passive": true,
+  "levels": {
+   "45": {
+    "hp": 30000,
     "atk": 0,
     "exp": 0,
     "gold": 0

@@ -28,7 +28,7 @@ import rpg.core.net.Net;
 final class BossX {
     private BossX() {}
 
-    static final Set<String> TYPES = Set.of("eggs", "pull", "lanes", "absorb", "collapse", "frenzy", "barrage", "volley", "webrain", "burst");
+    static final Set<String> TYPES = Set.of("eggs", "pull", "lanes", "absorb", "collapse", "frenzy", "barrage", "volley", "webrain", "burst", "hide");
 
     record Cocoon(UUID entity, Vec3 pos, long until) {}
     record Zone(Vec3 c, Vec3 dir, double r, double angle, long until) {}
@@ -46,6 +46,10 @@ final class BossX {
         final List<Shot> shots = new ArrayList<>();         // 떨어질 바위 (바위 연타)
         final List<Vec3> lines = new ArrayList<>();         // 독침 사격 방향들
         final List<Web> webs = new ArrayList<>();           // 거미줄 장판
+        final List<UUID> hidePillars = new ArrayList<>();   // 천장 숨기: 실 기둥
+        Vec3 hideFrom, hidePos;                             // 천장 숨기: 원래 자리 · 숨은 자리 (null = 안 숨음)
+        Boss.Pattern shadow;                                // 천장 숨기: 그림자 낙하
+        long nextShadow;
         int step;
         int safeLane;
         double baseAngle;
@@ -265,10 +269,118 @@ final class BossX {
             egg.getPersistentData().putBoolean("rpgPillar", true);
             MobData em = Combat.mob(egg);
             int people = Math.max(1, mob.getPersistentData().getInt("rpgRaidPeople"));
-            if (em != null && scale) { em.maxHp *= people; em.hp = em.maxHp; Mobs.sync(egg); }
+            if (em != null && scale) { em.maxHp *= objMul(people); em.hp = em.maxHp; Mobs.sync(egg); }
             into.put(egg.getUUID(), when);
             l.sendParticles(ParticleTypes.POOF, egg.getX(), egg.getY() + 0.5, egg.getZ(), 10, 0.4, 0.3, 0.4, 0.02);
         }
+    }
+
+    /** 오브젝트(알·실 기둥) 체력 배수: 1명 ×1, 1명 늘 때마다 +0.7 */
+    static double objMul(int people) { return 1 + 0.7 * Math.max(0, people - 1); }
+
+    // ───────── 천장 숨기 ─────────
+    private static void hideStart(Mob mob, MobData m, Boss.State st, Boss.Pattern p, ServerLevel l, long now) {
+        X x = st.x;
+        x.hideFrom = mob.position();
+        double up = 0;   // 위로 (천장에 막히면 거기까지, 최대 10칸)
+        for (int i = 1; i <= 10; i++) { if (l.noCollision(mob, mob.getBoundingBox().move(0, i, 0))) up = i; else break; }
+        mob.setNoGravity(true);
+        mob.setInvisible(true);
+        mob.setGlowingTag(false);
+        mob.teleportTo(mob.getX(), mob.getY() + up, mob.getZ());
+        mob.setDeltaMovement(Vec3.ZERO);
+        x.hidePos = mob.position();
+        l.sendParticles(ParticleTypes.LARGE_SMOKE, x.hideFrom.x, x.hideFrom.y + 1, x.hideFrom.z, 30, 1, 1, 1, 0.05);
+        // 실 기둥: 2명 이하 pillars 개 · 3명 이상 pillars3 개, 여왕 자리에서 pillarDist 칸 (경기장 안으로)
+        int fighters = 0;
+        for (ServerPlayer f : Boss.arena(l, st, 0)) if (Boss.valid(f)) fighters++;
+        int n = fighters <= 2 ? (int) p.x("pillars", 2) : (int) p.x("pillars3", 4);
+        double dist = p.x("pillarDist", 11), base = ThreadLocalRandom.current().nextDouble() * Math.PI * 2;
+        int people = Math.max(1, mob.getPersistentData().getInt("rpgRaidPeople"));
+        x.hidePillars.clear();
+        for (int i = 0; i < n; i++) {
+            double a = base + Math.PI * 2 * i / n;
+            Vec3 q = x.hideFrom.add(Math.cos(a) * dist, 0, Math.sin(a) * dist);
+            Vec3 off = new Vec3(q.x - st.center.x, 0, q.z - st.center.z);
+            if (off.length() > st.radius - 2) q = st.center.add(off.normalize().scale(st.radius - 2)).add(0, x.hideFrom.y - st.center.y, 0);
+            Mob c = Mobs.spawn(l, "web_pillar", m.level, BlockPos.containing(q), "boss", false);
+            if (c == null) continue;
+            c.moveTo(q.x, q.y, q.z, 0, 0);
+            c.setNoAi(true);
+            c.setInvisible(true);
+            c.setSilent(true);
+            c.getPersistentData().putBoolean("rpgPillar", true);
+            MobData cm = Combat.mob(c);
+            if (cm != null) { cm.maxHp *= objMul(people); cm.hp = cm.maxHp; Mobs.sync(c); }
+            x.hidePillars.add(c.getUUID());
+        }
+        x.shadow = new Boss.Pattern("shadow", "그림자 낙하", "shadow", p.x("shadowR", 5), 0, 0, 0, 0, p.x("shadowDelay", 1.8), 0, 0, 1, 1,
+                Map.of("maxPct", p.x("maxPct", 30)));
+        x.nextShadow = now + 20;
+        say(l, st, "◆ " + p.name() + " — 실 기둥 " + x.hidePillars.size() + "개를 " + (int) p.x("time", 12) + "초 안에 끊으세요!", ChatFormatting.LIGHT_PURPLE);
+        l.playSound(null, BlockPos.containing(x.hideFrom), SoundEvents.SPIDER_AMBIENT, SoundSource.HOSTILE, 3f, 0.3f);
+        l.playSound(null, BlockPos.containing(x.hideFrom), SoundEvents.WOOL_BREAK, SoundSource.HOSTILE, 2f, 0.5f);
+        st.stageEnd = now + Math.round(p.x("time", 12) * 20);
+    }
+
+    private static void hideTick(Mob mob, MobData m, Boss.State st, Boss.Def def, Boss.Pattern p, ServerLevel l, long now) {
+        X x = st.x;
+        mob.setDeltaMovement(Vec3.ZERO);
+        if (x.hidePos != null && mob.position().distanceToSqr(x.hidePos) > 0.25) mob.teleportTo(x.hidePos.x, x.hidePos.y, x.hidePos.z);
+        boolean alive = false;
+        for (UUID id : x.hidePillars) {
+            Entity e = l.getEntity(id);
+            if (e == null || !e.isAlive()) continue;
+            alive = true;
+            if (now % 5 == 0) {   // 실 기둥 (흰 기둥) + 여왕 쪽으로 이어진 실
+                l.sendParticles(ParticleTypes.ITEM_SNOWBALL, e.getX(), e.getY() + 2, e.getZ(), 10, 0.25, 1.3, 0.25, 0);
+                Vec3 a = e.position().add(0, 3.5, 0), b = x.hidePos == null ? a : x.hidePos.add(0, 1, 0);
+                for (int k = 0; k <= 10; k++) { Vec3 q = a.lerp(b, k / 10.0); l.sendParticles(ParticleTypes.ITEM_SNOWBALL, q.x, q.y, q.z, 1, 0, 0, 0, 0); }
+            }
+        }
+        if (!alive) {   // 성공: 떨어져서 기절
+            hideEnd(mob, st, l);
+            long stun = Math.round(p.x("stun", 8) * 20);
+            m.stunUntil = now + stun;
+            st.vulnUntil = now + stun;
+            l.playSound(null, mob.blockPosition(), SoundEvents.ANVIL_LAND, SoundSource.HOSTILE, 2f, 0.5f);
+            say(l, st, "◆ 실을 다 끊었어요! " + m.name + " 기절 " + (int) p.x("stun", 8) + "초 (받는 피해 +" + (int) def.g("counterVuln", 30) + "%)", ChatFormatting.AQUA);
+            Boss.finish(mob, st, def, now);
+            return;
+        }
+        if (now >= x.nextShadow) {   // 그림자 낙하: 무작위 한 명 발밑
+            List<ServerPlayer> fs = new ArrayList<>();
+            for (ServerPlayer f : Boss.arena(l, st, 0)) if (Boss.valid(f) && Boss.free(st, f)) fs.add(f);
+            if (!fs.isEmpty()) {
+                ServerPlayer v = fs.get(ThreadLocalRandom.current().nextInt(fs.size()));
+                int dl = Boss.ticks(x.shadow.delay());
+                Net.telegraph(l, v.position(), st.dir, MobAI.CIRCLE, x.shadow.r(), 0, dl);
+                x.shots.add(new Shot(v.position(), x.shadow.r(), now + dl + Boss.HIT_LAG, x.shadow));
+                l.playSound(null, v.blockPosition(), SoundEvents.SPIDER_STEP, SoundSource.HOSTILE, 1.5f, 0.5f);
+            }
+            x.nextShadow = now + Math.round(p.x("shadowEvery", 2) * 20);
+        }
+        if (now >= st.stageEnd) {   // 실패: 떨어지면서 경기장 전체
+            hideEnd(mob, st, l);
+            l.sendParticles(ParticleTypes.EXPLOSION_EMITTER, st.center.x, st.center.y + 0.5, st.center.z, 3, st.radius / 3, 0.2, st.radius / 3, 0);
+            l.playSound(null, mob.blockPosition(), SoundEvents.GENERIC_EXPLODE, SoundSource.HOSTILE, 2.5f, 0.5f);
+            for (ServerPlayer pl : Boss.arena(l, st, 0))
+                if (Boss.valid(pl)) Boss.hitAs(mob, m, st, l, pl, p.name() + " (실 못 끊음)", 0, p.x("failMaxPct", 60), 0);
+            say(l, st, "◆ 실을 다 못 끊었어요!", ChatFormatting.RED);
+            Boss.finish(mob, st, def, now);
+        }
+    }
+
+    /** 천장 숨기 끝: 보이게 · 중력 (떨어짐) · 남은 기둥 지움 */
+    static void hideEnd(Mob mob, Boss.State st, ServerLevel l) {
+        X x = st.x;
+        for (UUID id : x.hidePillars) { Entity e = l.getEntity(id); if (e != null) e.discard(); }
+        x.hidePillars.clear();
+        if (x.hidePos == null) return;
+        x.hidePos = null;
+        mob.setInvisible(false);
+        mob.setNoGravity(false);
+        mob.setDeltaMovement(0, -0.5, 0);
     }
 
     // ───────── 패턴 시작 ─────────
@@ -329,6 +441,7 @@ final class BossX {
                 l.playSound(null, mob.blockPosition(), SoundEvents.RAVAGER_ROAR, SoundSource.HOSTILE, 2.5f, 0.7f);
                 frenzyFang(mob, st, p, t, l, now);
             }
+            case "hide" -> hideStart(mob, m, st, p, l, now);
             case "webrain" -> {   // 거미줄 비: count 곳 원 (onPlayers 곳은 사람 발밑), 떨어진 자리에 거미줄 장판
                 int dl = Boss.ticks(p.delay());
                 double r = p.r();
@@ -421,6 +534,7 @@ final class BossX {
         Boss.Pattern p = st.cur;
         X x = st.x;
         mob.getNavigation().stop();
+        if (p.type().equals("hide")) { hideTick(mob, m, st, def, p, l, now); return; }
         Vec3 v = mob.getDeltaMovement();
         mob.setDeltaMovement(0, v.y, 0);
         if (p.type().equals("pull")) {   // 끌어당김 (걸으면 버팀)
@@ -582,6 +696,8 @@ final class BossX {
         for (UUID id : new ArrayList<>(x.absorb.keySet())) { Entity e = l.getEntity(id); if (e != null) e.discard(); }
         for (UUID id : x.adds) { Entity e = l.getEntity(id); if (e != null) e.discard(); }
         for (Cocoon c : x.cocoons.values()) { Entity e = l.getEntity(c.entity()); if (e != null) e.discard(); }
+        for (UUID id : x.hidePillars) { Entity e = l.getEntity(id); if (e != null) e.discard(); }
+        x.hidePillars.clear();
         if (!x.zones.isEmpty() || !x.webs.isEmpty()) Net.telegraph(l, st.center, new Vec3(1, 0, 0), 99, 0, 0, 1);
         x.hatch.clear(); x.absorb.clear(); x.adds.clear(); x.cocoons.clear(); x.zones.clear(); x.shots.clear(); x.lines.clear(); x.webs.clear();
         for (ServerPlayer p : Boss.arena(l, st, 24)) POISON.remove(p.getUUID());   // 독도 끝
