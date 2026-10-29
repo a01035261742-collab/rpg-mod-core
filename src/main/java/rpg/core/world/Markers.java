@@ -47,8 +47,11 @@ public final class Markers {
         for (var z : rpg.core.zone.ZoneData.get(l).zones.values())
             out.add(new M(0, z.min.getX(), z.min.getY(), z.min.getZ(), z.max2.getX() + 1, z.max2.getY() + 1, z.max2.getZ() + 1, 0,
                     z.name + " · " + z.mob + " Lv." + z.level + (z.levelMax > z.level ? "~" + z.levelMax : "")));
-        for (var b : rpg.core.combat.BossPoints.get(l).points)
-            out.add(at(1, b.pos, (float) b.radius, "보스: " + b.key));
+        for (var b : rpg.core.combat.BossPoints.get(l).points) {   // 경기장 크기 = mobs.json (등록할 때 반경은 예전 값일 수 있음)
+            var bd = rpg.core.combat.Boss.DEFS.get(b.key);
+            float r = (float) (bd != null ? bd.arena() : b.radius);
+            out.add(at(1, b.pos, r, "보스 경기장: " + b.key + " · 반지름 " + (int) r));
+        }
         var qp = rpg.core.quest.QuestPlaces.get(p.getServer());
         qp.npcs.forEach((id, list) -> { for (var pl : list) if (pl.dim().equals(dim)) out.add(at(2, pl.pos(), 0, "NPC: " + rpg.core.quest.Quests.npcName(id))); });
         qp.points.forEach((id, pl) -> { if (pl.dim().equals(dim)) out.add(at(3, pl.pos(), 0, "퀘스트: " + rpg.core.quest.Quests.pointName(id))); });
@@ -59,7 +62,7 @@ public final class Markers {
             for (var d : Raids.data(p.getServer()).raids.values()) {
                 for (var g : d.gates) out.add(at(7, g, 0, "레이드 단말기: " + d.title() + " (Lv." + d.minLevel() + ")"));
                 double ar = rpg.core.combat.Boss.DEFS.containsKey(d.name) ? rpg.core.combat.Boss.DEFS.get(d.name).arena() : 0;
-                for (int i = 0; i < d.rooms.size(); i++) out.add(at(8, d.rooms.get(i), (float) ar, "레이드 경기장: " + d.title() + " " + (i + 1) + "번"));
+                for (int i = 0; i < d.rooms.size(); i++) out.add(at(8, d.rooms.get(i), (float) ar, "레이드 경기장: " + d.title() + " " + (i + 1) + "번 · 반지름 " + (int) ar));
             }
         }
         return out;
