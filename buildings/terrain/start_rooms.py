@@ -158,16 +158,23 @@ def spline(pts, n=10):   # Catmull-Rom: 꺾인 곳 없이 부드럽게
             out.append(0.5 * ((2 * p1) + (-p0 + p2) * t + (2 * p0 - 5 * p1 + 4 * p2 - p3) * t * t + (-p0 + 3 * p1 - 3 * p2 + p3) * t ** 3))
     out.append(np.array(pts[-1], float))
     return [tuple(p) for p in out]
+import pathing
+_pcost = None
 def path(pts, width):
-    global road
-    d = np.full((D, W), 999.0)
-    sp = spline(pts)
-    for a, b in zip(sp, sp[1:]):
-        if a != b: d = np.minimum(d, seg(PX, PZ, a, b))
-    wd = width / SC * 1.25 * (0.85 + 0.3 * fbm(505))   # 폭도 조금씩 달라짐
-    hit = (d < width) & water
-    if hit.any(): zz, xx = np.nonzero(hit); BRIDGES.append((xx.mean() / SC - OFFX, zz.mean() / SC - OFFZ))
-    road |= (d < wd) & (walk | near_walk) & ~water
+    """실제 지형 위 길 찾기 (공터 가운데·완만한 곳으로), 폭 일정, 둥글게 다듬음"""
+    global road, _pcost
+    if _pcost is None:
+        _pcost = pathing.make_cost(H, walk, water, fbm(701))
+        brg = seg(X, Z, (64, 112), (66, 132)) < 2.5        # 다리 자리에서만 강을 건넘
+        _pcost = np.where(water & ~brg, np.inf, _pcost)
+    cells = []
+    for a, b in zip(pts, pts[1:]):
+        r_ = pathing.route(_pcost, G(*a), G(*b)); cells += r_ if not cells else r_[1:]
+    poly = pathing.smooth(cells)
+    m = pathing.stamp(road.shape, poly, 1.0 + width * 0.6)
+    hit = m & water
+    if hit.any(): zz, xx = np.nonzero(hit); BRIDGES.append((xx.mean() / SC - OFFX, zz.mean() / SC - OFFZ) if 'OFFX' in globals() else (xx.mean() / SC - OX, zz.mean() / SC - OZ))
+    road |= m & ~water
 VC = ROOMS['village'][0]
 path([VC, (84, 97), T((106, 101)), T((140, 104))], 1.8)
 path([T((140, 104)), (196, 112), (212, 116), (224, 112), MILL], 1.3)   # 풍차 가는 길 (구불)
@@ -175,7 +182,7 @@ path([MILL, (238, 122), (246, 134), (258, 140)], 1.0)   # 언덕 내려가는 �
 path([MILL, (240, 100), (250, 92)], 1.0)                # (북동)
 path([MILL, (226, 124), (216, 136)], 1.0)               # (남서)
 path([T(p) for p in [(140, 104), (150, 88), (156, 72), (164, 50), (146, 40), (126, 36), (106, 34), (76, 26), (46, 26), (24, 14)]] + [(T((22, 0))[0], -OFFZ)], 1.4)
-path([VC, (36, 108), (22, 124)], 1.1)
+path([VC, (36, 108), (26, 118)], 1.1)
 path([VC, (64, 112), (66, 132), (66, 146)], 1.6)          # 광장 → 다리 → 아랫마을
 path([(40, 146), (66, 146), (92, 146)], 1.2)             # 아랫마을 큰길
 plaza2 = np.sqrt((X - 66) ** 2 + (Z - 146) ** 2) < 6

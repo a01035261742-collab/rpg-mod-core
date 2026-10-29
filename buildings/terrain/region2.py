@@ -121,12 +121,21 @@ def spline(pts, n=10):
         for t in np.linspace(0, 1, n, endpoint=False):
             out.append(0.5 * ((2 * p1) + (-p0 + p2) * t + (2 * p0 - 5 * p1 + 4 * p2 - p3) * t * t + (-p0 + 3 * p1 - 3 * p2 + p3) * t ** 3))
     out.append(np.array(pts[-1], float)); return [tuple(p) for p in out]
+import pathing
+BRIDGES = []
+_pcost = None
 def path(pts, width):
-    global road
-    d = np.full((D, W), 999.0); sp = spline(pts)
-    for a, b in zip(sp, sp[1:]):
-        if a != b: d = np.minimum(d, seg(PX, PZ, a, b))
-    road |= (d < width / SC * 1.25 * (0.85 + 0.3 * fbm(505))) & (walk | near_walk) & ~WATER
+    """실제 지형 위 길 찾기 (공터 가운데·완만한 곳으로), 폭 일정, 둥글게 다듬음"""
+    global road, _pcost
+    if _pcost is None: _pcost = pathing.make_cost(H, walk, WATER, fbm(701))
+    cells = []
+    for a, b in zip(pts, pts[1:]):
+        r_ = pathing.route(_pcost, G(*a), G(*b)); cells += r_ if not cells else r_[1:]
+    poly = pathing.smooth(cells)
+    m = pathing.stamp(road.shape, poly, 1.0 + width * 0.6)
+    hit = m & WATER
+    if hit.any(): zz, xx = np.nonzero(hit); BRIDGES.append((xx.mean() / SC - OFFX, zz.mean() / SC - OFFZ) if 'OFFX' in globals() else (xx.mean() / SC - OX, zz.mean() / SC - OZ))
+    road |= m & ~WATER
 path([ENTRY, (98, 214), (104, 196), (110, 176), (112, 152), (150, 152), (182, 158), (206, 160), (234, 140), (250, 118), (262, 96), (234, 80), (210, 64), (176, 54), (140, 54), (108, 54), (72, 52), (64, 30), EXIT], 1.6)
 path([(98, 214), (84, 214), (62, 232), (34, 236), (12, 220), (6, 192), (12, 164), (24, 126)], 1.1)      # 숲의 군주 경기장
 path([(262, 96), (292, 108), (316, 104), (326, 82), (320, 58), (306, 44), (290, 20)], 1.1)      # 수호자 경기장
