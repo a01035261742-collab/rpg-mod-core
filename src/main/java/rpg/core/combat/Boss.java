@@ -1302,7 +1302,17 @@ public final class Boss {
         if (e.getLevel().isClientSide()) return;
         State st = STATES.remove(e.getEntity().getUUID());
         if (st != null && st.bar != null) st.bar.removeAllPlayers();
-        if (st != null && e.getLevel() instanceof ServerLevel sl) clearGimmicks(sl, st);
+        // 청크가 내려가는 도중(엔티티 추적 끝)에 블록·엔티티를 건드리면 청크 관리자가 꼬여서 게임이 터짐 → 다음 틱에 정리
+        if (st != null && e.getLevel() instanceof ServerLevel sl) LATER.add(() -> clearGimmicks(sl, st));
+    }
+
+    private static final java.util.List<Runnable> LATER = new java.util.ArrayList<>();
+
+    @SubscribeEvent
+    public static void later(net.minecraftforge.event.TickEvent.ServerTickEvent e) {
+        if (e.phase != net.minecraftforge.event.TickEvent.Phase.END || LATER.isEmpty()) return;
+        var run = new ArrayList<>(LATER); LATER.clear();
+        for (Runnable r : run) { try { r.run(); } catch (Exception ex) { ex.printStackTrace(); } }
     }
 
     /** 보스 레벨 (mobs.json levels 의 첫 레벨) */
