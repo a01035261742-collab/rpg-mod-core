@@ -188,6 +188,8 @@ shn = fbm(813)
 sh = shore & walk & (shn > 0.38)
 MAT[sh] = np.where(shn[sh] > 0.6, 'sand', 'gravel')
 MAT[islet] = 'grass'
+for nm, (c, r, h, gnd) in ARENAS.items():   # 길은 경기장 입구에서 끝 (안으로 안 들어감)
+    road &= np.sqrt((X - c[0]) ** 2 + (Z - c[1]) ** 2) > r + 1
 MAT[road] = 'path'; MAT[plaza] = 'plaza'; MAT[WATER] = np.where(bog[WATER], 'bog', 'water')
 # 경기장 테두리 (원 표시용 돌 고리, 반지름 = 실제 경기장)
 for nm, (c, r, h, gnd) in ARENAS.items():
@@ -195,7 +197,7 @@ for nm, (c, r, h, gnd) in ARENAS.items():
     MAT[(np.abs(rr - 24) < 0.5) & walk & ~road] = 'ring'
 
 np.save('R2_H.npy', H); np.save('R2_MAT.npy', MAT); np.save('R2_walk.npy', walk); np.save('R2_WLV.npy', WLV)
-json.dump({'SC': SC, 'entry': G(*ENTRY), 'exit': G(*EXIT), 'arenas': {k: G(*v[0]) for k, v in ARENAS.items()}}, open('R2_meta.json', 'w'))
+json.dump({'SC': SC, 'entry': G(*ENTRY), 'exit': G(*EXIT), 'arenas': {k: G(*v[0]) for k, v in ARENAS.items()}, 'arena_r': {k: v[1] * SC for k, v in ARENAS.items()}}, open('R2_meta.json', 'w'))
 print('H', H.min(), H.max(), 'size', W, D)
 
 # ───────── 미리보기 ─────────

@@ -21,7 +21,10 @@ P = ['minecraft:air', 'minecraft:barrier', 'minecraft:stone', 'minecraft:dirt', 
      'minecraft:coarse_dirt', 'minecraft:andesite', 'minecraft:podzol[snowy=false]', 'minecraft:mycelium[snowy=false]', 'minecraft:mud',
      'minecraft:rooted_dirt', 'minecraft:tuff', 'minecraft:deepslate[axis=y]', 'minecraft:water[level=0]', 'minecraft:polished_andesite',
      'minecraft:stone_bricks', 'minecraft:cobblestone', 'minecraft:cobbled_deepslate', 'minecraft:packed_mud', 'minecraft:gravel', 'minecraft:sand']
+import arena_deco
+P += [n for n in arena_deco.blocks() if n not in P]
 I = {n.split(':')[1].split('[')[0]: i for i, n in enumerate(P)}
+IF = {n: i for i, n in enumerate(P)}
 surf = {'grass': 'grass_block', 'path': 'dirt_path', 'plaza': 'polished_andesite', 'stone': 'stone', 'andesite': 'andesite', 'coarse': 'coarse_dirt',
         'podzol': 'podzol', 'mycelium': 'mycelium', 'mud': 'mud', 'deepdirt': 'rooted_dirt', 'tuff': 'tuff', 'deepslate': 'deepslate',
         'water': 'dirt', 'bog': 'mud', 'ring': 'polished_andesite', 'sand': 'sand', 'gravel': 'gravel'}
@@ -52,6 +55,8 @@ for z, x in zip(*np.nonzero(_core)):
     V[H[z, x], z, x] = I['dirt_path'] if _r[z, x] < 0.78 else I['coarse_dirt'] if _r[z, x] < 0.92 else I['gravel']
 for z, x in zip(*np.nonzero(_edge)):
     V[H[z, x], z, x] = I['dirt_path'] if _r[z, x] < 0.45 else I['coarse_dirt'] if _r[z, x] < 0.7 else I['grass_block']
+MM = json.load(open('R2_meta.json'))
+arena_deco.deco(V, H, IF, MAT == 'path', {k: tuple(v) for k, v in MM['arenas'].items()}, MM['arena_r'])
 # 투명 방벽 (시작 마을과 같은 방식: 공터에서 9~11칸 바깥 + 얇은 벽은 능선, 땅 위 4칸)
 allowed = WALK | wm
 dA = distance_transform_edt(~allowed)
