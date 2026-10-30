@@ -4,7 +4,7 @@ import math, random, json, numpy as np
 from scipy.ndimage import distance_transform_edt
 T = '/tmp/claude-0/-home-claude/ef3cffc3-4ba8-552d-9a1e-cc3d26fda8a3/scratchpad/terrain/'
 
-def LV(kind): return f'minecraft:{kind}_leaves[distance=1,persistent=true,waterlogged=false]'
+def LV(kind): return f'minecraft:{kind}_leaves[distance=1,persistent=true]'
 def LG(kind, ax='y'): return f'minecraft:{kind}_log[axis={ax}]'
 
 def blob(out, cx, cy, cz, rx, ry, rz, r, leaves):
@@ -168,7 +168,8 @@ def build(seed=3):
         if WLV[z, x] - H[z, x] >= 1 and zone[z, x] in ('pond',) or (fz.random() < 0.015 and WLV[z, x] - H[z, x] >= 2):
             if fz.random() < 0.06: out[(x, int(WLV[z, x]) + 1, z)] = 'minecraft:lily_pad'
     for z, x in zip(*np.nonzero(grass & (d_water <= 1.0) & (d_road > 1.5))):
-        if fz.random() < 0.12:
+        ok = any(0 <= z + dz < D and 0 <= x + dx < W and water[z + dz, x + dx] and WLV[z + dz, x + dx] >= H[z, x] for dx, dz in ((1, 0), (-1, 0), (0, 1), (0, -1)))
+        if ok and fz.random() < 0.12:
             y = int(H[z, x]) + 1; hh = fz.integers(1, 4)
             for k in range(hh): out[(x, y + k, z)] = 'minecraft:sugar_cane[age=0]'
     json.dump({'trees': [(int(a), int(b), c) for a, b, c in trees]}, open('veg_trees.json', 'w'))
