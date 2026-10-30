@@ -33,6 +33,7 @@ def gmush(r, kind='red', h=8, R=5, glow=False):
     cx, cz = lx + (0.5 if big else 0), lz + (0.5 if big else 0)
     m = 'minecraft:red_mushroom_block' if kind == 'red' else 'minecraft:brown_mushroom_block'
     H = max(1, int(R * (0.6 if kind == 'red' else 0.25)))
+    centers = []
     for x in range(int(cx - R - 1), int(cx + R + 2)):
         for z in range(int(cz - R - 1), int(cz + R + 2)):
             d = math.sqrt(((x - cx) / (R + 0.4)) ** 2 + ((z - cz) / (R + 0.4)) ** 2)
@@ -41,7 +42,16 @@ def gmush(r, kind='red', h=8, R=5, glow=False):
             b0 = max(h, t - (1 if d > 0.7 else 1))
             if kind == 'red' and d > 0.88: b0 = h - 1
             for yy in range(b0, t + 1): out[(x, yy, z)] = m
+            centers.append((x, z, b0))
             if glow and d < 0.75 and r.random() < 0.05 and (x, h - 1, z) not in out: out[(x, h - 1, z)] = 'minecraft:shroomlight'
+    # 줄기를 갓 밑면까지 이어 붙임 (갓 가운데 밑이 비어 공중에 뜨지 않게)
+    stem_cols = {(x, z) for (x, y, z), st in out.items() if st == 'minecraft:mushroom_stem'}
+    top_stem = {}
+    for (x, y, z), st in out.items():
+        if st == 'minecraft:mushroom_stem': top_stem[(x, z)] = max(top_stem.get((x, z), -1), y)
+    for (x, z, b0) in centers:
+        if (x, z) in top_stem:
+            for yy in range(top_stem[(x, z)] + 1, b0): out[(x, yy, z)] = 'minecraft:mushroom_stem'
     return out
 
 def mini(r):

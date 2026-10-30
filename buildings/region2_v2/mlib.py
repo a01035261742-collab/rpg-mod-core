@@ -140,6 +140,15 @@ def under_cap(s, cx, cz, R, y, rx=None, rz=None, body=None, lamps=4, glow=True):
             x = int(round(cx + math.cos(a) * (rx - 0.6))); z = int(round(cz + math.sin(a) * (rz - 0.6)))
             if s.get(x, y, z) and 'mushroom' in s.get(x, y, z): s.set(x, y, z, 'shroomlight')
 
+
+def stem_to_cap(s, xs_zs, y_from, cells):
+    """줄기를 갓 밑면까지 이어 붙임 (갓 가운데가 둥글게 비어 있어서 생기는 틈 메움)"""
+    for (x, z) in xs_zs:
+        c = cells.get((x, z))
+        if not c: continue
+        for yy in range(y_from, c[2]): 
+            if s.get(x, yy, z) is None: s.set(x, yy, z, 'mushroom_stem')
+
 def small_mush(s, x, z, h=3, R=2, kind='red', y0=1, stem2=False):
     """작은 버섯 (곁채·장식): 1×1 또는 2×2 기둥 + 갓"""
     for yy in range(y0, y0 + h):
@@ -147,7 +156,9 @@ def small_mush(s, x, z, h=3, R=2, kind='red', y0=1, stem2=False):
         if stem2:
             for (a, b) in ((1, 0), (0, 1), (1, 1)): s.set(x + a, yy, z + b, 'mushroom_stem')
     c = (x + 0.5, z + 0.5) if stem2 else (x, z)
-    return cap(s, c[0], c[1], R, y0 + h, max(1, R // 2 + 1), kind, lip=R >= 3, spots=R >= 3)
+    res = cap(s, c[0], c[1], R, y0 + h, max(1, R // 2 + 1), kind, lip=R >= 3, spots=R >= 3)
+    stem_to_cap(s, [(x, z)] + ([(x + 1, z), (x, z + 1), (x + 1, z + 1)] if stem2 else []), y0 + h, res[1])
+    return res
 
 def furnish_round(s, cx, cz, R, y=1, kind='home'):
     return   # 소품 없음 (사용자가 직접 꾸밈)
@@ -276,6 +287,8 @@ def giant(s, x, z, h, R, kind='red', y0=1, lean=(0, 0), stem2=False, H=None):
             for (a, b) in ((1, 0), (0, 1), (1, 1)): s.set(xx + a, y0 + k, zz + b, 'mushroom_stem')
     cx, cz = x + lx + (0.5 if stem2 else 0), z + lz + (0.5 if stem2 else 0)
     top, cells = cap(s, cx, cz, R, y0 + h, H or max(2, int(R * 0.6)), kind, lip=R >= 3, spots=True)
+    xx, zz = int(round(x + lx)), int(round(z + lz))
+    stem_to_cap(s, [(xx, zz)] + ([(xx + 1, zz), (xx, zz + 1), (xx + 1, zz + 1)] if stem2 else []), y0 + h, cells)
     for (a, b, c) in ((1, 0, 0), (-1, 0, 0), (0, 0, 1), (0, 0, -1)):
         q = (int(round(cx)) + a * int(R * 0.6), y0 + h - 1, int(round(cz)) + c * int(R * 0.6))
         if s.get(*q) is None and R >= 4: s.set(*q, 'shroomlight') if False else None
@@ -313,7 +326,8 @@ def overgrow(s, amount=1.0, seed=0, kinds=(('brown', 3), ('red', 1)), roof_sprou
         if any(abs(x - a) + abs(z - b) < 7 for a, b in got): continue
         h = r.randint(1, 2); R = r.choice((2, 2.5))
         for k in range(1, h + 1): s.set(x, y + k, z, 'mushroom_stem')
-        cap(s, x, z, R, y + h + 1, 1 if R < 2 else 2, kpick(), lip=False, spots=R >= 2)
+        _, cl = cap(s, x, z, R, y + h + 1, 1 if R < 2 else 2, kpick(), lip=False, spots=R >= 2)
+        stem_to_cap(s, [(x, z)], y + h + 1, cl)
         got.append((x, z))
     if base_bumps:   # 밑동 모서리에 혹 버섯 (땅 바로 위 벽에 1~2칸)
         low = [(x, y, z, f) for (x, y, z, f) in cand if 2 <= y <= 3]

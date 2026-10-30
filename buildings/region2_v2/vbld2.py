@@ -379,9 +379,10 @@ def well3():
             if 1.6 < d <= 2.6: s.set(x, 1, z, 'mossy_stone_bricks' if (x + z) % 3 == 0 else 'stone_bricks'); s.set(x, 2, z, SL('stone_brick'))
             elif d <= 1.6: s.set(x, 1, z, 'water'); s.set(x, -1, z, 'water'); s.set(x, -2, z, 'stone_bricks')
     for (x, z) in ((1, 1), (5, 1), (1, 5), (5, 5)):
-        for y in range(3, 6): s.set(x, y, z, LOG(FR))
-    hip_roof(s, 1, 1, 5, 5, 6, roof='slate', over=1)
-    s.set(c, 5, c, 'chain[axis=y]'); s.set(c, 4, c, 'chain[axis=y]'); s.set(c, 3, c, 'cauldron')
+        for y in range(1, 6): s.set(x, y, z, LOG(FR))          # 기둥은 땅부터 지붕까지
+    top = hip_roof(s, 1, 1, 5, 5, 6, roof='slate', over=1)
+    for y in range(4, top): s.set(c, y, c, 'chain[axis=y]')    # 두레박 사슬은 지붕까지
+    s.set(c, 3, c, 'cauldron')
     return finish(s)
 
 # ───────── 17. 노점 ─────────

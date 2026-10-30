@@ -278,7 +278,25 @@ def declutter(s):
         rm = n in PROPS or n.endswith('_carpet') or n.endswith('pressure_plate')
         if n == 'cauldron' and (s.get(x, y + 1, z) or '').startswith('minecraft:chain'): rm = False
         if n in ('campfire', 'soul_campfire') and y <= 2: rm = True          # 땅 위 모닥불 (굴뚝 위 것은 남김)
+        if n == 'chain' and s.get(x, y + 1, z) is None and s.get(x, y - 1, z) is None: rm = True   # 등 없이 매달린 사슬
         if rm: del s.b[(x, y, z)]; gone.add((x, y, z))
+    # 받침이 없어져 공중에 뜬 울타리·벽 덩어리 (허수아비 팔 등) 치움
+    def fence_like(st): return st is not None and any(k in st for k in ('_fence', '_wall[', 'iron_bars'))
+    seen = set()
+    for p0, st in list(s.b.items()):
+        if p0 in seen or not fence_like(st): continue
+        comp, q = [], [p0]; seen.add(p0)
+        while q:
+            p = q.pop(); comp.append(p)
+            for d in ((1, 0, 0), (-1, 0, 0), (0, 0, 1), (0, 0, -1), (0, 1, 0), (0, -1, 0)):
+                n = (p[0] + d[0], p[1] + d[1], p[2] + d[2])
+                if n not in seen and fence_like(s.b.get(n)): seen.add(n); q.append(n)
+        cs = set(comp)
+        sup = any(p[1] <= 1 or (s.b.get((p[0], p[1] - 1, p[2])) not in (None, 'minecraft:air') and (p[0], p[1] - 1, p[2]) not in cs) or
+                  any((p[0] + a, p[1], p[2] + b) not in cs and s.b.get((p[0] + a, p[1], p[2] + b)) not in (None, 'minecraft:air') for a, b in ((1, 0), (-1, 0), (0, 1), (0, -1)))
+                  for p in comp)
+        if not sup:
+            for p in comp: del s.b[p]; gone.add(p)
     for _ in range(2):   # 치운 것 위에 얹혀 있던 반블록·판자·서 있는 등, 탁자 다리(울타리)
         for (x, y, z), st in list(s.b.items()):
             n = st.split(':')[1].split('[')[0]

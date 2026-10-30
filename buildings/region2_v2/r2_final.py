@@ -28,10 +28,11 @@ AIR = PAL['minecraft:air']; BAR = PAL['minecraft:barrier']
 STEPS = {'S': 0, 'W': 1, 'N': 2, 'E': 3}
 LAY = json.load(open(VD + 'r2_layout.json')); fns = {fn.__name__: fn for fn, *_ in r2_place.PLAN}
 Hf = H.copy(); body = np.zeros((D, W), bool)
-GROUND = ('dirt_path', 'coarse_dirt', 'gravel', 'cobblestone', 'mossy_cobblestone', 'polished_andesite', 'andesite', 'spruce_planks', 'oak_planks',
-          'polished_deepslate', 'deepslate_tiles', 'chiseled_deepslate', 'stone_bricks', 'cracked_stone_bricks', 'mossy_stone_bricks', 'podzol', 'rooted_dirt', 'mycelium')
 from alib import declutter
+from bake import bake, floating
+BPOS = []
 VILLAGE_FN = {fn.__name__ for fn, *_ in r2_place.PLAN[:17]}
+FLAT2 = {'plaza3', 'well3', 'waystone2', 'stalls3', 'spore_camp', 'spirit_altar', 'soldier_camp', 'deep_post', 'witch_hut', 'beast_nest'}   # 땅에 놓이는 것
 for r in LAY:
     s = fns[r['fn']]()
     if r['fn'] in VILLAGE_FN: declutter(s)          # 마을 건물 안팎 소품 치움 (사냥터 구조물은 이야기 소품이라 남김)
@@ -39,28 +40,15 @@ for r in LAY:
     for (x, y, z), st in s.b.items():
         for _ in range(n): x, z = -z, x
         pts[(x, y, z)] = _rotf(st, n)
-    mx = min(p[0] for p in pts); mz = min(p[2] for p in pts); fl = r['floor']
-    cols = {}
-    for (x, y, z), st in pts.items(): cols.setdefault((r['x0'] + x - mx, r['z0'] + z - mz), []).append((y, st))
-    for (X_, Z_), lst in cols.items():
-        if not (0 <= X_ < W and 0 <= Z_ < D): continue
-        flat = all(y <= 0 for y, _ in lst) and all(st.split(':')[1].split('[')[0] in GROUND for y, st in lst if y == 0)
-        b0 = fl if flat else fl + 1            # 바닥이 땅 위 한 칸 (안 파묻힘)
-        if min(y for y, _ in lst) <= 0:
-            top = int(H[Z_, X_])
-            for y in range(b0 + (0 if flat else 1), max(top, b0) + 1):
-                if (y != b0 or not flat) and V2[y, Z_, X_] != BAR: V2[y, Z_, X_] = AIR
-            for y in range(top + 1, b0): V2[y, Z_, X_] = idx('dirt')
-            Hf[Z_, X_] = b0
-        for y, st in lst:
-            yy = b0 + y
-            if 0 <= yy < TOPN: V2[yy, Z_, X_] = idx(st)
-            if y >= 1 and st != 'minecraft:air': body[Z_, X_] = True
+    bake(pts, r, r['fn'] not in FLAT2, V2, H, Hf, body, idx, AIR, BAR, W, D, TOPN, BPOS)
 # ── 식생 (빈 칸에만)
-VEG = r2_veg.build(); nveg = 0
+VEG = r2_veg.build(); nveg = 0; VPOS = []
 for (x, y, z), st in VEG.items():
     if 0 <= x < W and 0 <= z < D and 0 <= y < TOPN and V2[y, z, x] == AIR and not body[z, x]:
         V2[y, z, x] = idx(st); nveg += 1
+        if 'mushroom_block' in st or 'stem' in st or 'leaves' in st or 'shroomlight' in st: VPOS.append((y, z, x))
+from bake import floating as _fl
+_fv = _fl(V2, AIR, BAR, VPOS, Pn, fix_small=300); print('떠 있는 버섯·잎 작은 조각 지움, 남은 큰 조각', len(_fv))
 # ── 큰 버섯 블록 면 상태 (같은 블록끼리 붙은 면 숨김, 갓 밑면 = 주름)
 MB = {i: st for i, st in enumerate(Pn) if st.split('[')[0] in ('minecraft:red_mushroom_block', 'minecraft:brown_mushroom_block', 'minecraft:mushroom_stem')}
 mask = np.isin(V2, list(MB))
@@ -120,6 +108,8 @@ leak[:, :, [0, -1]] = False; leak[:, [0, -1], :] = False
 print('물 옆이 빈 칸', int(leak.sum()), [(int(x), int(y), int(z)) for y, z, x in np.argwhere(leak)[:8]])
 on_road = sum(1 for (x, y, z), st in VEG.items() if 0 <= x < W and 0 <= z < D and MAT[z, x] in ('path', 'plaza') and y <= Hf[z, x] + 2 and 'leaves' not in st and 'mushroom_block' not in st)
 print('길 위 식생(머리 높이 아래)', on_road)
+fl_ = floating(V2, AIR, BAR, BPOS, Pn); print('공중에 뜬 건물 조각', len(fl_), fl_[:12])
+fv_ = floating(V2, AIR, BAR, VPOS, Pn, fix_small=60); print('공중에 뜬 버섯·잎 조각 (60칸 넘는 것)', len(fv_), fv_[:6])
 json.dump({'reach': rep, 'doors': f"{sum(door_ok.values())}/{len(door_ok)}"}, open(VD + 'r2_review.json', 'w'), ensure_ascii=False)
 
 def save(path, x0, z0, x1, z1):

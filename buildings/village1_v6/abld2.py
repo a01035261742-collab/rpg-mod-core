@@ -104,10 +104,12 @@ def well():
             s.set(x, -1, z, 'stone_bricks' if edge else 'water'); s.set(x, -2, z, 'stone_bricks')
             if edge: s.set(x, 1, z, s.pick(STONE))
     for (x, z) in ((0, 2), (4, 2)):
-        for y in range(2, 5): s.set(x, y, z, LOG('dark_oak_log'))
+        for y in range(2, 6): s.set(x, y, z, LOG('dark_oak_log'))   # 기둥이 지붕까지 닿게
     s.set(1, 4, 2, LOG('stripped_dark_oak_log', 'x')); s.set(2, 4, 2, LOG('stripped_dark_oak_log', 'x')); s.set(3, 4, 2, LOG('stripped_dark_oak_log', 'x'))
     s.set(2, 3, 2, 'chain[axis=y]'); s.set(2, 2, 2, 'cauldron')
     gable_roof(s, 0, 1, 4, 3, 5, axis='x', over=1, mats=('dark_oak', 'spruce'), gable_frame=False, gable=[('air', 1)])
+    for x in (0, 4):
+        for y in (5, 6): s.set(x, y, 2, LOG('dark_oak_log'))   # 기둥이 지붕 마루까지 닿게
     for x in (0, 4):
         for z in (1, 3): 
             if s.get(x, 5, z) == 'minecraft:air': s.set(x, 5, z, None)

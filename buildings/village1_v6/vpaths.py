@@ -58,8 +58,12 @@ def to_road(a):
 polys = []
 for name, (x, z), (fx, fz) in doors:
     lead = []
-    for k in range(14):    # 문 앞 마당·소품 칸은 곧장 앞으로 지나감
+    for k in range(14):    # 문 앞 마당·소품 칸은 곧장 앞으로 지나감 (막히면 옆으로 2칸까지 봄 — 선착장 등)
         if 0 <= x < W and 0 <= z < D and np.isfinite(cost[z, x]): break
+        side = [(x + fz * sg * j, z + fx * sg * j) for j in (1, 2, 3) for sg in (1, -1)]
+        hit = [(a, b) for (a, b) in side if 0 <= a < W and 0 <= b < D and np.isfinite(cost[b, a]) and not water[b, a]]
+        if hit and k >= 1:
+            lead.append((x, z)); x, z = hit[0]; break
         lead.append((x, z)); x += fx; z += fz
     if not (0 <= x < W and 0 <= z < D) or not np.isfinite(cost[z, x]): print('막힘', name); continue
     cells = lead + to_road((x, z))

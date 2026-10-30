@@ -33,42 +33,25 @@ print('방벽 칸', int(RING.sum()))
 # ── 건물 넣기 (자리 평평하게: 바닥 아래 흙 채우고 위 지형 비움)
 STEPS = {'S': 0, 'W': 1, 'N': 2, 'E': 3}
 Hf = H.copy(); body = np.zeros((D, W), bool); placed = []
-GROUND = ('dirt_path', 'coarse_dirt', 'gravel', 'cobblestone', 'mossy_cobblestone', 'polished_andesite', 'andesite', 'spruce_planks', 'oak_planks',
-          'polished_deepslate', 'deepslate_tiles', 'chiseled_deepslate', 'stone_bricks', 'cracked_stone_bricks', 'mossy_stone_bricks')
 from alib import declutter
-def bake(s, r):
-    """건물 넣기: 바닥(y=0)이 땅 위 한 칸 (안 파묻힘). 위에 아무것도 없는 바닥 깔기(광장 포장·마당)는 땅 높이 그대로"""
-    n = STEPS[r['face']]; pts = {}
+from bake import bake, floating
+BPOS = []
+FLAT1 = {'광장 분수 + 게시판', '시장 노점', '우물', '낚시 오두막 (모리)'}     # 땅에 놓이는 것 (안 올림)
+for (fn, name, *_), r in zip(PLAN, LAY):
+    s = declutter(fn()); n = STEPS[r['face']]; pts = {}
     for (x, y, z), st in s.b.items():
         for _ in range(n): x, z = -z, x
         pts[(x, y, z)] = _rotf(st, n)
-    mx = min(p[0] for p in pts); mz = min(p[2] for p in pts); fl = r['floor']
-    cols = {}
-    for (x, y, z), st in pts.items(): cols.setdefault((r['x0'] + x - mx, r['z0'] + z - mz), []).append((y, st))
-    for (X, Z), lst in cols.items():
-        if not (0 <= X < W and 0 <= Z < D): continue
-        flat = all(y <= 0 for y, _ in lst) and all(st.split(':')[1].split('[')[0] in GROUND for y, st in lst if y == 0)
-        b0 = fl if flat else fl + 1
-        if min(y for y, _ in lst) <= 0:
-            top = int(H[Z, X])
-            for y in range(b0 + (0 if flat else 1), max(top, b0) + 1):
-                if y != b0 or flat is False:
-                    if 'barrier' not in Pn[V2[y, Z, X]]: V2[y, Z, X] = AIR
-            for y in range(top + 1, b0): V2[y, Z, X] = idx('minecraft:dirt')
-            Hf[Z, X] = b0
-        for y, st in lst:
-            yy = b0 + y
-            if 0 <= yy < TOPN: V2[yy, Z, X] = idx(st if st.startswith('minecraft:') else 'minecraft:' + st)
-            if y >= 1 and st != 'minecraft:air': body[Z, X] = True
-for (fn, name, *_), r in zip(PLAN, LAY):
-    bake(declutter(fn()), r)
+    bake(pts, r, name not in FLAT1, V2, H, Hf, body, idx, AIR, PAL['minecraft:barrier'], W, D, TOPN, BPOS)
     placed.append(name)
 # ── 나무·풀 (빈 칸에만)
 VEG = veg.build()
-nveg = 0
+nveg = 0; VPOS = []
 for (x, y, z), st in VEG.items():
     if 0 <= x < W and 0 <= z < D and 0 <= y < TOPN and V2[y, z, x] == AIR and not body[z, x]:
         V2[y, z, x] = idx(st); nveg += 1
+        if 'leaves' in st or '_log' in st: VPOS.append((y, z, x))
+_fv = floating(V2, AIR, PAL['minecraft:barrier'], VPOS, Pn, fix_small=300); print('떠 있는 잎 조각 지움, 남은 큰 조각', len(_fv))
 print('건물', len(placed), '· 식생 블록', nveg, '· 팔레트', len(Pn))
 
 # ── 자가 검토 1: 걸어서 다닐 수 있는지 (나무 줄기·덤불·건물 = 막힘, 한 칸 턱까지)
@@ -124,6 +107,7 @@ on_road = 0
 for (x, y, z), st in VEG.items():
     if 0 <= x < W and 0 <= z < D and MAT[z, x] in ('path', 'plaza') and y <= Hf[z, x] + 2 and 'leaves' not in st: on_road += 1
 print('길 위 식생(머리 높이 아래)', on_road)
+fl_ = floating(V2, AIR, PAL['minecraft:barrier'], BPOS, Pn); print('공중에 뜬 건물 조각', len(fl_), fl_[:12])
 json.dump({'reach': rep, 'doors': f"{sum(door_ok.values())}/{len(door_ok)}"}, open('review.json', 'w'), ensure_ascii=False)
 
 # ── 저장 (varint)
