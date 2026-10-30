@@ -54,6 +54,8 @@ _pal = lambda z, x: ('cobblestone', 'andesite', 'gravel') if d_v[z, x] < 58 else
 blockmix.natural_paths(V, H, MAT, I, json.load(open('polys2.json')), _pal, okm)
 if os.path.exists('door_polys.json'):   # 건물 문 → 길 오솔길 (좁게)
     blockmix.natural_paths(V, H, MAT, I, json.load(open('door_polys.json')), _pal, okm, seed=52, wscale=0.6, keep_old=True)
+if os.path.exists('forest_polys.json'):   # 풀숲 큰길 → 사냥터 공터 오솔길
+    blockmix.natural_paths(V, H, MAT, I, json.load(open('forest_polys.json')), _pal, okm, seed=53, wscale=0.75, keep_old=True)
 # 동쪽 끝 강물: 맵 밖으로 안 흐르게 돌로 막음
 edge = (MAT[:, W - 1] == 'water')
 V[:WATER + 2, edge, W - 1] = I['stone']

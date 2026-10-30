@@ -104,13 +104,16 @@ def build(seed=3):
     d_wall = distance_transform_edt(walk)       # 공터 안에서 벽까지
     water = MAT == 'water'; d_water = distance_transform_edt(~water)
     gx, gz = np.gradient(H.astype(float)); flat = np.hypot(gx, gz) < 0.8
+    import os
+    clear = np.load(T + 'clear1.npy') if os.path.exists(T + 'clear1.npy') else np.zeros((D, W), bool)
+    d_clear = distance_transform_edt(~clear)    # 사냥터 공터까지 거리
     # 고원 위 방벽 줄은 피함
     allowed = walk | water; dA = distance_transform_edt(~allowed)
     ring = (dA > 8) & (dA <= 12)
     out = {}
     trees = []
-    SP = {'village': 14, 'village_s': 14, 'pond': 9, 'farm': 14, 'farm_e': 16, 'meadow': 18, 'forest': 8, 'plateau': 11}
-    cand = list(zip(*np.nonzero(grass & flat & ~ring & (d_road > 3) & (d_foot > 5))))
+    SP = {'village': 13, 'village_s': 13, 'pond': 9, 'farm': 14, 'farm_e': 16, 'meadow': 18, 'forest': 7, 'plateau': 9}
+    cand = list(zip(*np.nonzero(grass & flat & ~ring & (d_road > 3) & (d_foot > 5) & (d_clear > 3))))
     r.shuffle(cand)
     taken = []
     from scipy.spatial import cKDTree
@@ -121,8 +124,8 @@ def build(seed=3):
         p_ = {'village': 0.5, 'village_s': 0.5, 'pond': 0.8, 'farm': 0.0, 'farm_e': 0.0, 'meadow': 0.25, 'forest': 1.0, 'plateau': 0.75}[zn]
         if zn in ('farm', 'farm_e'): p_ = 0.6 if d_wall[z, x] < 8 else 0.0      # 밭 자리는 비우고 가장자리만
         if zn == 'meadow': p_ = 0.6 if d_wall[z, x] < 10 else 0.05
-        if zn == 'forest': p_ = 1.0 if d_wall[z, x] < 9 else 0.3       # 싸울 자리(가운데)는 듬성듬성
-        if zn == 'forest' and d_road[z, x] < 6: p_ = 0.2
+        if zn == 'forest': p_ = 1.0 if d_wall[z, x] < 8 or d_clear[z, x] < 8 else 0.8   # 예전보다 살짝 적게 (공터 안은 0)
+        if zn == 'forest' and d_road[z, x] < 6: p_ = 0.25
         if r.random() > p_: continue
         if any((x - a) ** 2 + (z - b) ** 2 < sp * sp for a, b in pts[-400:]) and len(pts) < 400: continue
         if pts and min((x - a) ** 2 + (z - b) ** 2 for a, b in pts) < sp * sp: continue
@@ -149,13 +152,16 @@ def build(seed=3):
     patch = gaussian_filter(fz.random((D, W)), 4); patch = (patch - patch.min()) / np.ptp(patch)
     for z, x in zip(*np.nonzero(grass & ~ring & (d_road > 1.5) & (d_foot > 2))):
         zn = zone[z, x]
-        dens = {'village': 0.10, 'village_s': 0.10, 'pond': 0.25, 'farm': 0.06, 'farm_e': 0.06, 'meadow': 0.35, 'forest': 0.30, 'plateau': 0.18}[zn]
+        dens = {'village': 0.10, 'village_s': 0.10, 'pond': 0.25, 'farm': 0.06, 'farm_e': 0.06, 'meadow': 0.35, 'forest': 0.25, 'plateau': 0.18}[zn]
+        if clear[z, x]: dens = 0.05                     # 공터: 풀 조금
         if nz[z, x] > dens * (0.4 + patch[z, x] * 1.2): continue
         y = int(H[z, x]) + 1
         if (x, y, z) in out or (x, y + 1, z) in out: continue
         v = fz.random()
-        if zn == 'forest':
-            st = 'minecraft:fern' if v < 0.4 else 'minecraft:grass' if v < 0.85 else 'minecraft:large_fern'
+        if clear[z, x]:
+            st = 'minecraft:grass' if v < 0.85 else 'minecraft:' + FLOWERS[int(patch[z, x] * 8.99)]
+        elif zn == 'forest':
+            st = 'minecraft:fern' if v < 0.35 else 'minecraft:grass' if v < 0.92 else 'minecraft:large_fern'
         elif zn == 'meadow':
             st = 'minecraft:tall_grass' if v < 0.35 else 'minecraft:grass' if v < 0.75 else 'minecraft:' + FLOWERS[int(patch[z, x] * 8.99)]
         else:

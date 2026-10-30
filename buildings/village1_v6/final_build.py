@@ -7,7 +7,8 @@ exec(open('build_schem.py').read().split("def save(")[0].replace("print(", "(lam
 os.chdir(VD); sys.path.insert(0, VD)
 from layout import PLAN, res as LAY
 from schem import _rotf, _tag
-import veg
+import importlib.util as _iu
+_sp = _iu.spec_from_file_location('veg', VD + 'veg.py'); veg = _iu.module_from_spec(_sp); _sp.loader.exec_module(veg)   # 마을 폴더 veg.py 확실히
 
 Pn = [('minecraft:' + p.split(':', 1)[1]) for p in P]
 PAL = {st: i for i, st in enumerate(Pn)}
