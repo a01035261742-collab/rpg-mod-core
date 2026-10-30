@@ -5,7 +5,7 @@ from schem import _tag
 
 import json
 from scipy.ndimage import distance_transform_edt, gaussian_filter
-H = np.load('H2.npy'); MAT = np.load('MAT2.npy', allow_pickle=True); WALK = np.load('walk2.npy')
+H = np.load('H2.npy'); MAT = np.load('MAT2v.npy' if os.path.exists('MAT2v.npy') else 'MAT2.npy', allow_pickle=True); WALK = np.load('walk2.npy')
 M = json.load(open('meta.json'))
 D, W = H.shape
 BASE, WATER = 10, 8
@@ -50,7 +50,10 @@ V[wm[None] & (Y > Hc) & (Y <= WLV2[None])] = I['water']
 # 길: 가운데 줄 흙길 + 양옆 거친 흙 · 마을 광장 근처는 돌 포장 (안산암 + 조약돌)
 d_v = blockmix.zone_dist((D, W), [PLAZA]) + (blockmix.blob((D, W), 4, 41) - 0.5) * 8
 okm = WALK & np.isin(MAT, ['path', 'grass', 'coarse'])
-blockmix.natural_paths(V, H, MAT, I, json.load(open('polys2.json')), lambda z, x: ('cobblestone', 'andesite', 'gravel') if d_v[z, x] < 58 else ('dirt_path', 'coarse_dirt', 'gravel'), okm)
+_pal = lambda z, x: ('cobblestone', 'andesite', 'gravel') if d_v[z, x] < 58 else ('dirt_path', 'coarse_dirt', 'gravel')
+blockmix.natural_paths(V, H, MAT, I, json.load(open('polys2.json')), _pal, okm)
+if os.path.exists('door_polys.json'):   # 건물 문 → 길 오솔길 (좁게)
+    blockmix.natural_paths(V, H, MAT, I, json.load(open('door_polys.json')), _pal, okm, seed=52, wscale=0.6, keep_old=True)
 # 동쪽 끝 강물: 맵 밖으로 안 흐르게 돌로 막음
 edge = (MAT[:, W - 1] == 'water')
 V[:WATER + 2, edge, W - 1] = I['stone']

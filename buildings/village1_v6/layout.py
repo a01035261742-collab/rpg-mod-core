@@ -41,7 +41,11 @@ for fn, name, at, face, force in PLAN:
     s = fn(); x0, y0, z0, x1, y1, z1 = s.bounds()
     blds.append(s)
     items.append(dict(name=name, size=(x1 - x0 + 1, z1 - z0 + 1), at=at, face=face, force=force, kind='new'))
-res = place(H, walk, MAT, items, P1, roadpad=1)
+import os as _os
+if _os.path.exists('layout1.json') and not _os.environ.get('RELAYOUT'):
+    res = json.load(open('layout1.json'))
+else:
+    res = place(H, walk, MAT, items, P1, roadpad=1)
 json.dump(res, open('layout1.json', 'w'), ensure_ascii=False, indent=1)
 
 def topview(s, px):
