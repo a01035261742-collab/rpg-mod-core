@@ -1,0 +1,965 @@
+[
+ {
+  "map": 1,
+  "kind": "npc",
+  "label": "촌장 해럴드 (퀘스트)",
+  "cmd": "/rpg npc quest harold",
+  "cell": [
+   113,
+   203
+  ],
+  "off": [
+   -17,
+   0,
+   -3
+  ],
+  "yaw": 90,
+  "note": "촌장 해럴드의 집 문 앞",
+  "no": 1
+ },
+ {
+  "map": 1,
+  "kind": "npc",
+  "label": "농부 브람 (퀘스트)",
+  "cmd": "/rpg npc quest bram",
+  "cell": [
+   258,
+   218
+  ],
+  "off": [
+   128,
+   0,
+   12
+  ],
+  "yaw": 180,
+  "note": "브람 농가 문 앞",
+  "no": 2
+ },
+ {
+  "map": 1,
+  "kind": "npc",
+  "label": "경비병 루크 (퀘스트)",
+  "cmd": "/rpg npc quest luke",
+  "cell": [
+   326,
+   141
+  ],
+  "off": [
+   196,
+   2,
+   -65
+  ],
+  "yaw": -90,
+  "note": "경비 초소 (루크) 문 앞",
+  "no": 3
+ },
+ {
+  "map": 1,
+  "kind": "npc",
+  "label": "약초꾼 엘린 (퀘스트)",
+  "cmd": "/rpg npc quest elin",
+  "cell": [
+   110,
+   288
+  ],
+  "off": [
+   -20,
+   0,
+   82
+  ],
+  "yaw": 0,
+  "note": "약초 가게 (엘린) 문 앞",
+  "no": 4
+ },
+ {
+  "map": 1,
+  "kind": "npc",
+  "label": "사냥꾼 로완 (퀘스트)",
+  "cmd": "/rpg npc quest rowan",
+  "cell": [
+   184,
+   84
+  ],
+  "off": [
+   54,
+   3,
+   -122
+  ],
+  "yaw": 0,
+  "note": "사냥꾼 오두막 (로완) 문 앞",
+  "no": 5
+ },
+ {
+  "map": 1,
+  "kind": "npc",
+  "label": "전사 교관 (전직)",
+  "cmd": "/rpg npc job 1",
+  "cell": [
+   281,
+   241
+  ],
+  "off": [
+   151,
+   0,
+   35
+  ],
+  "yaw": 0,
+  "note": "전사 수련장 (바르크) 문 앞",
+  "no": 6
+ },
+ {
+  "map": 1,
+  "kind": "npc",
+  "label": "궁수 교관 (전직)",
+  "cmd": "/rpg npc job 2",
+  "cell": [
+   362,
+   268
+  ],
+  "off": [
+   232,
+   1,
+   62
+  ],
+  "yaw": -90,
+  "note": "궁수 수련장 문 앞",
+  "no": 7
+ },
+ {
+  "map": 1,
+  "kind": "npc",
+  "label": "마법사 교관 (전직)",
+  "cmd": "/rpg npc job 3",
+  "cell": [
+   107,
+   281
+  ],
+  "off": [
+   -23,
+   0,
+   75
+  ],
+  "yaw": 180,
+  "note": "마법사 탑 (세라) 문 앞",
+  "no": 8
+ },
+ {
+  "map": 1,
+  "kind": "npc",
+  "label": "도적 교관 (전직)",
+  "cmd": "/rpg npc job 4",
+  "cell": [
+   158,
+   293
+  ],
+  "off": [
+   28,
+   0,
+   87
+  ],
+  "yaw": 0,
+  "note": "도적 은신처 (카이) 문 앞",
+  "no": 9
+ },
+ {
+  "map": 1,
+  "kind": "npc",
+  "label": "잡화 상인",
+  "cmd": "/rpg npc shop general",
+  "cell": [
+   143,
+   217
+  ],
+  "off": [
+   13,
+   0,
+   11
+  ],
+  "yaw": -90,
+  "note": "잡화점 문 앞",
+  "no": 10
+ },
+ {
+  "map": 1,
+  "kind": "npc",
+  "label": "장비 상인 (Lv1·10)",
+  "cmd": "/rpg npc shop gear",
+  "cell": [
+   145,
+   196
+  ],
+  "off": [
+   15,
+   0,
+   -10
+  ],
+  "yaw": -90,
+  "note": "장비 상점 문 앞",
+  "no": 11
+ },
+ {
+  "map": 1,
+  "kind": "npc",
+  "label": "대장장이 (제작)",
+  "cmd": "/rpg npc craft smith",
+  "cell": [
+   134,
+   296
+  ],
+  "off": [
+   4,
+   0,
+   90
+  ],
+  "yaw": 0,
+  "note": "대장간 문 앞",
+  "no": 12
+ },
+ {
+  "map": 1,
+  "kind": "npc",
+  "label": "세공사 (제작)",
+  "cmd": "/rpg npc craft jeweler",
+  "cell": [
+   131,
+   271
+  ],
+  "off": [
+   1,
+   0,
+   65
+  ],
+  "yaw": 90,
+  "note": "세공소 문 앞",
+  "no": 13
+ },
+ {
+  "map": 1,
+  "kind": "npc",
+  "label": "연금술사 (제작)",
+  "cmd": "/rpg npc craft alchemist",
+  "cell": [
+   177,
+   289
+  ],
+  "off": [
+   47,
+   0,
+   83
+  ],
+  "yaw": 0,
+  "note": "연금술 공방 문 앞",
+  "no": 14
+ },
+ {
+  "map": 1,
+  "kind": "npc",
+  "label": "창고지기",
+  "cmd": "/rpg npc storage",
+  "cell": [
+   157,
+   282
+  ],
+  "off": [
+   27,
+   0,
+   76
+  ],
+  "yaw": 180,
+  "note": "여관 문 앞",
+  "no": 15
+ },
+ {
+  "map": 1,
+  "kind": "npc",
+  "label": "물약 상인",
+  "cmd": "/rpg npc shop general2",
+  "cell": [
+   129,
+   192
+  ],
+  "off": [
+   -1,
+   0,
+   -14
+  ],
+  "yaw": 0,
+  "note": "시장 노점 앞",
+  "no": 16
+ },
+ {
+  "map": 1,
+  "kind": "town",
+  "label": "마을 등록: 시작마을 (귀환 도착지)",
+  "cmd": "/rpg town add 시작마을",
+  "cell": [
+   130,
+   218
+  ],
+  "off": [
+   0,
+   0,
+   12
+  ],
+  "yaw": 180,
+  "note": "광장 분수 남쪽",
+  "no": 17
+ },
+ {
+  "map": 1,
+  "kind": "point",
+  "label": "초원 동쪽 초소 (두고 오기)",
+  "cmd": "/rpg quest point add grass_post",
+  "cell": [
+   368,
+   108
+  ],
+  "off": [
+   238,
+   2,
+   -98
+  ],
+  "yaw": null,
+  "note": "초원 동쪽 끝 언덕",
+  "no": 18
+ },
+ {
+  "map": 1,
+  "kind": "point",
+  "label": "들개 굴 (가져오기)",
+  "cmd": "/rpg quest point add dog_den",
+  "cell": [
+   36,
+   108
+  ],
+  "off": [
+   -94,
+   3,
+   -98
+  ],
+  "yaw": null,
+  "note": "깊은 풀숲 서쪽 구석",
+  "no": 19
+ },
+ {
+  "map": 1,
+  "kind": "zone",
+  "label": "사냥터 1 — 농장",
+  "cmd": "/rpg zone ground 1 farm",
+  "ground": 1,
+  "c1": [
+   147,
+   0,
+   1
+  ],
+  "c2": [
+   183,
+   0,
+   24
+  ],
+  "cell1": [
+   277,
+   207
+  ],
+  "cell2": [
+   313,
+   230
+  ],
+  "size": [
+   37,
+   24
+  ],
+  "note": "돼지·소 Lv1~5 (밭 자리 포함)",
+  "no": 20
+ },
+ {
+  "map": 1,
+  "kind": "zone",
+  "label": "사냥터 2 — 초원",
+  "cmd": "/rpg zone ground 2 meadow",
+  "ground": 2,
+  "c1": [
+   174,
+   2,
+   -114
+  ],
+  "c2": [
+   232,
+   1,
+   -76
+  ],
+  "cell1": [
+   304,
+   92
+  ],
+  "cell2": [
+   362,
+   130
+  ],
+  "size": [
+   59,
+   39
+  ],
+  "note": "슬라임·쥐 Lv6~10",
+  "no": 21
+ },
+ {
+  "map": 1,
+  "kind": "zone",
+  "label": "사냥터 3 — 풀숲언덕",
+  "cmd": "/rpg zone ground 3 forest_hill",
+  "ground": 3,
+  "c1": [
+   15,
+   4,
+   -157
+  ],
+  "c2": [
+   39,
+   4,
+   -145
+  ],
+  "cell1": [
+   145,
+   49
+  ],
+  "cell2": [
+   169,
+   61
+  ],
+  "size": [
+   25,
+   13
+  ],
+  "note": "들개·벌 Lv11~15 (공터 B)",
+  "no": 22
+ },
+ {
+  "map": 1,
+  "kind": "zone",
+  "label": "사냥터 3 — 풀숲아래",
+  "cmd": "/rpg zone ground 3 forest_low",
+  "ground": 3,
+  "c1": [
+   12,
+   3,
+   -96
+  ],
+  "c2": [
+   41,
+   3,
+   -74
+  ],
+  "cell1": [
+   142,
+   110
+  ],
+  "cell2": [
+   171,
+   132
+  ],
+  "size": [
+   30,
+   23
+  ],
+  "note": "들개·벌 Lv11~15 (공터 C, 같은 3번 두 번째 자리)",
+  "no": 23
+ },
+ {
+  "map": 1,
+  "kind": "zone",
+  "label": "사냥터 4 — 깊은풀숲",
+  "cmd": "/rpg zone ground 4 deep_forest",
+  "ground": 4,
+  "c1": [
+   -86,
+   4,
+   -124
+  ],
+  "c2": [
+   -63,
+   4,
+   -104
+  ],
+  "cell1": [
+   44,
+   82
+  ],
+  "cell2": [
+   67,
+   102
+  ],
+  "size": [
+   24,
+   21
+  ],
+  "note": "멧돼지·곰 Lv16~20 (공터 A)",
+  "no": 24
+ },
+ {
+  "map": 2,
+  "kind": "npc",
+  "label": "경비대장 카엘 (퀘스트)",
+  "cmd": "/rpg npc quest kael",
+  "cell": [
+   170,
+   342
+  ],
+  "off": [
+   -69,
+   3,
+   -263
+  ],
+  "yaw": -90,
+  "note": "경비대 초소 (카엘) 문 앞",
+  "no": 1
+ },
+ {
+  "map": 2,
+  "kind": "npc",
+  "label": "버섯 학자 모리스 (퀘스트)",
+  "cmd": "/rpg npc quest morris",
+  "cell": [
+   183,
+   223
+  ],
+  "off": [
+   -56,
+   5,
+   -382
+  ],
+  "yaw": 180,
+  "note": "버섯 연구소 (모리스) 문 앞",
+  "no": 2
+ },
+ {
+  "map": 2,
+  "kind": "npc",
+  "label": "연금술사 네라 (퀘스트)",
+  "cmd": "/rpg npc quest nera",
+  "cell": [
+   235,
+   230
+  ],
+  "off": [
+   -4,
+   5,
+   -375
+  ],
+  "yaw": 0,
+  "note": "연금술 공방 (네라) 문 앞",
+  "no": 3
+ },
+ {
+  "map": 2,
+  "kind": "npc",
+  "label": "숲지기 오웬 (퀘스트)",
+  "cmd": "/rpg npc quest owen",
+  "cell": [
+   165,
+   113
+  ],
+  "off": [
+   -74,
+   0,
+   -492
+  ],
+  "yaw": 0,
+  "note": "숲지기 오두막 (오웬) 문 앞",
+  "no": 4
+ },
+ {
+  "map": 2,
+  "kind": "npc",
+  "label": "장비 상인 (Lv20·30·40)",
+  "cmd": "/rpg npc shop gear2",
+  "cell": [
+   215,
+   249
+  ],
+  "off": [
+   -24,
+   5,
+   -356
+  ],
+  "yaw": 180,
+  "note": "장비 상점 문 앞",
+  "no": 5
+ },
+ {
+  "map": 2,
+  "kind": "npc",
+  "label": "잡화 상인",
+  "cmd": "/rpg npc shop general",
+  "cell": [
+   171,
+   244
+  ],
+  "off": [
+   -68,
+   5,
+   -361
+  ],
+  "yaw": 180,
+  "note": "잡화점 문 앞",
+  "no": 6
+ },
+ {
+  "map": 2,
+  "kind": "npc",
+  "label": "대장장이 (제작)",
+  "cmd": "/rpg npc craft smith",
+  "cell": [
+   187,
+   283
+  ],
+  "off": [
+   -52,
+   5,
+   -322
+  ],
+  "yaw": -90,
+  "note": "대장간 문 앞",
+  "no": 7
+ },
+ {
+  "map": 2,
+  "kind": "npc",
+  "label": "세공사 (제작)",
+  "cmd": "/rpg npc craft jeweler",
+  "cell": [
+   248,
+   255
+  ],
+  "off": [
+   9,
+   5,
+   -350
+  ],
+  "yaw": 0,
+  "note": "세공소 문 앞",
+  "no": 8
+ },
+ {
+  "map": 2,
+  "kind": "npc",
+  "label": "창고지기",
+  "cmd": "/rpg npc storage",
+  "cell": [
+   227,
+   277
+  ],
+  "off": [
+   -12,
+   5,
+   -328
+  ],
+  "yaw": 180,
+  "note": "여관 문 앞",
+  "no": 9
+ },
+ {
+  "map": 2,
+  "kind": "npc",
+  "label": "물약 상인",
+  "cmd": "/rpg npc shop general2",
+  "cell": [
+   203,
+   263
+  ],
+  "off": [
+   -36,
+   5,
+   -342
+  ],
+  "yaw": -90,
+  "note": "노점 앞",
+  "no": 10
+ },
+ {
+  "map": 2,
+  "kind": "town",
+  "label": "마을 등록: 두번째마을 (귀환 도착지)",
+  "cmd": "/rpg town add 두번째마을",
+  "cell": [
+   186,
+   268
+  ],
+  "off": [
+   -53,
+   5,
+   -337
+  ],
+  "yaw": 180,
+  "note": "광장 분수 남쪽",
+  "no": 11
+ },
+ {
+  "map": 2,
+  "kind": "point",
+  "label": "버섯 연구 캠프 (두고 오기)",
+  "cmd": "/rpg quest point add spore_camp",
+  "cell": [
+   298,
+   282
+  ],
+  "off": [
+   59,
+   6,
+   -323
+  ],
+  "yaw": null,
+  "note": "구조물 가운데",
+  "no": 12
+ },
+ {
+  "map": 2,
+  "kind": "point",
+  "label": "정령의 제단 (가져오기)",
+  "cmd": "/rpg quest point add spirit_altar",
+  "cell": [
+   356,
+   275
+  ],
+  "off": [
+   117,
+   6,
+   -330
+  ],
+  "yaw": null,
+  "note": "구조물 가운데",
+  "no": 13
+ },
+ {
+  "map": 2,
+  "kind": "point",
+  "label": "병정 막사 (가져오기)",
+  "cmd": "/rpg quest point add soldier_camp",
+  "cell": [
+   422,
+   155
+  ],
+  "off": [
+   183,
+   9,
+   -450
+  ],
+  "yaw": null,
+  "note": "구조물 가운데",
+  "no": 14
+ },
+ {
+  "map": 2,
+  "kind": "point",
+  "label": "깊은 곳 전초기지 (두고 오기)",
+  "cmd": "/rpg quest point add deep_post",
+  "cell": [
+   341,
+   109
+  ],
+  "off": [
+   102,
+   4,
+   -496
+  ],
+  "yaw": null,
+  "note": "구조물 가운데",
+  "no": 15
+ },
+ {
+  "map": 2,
+  "kind": "point",
+  "label": "마녀의 은신처 (가져오기)",
+  "cmd": "/rpg quest point add witch_hideout",
+  "cell": [
+   251,
+   94
+  ],
+  "off": [
+   12,
+   4,
+   -511
+  ],
+  "yaw": null,
+  "note": "구조물 계단 앞",
+  "no": 16
+ },
+ {
+  "map": 2,
+  "kind": "point",
+  "label": "짐승 둥지 (가져오기)",
+  "cmd": "/rpg quest point add beast_nest",
+  "cell": [
+   93,
+   83
+  ],
+  "off": [
+   -146,
+   1,
+   -522
+  ],
+  "yaw": null,
+  "note": "구조물 가운데",
+  "no": 17
+ },
+ {
+  "map": 2,
+  "kind": "boss",
+  "label": "숲의 군주 (필드 보스 Lv20)",
+  "cmd": "/rpg boss point add forest_lord",
+  "cell": [
+   54,
+   213
+  ],
+  "off": [
+   -185,
+   3,
+   -392
+  ],
+  "yaw": null,
+  "note": "경기장 한가운데 (발밑 = 중앙)",
+  "no": 18
+ },
+ {
+  "map": 2,
+  "kind": "boss",
+  "label": "거대버섯 수호자 (필드 보스 Lv40)",
+  "cmd": "/rpg boss point add mush_guardian",
+  "cell": [
+   453,
+   54
+  ],
+  "off": [
+   214,
+   7,
+   -551
+  ],
+  "yaw": null,
+  "note": "경기장 한가운데 (발밑 = 중앙)",
+  "no": 19
+ },
+ {
+  "map": 2,
+  "kind": "zone",
+  "label": "사냥터 5 — 군락입구",
+  "cmd": "/rpg zone ground 5 mush_gate",
+  "ground": 5,
+  "c1": [
+   72,
+   6,
+   -366
+  ],
+  "c2": [
+   106,
+   6,
+   -313
+  ],
+  "cell1": [
+   311,
+   239
+  ],
+  "cell2": [
+   345,
+   292
+  ],
+  "size": [
+   35,
+   54
+  ],
+  "note": "버섯 정령·꼬마 버섯 Lv21~25",
+  "no": 20
+ },
+ {
+  "map": 2,
+  "kind": "zone",
+  "label": "사냥터 6 — 군락안쪽",
+  "cmd": "/rpg zone ground 6 mush_inner",
+  "ground": 6,
+  "c1": [
+   133,
+   9,
+   -435
+  ],
+  "c2": [
+   211,
+   8,
+   -406
+  ],
+  "cell1": [
+   372,
+   170
+  ],
+  "cell2": [
+   450,
+   199
+  ],
+  "size": [
+   79,
+   30
+  ],
+  "note": "버섯 병정·요정 Lv26~30",
+  "no": 21
+ },
+ {
+  "map": 2,
+  "kind": "zone",
+  "label": "사냥터 7 — 깊은곳",
+  "cmd": "/rpg zone ground 7 mush_deep",
+  "ground": 7,
+  "c1": [
+   -4,
+   4,
+   -506
+  ],
+  "c2": [
+   89,
+   4,
+   -485
+  ],
+  "cell1": [
+   235,
+   99
+  ],
+  "cell2": [
+   328,
+   120
+  ],
+  "size": [
+   94,
+   22
+  ],
+  "note": "포자 거미·마녀 Lv31~35",
+  "no": 22
+ },
+ {
+  "map": 2,
+  "kind": "zone",
+  "label": "사냥터 8 — 어둠경계",
+  "cmd": "/rpg zone ground 8 dark_edge",
+  "ground": 8,
+  "c1": [
+   -124,
+   -1,
+   -531
+  ],
+  "c2": [
+   -74,
+   0,
+   -498
+  ],
+  "cell1": [
+   115,
+   74
+  ],
+  "cell2": [
+   165,
+   107
+  ],
+  "size": [
+   51,
+   34
+  ],
+  "note": "어둠 거미·버섯 짐승 Lv36~40",
+  "no": 23
+ }
+]

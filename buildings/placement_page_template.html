@@ -1,0 +1,154 @@
+<title>NPC·몹 배치표</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<style>
+/* 측량 야장(野帳) 느낌: 이끼색 잉크 + 종류별 표지색 (지도 위 번호와 같은 색) */
+:root{
+  --bg:#eef1ec; --panel:#f8faf6; --ink:#1d2620; --muted:#5b6a5f; --line:#cdd6cc; --accent:#3d6b4a; --accent-ink:#ffffff;
+  --npc:#e2b22a; --point:#e27a34; --zone:#d64848; --boss:#b5303f; --town:#4aa8cf; --code:#e6ebe4;
+  --f-body:"IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --f-mono:"IBM Plex Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#141a16; --panel:#1b231e; --ink:#e3ebe4; --muted:#9aaa9e; --line:#2e3a32; --accent:#7fb48d; --accent-ink:#0f1511;
+  --npc:#e8bf45; --point:#ec8c4b; --zone:#ea6464; --boss:#e05a68; --town:#6cc0e2; --code:#232d26; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#141a16; --panel:#1b231e; --ink:#e3ebe4; --muted:#9aaa9e; --line:#2e3a32; --accent:#7fb48d; --accent-ink:#0f1511;
+  --npc:#e8bf45; --point:#ec8c4b; --zone:#ea6464; --boss:#e05a68; --town:#6cc0e2; --code:#232d26; color-scheme:dark }
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.55}
+.wrap{max-width:1180px;margin:0 auto;padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:18px}
+h1{font-size:1.6rem;margin:0;text-wrap:balance;letter-spacing:-.01em}
+h2{font-size:1.1rem;margin:0}
+.lede{color:var(--muted);margin:4px 0 0;max-width:68ch}
+.base{display:flex;flex-wrap:wrap;gap:12px 18px;align-items:end;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.base label{display:grid;gap:3px;font-size:.78rem;color:var(--muted);letter-spacing:.04em}
+.base input{width:7.5em;font:600 1rem var(--f-mono);padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink)}
+.base input:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.base .hint{flex:1 1 260px;min-width:0;color:var(--muted);font-size:.85rem}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tabs button{font:600 .95rem var(--f-body);padding:8px 14px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.view{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:900px){.view{grid-template-columns:1fr}}
+.mapbox{position:sticky;top:calc(env(safe-area-inset-top,0px) + 10px);display:grid;gap:8px}
+.mapbox img{width:100%;border-radius:8px;border:1px solid var(--line);display:block;cursor:zoom-in}
+.view.big{grid-template-columns:1fr}.view.big .mapbox{position:static}.view.big .mapbox img{cursor:zoom-out}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.8rem;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:-1px;background:var(--c)}
+.legend .z::before{border-radius:2px;background:none;border:2px solid var(--zone)}
+.list{display:grid;gap:16px;min-width:0}
+.group h2{display:flex;gap:8px;align-items:baseline}
+.group h2 small{color:var(--muted);font-weight:400;font-size:.8rem}
+.rows{display:grid;gap:8px;margin-top:8px}
+.row{display:grid;grid-template-columns:30px minmax(0,1fr);gap:10px;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+.no{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font:700 .8rem var(--f-mono);color:#1d2620;background:var(--c);border:1.5px solid rgba(0,0,0,.35)}
+.row.zone .no{border-radius:5px;color:#fff}
+.title{font-weight:600}
+.note{color:var(--muted);font-size:.82rem}
+.cmds{display:grid;gap:5px;margin-top:6px}
+.cmd{display:flex;gap:6px;align-items:center;min-width:0}
+.cmd code{flex:1;min-width:0;overflow-x:auto;white-space:nowrap;font:500 .82rem var(--f-mono);background:var(--code);padding:5px 8px;border-radius:5px}
+.cmd .step{font-size:.72rem;color:var(--muted);width:3.2em;flex:none;text-align:right}
+.cmd button{flex:none;font:600 .75rem var(--f-body);padding:5px 9px;border-radius:5px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.cmd button.ok{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.how{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:grid;gap:6px}
+.how ol{margin:0;padding-left:1.3em;display:grid;gap:4px}
+.how code{font:500 .85em var(--f-mono);background:var(--code);padding:1px 5px;border-radius:4px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<div class="wrap">
+  <header>
+    <h1>NPC·몹 배치표</h1>
+    <p class="lede">1번 맵과 2지역에 NPC, 퀘스트 지점, 사냥터(몹), 필드 보스, 마을 등록을 어디에 놓을지 정리한 표예요. 붙이기 기준점 좌표를 넣으면 순간이동 명령어가 실제 좌표로 바뀌어요. 지도의 번호와 목록 번호가 같아요.</p>
+  </header>
+  <section class="base" aria-label="기준점">
+    <label for="bx">기준점 X<input id="bx" type="number" inputmode="numeric" value="0"></label>
+    <label for="by">Y<input id="by" type="number" inputmode="numeric" value="64"></label>
+    <label for="bz">Z<input id="bz" type="number" inputmode="numeric" value="0"></label>
+    <p class="hint">기준점 = 1번 맵을 붙일 때 서 있던 자리 (분수 한가운데, 발 위치). F3 화면의 Block 좌표(정수)를 넣어요. 2지역도 같은 기준점에서 붙였으니 같은 값을 써요.</p>
+  </section>
+  <section class="how" aria-label="쓰는 법">
+    <h2>쓰는 법</h2>
+    <ol>
+      <li><b>NPC</b>: 첫 줄 순간이동(건물 쪽을 바라보게 됨) → 둘째 줄. NPC는 내 반대쪽, 즉 길 쪽을 보고 서요.</li>
+      <li><b>퀘스트 지점·보스·마을 등록</b>: 순간이동 → 명령어. 서 있는 발밑이 그 자리가 돼요.</li>
+      <li><b>사냥터</b>: <code>/rpg wand</code> 로 지팡이를 받고, 1번 모서리로 순간이동(아래를 보게 됨) → 발밑 블록 <b>좌클릭</b>, 2번 모서리로 순간이동 → 발밑 블록 <b>우클릭</b> → 마지막 줄 명령어. 몹 종류·레벨은 번호마다 자동이에요.</li>
+      <li>다 놓은 뒤 <code>/rpg quest check</code> (빠진 NPC·지점 빨간색), <code>/rpg zone show</code> (사냥터 테두리)로 확인해요.</li>
+    </ol>
+  </section>
+  <nav class="tabs" role="tablist" aria-label="지역">
+    <button id="t1" role="tab" aria-selected="true" data-map="1">1번 맵 (시작 마을)</button>
+    <button id="t2" role="tab" aria-selected="false" data-map="2">2지역 (버섯 군락)</button>
+  </nav>
+  <section class="view">
+    <div class="mapbox">
+      <img id="mapimg" alt="배치 지도">
+      <div class="legend"><span style="--c:transparent">지도 누르면 크게 / 작게</span>
+        <span style="--c:var(--npc)">NPC</span><span style="--c:var(--point)">퀘스트 지점</span><span class="z">사냥터</span><span style="--c:var(--boss)">필드 보스</span><span style="--c:var(--town)">마을 등록</span>
+      </div>
+    </div>
+    <div class="list" id="list"></div>
+  </section>
+</div>
+<script>
+const DATA = __DATA__;
+const IMG = {1: "__IMG1__", 2: "__IMG2__"};
+const KIND = {npc:["NPC","세운 자리에 서서 길 쪽을 봐요","--npc"], town:["마을 등록","귀환 주문서 도착지","--town"], point:["퀘스트 지점","3칸 안에 들어가면 작동","--point"], zone:["사냥터 (몹)","지팡이로 두 모서리 → 명령어","--zone"], boss:["필드 보스","발밑이 경기장 중앙","--boss"]};
+const ORDER = ["npc","town","point","zone","boss"];
+const $ = s => document.querySelector(s);
+let map = 1;
+function load(){ try{ const v = JSON.parse(localStorage.getItem("rpg_base")||"null"); if(v){ $("#bx").value=v[0]; $("#by").value=v[1]; $("#bz").value=v[2]; } }catch(e){} try{ const m = localStorage.getItem("rpg_map"); if(m) map = +m; }catch(e){} }
+function save(){ try{ localStorage.setItem("rpg_base", JSON.stringify(base())); localStorage.setItem("rpg_map", String(map)); }catch(e){} }
+function base(){ return [+$("#bx").value||0, +$("#by").value||0, +$("#bz").value||0]; }
+function abs(o){ const b = base(); return [b[0]+o[0], b[1]+o[1], b[2]+o[2]]; }
+function tp(o, yaw, pitch){ const a = abs(o); return `/tp @s ${a[0]} ${a[1]} ${a[2]}` + (yaw!==null && yaw!==undefined ? ` ${yaw} ${pitch||0}` : (pitch!==undefined ? ` 0 ${pitch}` : "")); }
+function cmdRow(step, text){
+  const d = document.createElement("div"); d.className = "cmd";
+  const s = document.createElement("span"); s.className = "step"; s.textContent = step;
+  const c = document.createElement("code"); c.textContent = text;
+  const b = document.createElement("button"); b.type = "button"; b.textContent = "복사";
+  b.addEventListener("click", () => {
+    const done = () => { b.textContent = "복사됨"; b.classList.add("ok"); setTimeout(()=>{ b.textContent="복사"; b.classList.remove("ok"); }, 1300); };
+    try { navigator.clipboard.writeText(text).then(done, () => sel(c)); } catch(e){ sel(c); }
+  });
+  d.append(s, c, b); return d;
+}
+function sel(el){ const r = document.createRange(); r.selectNodeContents(el); const s = getSelection(); s.removeAllRanges(); s.addRange(r); }
+function render(){
+  $("#mapimg").src = IMG[map];
+  $("#mapimg").alt = map===1 ? "1번 맵 배치 지도" : "2지역 배치 지도";
+  document.querySelectorAll(".tabs button").forEach(b => b.setAttribute("aria-selected", String(+b.dataset.map===map)));
+  const L = $("#list"); L.textContent = "";
+  for (const k of ORDER){
+    const items = DATA.filter(o => o.map===map && o.kind===k);
+    if (!items.length) continue;
+    const g = document.createElement("div"); g.className = "group";
+    const h = document.createElement("h2"); h.innerHTML = `${KIND[k][0]} <small>${items.length}개 · ${KIND[k][1]}</small>`;
+    const rows = document.createElement("div"); rows.className = "rows";
+    for (const o of items){
+      const r = document.createElement("div"); r.className = "row" + (k==="zone" ? " zone" : ""); r.style.setProperty("--c", `var(${KIND[k][2]})`);
+      const n = document.createElement("div"); n.className = "no"; n.textContent = k==="zone" ? o.ground : o.no;
+      const body = document.createElement("div"); body.style.minWidth = "0";
+      const t = document.createElement("div"); t.className = "title"; t.textContent = o.label;
+      const note = document.createElement("div"); note.className = "note";
+      const cm = document.createElement("div"); cm.className = "cmds";
+      if (k==="zone"){
+        note.textContent = `${o.note} · ${o.size[0]}×${o.size[1]}칸`;
+        cm.append(cmdRow("1번", tp(o.c1, undefined, 90) + "  → 좌클릭"), cmdRow("2번", tp(o.c2, undefined, 90) + "  → 우클릭"), cmdRow("만들기", o.cmd));
+      } else {
+        const a = abs(o.off);
+        note.textContent = `${o.note} · 기준점에서 ${o.off[0]>=0?"+":""}${o.off[0]}, ${o.off[1]>=0?"+":""}${o.off[1]}, ${o.off[2]>=0?"+":""}${o.off[2]}`;
+        cm.append(cmdRow("이동", tp(o.off, o.yaw, 0)), cmdRow("놓기", o.cmd));
+      }
+      body.append(t, note, cm); r.append(n, body); rows.append(r);
+    }
+    g.append(h, rows); L.append(g);
+  }
+}
+load();
+["#bx","#by","#bz"].forEach(s => $(s).addEventListener("input", () => { save(); render(); }));
+document.querySelectorAll(".tabs button").forEach(b => b.addEventListener("click", () => { map = +b.dataset.map; save(); render(); }));
+$("#mapimg").addEventListener("click", () => $(".view").classList.toggle("big"));
+render();
+</script>
