@@ -46,6 +46,9 @@ if _os.path.exists('layout1.json') and not _os.environ.get('RELAYOUT'):
     res = json.load(open('layout1.json'))
 else:
     res = place(H, walk, MAT, items, P1, roadpad=1)
+FN = {p[1]: p[0] for p in PLAN}
+PLAN = [(FN[r['name']], r['name'], (0, 0), r['face'], False) for r in res]
+blds = [fn() for fn, *_ in PLAN]
 json.dump(res, open('layout1.json', 'w'), ensure_ascii=False, indent=1)
 
 def topview(s, px):
@@ -63,7 +66,7 @@ def topview(s, px):
     return im
 
 S_ = 3; OFF = (40, 70); K = 2
-base = Image.open(T + 'map1_new.png').convert('RGB')
+base = Image.open(T + 'map1_cur.png').convert('RGB')
 crop = (40, 60, 440, 330)
 im = base.crop((OFF[0] + crop[0] * S_, OFF[1] + crop[1] * S_, OFF[0] + crop[2] * S_, OFF[1] + crop[3] * S_))
 im = im.resize((im.width * K, im.height * K), Image.NEAREST)
