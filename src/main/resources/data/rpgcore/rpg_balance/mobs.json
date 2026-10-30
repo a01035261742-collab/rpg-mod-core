@@ -129,34 +129,34 @@
     "gold": 24
    },
    "6": {
-    "hp": 55,
+    "hp": 77,
     "atk": 26.0,
     "exp": 31,
     "gold": 27
    },
    "7": {
-    "hp": 68,
+    "hp": 122,
     "atk": 28.0,
     "exp": 38,
     "gold": 33
    },
    "8": {
-    "hp": 81,
+    "hp": 186,
     "atk": 30.0,
     "exp": 45,
     "gold": 36
    },
    "9": {
-    "hp": 97,
+    "hp": 281,
     "atk": 32.0,
     "exp": 53,
     "gold": 39
    },
    "10": {
     "hp": 390,
-    "atk": 44.2,
+    "atk": 39.1,
     "exp": 60,
-    "gold": 42
+    "gold": 84
    }
   }
  },
@@ -197,34 +197,34 @@
     "gold": 30
    },
    "6": {
-    "hp": 76,
+    "hp": 106,
     "atk": 26.0,
     "exp": 38,
     "gold": 36
    },
    "7": {
-    "hp": 94,
+    "hp": 169,
     "atk": 28.0,
     "exp": 47,
     "gold": 39
    },
    "8": {
-    "hp": 112,
+    "hp": 258,
     "atk": 30.0,
     "exp": 55,
     "gold": 45
    },
    "9": {
-    "hp": 133,
+    "hp": 386,
     "atk": 32.0,
     "exp": 64,
     "gold": 48
    },
    "10": {
     "hp": 540,
-    "atk": 44.2,
+    "atk": 39.1,
     "exp": 74,
-    "gold": 54
+    "gold": 108
    }
   }
  },
@@ -256,64 +256,64 @@
     "gold": 30
    },
    "6": {
-    "hp": 76,
+    "hp": 106,
     "atk": 23.4,
     "exp": 35,
     "gold": 36
    },
    "7": {
-    "hp": 94,
+    "hp": 169,
     "atk": 25.2,
     "exp": 42,
     "gold": 39
    },
    "8": {
-    "hp": 112,
+    "hp": 258,
     "atk": 27.0,
     "exp": 50,
     "gold": 45
    },
    "9": {
-    "hp": 133,
+    "hp": 386,
     "atk": 28.8,
     "exp": 58,
     "gold": 48
    },
    "10": {
     "hp": 540,
-    "atk": 39.8,
+    "atk": 35.2,
     "exp": 67,
-    "gold": 54
+    "gold": 108
    },
    "11": {
     "hp": 625,
-    "atk": 42.1,
+    "atk": 37.3,
     "exp": 76,
-    "gold": 57
+    "gold": 114
    },
    "12": {
     "hp": 700,
-    "atk": 44.5,
+    "atk": 39.3,
     "exp": 84,
-    "gold": 63
+    "gold": 126
    },
    "13": {
     "hp": 780,
-    "atk": 46.8,
+    "atk": 41.4,
     "exp": 93,
-    "gold": 66
+    "gold": 132
    },
    "14": {
     "hp": 870,
-    "atk": 49.1,
+    "atk": 43.5,
     "exp": 102,
-    "gold": 72
+    "gold": 144
    },
    "15": {
     "hp": 955,
-    "atk": 51.5,
+    "atk": 45.5,
     "exp": 111,
-    "gold": 78
+    "gold": 156
    }
   }
  },
@@ -346,64 +346,64 @@
     "gold": 30
    },
    "6": {
-    "hp": 48,
+    "hp": 67,
     "atk": 23.4,
     "exp": 35,
     "gold": 36
    },
    "7": {
-    "hp": 60,
+    "hp": 108,
     "atk": 25.2,
     "exp": 42,
     "gold": 39
    },
    "8": {
-    "hp": 71,
+    "hp": 163,
     "atk": 27.0,
     "exp": 50,
     "gold": 45
    },
    "9": {
-    "hp": 84,
+    "hp": 244,
     "atk": 28.8,
     "exp": 58,
     "gold": 48
    },
    "10": {
     "hp": 345,
-    "atk": 39.8,
+    "atk": 35.2,
     "exp": 67,
-    "gold": 54
+    "gold": 108
    },
    "11": {
     "hp": 395,
-    "atk": 42.1,
+    "atk": 37.3,
     "exp": 76,
-    "gold": 57
+    "gold": 114
    },
    "12": {
     "hp": 450,
-    "atk": 44.5,
+    "atk": 39.3,
     "exp": 84,
-    "gold": 63
+    "gold": 126
    },
    "13": {
     "hp": 495,
-    "atk": 46.8,
+    "atk": 41.4,
     "exp": 93,
-    "gold": 66
+    "gold": 132
    },
    "14": {
     "hp": 555,
-    "atk": 49.1,
+    "atk": 43.5,
     "exp": 102,
-    "gold": 72
+    "gold": 144
    },
    "15": {
     "hp": 610,
-    "atk": 51.5,
+    "atk": 45.5,
     "exp": 111,
-    "gold": 78
+    "gold": 156
    }
   }
  },
@@ -424,76 +424,76 @@
   ],
   "levels": {
    "9": {
-    "hp": 121,
+    "hp": 351,
     "atk": 35.2,
     "exp": 61,
     "gold": 48
    },
    "10": {
     "hp": 490,
-    "atk": 48.6,
+    "atk": 43.0,
     "exp": 70,
-    "gold": 54
+    "gold": 108
    },
    "11": {
     "hp": 565,
-    "atk": 51.5,
+    "atk": 45.5,
     "exp": 79,
-    "gold": 57
+    "gold": 114
    },
    "12": {
     "hp": 640,
-    "atk": 54.3,
+    "atk": 48.1,
     "exp": 89,
-    "gold": 63
+    "gold": 126
    },
    "13": {
     "hp": 710,
-    "atk": 57.2,
+    "atk": 50.6,
     "exp": 98,
-    "gold": 66
+    "gold": 132
    },
    "14": {
     "hp": 790,
-    "atk": 60.1,
+    "atk": 53.1,
     "exp": 107,
-    "gold": 72
+    "gold": 144
    },
    "15": {
     "hp": 870,
-    "atk": 62.9,
+    "atk": 55.7,
     "exp": 117,
-    "gold": 78
+    "gold": 156
    },
    "16": {
     "hp": 1000,
-    "atk": 65.8,
+    "atk": 58.2,
     "exp": 126,
-    "gold": 81
+    "gold": 162
    },
    "17": {
     "hp": 1145,
-    "atk": 68.6,
+    "atk": 60.7,
     "exp": 135,
-    "gold": 87
+    "gold": 174
    },
    "18": {
     "hp": 1295,
-    "atk": 71.5,
+    "atk": 63.2,
     "exp": 145,
-    "gold": 90
+    "gold": 180
    },
    "19": {
     "hp": 1465,
-    "atk": 74.4,
+    "atk": 65.8,
     "exp": 155,
-    "gold": 96
+    "gold": 192
    },
    "20": {
     "hp": 1640,
-    "atk": 77.2,
+    "atk": 68.3,
     "exp": 165,
-    "gold": 99
+    "gold": 198
    }
   }
  },
@@ -515,76 +515,76 @@
   ],
   "levels": {
    "9": {
-    "hp": 84,
+    "hp": 244,
     "atk": 32.0,
     "exp": 58,
     "gold": 48
    },
    "10": {
     "hp": 345,
-    "atk": 44.2,
+    "atk": 39.1,
     "exp": 67,
-    "gold": 54
+    "gold": 108
    },
    "11": {
     "hp": 395,
-    "atk": 46.8,
+    "atk": 41.4,
     "exp": 76,
-    "gold": 57
+    "gold": 114
    },
    "12": {
     "hp": 450,
-    "atk": 49.4,
+    "atk": 43.7,
     "exp": 84,
-    "gold": 63
+    "gold": 126
    },
    "13": {
     "hp": 495,
-    "atk": 52.0,
+    "atk": 46.0,
     "exp": 93,
-    "gold": 66
+    "gold": 132
    },
    "14": {
     "hp": 555,
-    "atk": 54.6,
+    "atk": 48.3,
     "exp": 102,
-    "gold": 72
+    "gold": 144
    },
    "15": {
     "hp": 610,
-    "atk": 57.2,
+    "atk": 50.6,
     "exp": 111,
-    "gold": 78
+    "gold": 156
    },
    "16": {
     "hp": 700,
-    "atk": 59.8,
+    "atk": 52.9,
     "exp": 120,
-    "gold": 81
+    "gold": 162
    },
    "17": {
     "hp": 800,
-    "atk": 62.4,
+    "atk": 55.2,
     "exp": 129,
-    "gold": 87
+    "gold": 174
    },
    "18": {
     "hp": 910,
-    "atk": 65.0,
+    "atk": 57.5,
     "exp": 138,
-    "gold": 90
+    "gold": 180
    },
    "19": {
     "hp": 1025,
-    "atk": 67.6,
+    "atk": 59.8,
     "exp": 148,
-    "gold": 96
+    "gold": 192
    },
    "20": {
     "hp": 1150,
-    "atk": 70.2,
+    "atk": 62.1,
     "exp": 157,
-    "gold": 99
+    "gold": 198
    }
   }
  },
@@ -607,75 +607,75 @@
   "levels": {
    "14": {
     "hp": 1025,
-    "atk": 60.1,
+    "atk": 53.1,
     "exp": 117,
-    "gold": 78
+    "gold": 156
    },
    "15": {
     "hp": 1130,
-    "atk": 62.9,
+    "atk": 55.7,
     "exp": 128,
-    "gold": 87
+    "gold": 174
    },
    "16": {
     "hp": 1305,
-    "atk": 65.8,
+    "atk": 58.2,
     "exp": 138,
-    "gold": 90
+    "gold": 180
    },
    "17": {
     "hp": 1490,
-    "atk": 68.6,
+    "atk": 60.7,
     "exp": 148,
-    "gold": 96
+    "gold": 192
    },
    "18": {
     "hp": 1685,
-    "atk": 71.5,
+    "atk": 63.2,
     "exp": 159,
-    "gold": 99
+    "gold": 198
    },
    "19": {
     "hp": 1905,
-    "atk": 74.4,
+    "atk": 65.8,
     "exp": 170,
-    "gold": 105
+    "gold": 210
    },
    "20": {
     "hp": 2135,
-    "atk": 77.2,
+    "atk": 68.3,
     "exp": 181,
-    "gold": 108
+    "gold": 216
    },
    "21": {
     "hp": 2325,
-    "atk": 80.1,
+    "atk": 70.8,
     "exp": 191,
-    "gold": 114
+    "gold": 228
    },
    "22": {
     "hp": 2510,
-    "atk": 82.9,
+    "atk": 73.4,
     "exp": 202,
-    "gold": 120
+    "gold": 240
    },
    "23": {
     "hp": 2705,
-    "atk": 85.8,
+    "atk": 75.9,
     "exp": 213,
-    "gold": 126
+    "gold": 252
    },
    "24": {
     "hp": 2910,
-    "atk": 88.7,
+    "atk": 78.4,
     "exp": 224,
-    "gold": 129
+    "gold": 258
    },
    "25": {
     "hp": 3110,
-    "atk": 91.5,
+    "atk": 81.0,
     "exp": 236,
-    "gold": 132
+    "gold": 264
    }
   }
  },
@@ -698,75 +698,75 @@
   "levels": {
    "14": {
     "hp": 1265,
-    "atk": 65.5,
+    "atk": 58.0,
     "exp": 128,
-    "gold": 87
+    "gold": 174
    },
    "15": {
     "hp": 1390,
-    "atk": 68.6,
+    "atk": 60.7,
     "exp": 139,
-    "gold": 93
+    "gold": 186
    },
    "16": {
     "hp": 1605,
-    "atk": 71.8,
+    "atk": 63.5,
     "exp": 150,
-    "gold": 99
+    "gold": 198
    },
    "17": {
     "hp": 1830,
-    "atk": 74.9,
+    "atk": 66.2,
     "exp": 161,
-    "gold": 102
+    "gold": 204
    },
    "18": {
     "hp": 2070,
-    "atk": 78.0,
+    "atk": 69.0,
     "exp": 172,
-    "gold": 108
+    "gold": 216
    },
    "19": {
     "hp": 2345,
-    "atk": 81.1,
+    "atk": 71.8,
     "exp": 184,
-    "gold": 114
+    "gold": 228
    },
    "20": {
     "hp": 2630,
-    "atk": 84.2,
+    "atk": 74.5,
     "exp": 196,
-    "gold": 120
+    "gold": 240
    },
    "21": {
     "hp": 2865,
-    "atk": 87.4,
+    "atk": 77.3,
     "exp": 208,
-    "gold": 126
+    "gold": 252
    },
    "22": {
     "hp": 3095,
-    "atk": 90.5,
+    "atk": 80.0,
     "exp": 220,
-    "gold": 132
+    "gold": 264
    },
    "23": {
     "hp": 3325,
-    "atk": 93.6,
+    "atk": 82.8,
     "exp": 231,
-    "gold": 138
+    "gold": 276
    },
    "24": {
     "hp": 3580,
-    "atk": 96.7,
+    "atk": 85.6,
     "exp": 244,
-    "gold": 141
+    "gold": 282
    },
    "25": {
     "hp": 3835,
-    "atk": 99.8,
+    "atk": 88.3,
     "exp": 256,
-    "gold": 144
+    "gold": 288
    }
   }
  },
@@ -808,75 +808,75 @@
   "levels": {
    "19": {
     "hp": 1465,
-    "atk": 60.8,
+    "atk": 53.8,
     "exp": 162,
-    "gold": 105
+    "gold": 210
    },
    "20": {
     "hp": 1640,
-    "atk": 63.2,
+    "atk": 55.9,
     "exp": 173,
-    "gold": 108
+    "gold": 216
    },
    "21": {
     "hp": 1785,
-    "atk": 65.5,
+    "atk": 58.0,
     "exp": 183,
-    "gold": 114
+    "gold": 228
    },
    "22": {
     "hp": 1935,
-    "atk": 67.9,
+    "atk": 60.0,
     "exp": 193,
-    "gold": 120
+    "gold": 240
    },
    "23": {
     "hp": 2080,
-    "atk": 70.2,
+    "atk": 62.1,
     "exp": 204,
-    "gold": 126
+    "gold": 252
    },
    "24": {
     "hp": 2235,
-    "atk": 72.5,
+    "atk": 64.2,
     "exp": 214,
-    "gold": 129
+    "gold": 258
    },
    "25": {
     "hp": 2395,
-    "atk": 74.9,
+    "atk": 66.2,
     "exp": 226,
-    "gold": 132
+    "gold": 264
    },
    "26": {
     "hp": 2670,
-    "atk": 79.6,
+    "atk": 68.3,
     "exp": 236,
-    "gold": 138
+    "gold": 276
    },
    "27": {
     "hp": 2965,
-    "atk": 84.5,
+    "atk": 70.4,
     "exp": 246,
-    "gold": 144
+    "gold": 288
    },
    "28": {
     "hp": 3270,
-    "atk": 89.5,
+    "atk": 72.4,
     "exp": 256,
-    "gold": 150
+    "gold": 300
    },
    "29": {
     "hp": 3605,
-    "atk": 94.6,
+    "atk": 74.5,
     "exp": 267,
-    "gold": 153
+    "gold": 306
    },
    "30": {
     "hp": 3955,
-    "atk": 99.9,
+    "atk": 76.6,
     "exp": 278,
-    "gold": 159
+    "gold": 318
    }
   }
  },
@@ -908,75 +908,75 @@
   "levels": {
    "19": {
     "hp": 880,
-    "atk": 54.1,
+    "atk": 47.8,
     "exp": 118,
-    "gold": 75
+    "gold": 150
    },
    "20": {
     "hp": 985,
-    "atk": 56.2,
+    "atk": 49.7,
     "exp": 126,
-    "gold": 78
+    "gold": 156
    },
    "21": {
     "hp": 1070,
-    "atk": 58.2,
+    "atk": 51.5,
     "exp": 133,
-    "gold": 84
+    "gold": 168
    },
    "22": {
     "hp": 1160,
-    "atk": 60.3,
+    "atk": 53.4,
     "exp": 141,
-    "gold": 87
+    "gold": 174
    },
    "23": {
     "hp": 1250,
-    "atk": 62.4,
+    "atk": 55.2,
     "exp": 148,
-    "gold": 90
+    "gold": 180
    },
    "24": {
     "hp": 1340,
-    "atk": 64.5,
+    "atk": 57.0,
     "exp": 156,
-    "gold": 93
+    "gold": 186
    },
    "25": {
     "hp": 1440,
-    "atk": 66.6,
+    "atk": 58.9,
     "exp": 164,
-    "gold": 96
+    "gold": 192
    },
    "26": {
     "hp": 1605,
-    "atk": 70.8,
+    "atk": 60.7,
     "exp": 171,
-    "gold": 99
+    "gold": 198
    },
    "27": {
     "hp": 1780,
-    "atk": 75.1,
+    "atk": 62.6,
     "exp": 179,
-    "gold": 105
+    "gold": 210
    },
    "28": {
     "hp": 1960,
-    "atk": 79.5,
+    "atk": 64.4,
     "exp": 186,
-    "gold": 108
+    "gold": 216
    },
    "29": {
     "hp": 2165,
-    "atk": 84.1,
+    "atk": 66.2,
     "exp": 194,
-    "gold": 111
+    "gold": 222
    },
    "30": {
     "hp": 2380,
-    "atk": 88.8,
+    "atk": 68.1,
     "exp": 202,
-    "gold": 114
+    "gold": 228
    }
   }
  },
@@ -1018,76 +1018,76 @@
   ],
   "levels": {
    "24": {
-    "hp": 2910,
-    "atk": 80.6,
+    "hp": 2475,
+    "atk": 71.3,
     "exp": 234,
-    "gold": 141
+    "gold": 282
    },
    "25": {
-    "hp": 3110,
-    "atk": 83.2,
+    "hp": 2645,
+    "atk": 73.6,
     "exp": 246,
-    "gold": 144
+    "gold": 288
    },
    "26": {
-    "hp": 3475,
-    "atk": 88.4,
+    "hp": 2955,
+    "atk": 75.9,
     "exp": 257,
-    "gold": 150
+    "gold": 300
    },
    "27": {
-    "hp": 3855,
-    "atk": 93.8,
+    "hp": 3275,
+    "atk": 78.2,
     "exp": 268,
-    "gold": 156
+    "gold": 312
    },
    "28": {
-    "hp": 4255,
-    "atk": 99.4,
+    "hp": 3615,
+    "atk": 80.5,
     "exp": 280,
-    "gold": 162
+    "gold": 324
    },
    "29": {
-    "hp": 4690,
-    "atk": 105.1,
+    "hp": 3985,
+    "atk": 82.8,
     "exp": 292,
-    "gold": 168
+    "gold": 336
    },
    "30": {
-    "hp": 5145,
-    "atk": 111.0,
+    "hp": 4375,
+    "atk": 85.1,
     "exp": 304,
-    "gold": 174
+    "gold": 348
    },
    "31": {
-    "hp": 5485,
-    "atk": 114.0,
+    "hp": 4660,
+    "atk": 87.4,
     "exp": 315,
-    "gold": 177
+    "gold": 354
    },
    "32": {
-    "hp": 5820,
-    "atk": 117.0,
+    "hp": 4945,
+    "atk": 89.7,
     "exp": 327,
-    "gold": 183
+    "gold": 366
    },
    "33": {
-    "hp": 6165,
-    "atk": 120.0,
+    "hp": 5240,
+    "atk": 92.0,
     "exp": 338,
-    "gold": 186
+    "gold": 372
    },
    "34": {
-    "hp": 6530,
-    "atk": 123.0,
+    "hp": 5550,
+    "atk": 94.3,
     "exp": 350,
-    "gold": 195
+    "gold": 390
    },
    "35": {
-    "hp": 6900,
-    "atk": 126.0,
+    "hp": 5865,
+    "atk": 96.6,
     "exp": 361,
-    "gold": 201
+    "gold": 402
    }
   }
  },
@@ -1109,75 +1109,75 @@
   "levels": {
    "24": {
     "hp": 1570,
-    "atk": 80.6,
+    "atk": 71.3,
     "exp": 205,
-    "gold": 117
+    "gold": 234
    },
    "25": {
     "hp": 1675,
-    "atk": 83.2,
+    "atk": 73.6,
     "exp": 215,
-    "gold": 120
+    "gold": 240
    },
    "26": {
     "hp": 1870,
-    "atk": 88.4,
+    "atk": 75.9,
     "exp": 225,
-    "gold": 126
+    "gold": 252
    },
    "27": {
     "hp": 2075,
-    "atk": 93.8,
+    "atk": 78.2,
     "exp": 235,
-    "gold": 129
+    "gold": 258
    },
    "28": {
     "hp": 2290,
-    "atk": 99.4,
+    "atk": 80.5,
     "exp": 245,
-    "gold": 135
+    "gold": 270
    },
    "29": {
     "hp": 2525,
-    "atk": 105.1,
+    "atk": 82.8,
     "exp": 255,
-    "gold": 138
+    "gold": 276
    },
    "30": {
     "hp": 2775,
-    "atk": 111.0,
+    "atk": 85.1,
     "exp": 266,
-    "gold": 144
+    "gold": 288
    },
    "31": {
     "hp": 2950,
-    "atk": 114.0,
+    "atk": 87.4,
     "exp": 276,
-    "gold": 147
+    "gold": 294
    },
    "32": {
     "hp": 3140,
-    "atk": 117.0,
+    "atk": 89.7,
     "exp": 286,
-    "gold": 153
+    "gold": 306
    },
    "33": {
     "hp": 3320,
-    "atk": 120.0,
+    "atk": 92.0,
     "exp": 296,
-    "gold": 156
+    "gold": 312
    },
    "34": {
     "hp": 3520,
-    "atk": 123.0,
+    "atk": 94.3,
     "exp": 306,
-    "gold": 162
+    "gold": 324
    },
    "35": {
     "hp": 3715,
-    "atk": 126.0,
+    "atk": 96.6,
     "exp": 316,
-    "gold": 168
+    "gold": 336
    }
   }
  },
@@ -1200,75 +1200,75 @@
   "levels": {
    "29": {
     "hp": 3245,
-    "atk": 115.6,
+    "atk": 91.1,
     "exp": 267,
-    "gold": 153
+    "gold": 306
    },
    "30": {
     "hp": 3565,
-    "atk": 122.1,
+    "atk": 93.6,
     "exp": 278,
-    "gold": 159
+    "gold": 318
    },
    "31": {
     "hp": 3800,
-    "atk": 125.4,
+    "atk": 96.1,
     "exp": 289,
-    "gold": 162
+    "gold": 324
    },
    "32": {
     "hp": 4035,
-    "atk": 128.7,
+    "atk": 98.7,
     "exp": 300,
-    "gold": 168
+    "gold": 336
    },
    "33": {
     "hp": 4270,
-    "atk": 132.0,
+    "atk": 101.2,
     "exp": 310,
-    "gold": 171
+    "gold": 342
    },
    "34": {
     "hp": 4520,
-    "atk": 135.3,
+    "atk": 103.7,
     "exp": 321,
-    "gold": 177
+    "gold": 354
    },
    "35": {
     "hp": 4775,
-    "atk": 138.6,
+    "atk": 106.3,
     "exp": 331,
-    "gold": 186
+    "gold": 372
    },
    "36": {
     "hp": 5220,
-    "atk": 141.9,
+    "atk": 108.8,
     "exp": 342,
-    "gold": 189
+    "gold": 378
    },
    "37": {
     "hp": 5675,
-    "atk": 145.2,
+    "atk": 111.3,
     "exp": 352,
-    "gold": 195
+    "gold": 390
    },
    "38": {
     "hp": 6150,
-    "atk": 148.5,
+    "atk": 113.8,
     "exp": 363,
-    "gold": 198
+    "gold": 396
    },
    "39": {
     "hp": 6670,
-    "atk": 151.8,
+    "atk": 116.4,
     "exp": 374,
-    "gold": 204
+    "gold": 408
    },
    "40": {
     "hp": 7205,
-    "atk": 155.1,
+    "atk": 118.9,
     "exp": 385,
-    "gold": 207
+    "gold": 414
    }
   }
  },
@@ -1290,75 +1290,75 @@
   "levels": {
    "29": {
     "hp": 3970,
-    "atk": 105.1,
+    "atk": 82.8,
     "exp": 292,
-    "gold": 168
+    "gold": 336
    },
    "30": {
     "hp": 4355,
-    "atk": 111.0,
+    "atk": 85.1,
     "exp": 304,
-    "gold": 174
+    "gold": 348
    },
    "31": {
     "hp": 4640,
-    "atk": 114.0,
+    "atk": 87.4,
     "exp": 315,
-    "gold": 177
+    "gold": 354
    },
    "32": {
     "hp": 4925,
-    "atk": 117.0,
+    "atk": 89.7,
     "exp": 327,
-    "gold": 183
+    "gold": 366
    },
    "33": {
     "hp": 5215,
-    "atk": 120.0,
+    "atk": 92.0,
     "exp": 338,
-    "gold": 186
+    "gold": 372
    },
    "34": {
     "hp": 5525,
-    "atk": 123.0,
+    "atk": 94.3,
     "exp": 350,
-    "gold": 195
+    "gold": 390
    },
    "35": {
     "hp": 5835,
-    "atk": 126.0,
+    "atk": 96.6,
     "exp": 361,
-    "gold": 201
+    "gold": 402
    },
    "36": {
     "hp": 6375,
-    "atk": 129.0,
+    "atk": 98.9,
     "exp": 373,
-    "gold": 207
+    "gold": 414
    },
    "37": {
     "hp": 6935,
-    "atk": 132.0,
+    "atk": 101.2,
     "exp": 384,
-    "gold": 210
+    "gold": 420
    },
    "38": {
     "hp": 7525,
-    "atk": 135.0,
+    "atk": 103.5,
     "exp": 396,
-    "gold": 216
+    "gold": 432
    },
    "39": {
     "hp": 8155,
-    "atk": 138.0,
+    "atk": 105.8,
     "exp": 408,
-    "gold": 222
+    "gold": 444
    },
    "40": {
     "hp": 8800,
-    "atk": 141.0,
+    "atk": 108.1,
     "exp": 420,
-    "gold": 228
+    "gold": 456
    }
   }
  },
@@ -1380,75 +1380,75 @@
   "levels": {
    "34": {
     "hp": 5025,
-    "atk": 135.3,
+    "atk": 103.7,
     "exp": 321,
-    "gold": 177
+    "gold": 354
    },
    "35": {
     "hp": 5310,
-    "atk": 138.6,
+    "atk": 106.3,
     "exp": 331,
-    "gold": 186
+    "gold": 372
    },
    "36": {
     "hp": 5795,
-    "atk": 141.9,
+    "atk": 108.8,
     "exp": 342,
-    "gold": 189
+    "gold": 378
    },
    "37": {
     "hp": 6305,
-    "atk": 145.2,
+    "atk": 111.3,
     "exp": 352,
-    "gold": 195
+    "gold": 390
    },
    "38": {
     "hp": 6835,
-    "atk": 148.5,
+    "atk": 113.8,
     "exp": 363,
-    "gold": 198
+    "gold": 396
    },
    "39": {
     "hp": 7410,
-    "atk": 151.8,
+    "atk": 116.4,
     "exp": 374,
-    "gold": 204
+    "gold": 408
    },
    "40": {
     "hp": 8005,
-    "atk": 155.1,
+    "atk": 118.9,
     "exp": 385,
-    "gold": 207
+    "gold": 414
    },
    "41": {
     "hp": 8385,
-    "atk": 158.4,
+    "atk": 121.4,
     "exp": 396,
-    "gold": 213
+    "gold": 426
    },
    "42": {
     "hp": 8770,
-    "atk": 161.7,
+    "atk": 124.0,
     "exp": 407,
-    "gold": 219
+    "gold": 438
    },
    "43": {
     "hp": 9155,
-    "atk": 165.0,
+    "atk": 126.5,
     "exp": 418,
-    "gold": 222
+    "gold": 444
    },
    "44": {
     "hp": 9545,
-    "atk": 168.3,
+    "atk": 129.0,
     "exp": 429,
-    "gold": 228
+    "gold": 456
    },
    "45": {
     "hp": 9935,
-    "atk": 171.6,
+    "atk": 131.6,
     "exp": 440,
-    "gold": 234
+    "gold": 468
    }
   }
  },
@@ -1469,76 +1469,76 @@
   "stunArmor": 0.4,
   "levels": {
    "34": {
-    "hp": 11050,
-    "atk": 159.9,
+    "hp": 7735,
+    "atk": 122.6,
     "exp": 525,
-    "gold": 291
+    "gold": 582
    },
    "35": {
-    "hp": 11675,
-    "atk": 163.8,
+    "hp": 8170,
+    "atk": 125.6,
     "exp": 542,
-    "gold": 303
+    "gold": 606
    },
    "36": {
-    "hp": 12750,
-    "atk": 167.7,
+    "hp": 8925,
+    "atk": 128.6,
     "exp": 559,
-    "gold": 309
+    "gold": 618
    },
    "37": {
-    "hp": 13875,
-    "atk": 171.6,
+    "hp": 9710,
+    "atk": 131.6,
     "exp": 577,
-    "gold": 318
+    "gold": 636
    },
    "38": {
-    "hp": 15045,
-    "atk": 175.5,
+    "hp": 10530,
+    "atk": 134.5,
     "exp": 594,
-    "gold": 324
+    "gold": 648
    },
    "39": {
-    "hp": 16300,
-    "atk": 179.4,
+    "hp": 11410,
+    "atk": 137.5,
     "exp": 612,
-    "gold": 333
+    "gold": 666
    },
    "40": {
-    "hp": 17605,
-    "atk": 183.3,
+    "hp": 12325,
+    "atk": 140.5,
     "exp": 630,
-    "gold": 339
+    "gold": 678
    },
    "41": {
-    "hp": 18445,
-    "atk": 187.2,
+    "hp": 12910,
+    "atk": 143.5,
     "exp": 648,
-    "gold": 348
+    "gold": 696
    },
    "42": {
-    "hp": 19285,
-    "atk": 191.1,
+    "hp": 13500,
+    "atk": 146.5,
     "exp": 666,
-    "gold": 357
+    "gold": 714
    },
    "43": {
-    "hp": 20135,
-    "atk": 195.0,
+    "hp": 14095,
+    "atk": 149.5,
     "exp": 684,
-    "gold": 366
+    "gold": 732
    },
    "44": {
-    "hp": 20995,
-    "atk": 198.9,
+    "hp": 14695,
+    "atk": 152.5,
     "exp": 702,
-    "gold": 372
+    "gold": 744
    },
    "45": {
-    "hp": 21855,
-    "atk": 202.8,
+    "hp": 15300,
+    "atk": 155.5,
     "exp": 720,
-    "gold": 381
+    "gold": 762
    }
   }
  },
@@ -1589,7 +1589,7 @@
   "levels": {
    "30": {
     "hp": 73320,
-    "atk": 165.0,
+    "atk": 126.5,
     "exp": 0,
     "gold": 0
    }
@@ -1604,15 +1604,15 @@
   "levels": {
    "20": {
     "hp": 633750,
-    "atk": 190,
+    "atk": 150,
     "exp": 2940,
-    "gold": 9600
+    "gold": 19200
    }
   },
   "boss": {
-   "_설명": "보스. arena = 경기장 반경, respawnSec 처치 후 재등장, resetSec 아무도 없으면 초기화, phase2 = HP % 이하 2페이즈, wait1/wait2 = 패턴 사이 대기(초) 범위, 레벨 낮으면 1레벨당 penaltyPerLevel% 감소 (최대 maxPenalty%). 패턴 type: cone(r·angle) slam(r) charge(len·w, track 추적초, repeat2 = 2페이즈 연속 횟수) rocks(r, 모든 플레이어 발밑 추적) roar(r, push 칸, 피해 없음). delay = 빨강 확정 후 발동까지 초, pct = 공격력 %, phase = 이 페이즈부터. 보상: 경험치·골드(levels)는 피해 비율로 나눔, 드롭 세트를 참여 인원수만큼 (sure 확정 · mats [몹, 굴림 횟수] · fragments 주문서 조각 · scrollChance% 주문서 · ring 장신구 ringChance%, 확률은 참여자 최고 드롭률 보너스 적용) melee = 패턴 사이 기본 근접 공격 (보스 중심에서 r칸 안에 대상이 있으면, cd초마다, 부채꼴)",
-   "arena": 32,
-   "respawnSec": 600,
+   "_설명": "보스. arena = 경기장 반경, respawnSec 처치 후 재등장, resetSec 아무도 없으면 초기화, phase2 = HP % 이하 2페이즈, wait1/wait2 = 패턴 사이 대기(초) 범위, 레벨 낮으면 1레벨당 penaltyPerLevel% 감소 (최대 maxPenalty%). 패턴 type: cone(r·angle) slam(r) charge(len·w, track 추적초, repeat2 = 2페이즈 연속 횟수) rocks(r, 모든 플레이어 발밑 추적) roar(r, push 칸, 피해 없음). delay = 빨강 확정 후 발동까지 초, pct = 공격력 %, phase = 이 페이즈부터. 보상: 경험치·골드(levels)는 피해 비율로 나눔, 드롭 세트를 참여 인원수만큼 (sure 확정 · mats [몹, 굴림 횟수] · fragments 주문서 조각 · scrollChance% 주문서 · ring 장신구 ringChance%, 확률은 참여자 최고 드롭률 보너스 적용) melee = 패턴 사이 기본 근접 공격 (보스 중심에서 r칸 안에 대상이 있으면, cd초마다, 부채꼴) barrage(가장 먼 사람 발밑에 interval초마다 count개 원). far 1 = 가장 먼 사람 노림, ranged 1 = 누가 멀리(farDist칸, 기본 10) 떨어져 있으면 먼저 뽑힘 (원거리 견제) poke = 원거리 평타 (대상이 평타 거리 밖일 때 패턴 사이, 발밑 원 r · delay · pct · cd초), gap = 뛰어 붙기 (대상이 dist칸 넘게 멀면, 착지 원 r · cd초). 노리는 대상 = 피해 점수 (rangedDist칸 넘게 떨어져서 준 피해는 rangedThreat배, 기본 8칸 · 1.5배)",
+   "arena": 36,
+   "respawnSec": 1800,
    "resetSec": 30,
    "phase2": 50,
    "wait1": [
@@ -1639,8 +1639,8 @@
      "id": "slam",
      "name": "내려찍기",
      "type": "slam",
-     "r": 6,
-     "delay": 1.6,
+     "r": 8,
+     "delay": 2.4,
      "pct": 220
     },
     {
@@ -1650,25 +1650,40 @@
      "len": 16,
      "w": 5,
      "track": 1.5,
-     "delay": 1.0,
+     "delay": 1.6,
      "pct": 200,
-     "repeat2": 3
+     "repeat2": 3,
+     "far": 1,
+     "ranged": 1
     },
     {
      "id": "rocks",
      "name": "바위 던지기",
      "type": "rocks",
-     "r": 3,
+     "r": 4,
      "track": 1.5,
-     "delay": 1.5,
-     "pct": 150
+     "delay": 2.0,
+     "pct": 150,
+     "ranged": 1
+    },
+    {
+     "id": "barrage",
+     "name": "바위 연타",
+     "type": "barrage",
+     "r": 3.5,
+     "count": 3,
+     "interval": 0.8,
+     "delay": 1.6,
+     "pct": 120,
+     "far": 1,
+     "ranged": 1
     },
     {
      "id": "roar",
      "name": "포효",
      "type": "roar",
-     "r": 20,
-     "delay": 2.0,
+     "r": 22,
+     "delay": 3.0,
      "push": 8,
      "phase": 2
     }
@@ -1753,6 +1768,21 @@
     "delay": 0.8,
     "pct": 120,
     "cd": 2.5
+   },
+   "poke": {
+    "name": "돌 던지기",
+    "r": 2.5,
+    "delay": 1.0,
+    "pct": 100,
+    "cd": 3
+   },
+   "gap": {
+    "name": "덮치기",
+    "r": 3,
+    "delay": 1.2,
+    "pct": 120,
+    "cd": 8,
+    "dist": 12
    }
   }
  },
@@ -1765,15 +1795,15 @@
   "levels": {
    "35": {
     "hp": 1662960,
-    "atk": 284,
+    "atk": 200,
     "exp": 5415,
-    "gold": 16080
+    "gold": 32160
    }
   },
   "boss": {
    "_설명": "거대버섯 수호자. 패턴 type 추가: combo(hits·hits2 연속, delay2 다음 타 예고, altChance% 확률로 마지막 타가 altR 원) · delayed(대상 추적 원 → 빨강 → hold초 멈췄다 폭발) · jump(대상 추적 원 → 뛰어서 착지, repeat2 = 2페이즈 연속, 착지 원 안 단단한 버섯 → 기절 propStun초) · counter(파란 원 window초, 그 안에 최대 HP need% 피해 → 기절 stun초 + 받는 피해 counterVuln%, 실패 → 폭발) · beam(대상 추적 선 → 빨강 → 발사, count발, maxPct = 최대 HP 비율 피해). gimmick: props 단단한 버섯 최대 개수 · propEvery초마다 · 중앙에서 propMin~propMax칸 · pillar 기둥 몹 키 · pillarAt HP% · pillarCount · pillarDist · pillarReduce% 받는 피해 감소 counter needPer = 경기장 인원 1명당 최대 HP %",
-   "arena": 32,
-   "respawnSec": 600,
+   "arena": 36,
+   "respawnSec": 1800,
    "resetSec": 30,
    "phase2": 50,
    "wait1": [
@@ -1811,16 +1841,16 @@
      "hits": 3,
      "hits2": 4,
      "altChance": 50,
-     "altR": 6,
+     "altR": 7,
      "pct": 160
     },
     {
      "id": "delayed",
      "name": "지연 내려찍기",
      "type": "delayed",
-     "r": 6,
+     "r": 8,
      "track": 1.2,
-     "delay": 1.5,
+     "delay": 2.2,
      "hold": 0.6,
      "pct": 220
     },
@@ -1828,17 +1858,33 @@
      "id": "jump",
      "name": "점프 압착",
      "type": "jump",
-     "r": 7,
+     "r": 9,
      "track": 2.0,
-     "delay": 1.2,
+     "delay": 2.0,
      "pct": 220,
-     "repeat2": 2
+     "repeat2": 2,
+     "far": 1,
+     "ranged": 1
+    },
+    {
+     "id": "spore_shot",
+     "name": "포자탄",
+     "type": "web",
+     "r": 4,
+     "track": 1.5,
+     "delay": 2.0,
+     "pct": 150,
+     "cocoon": 0,
+     "targets": 2,
+     "poison": 3,
+     "far": 1,
+     "ranged": 1
     },
     {
      "id": "counter",
      "name": "기 모으기",
      "type": "counter",
-     "r": 10,
+     "r": 11,
      "window": 5.0,
      "stun": 5,
      "pct": 250,
@@ -1851,11 +1897,13 @@
      "len": 40,
      "w": 3,
      "track": 0.8,
-     "delay": 1.0,
+     "delay": 1.6,
      "count": 4,
      "maxPct": 25,
      "pct": 0,
-     "phase": 2
+     "phase": 2,
+     "far": 1,
+     "ranged": 1
     }
    ],
    "reward": {
@@ -1938,6 +1986,21 @@
       50000
      ]
     ]
+   },
+   "poke": {
+    "name": "포자 한 발",
+    "r": 2.5,
+    "delay": 1.0,
+    "pct": 100,
+    "cd": 3
+   },
+   "gap": {
+    "name": "뛰어 덮치기",
+    "r": 3,
+    "delay": 1.2,
+    "pct": 120,
+    "cd": 8,
+    "dist": 12
    }
   }
  },
@@ -1965,14 +2028,14 @@
   "levels": {
    "45": {
     "hp": 2610000,
-    "atk": 345,
+    "atk": 250,
     "exp": 9500,
-    "gold": 30000
+    "gold": 60000
    }
   },
   "boss": {
-   "_설명": "레이드 보스 어둠거미여왕. only = 그 페이즈에서만 나오는 패턴 (2페이즈는 패턴 묶음이 바뀜). 새 type: fang(부채꼴, 2페이즈 hits2번 반대 방향, poison초 독) · web(추적 원 → 맞으면 cocoon초 고치, 2페이즈 targets2명) · eggs(count개 알, hatch초 뒤 부화 → 새끼 hatchCount마리) · pull(중앙으로 끌어당김 pull 세기, 끝날 때 r칸 안 maxPct%) · lanes(줄 3개 중 2개, pct) · absorb(count개 알, absorbSec초 뒤 남은 알 1개당 absorbHeal% 회복) · mark(모두 추적 원 → 각자 폭발, 겹치면 ×2) · share(한 명 보라 원 → 원 안 인원수로 maxPct% 나눔) · collapse(4등분 순서대로 delay초씩, 독 늪 linger초) · frenzy(독니 hits번 → 경기장 전체, 여왕 주변 safeR칸만 안전, finalPct%). gimmick: poisonPct 독 1초당 최대 HP %, zonePct 독 늪 0.5초당 최대 HP %, hatchCount, absorbHeal. 레이드 인원수만큼 체력 배수 (알도)",
-   "arena": 24,
+   "_설명": "레이드 보스 어둠거미여왕 (2026-10-29 리워크). only = 그 페이즈에서만 나오는 패턴. fang(부채꼴 r·angle, back 1 = 앞을 본 채 뒤를 참 + push칸 밀침, hits = 앞·뒤 번갈아 몇 번 — 뒤 타는 이 보스의 back 패턴, delay2 = 다음 타 예고) · web(추적 원 → 고치 cocoon초, targets명) · jump(추적 원 → 포물선 착지, repeat2 = 2페이즈 연속, delay2 = 두 번째부터 예고) · volley(먼 사람 쪽 직선 lines개, spread도 간격) · eggs(count개 알, hatch초 뒤 부화) · pull(중앙으로 끌림, 끝에 r칸 maxPct%) · mark(모두 추적 원, 겹치면 ×2) · share(한 명 보라 원 → 원 안 인원수로 maxPct% 나눔, 혼자 maxPctSolo, 원 밖 = 최대 HP outPct% + outPoison초 독, center 1 = 모두의 가운데에 가장 가까운 사람) · webrain(count곳 원 r, onPlayers곳은 사람 발밑, 떨어진 자리 거미줄 web초 = 구속 webSlow단계) · burst(도넛 rIn~rOut → 바로 안쪽 r2 내려찍기 delay2·pct2) · collapse(4등분 순서대로 delay초씩, 독 늪 linger초) · absorb(알 count개 absorbSec초, 남은 알당 absorbHeal%) · frenzy(독니 hits번 → 전체, 여왕 safeR칸 안전, 처음부터 초록 원). far 1 = 가장 먼 사람 (방금 노린 사람은 건너뜀), ranged 1 = 누가 farDist칸 넘게 떨어지면 먼저. 고치에 갇힌 사람은 대상에서 빠짐. gimmick: poisonPct 독 1초당 최대 HP %, zonePct 독 늪 0.5초당 최대 HP %, hatchCount, absorbHeal, restEvery·restSec 정기 휴식, transSec = 2페이즈 전환 연출 초 (무적, 바닥 정리, 전환 전엔 HP 가 경계에서 멈춤). 레이드 인원수만큼 체력 배수 (알도) hide(hpAt% 에서 한 번: 위로 올라가 time초 무적, 실 기둥 = 2명 이하 pillars개 · 3명+ pillars3개 (여왕 자리에서 pillarDist칸), shadowEvery초마다 무작위 한 명 발밑 그림자 낙하 원 shadowR (shadowDelay초, 최대 HP maxPct%), 다 끊으면 stun초 기절 + 받는 피해 counterVuln%, 못 끊으면 전체 최대 HP failMaxPct%). hpAt 패턴은 덱에 안 들어가고, 나오기 전엔 그 HP 아래로 안 내려감. 오브젝트(알·실 기둥) 체력 = 기본 × (1 + 0.7 × (인원 − 1))",
+   "arena": 28,
    "respawnSec": 600,
    "resetSec": 60,
    "phase2": 50,
@@ -1981,8 +2044,8 @@
     4.5
    ],
    "wait2": [
-    2,
-    3
+    1.5,
+    2.5
    ],
    "penaltyPerLevel": 5,
    "maxPenalty": 90,
@@ -1992,14 +2055,16 @@
     "hatchCount": 4,
     "absorbHeal": 3,
     "restEvery": 3,
-    "restSec": 4
+    "restSec": 4,
+    "transSec": 3,
+    "webSlow": 2
    },
    "patterns": [
     {
      "id": "fang",
      "name": "독니 찌르기",
      "type": "fang",
-     "r": 8,
+     "r": 9,
      "angle": 120,
      "delay": 1.6,
      "pct": 220,
@@ -2007,14 +2072,56 @@
      "only": 1
     },
     {
+     "id": "kick",
+     "name": "뒷다리 차기",
+     "type": "fang",
+     "back": 1,
+     "r": 8,
+     "angle": 140,
+     "delay": 1.4,
+     "pct": 180,
+     "push": 3,
+     "only": 1
+    },
+    {
      "id": "web",
      "name": "거미줄 발사",
      "type": "web",
-     "r": 2.5,
+     "r": 4,
      "track": 1.5,
-     "delay": 1.4,
+     "delay": 2.0,
      "pct": 100,
      "cocoon": 4,
+     "targets": 2,
+     "far": 1,
+     "ranged": 1,
+     "only": 1
+    },
+    {
+     "id": "leap",
+     "name": "도약",
+     "type": "jump",
+     "r": 8,
+     "track": 1.5,
+     "delay": 2.4,
+     "pct": 250,
+     "far": 1,
+     "ranged": 1,
+     "only": 1
+    },
+    {
+     "id": "needle",
+     "name": "독침 사격",
+     "type": "volley",
+     "len": 22,
+     "w": 2.5,
+     "spread": 20,
+     "lines": 3,
+     "delay": 2.0,
+     "pct": 130,
+     "poison": 3,
+     "far": 1,
+     "ranged": 1,
      "only": 1
     },
     {
@@ -2026,73 +2133,35 @@
      "only": 1
     },
     {
-     "id": "leap",
-     "name": "도약",
-     "type": "jump",
-     "r": 6,
-     "track": 1.5,
-     "delay": 1.6,
-     "pct": 250,
-     "only": 1
-    },
-    {
      "id": "pull",
      "name": "실 당기기",
      "type": "pull",
-     "r": 8,
+     "r": 9,
      "delay": 4,
      "maxPct": 70,
      "pull": 0.07,
      "only": 1
     },
     {
-     "id": "lanes",
-     "name": "새끼 거미 떼 돌진",
-     "type": "lanes",
-     "delay": 2.9,
-     "pct": 200,
-     "only": 1
-    },
-    {
-     "id": "fang2",
-     "name": "독니 찌르기",
+     "id": "combo",
+     "name": "앞뒤 연타",
      "type": "fang",
-     "r": 8,
+     "hits": 3,
+     "r": 9,
      "angle": 120,
      "delay": 1.4,
      "delay2": 1.2,
-     "hits2": 2,
      "pct": 220,
      "poison": 4,
-     "only": 2
-    },
-    {
-     "id": "web2",
-     "name": "거미줄 발사",
-     "type": "web",
-     "r": 2.5,
-     "track": 1.5,
-     "delay": 1.4,
-     "pct": 100,
-     "cocoon": 4,
-     "targets2": 2,
-     "only": 2
-    },
-    {
-     "id": "absorb",
-     "name": "알 흡수",
-     "type": "absorb",
-     "count": 2,
-     "absorbSec": 8,
      "only": 2
     },
     {
      "id": "mark",
      "name": "독 표식",
      "type": "mark",
-     "r": 5,
+     "r": 6,
      "track": 2.0,
-     "delay": 1.4,
+     "delay": 2.2,
      "pct": 150,
      "poison": 3,
      "only": 2
@@ -2101,10 +2170,40 @@
      "id": "share",
      "name": "먹잇감",
      "type": "share",
-     "r": 5,
-     "track": 2.5,
-     "delay": 1.4,
+     "r": 6,
+     "track": 2.0,
+     "delay": 3.0,
      "maxPct": 90,
+     "maxPctSolo": 50,
+     "outPct": 70,
+     "outPoison": 3,
+     "center": 1,
+     "only": 2
+    },
+    {
+     "id": "webrain",
+     "name": "거미줄 비",
+     "type": "webrain",
+     "count": 5,
+     "onPlayers": 2,
+     "r": 4,
+     "delay": 2.0,
+     "pct": 120,
+     "web": 15,
+     "only": 2
+    },
+    {
+     "id": "burst",
+     "name": "독 분출",
+     "type": "burst",
+     "rIn": 6,
+     "rOut": 20,
+     "delay": 2.6,
+     "pct": 200,
+     "poison": 3,
+     "r2": 6,
+     "delay2": 1.6,
+     "pct2": 220,
      "only": 2
     },
     {
@@ -2117,6 +2216,29 @@
      "only": 2
     },
     {
+     "id": "absorb",
+     "name": "알 흡수",
+     "type": "absorb",
+     "count": 2,
+     "absorbSec": 8,
+     "only": 2
+    },
+    {
+     "id": "needle2",
+     "name": "독침 사격",
+     "type": "volley",
+     "len": 22,
+     "w": 2.5,
+     "spread": 24,
+     "lines": 5,
+     "delay": 2.4,
+     "pct": 130,
+     "poison": 3,
+     "far": 1,
+     "ranged": 1,
+     "only": 2
+    },
+    {
      "id": "frenzy",
      "name": "광폭 연타",
      "type": "frenzy",
@@ -2125,9 +2247,40 @@
      "pct": 200,
      "hits": 3,
      "fangDelay": 1.2,
-     "finalDelay": 2.4,
-     "safeR": 6,
+     "finalDelay": 4.5,
+     "safeR": 7,
      "finalPct": 300,
+     "only": 2
+    },
+    {
+     "id": "leap2",
+     "name": "도약 2연속",
+     "type": "jump",
+     "r": 8,
+     "track": 1.5,
+     "delay": 2.4,
+     "delay2": 2.0,
+     "pct": 250,
+     "repeat2": 2,
+     "far": 1,
+     "ranged": 1,
+     "only": 2
+    },
+    {
+     "id": "hide",
+     "name": "천장 숨기",
+     "type": "hide",
+     "hpAt": 25,
+     "time": 12,
+     "pillars": 2,
+     "pillars3": 4,
+     "pillarDist": 11,
+     "shadowR": 5,
+     "shadowEvery": 2,
+     "shadowDelay": 1.8,
+     "maxPct": 30,
+     "stun": 8,
+     "failMaxPct": 60,
      "only": 2
     }
    ],
@@ -2222,6 +2375,21 @@
       100000
      ]
     ]
+   },
+   "poke": {
+    "name": "독침 한 발",
+    "r": 2.5,
+    "delay": 1.0,
+    "pct": 100,
+    "cd": 3
+   },
+   "gap": {
+    "name": "달려들기",
+    "r": 3,
+    "delay": 1.2,
+    "pct": 120,
+    "cd": 8,
+    "dist": 12
    }
   }
  },
@@ -2233,7 +2401,7 @@
   "levels": {
    "45": {
     "hp": 6960,
-    "atk": 90,
+    "atk": 69,
     "exp": 0,
     "gold": 0
    }
@@ -2264,6 +2432,21 @@
   "levels": {
    "45": {
     "hp": 1000,
+    "atk": 0,
+    "exp": 0,
+    "gold": 0
+   }
+  }
+ },
+ "web_pillar": {
+  "entity": "minecraft:zombie",
+  "name": "실 기둥",
+  "area": "레이드 기믹 (어둠거미여왕 천장 숨기)",
+  "stunArmor": 99,
+  "passive": true,
+  "levels": {
+   "45": {
+    "hp": 30000,
     "atk": 0,
     "exp": 0,
     "gold": 0

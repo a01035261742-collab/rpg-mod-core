@@ -41,7 +41,7 @@ public final class MarkerRender {
         List<Object[]> labels = new ArrayList<>();
         for (Markers.M k : LIST) {
             double cx = (k.x1() + k.x2()) / 2.0 + (k.type() == 0 ? 0 : 0.5), cz = (k.z1() + k.z2()) / 2.0 + (k.type() == 0 ? 0 : 0.5);
-            double near = k.type() == 0 ? Math.max(Math.abs(k.x2() - k.x1()), Math.abs(k.z2() - k.z1())) / 2.0 + 32 : 32 + k.r();
+            double near = k.type() == 0 ? Math.max(Math.abs(k.x2() - k.x1()), Math.abs(k.z2() - k.z1())) / 2.0 + 32 : 48 + k.r();
             if ((cx - c.x) * (cx - c.x) + (cz - c.z) * (cz - c.z) > near * near) continue;
             int col = COL[Math.max(0, Math.min(COL.length - 1, k.type()))];
             float r = (col >> 16 & 255) / 255f, g = (col >> 8 & 255) / 255f, b = (col & 255) / 255f;
@@ -51,22 +51,11 @@ public final class MarkerRender {
                     box(vc, m, n, k.x1() + ox, k.y1() + oy, k.z1() + oz, k.x2() + ox, k.y2() + oy, k.z2() + oz, r, g, b);
                     labels.add(new Object[]{new Vec3(cx, k.y2() + 0.5, cz), k.label(), col});
                 }
-                case 1 -> {   // 바닥 원 + 가운데 기둥
-                    double y = k.y1() + 0.05 + oy;
-                    int seg = 48;
-                    for (int i = 0; i < seg; i++) {
-                        double a1 = Math.PI * 2 * i / seg, a2 = Math.PI * 2 * (i + 1) / seg;
-                        line(vc, m, n, cx + Math.cos(a1) * k.r() + ox, y, cz + Math.sin(a1) * k.r() + oz, cx + Math.cos(a2) * k.r() + ox, y, cz + Math.sin(a2) * k.r() + oz, r, g, b);
-                    }
-                    line(vc, m, n, cx + ox, y, cz + oz, cx + ox, y + 4, cz + oz, r, g, b);
-                    labels.add(new Object[]{new Vec3(cx, k.y1() + 4.5, cz), k.label(), col});
+                case 1, 8 -> {
+                    if (k.r() <= 0) pillar(vc, m, n, k, cx, cz, ox, oy, oz, r, g, b, labels, col);
+                    else ring(vc, m, n, k, cx, cz, ox, oy, oz, r, g, b, labels, col);
                 }
-                default -> {   // 기둥 3칸
-                    double y = k.y1() + oy;
-                    line(vc, m, n, cx + ox, y, cz + oz, cx + ox, y + 3, cz + oz, r, g, b);
-                    box(vc, m, n, cx - 0.3 + ox, y, cz - 0.3 + oz, cx + 0.3 + ox, y + 0.1, cz + 0.3 + oz, r, g, b);
-                    labels.add(new Object[]{new Vec3(cx, k.y1() + 3.4, cz), k.label(), col});
-                }
+                default -> pillar(vc, m, n, k, cx, cz, ox, oy, oz, r, g, b, labels, col);   // 기둥 3칸
             }
         }
         buf.endBatch(RenderType.lines());
@@ -83,6 +72,33 @@ public final class MarkerRender {
             ps.popPose();
         }
         buf.endBatch();
+    }
+
+    private static void ring(VertexConsumer vc, Matrix4f m, Matrix3f n, Markers.M k, double cx, double cz, double ox, double oy, double oz,
+                             float r, float g, float b, List<Object[]> labels, int col) {
+        // 경기장 (보스·레이드): 울타리처럼 바닥 원 + 높이 1·3칸 원 + 기둥 (땅이 높아도 보이게) + 가운데 기둥
+        double y = k.y1() + 0.05 + oy;
+        int seg = Math.max(48, (int) (k.r() * 4));
+        for (double h : new double[]{0, 1, 3}) for (int i = 0; i < seg; i++) {
+            double a1 = Math.PI * 2 * i / seg, a2 = Math.PI * 2 * (i + 1) / seg;
+            line(vc, m, n, cx + Math.cos(a1) * k.r() + ox, y + h, cz + Math.sin(a1) * k.r() + oz, cx + Math.cos(a2) * k.r() + ox, y + h, cz + Math.sin(a2) * k.r() + oz, r, g, b);
+        }
+        for (int i = 0; i < 24; i++) {   // 15도마다 세로 기둥
+            double a = Math.PI * 2 * i / 24;
+            line(vc, m, n, cx + Math.cos(a) * k.r() + ox, y, cz + Math.sin(a) * k.r() + oz, cx + Math.cos(a) * k.r() + ox, y + 3, cz + Math.sin(a) * k.r() + oz, r, g, b);
+        }
+        line(vc, m, n, cx + ox, y, cz + oz, cx + ox, y + 4, cz + oz, r, g, b);
+        line(vc, m, n, cx - 1 + ox, y, cz + oz, cx + 1 + ox, y, cz + oz, r, g, b);
+        line(vc, m, n, cx + ox, y, cz - 1 + oz, cx + ox, y, cz + 1 + oz, r, g, b);
+        labels.add(new Object[]{new Vec3(cx, k.y1() + 4.5, cz), k.label(), col});
+    }
+
+    private static void pillar(VertexConsumer vc, Matrix4f m, Matrix3f n, Markers.M k, double cx, double cz, double ox, double oy, double oz,
+                               float r, float g, float b, List<Object[]> labels, int col) {
+        double y = k.y1() + oy;
+        line(vc, m, n, cx + ox, y, cz + oz, cx + ox, y + 3, cz + oz, r, g, b);
+        box(vc, m, n, cx - 0.3 + ox, y, cz - 0.3 + oz, cx + 0.3 + ox, y + 0.1, cz + 0.3 + oz, r, g, b);
+        labels.add(new Object[]{new Vec3(cx, k.y1() + 3.4, cz), k.label(), col});
     }
 
     private static void line(VertexConsumer vc, Matrix4f m, Matrix3f n, double x1, double y1, double z1, double x2, double y2, double z2, float r, float g, float b) {

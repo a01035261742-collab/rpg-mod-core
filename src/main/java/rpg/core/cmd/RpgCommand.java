@@ -175,6 +175,16 @@ public final class RpgCommand {
                 d.level, d.exp, Balance.expNeed(d.level), d.hp, d.maxHp, d.mp, d.maxMp,
                 d.stats[0], d.stats[1], d.stats[2], d.stats[3], d.stats[4], d.stats[5], d.statPoints, d.gold))
                 .withStyle(ChatFormatting.AQUA), false);
+        // 스공 분해: 어디서 나오는지 (직업 비교용)
+        double main = rpg.core.combat.Combat.mainStat(d), sub = rpg.core.combat.Combat.subStat(d), w = rpg.core.combat.Combat.weaponAtk(p, d);
+        double ap = d.bonus("atkPct") + rpg.core.skill.PassiveEffects.extraAtk(d), dp = rpg.core.combat.Combat.dmgPct(d);
+        String[] nm = {"체", "힘", "민", "지", "운"};
+        StringBuilder tot = new StringBuilder();
+        for (int i = 0; i < 5; i++) tot.append(nm[i]).append(String.format("%.0f ", d.total(i)));
+        c.getSource().sendSuccess(() -> Component.literal(String.format(
+                "스공 = (주스탯 %.0f ×4 + 부스탯 %.0f) × 무기공 %.0f × (1+공%% %.0f) × (1+데미지%% %.0f) / 100 = %.0f  | 최종 스탯 %s| 숙련도 %.0f%%",
+                main, sub, w, ap, dp, rpg.core.combat.Combat.statAttack(p, d), tot, rpg.core.combat.Combat.mastery(d) * 100))
+                .withStyle(ChatFormatting.GRAY), false);
         return 1;
     }
 

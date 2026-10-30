@@ -176,7 +176,8 @@ public class PlayerData {
         double ap = eq(job == 3 ? "matkPct" : "patkPct");   // 잠재 공격력%(마법사 빼고) · 마력%(마법사만)
         if (ap != 0) bonus.merge("atkPct", ap, Double::sum);
         double vitHp = Balance.hpPerVit * total(VIT) * (1 + bonus("vitHpPct") / 100.0);   // 단단한 피부
-        double mh = (Balance.hpBase + Balance.hpPerLevel * level + vitHp + eq("hp")) * (1 + bonus("hpPct") / 100.0)
+        double hpLv = Balance.hpPerLevelByJob != null ? Balance.hpPerLevelByJob[Math.max(0, Math.min(4, job))] : Balance.hpPerLevel;
+        double mh = (Balance.hpBase + hpLv * level + vitHp + eq("hp")) * (1 + bonus("hpPct") / 100.0)
                 * (1 + bonus("giantHp") / 100.0)    // 거신: 최대 HP ×1.3
                 * (oathVal > 0 ? 1.05 : 1)           // 수호자의 맹세: +5%
                 * (1 + holyVal / 100.0);             // 신성 영역

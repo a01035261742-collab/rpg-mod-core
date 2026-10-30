@@ -117,7 +117,11 @@ public final class Drops {
         List<ItemStack> out = new ArrayList<>();
 
         // 골드 주머니
-        long gold = Math.round(m.gold * (1.0 + d.goldBonus() / 100.0) * (1.0 + d.comboGoldPct(killer.level().getGameTime()) / 100.0) * (0.85 + r.nextDouble() * 0.3));
+        // 나보다 5레벨 넘게 낮은 몹: 넘는 레벨당 골드 -10% (최소 10%), 콤보 보너스도 없음
+        int below = d.level - m.level - 5;
+        double lowMul = below > 0 ? Math.max(0.1, 1 - below * 0.1) : 1.0;
+        double combo = below > 0 ? 0 : d.comboGoldPct(killer.level().getGameTime());
+        long gold = Math.round(m.gold * lowMul * (1.0 + d.goldBonus() / 100.0) * (1.0 + combo / 100.0) * (0.85 + r.nextDouble() * 0.3));
         if (gold > 0 && r.nextDouble() * 100 < goldChance) out.add(GoldPouch.of(gold));
 
         MobDrops md = MOBS.get(m.key);

@@ -32,6 +32,8 @@ public final class Balance {
     public static double hpRegenPct = 0.0, mpRegenPct = 0.5, mageMpRegenPct = 1.0, regenInterval = 5.0, bossPotionCooldown = 5;
     /** 직업별 레벨당 MP (초보자 전사 궁수 마법사 도적) */
     public static double[] mpPerLevelByJob = {5, 5, 10, 5, 10};
+    /** 직업별 레벨당 HP [초보자, 전사, 궁수, 마법사, 도적] (없으면 hpPerLevel) */
+    public static double[] hpPerLevelByJob = null;
     public static double critBase = 5.0, critPerDex = 0.1, healPerInt = 0.5, dropPerLuk = 0.2, goldPerLuk = 0.3;
     public static double expBase = 15, expPower = 2.0, expLinear = 30;
     public static int skillPointsPerLevel = 2, passivePointsPerLevel = 1;
@@ -147,6 +149,8 @@ public final class Balance {
             mpBase = d(o, "mpBase", mpBase); mpPerLevel = d(o, "mpPerLevel", mpPerLevel); mpPerInt = d(o, "mpPerInt", mpPerInt);
             hpRegenPct = d(o, "hpRegenPercent", hpRegenPct); mpRegenPct = d(o, "mpRegenPercent", mpRegenPct);
             mageMpRegenPct = d(o, "mageMpRegenPercent", mageMpRegenPct); bossPotionCooldown = d(o, "bossPotionCooldown", bossPotionCooldown);
+            hpPerLevelByJob = null;
+            if (o.has("hpPerLevelByJob")) { var a = o.getAsJsonArray("hpPerLevelByJob"); hpPerLevelByJob = new double[5]; for (int i = 0; i < 5; i++) hpPerLevelByJob[i] = i < a.size() ? a.get(i).getAsDouble() : hpPerLevel; }
             if (o.has("mpPerLevelByJob")) { var a = o.getAsJsonArray("mpPerLevelByJob"); for (int i = 0; i < Math.min(5, a.size()); i++) mpPerLevelByJob[i] = a.get(i).getAsDouble(); }
             regenInterval = d(o, "regenIntervalSec", regenInterval);
             critBase = d(o, "critBase", critBase); critPerDex = d(o, "critPerDex", critPerDex);

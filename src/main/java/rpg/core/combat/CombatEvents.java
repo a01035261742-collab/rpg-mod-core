@@ -148,6 +148,26 @@ public final class CombatEvents {
         FIXED.remove(t.getId());
     }
 
+    /**
+     * 화살 충돌 전에 거름 (공격 취소로 막으면 화살이 튕겨 나와 쏜 사람이 맞음 → 충돌 자체를 없애서 그냥 지나가게):
+     * - 플레이어가 쏜 화살은 플레이어(나·파티원)를 그냥 지나감
+     * - 화살 하나는 같은 대상을 한 번만 (꿰뚫기로 관통이 붙으면 큰 보스 몸에 두 번 맞던 것)
+     */
+    @SubscribeEvent(priority = net.minecraftforge.eventbus.api.EventPriority.HIGH)
+    public static void arrowImpact(net.minecraftforge.event.entity.ProjectileImpactEvent e) {
+        if (!(e.getProjectile() instanceof net.minecraft.world.entity.projectile.AbstractArrow a) || a.level().isClientSide) return;
+        if (!(e.getRayTraceResult() instanceof net.minecraft.world.phys.EntityHitResult eh)) return;
+        Entity target = eh.getEntity();
+        if (a.getOwner() instanceof net.minecraft.world.entity.player.Player && target instanceof net.minecraft.world.entity.player.Player) { e.setCanceled(true); return; }
+        var tag = a.getPersistentData();
+        int[] hit = tag.getIntArray("rpgHitIds");
+        int id = target.getId();
+        for (int h : hit) if (h == id) { e.setCanceled(true); return; }
+        int[] more = java.util.Arrays.copyOf(hit, hit.length + 1);
+        more[hit.length] = id;
+        tag.putIntArray("rpgHitIds", more);
+    }
+
     /** 스킬 화살은 연속으로 맞아도 다 들어가게 */
     @SubscribeEvent
     public static void skillArrowIframes(net.minecraftforge.event.entity.living.LivingAttackEvent e) {
@@ -447,7 +467,7 @@ public final class CombatEvents {
         if (mob.getPersistentData().getBoolean("rpgPillar")) return;   // 보스 기둥: 보상 없음   // 보스: 기여도 분배 · 드롭 세트
         // 연속 처치 콤보 (골드 주는 몹만, 보스방 밖에서만): 10초 안에 다음 처치
         long now = killer.level().getGameTime();
-        if (m.gold > 0 && !Boss.inArena(killer)) {
+        if (m.gold > 0 && !Boss.inArena(killer) && m.level >= d.level - 5) {   // 내 레벨 -5 이상 몹만 콤보
             d.killCombo = now < d.killComboUntil ? d.killCombo + 1 : 1;
             d.killComboUntil = now + 200;
             if (d.killCombo >= 10 && d.killCombo % 10 == 0)

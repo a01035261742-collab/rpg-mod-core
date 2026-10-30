@@ -6,7 +6,14 @@
  "statPointsPerLevel": 5,
  "maxLevel": 200,
  "hpBase": 50,
- "hpPerLevel": 10,
+ "hpPerLevel": 16,
+ "hpPerLevelByJob": [
+  10,
+  18,
+  16,
+  8,
+  16
+ ],
  "hpPerVit": 5,
  "mpBase": 50,
  "mpPerLevel": 5,

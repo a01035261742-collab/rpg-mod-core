@@ -125,7 +125,7 @@ public class BossPoints extends SavedData {
             }
             if (now < p.nextSpawn || !Boss.DEFS.containsKey(p.key)) continue;
             if (l.getNearestPlayer(p.pos.getX() + 0.5, p.pos.getY(), p.pos.getZ() + 0.5, 64, false) == null) continue;
-            Mob mob = spawnAt(l, p.key, p.pos, p.radius, p.id);
+            Mob mob = spawnAt(l, p.key, p.pos, Boss.DEFS.get(p.key).arena(), p.id);   // 크기는 mobs.json 기준
             if (mob != null) { p.boss = mob.getUUID(); d.setDirty(); }
         }
     }

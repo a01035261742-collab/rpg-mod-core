@@ -2,7 +2,8 @@ import json,math
 import os; B=os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'src/main/resources/data/rpgcore/rpg_balance/')
 P=json.load(open(B+'player.json')); M=json.load(open(B+'mobs.json')); E=json.load(open(B+'equipment.json'))['items']
 Q=json.load(open(B+'quests.json'))['quests']
-def need(l): return round(15*l*l+30*l)
+def need(l):
+    import json as _j; _p=_j.load(open(B+"player.json")); return round(_p["expBase"]*l**_p["expPower"]+_p["expLinear"]*l)   # 실제 player.json 공식
 # zone mob for level: pick mob whose area covers
 zones=[(1,5,'pig'),(6,10,'slime'),(11,15,'wild_dog'),(16,20,'boar'),(21,25,'mush_spirit'),(26,30,'mush_soldier'),(31,35,'spore_spider'),(36,45,'dark_spider')]
 def mob(l):

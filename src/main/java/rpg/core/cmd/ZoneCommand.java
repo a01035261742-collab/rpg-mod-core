@@ -449,6 +449,20 @@ public final class ZoneCommand {
                             clearMobs(lv, n);
                             return ok(c, "사냥터 삭제: " + n);
                         })))
+                .then(Commands.literal("removeall")
+                        .executes(c -> {
+                            int n = ZoneData.get(c.getSource().getLevel()).zones.size();
+                            return fail(c, "사냥터 " + n + "곳을 전부 지워요. 정말이면: /rpg zone removeall confirm");
+                        })
+                        .then(Commands.literal("confirm").executes(c -> {
+                            ServerLevel lv = c.getSource().getLevel();
+                            ZoneData d = ZoneData.get(lv);
+                            int mobs = 0, n = d.zones.size();
+                            for (String name : new java.util.ArrayList<>(d.zones.keySet())) mobs += clearMobs(lv, name);
+                            d.zones.clear();
+                            d.setDirty();
+                            return ok(c, "사냥터 " + n + "곳 전부 삭제 (몹 " + mobs + "마리 정리)");
+                        })))
                 .then(Commands.literal("clear").executes(c -> {
                             Zone z = here(c);
                             if (z == null) {   // 사냥터 밖: 모든 사냥터 몹 정리
