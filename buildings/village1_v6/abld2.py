@@ -325,40 +325,55 @@ def granary():
 
 # ── 풍차 ──
 def windmill():
-    s = Bld('farm/windmill', 36); cx, cz, R = 5, 5, 4
-    for x in range(0, 11):
-        for z in range(0, 11):
+    """높은 풍차: 돌 1층(9칸) + 반목조 몸통(위로 갈수록 살짝 좁아짐) + 원뿔 지붕 + 큰 날개 4개"""
+    s = Bld('farm/windmill', 36); cx, cz, R = 6, 6, 5
+    for x in range(0, 13):
+        for z in range(0, 13):
             d = math.hypot(x - cx, z - cz)
             if d <= R + 0.4: s.set(x, 0, z, 'stone_bricks')
-            if R - 0.9 <= d <= R + 0.4:
-                for yy in range(1, 6): s.set(x, yy, z, s.pick(STONE_LOW if yy == 1 else STONE))
-                for yy in range(6, 15):
-                    rr = R - (yy - 6) * 0.12
-                    if rr - 0.9 <= d <= rr + 0.4 or True: s.set(x, yy, z, LOG('dark_oak_log') if (x + z) % 4 == 0 else s.pick(INFILL))
-    for yy in (3, 8, 12): s.set(cx, yy, cz + R, 'glass_pane'); s.set(cx + R, yy, cz, 'glass_pane')
-    s.set(cx, 1, cz + R, 'spruce_door[facing=south,half=lower,hinge=left,open=false,powered=false]'); s.set(cx, 2, cz + R, 'spruce_door[facing=south,half=upper,hinge=left,open=false,powered=false]')
-    for x in range(cx - R, cx + R + 1):
-        for z in range(cz - R, cz + R + 1):
-            if R - 0.2 <= math.hypot(x - cx, z - cz) <= R + 0.9:
+            elif d <= R + 1.4:
                 dx, dz = cx - x, cz - z
-                f = ('east' if dx > 0 else 'west') if abs(dx) >= abs(dz) else ('south' if dz > 0 else 'north')
-                s.set(x, 6, z, ST('dark_oak', f, 'top')) if s.get(x, 6, z) is None else None
-    top = cone(s, cx, cz, R + 1, 15, mats=('dark_oak', 'spruce', 'spruce'), step=0.6)
-    # 날개: 정면(남) 축 + 4개 날개 (울타리 뼈대 + 흰 양털 돛)
-    hz = cz + R + 2; hy = 13
-    s.set(cx, hy, cz + R + 1, LOG('dark_oak_log', 'z')); s.set(cx, hy, hz, LOG('dark_oak_log', 'z'))
+                s.set(x, 0, z, ST('stone_brick', ('east' if dx > 0 else 'west') if abs(dx) >= abs(dz) else ('south' if dz > 0 else 'north')))
+    TOPY = 24
+    for yy in range(1, TOPY):
+        rr = R if yy <= 9 else R - (yy - 9) * 0.09
+        for x in range(0, 13):
+            for z in range(0, 13):
+                d = math.hypot(x - cx, z - cz)
+                if rr - 0.95 <= d <= rr + 0.35:
+                    if yy <= 9: m = s.pick(STONE_LOW if yy == 1 else STONE)
+                    elif yy in (10, 17): m = LOG('stripped_dark_oak_log', 'x')
+                    else: m = LOG('dark_oak_log') if (round(math.atan2(z - cz, x - cx) / (math.pi / 4))) % 2 == 0 and abs(math.hypot(x - cx, z - cz) - rr) < 0.5 and (x == cx or z == cz or abs(x - cx) == abs(z - cz)) else s.pick(INFILL)
+                    s.set(x, yy, z, m)
+    for (dx, dz, f) in ((0, 1, 'S'), (1, 0, 'E'), (0, -1, 'N'), (-1, 0, 'W')):   # 층마다 창
+        for yy in (4, 13, 20):
+            r_ = R if yy <= 9 else int(R - (yy - 9) * 0.09 + 0.3)
+            s.set(cx + dx * r_, yy, cz + dz * r_, 'glass_pane'); s.set(cx + dx * r_, yy + 1, cz + dz * r_, 'glass_pane')
+    for x in range(0, 13):   # 돌층 위 받침 띠
+        for z in range(0, 13):
+            d = math.hypot(x - cx, z - cz)
+            if R - 0.2 <= d <= R + 0.9 and s.get(x, 10, z) is None:
+                dx, dz = cx - x, cz - z
+                s.set(x, 10, z, ST('dark_oak', ('east' if dx > 0 else 'west') if abs(dx) >= abs(dz) else ('south' if dz > 0 else 'north'), 'top'))
+    s.set(cx, 1, cz + R, 'spruce_door[facing=south,half=lower,hinge=left,open=false,powered=false]'); s.set(cx, 2, cz + R, 'spruce_door[facing=south,half=upper,hinge=left,open=false,powered=false]')
+    s.set(cx, 3, cz + R, SL('stone_brick', 'top')); s.set(cx - 1, 3, cz + R + 1, 'lantern[hanging=false,waterlogged=false]'); s.set(cx + 1, 3, cz + R + 1, 'lantern[hanging=false,waterlogged=false]')
+    top = cone(s, cx, cz, R + 1, TOPY, mats=('dark_oak', 'spruce', 'spruce', 'dark_oak'), step=0.45)
+    # 날개: 정면 축 + 4개 (길이 12)
+    hy = 19; hz = cz + R + 2
+    for z in range(cz + R - 1, hz + 1): s.set(cx, hy, z, LOG('dark_oak_log', 'z'))
+    s.set(cx, hy, hz + 1, 'dark_oak_fence')
     for (dx, dy) in ((0, 1), (0, -1), (1, 0), (-1, 0)):
-        ox, oy = (dy, -dx)                      # 돛은 날개 한쪽으로만 (돌아가는 방향)
-        for k in range(1, 10):
+        ox, oy = (dy, -dx)
+        for k in range(1, 13):
             x, yy = cx + dx * k, hy + dy * k
             s.set(x, yy, hz, 'dark_oak_fence')
-            if 2 <= k <= 9:
-                s.set(x + ox, yy + oy, hz, 'white_wool' if k % 3 else 'stripped_dark_oak_log[axis=' + ('x' if dx == 0 else 'y') + ']')
-                s.set(x + 2 * ox, yy + 2 * oy, hz, 'white_wool' if k % 3 else 'stripped_dark_oak_log[axis=' + ('x' if dx == 0 else 'y') + ']')
-                s.set(x + 3 * ox, yy + 3 * oy, hz, 'dark_oak_fence')
-    s.set(cx, 2, cz + R + 1, ST('stone_brick', 'north')) if False else None
+            if 3 <= k <= 12:
+                ax = 'x' if dx == 0 else 'y'
+                for w in (1, 2, 3):
+                    s.set(x + ox * w, yy + oy * w, hz, 'white_wool' if k % 3 else f'stripped_dark_oak_log[axis={ax}]')
+                s.set(x + 4 * ox, yy + 4 * oy, hz, 'dark_oak_fence')
     for (x, z) in ((cx + R + 2, cz - 1), (cx + R + 2, cz)): s.set(x, 1, z, 'hay_block[axis=y]')
-    s.set(cx - R - 2, 1, cz, 'barrel[facing=up,open=false]')
+    s.set(cx + R + 3, 1, cz - 1, 'hay_block[axis=x]'); s.set(cx - R - 2, 1, cz, 'barrel[facing=up,open=false]'); s.set(cx - R - 2, 1, cz + 1, 'barrel[facing=up,open=false]')
     return finish(s)
 
 # ── 경비 초소 (루크) ──
