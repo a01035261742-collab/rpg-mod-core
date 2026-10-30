@@ -263,8 +263,8 @@ def mage():
                     if y in (6, 11): m = 'polished_andesite'
                     s.set(x, y, z, m)
     for y in (3, 8, 13):   # 창 (네 방향, 깊게)
-        s.set(cx, y, cz + R, 'air'); s.set(cx, y, cz + R - 1, 'glass_pane'); s.set(cx, y + 1, cz + R, 'air'); s.set(cx, y + 1, cz + R - 1, 'glass_pane')
-        s.set(cx + R, y, cz, 'air'); s.set(cx + R - 1, y, cz, 'glass_pane'); s.set(cx + R, y + 1, cz, 'air'); s.set(cx + R - 1, y + 1, cz, 'glass_pane')
+        s.set(cx, y, cz + R, 'glass_pane'); s.set(cx, y, cz + R - 1, 'air'); s.set(cx, y + 1, cz + R, 'glass_pane'); s.set(cx, y + 1, cz + R - 1, 'air')
+        s.set(cx + R, y, cz, 'glass_pane'); s.set(cx + R - 1, y, cz, 'air'); s.set(cx + R, y + 1, cz, 'glass_pane'); s.set(cx + R - 1, y + 1, cz, 'air')
     # 꼭대기 반목조 방 (튀어나옴) + 받침
     R2 = R + 1
     for x in range(cx - R2, cx + R2 + 1):

@@ -59,10 +59,10 @@ def stone_story(s, x0, z0, x1, z1, y0, h, quoin=True):
             for y in range(y0, y0 + h): s.set(x, y, z, 'polished_andesite' if (y - y0) % 2 == 0 else 'stone_bricks')
 
 def window(s, x, y, z, f, h=2, wood='spruce', shutters=True, lintel='spruce', sill=True):
-    """깊은 창: 벽칸은 비우고 한 칸 안쪽에 유리판, 위 계단 처마, 양옆 덧문"""
+    """창: 벽면에 유리판 + 위 계단 처마 + 아래 받침 + 양옆 덧문"""
     dx, dz = OUT[f]
     for k in range(h):
-        s.set(x, y + k, z, None if False else 'air'); s.set(x - dx, y + k, z - dz, 'glass_pane')
+        s.set(x, y + k, z, 'glass_pane')            # 유리판은 벽면에 (안으로 들이지 않음)
     s.set(x + dx, y + h, z + dz, ST(lintel, FACE[OPP[f]], 'top'))            # 창 위 작은 처마
     if sill: s.set(x + dx, y - 1, z + dz, ST(wood, FACE[OPP[f]], 'top'))
     if shutters:
@@ -195,20 +195,25 @@ def lamp_post(s, x, z, h=3):
     s.set(x, h + 1, z, 'dark_oak_fence'); s.set(x + 1, h + 1, z, 'dark_oak_fence'); s.set(x + 1, h, z, 'lantern[hanging=true,waterlogged=false]')
 
 def bench(s, x, z, f='S', n=2):
+    return   # 소품 없음 (사용자가 직접 꾸밈)
     for i in range(n): s.set(x + i, 1, z, ST('spruce', FACE[OPP[f]]))
 
 def barrels(s, pts):
+    return   # 소품 없음 (사용자가 직접 꾸밈)
     for (x, y, z) in pts: s.set(x, y, z, 'barrel[facing=up,open=false]')
 
 def crates(s, x, z):
+    return   # 소품 없음 (사용자가 직접 꾸밈)
     s.set(x, 1, z, 'barrel[facing=up,open=false]'); s.set(x + 1, 1, z, 'spruce_planks'); s.set(x, 2, z, SL('spruce'))
 
 def woodpile(s, x0, z, n=3, ax='x'):
+    return   # 소품 없음 (사용자가 직접 꾸밈)
     for i in range(n):
         s.set(x0 + i, 1, z, LOG('spruce_log', 'z')); 
         if i < n - 1: s.set(x0 + i, 2, z, LOG('spruce_log', 'z'))
 
 def path_patch(s, x0, x1, z0, z1):
+    return   # 소품 없음 (사용자가 직접 꾸밈)
     for x in range(x0, x1 + 1):
         for z in range(z0, z1 + 1):
             if s.get(x, 0, z) is None: s.set(x, 0, z, s.pick([('dirt_path', 60), ('coarse_dirt', 25), ('gravel', 15)]))
@@ -231,6 +236,7 @@ def weathervane(s, x, y, z):
 
 def furnish(s, x0, z0, x1, z1, y=1, kind='home'):
     """안 꾸미기 (창으로 보임): 가장자리 가구 + 가운데 탁자·의자 + 매단 등"""
+    return   # 소품 없음 (사용자가 직접 꾸밈)
     def free(x, yy, z): return s.get(x, yy, z) is None
     cx, cz = (x0 + x1) // 2, (z0 + z1) // 2
     # 바닥 깔개
@@ -252,9 +258,32 @@ def furnish(s, x0, z0, x1, z1, y=1, kind='home'):
 
 def scatter(s, x0, z0, x1, z1, n=6):
     """건물 둘레 바닥: 자갈·거친 흙 조각 + 디딤돌"""
+    return   # 소품 없음 (사용자가 직접 꾸밈)
     for _ in range(n):
         f = s.r.choice('SNEW'); x = s.r.randint(x0, x1); z = s.r.randint(z0, z1)
         dx, dz = OUT[f]
         x, z = {'S': (x, z1 + 2), 'N': (x, z0 - 2), 'E': (x1 + 2, z), 'W': (x0 - 2, z)}[f]
         for (ax, az) in ((0, 0), (1, 0), (0, 1)):
             if s.get(x + ax, 0, z + az) is None: s.set(x + ax, 0, z + az, s.pick([('coarse_dirt', 50), ('gravel', 30), ('cobblestone', 20)]))
+
+
+PROPS = ('chest', 'barrel', 'crafting_table', 'furnace', 'blast_furnace', 'smoker', 'bookshelf', 'lectern', 'brewing_stand', 'cauldron', 'water_cauldron',
+         'lava_cauldron', 'anvil', 'grindstone', 'smithing_table', 'cartography_table', 'fletching_table', 'composter', 'enchanting_table', 'cake',
+         'hay_block', 'target', 'amethyst_block', 'amethyst_cluster', 'coal_block', 'carved_pumpkin', 'loom', 'stonecutter', 'iron_block')
+def declutter(s):
+    """안팎에 흩어진 소품(상자·작업대·통·책장 등) 치움. 남김: 벽·지붕·창·문·등·간판·깃발·사다리·굴뚝, 우물 두레박(사슬 밑 가마솥)"""
+    gone = set()
+    for (x, y, z), st in list(s.b.items()):
+        n = st.split(':')[1].split('[')[0]
+        rm = n in PROPS or n.endswith('_carpet') or n.endswith('pressure_plate')
+        if n == 'cauldron' and (s.get(x, y + 1, z) or '').startswith('minecraft:chain'): rm = False
+        if n in ('campfire', 'soul_campfire') and y <= 2: rm = True          # 땅 위 모닥불 (굴뚝 위 것은 남김)
+        if rm: del s.b[(x, y, z)]; gone.add((x, y, z))
+    for _ in range(2):   # 치운 것 위에 얹혀 있던 반블록·판자·서 있는 등, 탁자 다리(울타리)
+        for (x, y, z), st in list(s.b.items()):
+            n = st.split(':')[1].split('[')[0]
+            if (x, y - 1, z) in gone and (n.endswith('_slab') or n.endswith('_planks') or (n == 'lantern' and 'hanging=false' in st)):
+                del s.b[(x, y, z)]; gone.add((x, y, z))
+            if (x, y + 1, z) in gone and n.endswith('_fence') and y <= 1 and not any((x + a, y, z + b) in s.b and 'fence' in s.b[(x + a, y, z + b)] for a, b in ((1, 0), (-1, 0), (0, 1), (0, -1))):
+                del s.b[(x, y, z)]; gone.add((x, y, z))
+    return s

@@ -33,28 +33,35 @@ print('방벽 칸', int(RING.sum()))
 # ── 건물 넣기 (자리 평평하게: 바닥 아래 흙 채우고 위 지형 비움)
 STEPS = {'S': 0, 'W': 1, 'N': 2, 'E': 3}
 Hf = H.copy(); body = np.zeros((D, W), bool); placed = []
-for (fn, name, *_), r in zip(PLAN, LAY):
-    s = fn(); n = STEPS[r['face']]; pts = {}
+GROUND = ('dirt_path', 'coarse_dirt', 'gravel', 'cobblestone', 'mossy_cobblestone', 'polished_andesite', 'andesite', 'spruce_planks', 'oak_planks',
+          'polished_deepslate', 'deepslate_tiles', 'chiseled_deepslate', 'stone_bricks', 'cracked_stone_bricks', 'mossy_stone_bricks')
+from alib import declutter
+def bake(s, r):
+    """건물 넣기: 바닥(y=0)이 땅 위 한 칸 (안 파묻힘). 위에 아무것도 없는 바닥 깔기(광장 포장·마당)는 땅 높이 그대로"""
+    n = STEPS[r['face']]; pts = {}
     for (x, y, z), st in s.b.items():
         for _ in range(n): x, z = -z, x
         pts[(x, y, z)] = _rotf(st, n)
     mx = min(p[0] for p in pts); mz = min(p[2] for p in pts); fl = r['floor']
     cols = {}
-    for (x, y, z), st in pts.items():
-        X, Z = r['x0'] + x - mx, r['z0'] + z - mz
-        cols.setdefault((X, Z), []).append((y, st))
+    for (x, y, z), st in pts.items(): cols.setdefault((r['x0'] + x - mx, r['z0'] + z - mz), []).append((y, st))
     for (X, Z), lst in cols.items():
         if not (0 <= X < W and 0 <= Z < D): continue
-        miny = min(y for y, _ in lst)
-        if miny <= 0:   # 바닥 있는 칸: 지형 맞춤
+        flat = all(y <= 0 for y, _ in lst) and all(st.split(':')[1].split('[')[0] in GROUND for y, st in lst if y == 0)
+        b0 = fl if flat else fl + 1
+        if min(y for y, _ in lst) <= 0:
             top = int(H[Z, X])
-            for y in range(fl + 1, max(top, fl) + 1): V2[y, Z, X] = AIR if 'barrier' not in Pn[V2[y, Z, X]] else V2[y, Z, X]
-            for y in range(top + 1, fl): V2[y, Z, X] = idx('minecraft:dirt')
-            Hf[Z, X] = fl
+            for y in range(b0 + (0 if flat else 1), max(top, b0) + 1):
+                if y != b0 or flat is False:
+                    if 'barrier' not in Pn[V2[y, Z, X]]: V2[y, Z, X] = AIR
+            for y in range(top + 1, b0): V2[y, Z, X] = idx('minecraft:dirt')
+            Hf[Z, X] = b0
         for y, st in lst:
-            yy = fl + y
+            yy = b0 + y
             if 0 <= yy < TOPN: V2[yy, Z, X] = idx(st if st.startswith('minecraft:') else 'minecraft:' + st)
             if y >= 1 and st != 'minecraft:air': body[Z, X] = True
+for (fn, name, *_), r in zip(PLAN, LAY):
+    bake(declutter(fn()), r)
     placed.append(name)
 # ── 나무·풀 (빈 칸에만)
 VEG = veg.build()
