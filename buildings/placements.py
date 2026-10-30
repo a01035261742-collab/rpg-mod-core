@@ -165,8 +165,30 @@ def center(fn):
 for fn, pid, nm in (('spore_camp', 'spore_camp', '버섯 연구 캠프 (두고 오기)'), ('spirit_altar', 'spirit_altar', '정령의 제단 (가져오기)'),
                     ('soldier_camp', 'soldier_camp', '병정 막사 (가져오기)'), ('deep_post', 'deep_post', '깊은 곳 전초기지 (두고 오기)'),
                     ('witch_hut', 'witch_hideout', '마녀의 은신처 (가져오기)'), ('beast_nest', 'beast_nest', '짐승 둥지 (가져오기)')):
-    x, z = tuple(by2[fn]['door']) if fn in ('witch_hut',) else center(fn)
-    add(2, 'point', nm, f'/rpg quest point add {pid}', x, z, None, V, PB, H, off, '구조물 ' + ('계단 앞' if fn == 'witch_hut' else '가운데'))
+    r_ = by2[fn]
+    def find(names):
+        sub = V[:, r_['z0']:r_['z0'] + r_['l'], r_['x0']:r_['x0'] + r_['w']]
+        ids = [i for i, p in enumerate(P) if p.split(':')[1].split('[')[0] in names]
+        hits = np.argwhere(np.isin(sub, ids))
+        return [(int(r_['x0'] + x), int(y), int(r_['z0'] + z)) for y, z, x in hits]
+    if fn == 'soldier_camp':        # 막사 탁자 옆 (탁자 밑에서 작전 지도)
+        tx, ty, tz = find(('cartography_table',))[0]
+        x, z, y = clear_spot(V, PB, H, tx, tz, rmax=2)
+        OUT.append(dict(map=2, kind='point', label=nm, cmd=f'/rpg quest point add {pid}', cell=[x, z], off=[x + off[0], y + off[1], z + off[2]], yaw=None, note='작전 탁자 바로 옆'))
+        continue
+    if fn == 'witch_hut':           # 오두막 안, 책장 옆 (책장에서 주문서)
+        bs = find(('bookshelf',)); fl_ = max(b[1] for b in bs) - 1 if False else min(b[1] for b in bs) - 1
+        best = None
+        for (bx, by, bz) in bs:
+            for dx, dz in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                X, Z = bx + dx, bz + dz
+                if not PB[V[fl_, Z, X]] and PB[V[fl_ + 1, Z, X]] and PB[V[fl_ + 2, Z, X]]: best = (X, Z); break
+            if best: break
+        x, z = best; y = fl_ + 1
+        OUT.append(dict(map=2, kind='point', label=nm, cmd=f'/rpg quest point add {pid}', cell=[x, z], off=[x + off[0], y + off[1], z + off[2]], yaw=None, note='오두막 안 책장 옆 (계단으로 올라가서)'))
+        continue
+    x, z = center(fn)
+    add(2, 'point', nm, f'/rpg quest point add {pid}', x, z, None, V, PB, H, off, '구조물 가운데' if fn != 'spirit_altar' else '제단 가운데 (독서대 옆)')
 MM = json.load(open(T + 'R2_meta.json'))
 for k, boss, nm in (('boss1', 'forest_lord', '숲의 군주 (필드 보스 Lv20)'), ('boss2', 'mush_guardian', '거대버섯 수호자 (필드 보스 Lv40)')):
     x, z = MM['arenas'][k]; add(2, 'boss', nm, f'/rpg boss point add {boss}', x, z, None, V, PB, H, off, '경기장 한가운데 (발밑 = 중앙)')
@@ -181,6 +203,15 @@ for no, zn, nm, mobs, zid in ((5, 'g5', '군락입구', '버섯 정령·꼬마 �
                           (7, 'g7', '깊은곳', '포자 거미·마녀 Lv31~35', 'mush_deep'), (8, 'g8', '어둠경계', '어둠 거미·버섯 짐승 Lv36~40', 'dark_edge')):
     zone_add(2, no, nm, ok & (ZN == zn) & ~arena, V, PB, H, off, mobs, zid)
 M2 = (V, P, PB, H, off)
+QJ = json.load(open('/home/claude/rpg-mod-core/src/main/resources/data/rpgcore/rpg_balance/quests.json'))
+NPCN = {k: v['name'] for k, v in QJ['npcs'].items()}
+for o in OUT:
+    if o['kind'] != 'point': continue
+    pid = o['cmd'].split()[-1]
+    for qk, q in QJ['quests'].items():
+        f = q.get('fetch') or {}
+        if f.get('point') == pid: o['quest'] = f"가져오기 · {q.get('name')} ({NPCN.get(q.get('npc'), q.get('npc'))}) — 가까이 가면 자동으로 주움: “{f.get('text')}”"
+        if q.get('point') == pid: o['quest'] = f"두고 오기 · {q.get('name')} ({NPCN.get(q.get('npc'), q.get('npc'))}) — 가까이 가면 바로 완료"
 json.dump(OUT, open(VD + 'placements.json', 'w'), ensure_ascii=False, indent=1)
 print(len(OUT), '개')
 for o in OUT: print(o['map'], o['kind'], o['label'], o.get('off') or (o['c1'], o['c2'], o['size']), o.get('yaw'))

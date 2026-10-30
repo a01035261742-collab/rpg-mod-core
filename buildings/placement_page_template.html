@@ -47,6 +47,7 @@ h2{font-size:1.1rem;margin:0}
 .title{font-weight:600}
 .note{color:var(--muted);font-size:.82rem}
 .cmds{display:grid;gap:5px;margin-top:6px}
+.qline{font-size:.82rem;margin-top:3px;padding:4px 8px;border-left:3px solid var(--point);background:var(--code);border-radius:0 5px 5px 0}
 .cmd{display:flex;gap:6px;align-items:center;min-width:0}
 .cmd code{flex:1;min-width:0;overflow-x:auto;white-space:nowrap;font:500 .82rem var(--f-mono);background:var(--code);padding:5px 8px;border-radius:5px}
 .cmd .step{font-size:.72rem;color:var(--muted);width:3.2em;flex:none;text-align:right}
@@ -72,7 +73,8 @@ h2{font-size:1.1rem;margin:0}
     <h2>쓰는 법</h2>
     <ol>
       <li><b>NPC</b>: 첫 줄 순간이동(건물 쪽을 바라보게 됨) → 둘째 줄. NPC는 내 반대쪽, 즉 길 쪽을 보고 서요.</li>
-      <li><b>퀘스트 지점·보스·마을 등록</b>: 순간이동 → 명령어. 서 있는 발밑이 그 자리가 돼요.</li>
+      <li><b>퀘스트 지점</b> (두고 오기·가져오기 둘 다 같은 명령어): 순간이동 → <code>/rpg quest point add &lt;지점&gt;</code>. 상자나 아이템은 놓지 않아요. 퀘스트를 받은 사람이 지점 3칸 안에 오면 <b>두고 오기</b>는 바로 완료, <b>가져오기</b>는 물건이 자동으로 인벤토리에 들어와요 (화면에 “찾았다!” 글). 그 사람 눈에만 지점 위에 노란 ! · ? 가 보여요.</li>
+      <li><b>보스·마을 등록</b>: 순간이동 → 명령어. 서 있는 발밑이 그 자리가 돼요.</li>
       <li><b>사냥터</b>: <code>/rpg wand</code> 로 지팡이를 받고, 1번 모서리로 순간이동(아래를 보게 됨) → 발밑 블록 <b>좌클릭</b>, 2번 모서리로 순간이동 → 발밑 블록 <b>우클릭</b> → 마지막 줄 명령어. 몹 종류·레벨은 번호마다 자동이에요.</li>
       <li>다 놓은 뒤 <code>/rpg quest check</code> (빠진 NPC·지점 빨간색), <code>/rpg zone show</code> (사냥터 테두리)로 확인해요.</li>
     </ol>
@@ -141,7 +143,9 @@ function render(){
         note.textContent = `${o.note} · 기준점에서 ${o.off[0]>=0?"+":""}${o.off[0]}, ${o.off[1]>=0?"+":""}${o.off[1]}, ${o.off[2]>=0?"+":""}${o.off[2]}`;
         cm.append(cmdRow("이동", tp(o.off, o.yaw, 0)), cmdRow("놓기", o.cmd));
       }
-      body.append(t, note, cm); r.append(n, body); rows.append(r);
+      body.append(t, note);
+      if (o.quest){ const qd = document.createElement("div"); qd.className = "qline"; qd.textContent = o.quest; body.append(qd); }
+      body.append(cm); r.append(n, body); rows.append(r);
     }
     g.append(h, rows); L.append(g);
   }
