@@ -9,7 +9,7 @@ from schem import _rotf
 from PIL import Image, ImageDraw, ImageFont
 
 DV = {'S': (0, 1), 'N': (0, -1), 'E': (1, 0), 'W': (-1, 0)}
-LOOK = {'S': 180, 'N': 0, 'E': 90, 'W': -90}      # 문이 이쪽을 볼 때 플레이어 시선 (건물 쪽) → NPC 는 반대로 길 쪽을 봄
+LOOK = {'S': 0, 'N': 180, 'E': -90, 'W': 90}      # 0.55.3~: NPC 는 내가 보는 방향을 봄 → 순간이동 때 문이 보는 쪽(길 쪽)을 보게
 STEPS = {'S': 0, 'W': 1, 'N': 2, 'E': 3}
 PASS = ('air', 'cave_air', 'barrier', 'grass', 'fern', 'tall_grass', 'large_fern', 'dandelion', 'poppy', 'cornflower', 'oxeye_daisy', 'azure_bluet',
         'allium', 'red_tulip', 'white_tulip', 'pink_tulip', 'red_mushroom', 'brown_mushroom', 'lily_pad', 'snow')
@@ -119,7 +119,7 @@ bld('세공소', 'npc', '세공사 (제작)', '/rpg npc craft jeweler')
 bld('연금술 공방', 'npc', '연금술사 (제작)', '/rpg npc craft alchemist')
 bld('여관', 'npc', '창고지기', '/rpg npc storage')
 r = byname['시장 노점']; add(1, 'npc', '물약 상인', '/rpg npc shop general2', r['x0'] + r['w'] // 2, r['z0'] + r['l'] + 2, 0, V, PB, H, off, '시장 노점 앞')
-add(1, 'town', '마을 등록: 시작마을 (귀환 도착지)', '/rpg town add 시작마을', 130, 218, 180, V, PB, H, off, '광장 분수 남쪽')
+add(1, 'town', '마을 등록: 시작마을 (귀환 도착지)', '/rpg town add 시작마을', 130, 218, 0, V, PB, H, off, '광장 분수 남쪽')
 # 퀘스트 지점
 add(1, 'point', '초원 동쪽 초소 (두고 오기)', '/rpg quest point add grass_post', 368, 108, None, V, PB, H, off, '초원 동쪽 끝 언덕')
 add(1, 'point', '들개 굴 (가져오기)', '/rpg quest point add dog_den', 36, 108, None, V, PB, H, off, '깊은 풀숲 서쪽 구석')
