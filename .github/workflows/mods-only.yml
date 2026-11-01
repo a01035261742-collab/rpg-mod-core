@@ -1,0 +1,37 @@
+name: mods-only
+# 모드 목록(pack/)만 바뀌었을 때: 코어는 다시 빌드하지 않고 최신 릴리스의 jar 를 그대로 두고 manifest.json 만 다시 만든다.
+on:
+  push:
+    branches: [main]
+    paths: ['pack/**']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency: mods-only
+jobs:
+  manifest:
+    # [release] 커밋은 build.yml 이 코어와 manifest 를 함께 올리니 건너뜀
+    if: github.event_name == 'workflow_dispatch' || !contains(github.event.head_commit.message, '[release]')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Rebuild manifest from latest release jar
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_KEY }}
+        run: |
+          set -o pipefail
+          TAG=$(gh release view --json tagName --jq .tagName)
+          echo "최신 릴리스: $TAG"
+          mkdir -p /tmp/rel
+          gh release download "$TAG" --pattern '*.jar' --dir /tmp/rel
+          JAR=$(ls /tmp/rel/*.jar | grep -v -e sources -e slim | head -1)
+          MANIFEST_VERSION="${TAG#v}" python3 ci/make_manifest.py "$JAR" > /tmp/manifest.json 2> /tmp/manifest.log
+          cat /tmp/manifest.log
+          # 모드가 조용히 빠진 목록을 올리지 않도록, 건너뛴 항목이 있으면 멈춤
+          if grep -q "건너뜀" /tmp/manifest.log; then
+            echo "::error title=mods-only::건너뛴 모드가 있어서 manifest 를 올리지 않았어요. 위 로그를 확인하세요."
+            exit 1
+          fi
+          cat /tmp/manifest.json
+          gh release upload "$TAG" /tmp/manifest.json --clobber
