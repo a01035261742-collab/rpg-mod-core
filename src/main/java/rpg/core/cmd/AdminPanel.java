@@ -16,6 +16,8 @@ import net.minecraft.world.entity.npc.Villager;
 /**
  * 관리자 패널 (OP 전용): /rpg 관리 → 채팅에 누르는 버튼. ▶ 는 다음 줄에 고르는 버튼.
  * /rpg npc 삭제 = 5칸 안 가장 가까운 우리 NPC 지우기 (퀘스트 NPC 면 위치 기록도)
+ * /rpg npc 방향 (face) = 5칸 안 가장 가까운 우리 NPC 를 내가 보는 방향으로 돌리기
+ * NPC 세울 때: 내가 선 블록 가운데에, 내가 보는 방향(45도 단위)을 봄
  */
 public final class AdminPanel {
     private AdminPanel() {}
@@ -32,6 +34,40 @@ public final class AdminPanel {
         for (String n : new String[]{"삭제", "remove"})
             root.then(Commands.literal("npc").requires(s -> s.hasPermission(2))
                     .then(Commands.literal(n).executes(c -> removeNpc(c.getSource().getPlayerOrException()))));
+        for (String n : new String[]{"방향", "face"})
+            root.then(Commands.literal("npc").requires(s -> s.hasPermission(2))
+                    .then(Commands.literal(n).executes(c -> faceNpc(c.getSource().getPlayerOrException()))));
+    }
+
+    /** 내가 보는 방향 (45도 단위로 맞춤) */
+    public static float facing(ServerPlayer p) {
+        return Math.round(p.getYRot() / 45f) * 45f;
+    }
+
+    /** NPC 를 내 자리(블록 가운데)에, 내가 보는 방향으로 — 머리·몸 방향까지 같이 (안 맞추면 몸이 늘 남쪽을 봄) */
+    public static void placeNpc(net.minecraft.world.entity.Mob v, ServerPlayer p) {
+        net.minecraft.core.BlockPos b = p.blockPosition();
+        v.moveTo(b.getX() + 0.5, p.getY(), b.getZ() + 0.5, facing(p), 0);
+        turn(v, facing(p));
+    }
+
+    static void turn(Entity e, float yaw) {
+        e.setYRot(yaw); e.yRotO = yaw;
+        e.setYHeadRot(yaw);
+        if (e instanceof net.minecraft.world.entity.LivingEntity le) { le.setYBodyRot(yaw); le.yBodyRotO = yaw; le.yHeadRotO = yaw; }
+    }
+
+    static int faceNpc(ServerPlayer p) {
+        List<Entity> near = p.level().getEntities(p, p.getBoundingBox().inflate(5), AdminPanel::ours);
+        Entity best = null;
+        for (Entity e : near) if (best == null || e.distanceToSqr(p) < best.distanceToSqr(p)) best = e;
+        if (best == null) { p.sendSystemMessage(Component.literal("[RPG] 5칸 안에 우리 NPC가 없어요").withStyle(ChatFormatting.RED)); return 0; }
+        float yaw = facing(p);
+        best.moveTo(best.getX(), best.getY(), best.getZ(), yaw, 0);
+        turn(best, yaw);
+        String dir = new String[]{"남", "남서", "서", "북서", "북", "북동", "동", "남동"}[Math.floorMod(Math.round(yaw / 45f), 8)];
+        p.sendSystemMessage(Component.literal("[RPG] " + best.getName().getString() + " → " + dir + "쪽을 봐요").withStyle(ChatFormatting.GREEN));
+        return 1;
     }
 
     // ───────── 버튼 ─────────
@@ -60,14 +96,14 @@ public final class AdminPanel {
                 btn("골드 +100만", "/rpg gold 1000000", y), btn("회복", "/rpg heal", g), btn("스탯 +50", "/rpg sp 50", a), btn("초기화 주문서", "/rpg resetscroll", a)));
         say(src, row("월드", btn("지점 보기", "/rpg 보기", l), btn("여기를 스폰으로", "/rpg 스폰설정", l), btn("문·창고 받기", "/rpg 포탈", l),
                 btn("사냥터 목록", "/rpg zone list", g), btn("사냥터 지팡이", "/rpg wand", g), btn("건축 도우미 ▶", "/rpg 건축", ChatFormatting.GOLD)));
-        say(src, row("NPC", btn("세우기 ▶", "/rpg 관리 npc", g), btn("퀘스트 NPC ▶", "/rpg 관리 quest", g), btn("삭제 (5칸 안)", "/rpg npc 삭제", r)));
+        say(src, row("NPC", btn("세우기 ▶", "/rpg 관리 npc", g), btn("퀘스트 NPC ▶", "/rpg 관리 quest", g), btn("방향 돌리기 (내가 보는 쪽)", "/rpg npc 방향", g), btn("삭제 (5칸 안)", "/rpg npc 삭제", r)));
         say(src, row("보스·레이드", btn("보스 ▶", "/rpg 관리 boss", r), btn("레이드 목록", "/rpg 레이드 목록", l),
                 btn("일일 초기화", "/rpg daily reset", y), btn("일일 완료", "/rpg daily complete", y)));
         say(src, row("테스트", btn("장비 받기 ▶", "/rpg 관리 gear", a), btn("몹 목록", "/rpg mobs", a), btn("명령어 전체", "/rpg help admin", ChatFormatting.WHITE)));
     }
 
     static void npcMenu(CommandSourceStack src) {
-        title(src, "NPC 세우기 (지금 자리)");
+        title(src, "NPC 세우기 (지금 자리 · 내가 보는 쪽을 봄)");
         MutableComponent shops = Component.literal("");
         rpg.core.shop.Shops.SHOPS.forEach((id, s) -> shops.append(btn(s.name() + "(" + id + ")", "/rpg npc shop " + id, ChatFormatting.AQUA)).append(" "));
         say(src, row("상점", shops));
@@ -81,7 +117,7 @@ public final class AdminPanel {
     }
 
     static void questMenu(CommandSourceStack src) {
-        title(src, "퀘스트 NPC 세우기 (지금 자리)");
+        title(src, "퀘스트 NPC 세우기 (지금 자리 · 내가 보는 쪽을 봄)");
         MutableComponent r = Component.literal("");
         for (String id : rpg.core.quest.Quests.NPCS.keySet())
             r.append(btn(rpg.core.quest.Quests.npcName(id), "/rpg npc quest " + id, ChatFormatting.GREEN)).append(" ");

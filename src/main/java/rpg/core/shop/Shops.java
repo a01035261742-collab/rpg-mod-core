@@ -99,7 +99,7 @@ public final class Shops {
     public static void spawn(ServerPlayer p, String shopId) {
         Shop s = SHOPS.get(shopId);
         Villager v = new Villager(EntityType.VILLAGER, p.level());
-        v.moveTo(p.getX(), p.getY(), p.getZ(), p.getYRot() + 180, 0);
+        rpg.core.cmd.AdminPanel.placeNpc(v, p);   // 블록 가운데 · 내가 보는 방향 (머리·몸 같이)
         v.setNoAi(true);
         v.setInvulnerable(true);
         v.setSilent(true);
