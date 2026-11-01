@@ -171,14 +171,29 @@ public final class MobAI {
                 && edge(mob, t) > RpgMeleeGoal.REACH * 0.8) mob.getNavigation().moveTo(t, 1.1);
 
         double dist = mob.distanceTo(t);
+        boolean shared = !"trial_golem".equals(m.key);   // 시련(1:1)은 공용 쿨 안 씀
+        if (!def.skills().isEmpty() && shared) {
+            // 처음 마주쳤거나 오래(5초) 못 봤으면: 첫 패턴까지 잠깐 기다림 (몰려와도 한꺼번에 안 씀)
+            if (now - m.patSeen > 100) {
+                for (int i = 0; i < m.skillReady.length; i++)
+                    m.skillReady[i] = Math.max(m.skillReady[i], now + Math.round((Balance.patFirstMin + mob.getRandom().nextDouble() * (Balance.patFirstMax - Balance.patFirstMin)) * 20));
+            }
+            m.patSeen = now;
+            // 공용 쿨: 한 사람에게는 몹들이 번갈아 (누가 패턴을 쓰면 그 끝 + sharedSec 동안 다른 몹은 그 사람에게 안 씀)
+            if (now < PAT_NEXT.getOrDefault(t.getUUID(), 0L)) return;
+        }
         for (int i = 0; i < def.skills().size() && i < m.skillReady.length; i++) {
             Balance.MobSkill sk = def.skills().get(i);
             if (now < m.skillReady[i] || dist > sk.range() || !mob.hasLineOfSight(t)) continue;
             if (sk.hpBelow() > 0 && m.hp > m.maxHp * sk.hpBelow() / 100.0) continue;   // HP 몇 % 아래에서만 쓰는 패턴
             start(mob, m, sk, i, t, now);
+            if (shared) PAT_NEXT.put(t.getUUID(), m.castEnd + Math.round(Balance.patShared * 20));
             return;
         }
     }
+
+    /** 플레이어마다 다음 일반 몹 패턴을 받을 수 있는 시각 (공용 쿨) */
+    private static final java.util.Map<java.util.UUID, Long> PAT_NEXT = new java.util.concurrent.ConcurrentHashMap<>();
 
     /**
      * 경직 (EF 방식): 충격(impact) - 경직 방어 = 남는 충격 → 없음 / 짧은 경직 / 긴 경직(뒤로 밀림)
@@ -315,7 +330,8 @@ public final class MobAI {
         m.casting = idx;
         m.castEnd = now + delay;
         m.castAnim = false;
-        m.skillReady[idx] = now + delay + Math.round(sk.cd() * 20);
+        double jit = 1 + (mob.getRandom().nextDouble() * 2 - 1) * Balance.patJitter;   // 쿨 흔들림: 여러 마리가 박자 맞춰 쓰지 않게
+        m.skillReady[idx] = now + delay + Math.round(sk.cd() * 20 * jit);
         Vec3 dir = new Vec3(t.getX() - mob.getX(), 0, t.getZ() - mob.getZ());
         m.castDir = dir.lengthSqr() < 1e-4 ? Vec3.directionFromRotation(0, mob.getYRot()) : dir.normalize();
         int shape;

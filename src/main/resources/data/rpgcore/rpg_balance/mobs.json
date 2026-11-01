@@ -8,6 +8,13 @@
   "gear": 3,
   "goldMul": 10
  },
+ "_pattern": {
+  "_설명": "일반 몹 패턴 (보스 제외). sharedSec = 한 사람에게 공용 쿨: 어떤 몹이 패턴을 쓰면 그 패턴이 끝나고 이 초 동안은 다른 몹이 그 사람에게 패턴을 안 씀 (여러 마리 몰려도 번갈아). firstMin~firstMax = 처음 마주치거나 5초 넘게 못 보다 다시 본 뒤 첫 패턴까지 기다리는 초 (마리마다 무작위). jitter = 각 몹 쿨(cd)을 ±이 비율만큼 흔듦 (박자 맞춰 같이 쓰지 않게). 시련의 허수아비는 공용 쿨 안 받음",
+  "sharedSec": 2.5,
+  "firstMin": 2.0,
+  "firstMax": 5.0,
+  "jitter": 0.25
+ },
  "_stun": {
   "shortMin": 0.5,
   "longMin": 1.4,
@@ -232,16 +239,6 @@
   "entity": "minecraft:slime",
   "name": "슬라임",
   "area": "Lv6~10",
-  "skills": [
-   {
-    "type": "leap",
-    "range": 7,
-    "cd": 6,
-    "delay": 1.0,
-    "pct": 130,
-    "r": 2.5
-   }
-  ],
   "levels": {
    "4": {
     "hp": 44,
