@@ -72,7 +72,10 @@ public final class Mobs {
         MobAI.setup(mob, def);
     }
 
-    /** 엘리트: 체력·공격·보상 배수, 금색 이름, 빛남 */
+    /** 엘리트 크기 배수 (보이는 크기 + 맞는 범위·몸통 둘 다) — 서버 CombatEvents.eliteSize · 클라 WorldText.eliteSizeClient */
+    public static final float ELITE_SCALE = 1.5f;
+
+    /** 엘리트: 체력·공격·보상 배수, 금색 이름, 1.5배 크기 (빛남 없음, 0.55.5~) */
     public static void makeElite(Mob mob) {
         MobData m = Combat.mob(mob);
         if (m == null) return;
@@ -83,7 +86,8 @@ public final class Mobs {
         m.exp = Math.round(m.exp * Balance.eliteReward);
         m.gold = Math.round(m.gold * Balance.eliteGoldMul);
         m.name = "★" + m.name;
-        mob.setGlowingTag(true);
+        mob.refreshDimensions();                               // 맞는 범위 1.5배 (CombatEvents.eliteSize)
+        mob.setPos(mob.getX(), mob.getY(), mob.getZ());       // 커진 몸통을 발 가운데로 맞춤
     }
 
     public static void apply(Mob mob, Balance.MobDef def, int lv, String zone) {

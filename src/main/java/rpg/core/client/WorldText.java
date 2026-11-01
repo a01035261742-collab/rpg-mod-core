@@ -56,15 +56,36 @@ public final class WorldText {
         if (mc.level.getGameTime() % 100 == 0) ClientMobs.MAP.keySet().removeIf(id -> mc.level.getEntity(id) == null);
     }
 
-    // ── 엘리트는 1.3배 크게 보이기 (몸 크기 판정은 그대로) ──
-    @SubscribeEvent(priority = net.minecraftforge.eventbus.api.EventPriority.LOWEST)   // 다른 모드가 취소한 뒤에 (Post 짝 맞추기)
+    // ── 엘리트는 1.5배 크게 보이기 (맞는 범위도 1.5배: eliteSizeClient · 서버 CombatEvents.eliteSize) ──
+    // 에픽파이트 몹(거미·마녀·멧돼지 등)은 EF 가 Pre 를 취소하고 같은 PoseStack 으로 직접 그림 → HIGHEST 에서 먼저 키우고,
+    // 취소되면 Post 가 안 오니 LOWEST(취소된 것도 받음)에서 되돌림. 우리 GeckoLib 몹은 RpgGeoRenderer 가 직접 키움.
+    private static final java.util.Set<LivingEntity> SCALED = java.util.Collections.newSetFromMap(new java.util.IdentityHashMap<>());
+
+    @SubscribeEvent(priority = net.minecraftforge.eventbus.api.EventPriority.HIGHEST)
     public static void elitePre(net.minecraftforge.client.event.RenderLivingEvent.Pre<?, ?> e) {
-        if (isElite(e.getEntity())) { e.getPoseStack().pushPose(); e.getPoseStack().scale(1.3f, 1.3f, 1.3f); }
+        LivingEntity le = e.getEntity();
+        if (!isElite(le) || !SCALED.add(le)) return;
+        float s = rpg.core.combat.Mobs.ELITE_SCALE;
+        e.getPoseStack().pushPose();
+        e.getPoseStack().scale(s, s, s);
+    }
+
+    @SubscribeEvent(priority = net.minecraftforge.eventbus.api.EventPriority.LOWEST, receiveCanceled = true)
+    public static void elitePreCanceled(net.minecraftforge.client.event.RenderLivingEvent.Pre<?, ?> e) {
+        if (e.isCanceled() && SCALED.remove(e.getEntity())) e.getPoseStack().popPose();
     }
 
     @SubscribeEvent
     public static void elitePost(net.minecraftforge.client.event.RenderLivingEvent.Post<?, ?> e) {
-        if (isElite(e.getEntity())) e.getPoseStack().popPose();
+        if (SCALED.remove(e.getEntity())) e.getPoseStack().popPose();
+    }
+
+    /** 클라 쪽 엘리트 몸통 1.5배 (조준·맞는 범위). 엘리트인지 알게 되면 ClientMobs.update 가 refreshDimensions */
+    @SubscribeEvent
+    public static void eliteSizeClient(net.minecraftforge.event.entity.EntityEvent.Size e) {
+        Entity en = e.getEntity();
+        if (!(en instanceof net.minecraft.world.entity.Mob le) || en.level() == null || !en.level().isClientSide) return;
+        if (isElite(le)) e.setNewSize(e.getNewSize().scale(rpg.core.combat.Mobs.ELITE_SCALE), true);
     }
 
     public static boolean isElite(LivingEntity le) {

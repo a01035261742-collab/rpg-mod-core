@@ -518,6 +518,26 @@ public final class CombatEvents {
     }
 
 
+    /** 엘리트 1.5배 몸통 (맞는 범위·부딪힘) — 서버 쪽. 클라 쪽은 WorldText.eliteSizeClient */
+    @SubscribeEvent
+    public static void eliteSize(net.minecraftforge.event.entity.EntityEvent.Size e) {
+        Entity en = e.getEntity();
+        if (!(en instanceof Mob mob) || en.level() == null || en.level().isClientSide) return;
+        MobData m = Combat.mob(mob);
+        if (m != null && m.elite) e.setNewSize(e.getNewSize().scale(Mobs.ELITE_SCALE), true);
+    }
+
+    /** 저장된 엘리트를 다시 불러올 때(청크 로드·접속): 몸통 크기 다시 계산 + 예전 버전의 빛남 끄기 */
+    @SubscribeEvent
+    public static void eliteJoin(net.minecraftforge.event.entity.EntityJoinLevelEvent e) {
+        if (e.getLevel().isClientSide || !(e.getEntity() instanceof Mob mob)) return;
+        MobData m = Combat.mob(mob);
+        if (m == null || !m.elite) return;
+        if (mob.hasGlowingTag()) mob.setGlowingTag(false);
+        mob.refreshDimensions();
+        mob.setPos(mob.getX(), mob.getY(), mob.getZ());
+    }
+
     /** 몹이 보이기 시작하면 레벨·체력 보내기 */
     @SubscribeEvent
     public static void startTracking(PlayerEvent.StartTracking e) {
