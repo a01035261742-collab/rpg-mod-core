@@ -144,12 +144,6 @@
       "side": "both"
     },
     {
-      "modrinth": "better-lock-on",
-      "version": "2.0.10-forge",
-      "optional": false,
-      "side": "both"
-    },
-    {
       "modrinth": "searchables",
       "version": "1.0.3",
       "optional": false,
@@ -164,12 +158,6 @@
     {
       "modrinth": "korean-chat-patch",
       "version": "mc1.20.1-1.9.6-forge",
-      "optional": false,
-      "side": "client"
-    },
-    {
-      "curseforge": 1511653,
-      "file": 8389827,
       "optional": false,
       "side": "client"
     }
