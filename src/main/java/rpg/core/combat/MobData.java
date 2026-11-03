@@ -24,6 +24,7 @@ public class MobData {
 
     // 패턴 (저장 안 함)
     public transient final long[] skillReady = new long[8];
+    public transient long patSeen = -10000;       // 마지막으로 대상을 본 시각 (오래 못 봤으면 첫 패턴 대기 다시)
     public transient boolean aiReady;            // 근접 공격·대상 AI 설정 끝남 (다시 불러와도 한 번만)
     public transient int casting = -1;          // 쓰는 중인 패턴 번호
     public transient long castEnd;

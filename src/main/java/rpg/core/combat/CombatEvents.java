@@ -106,6 +106,21 @@ public final class CombatEvents {
         if (e.getEntity() instanceof Mob t && !t.level().isClientSide && isRpg(t) && !allowedHit(t, e.getSource())) e.setCanceled(true);
     }
 
+    /**
+     * RPG 대륙: EF 전투 모드가 아니면(바닐라 모드) RPG 몹을 근접으로 못 때림 (0.55.6~).
+     * 바닐라 모드는 쿨 덜 찬 클릭도 최소 20%가 들어가고 몹 무적 시간이 0이라 오토클릭이 콤보보다 셌음. 스킬·화살·지속 피해는 그대로.
+     */
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public static void battleModeOnly(net.minecraftforge.event.entity.living.LivingAttackEvent e) {
+        if (!(e.getEntity() instanceof Mob t) || t.level().isClientSide || !isRpg(t)) return;
+        if (!(e.getSource().getEntity() instanceof ServerPlayer ap) || e.getSource().getDirectEntity() != ap) return;
+        if (SKILL_PCT.containsKey(t.getId()) || FIXED.containsKey(t.getId()) || ap.isCreative() || !rpg.core.world.RpgWorld.in(ap)) return;
+        if (!Boolean.FALSE.equals(rpg.core.compat.EpicFightCompat.battleModeOrNull(ap))) return;   // 전투 모드 (또는 EF 확인 실패) → 그대로
+        e.setCanceled(true);
+        ap.displayClientMessage(net.minecraft.network.chat.Component.literal("R 키로 전투 모드를 켜야 공격돼요")
+                .withStyle(net.minecraft.ChatFormatting.YELLOW), true);
+    }
+
     /** PvP 끔: 플레이어(또는 플레이어가 쏜 것)가 다른 플레이어를 때리면 막음 */
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void noPvp(net.minecraftforge.event.entity.living.LivingAttackEvent e) {
@@ -517,6 +532,26 @@ public final class CombatEvents {
         if (e.getEntity() instanceof Mob m && isRpg(m)) e.setCanceled(true);
     }
 
+
+    /** 엘리트 1.5배 몸통 (맞는 범위·부딪힘) — 서버 쪽. 클라 쪽은 WorldText.eliteSizeClient */
+    @SubscribeEvent
+    public static void eliteSize(net.minecraftforge.event.entity.EntityEvent.Size e) {
+        Entity en = e.getEntity();
+        if (!(en instanceof Mob mob) || en.level() == null || en.level().isClientSide) return;
+        MobData m = Combat.mob(mob);
+        if (m != null && m.elite) e.setNewSize(e.getNewSize().scale(Mobs.ELITE_SCALE), true);
+    }
+
+    /** 저장된 엘리트를 다시 불러올 때(청크 로드·접속): 몸통 크기 다시 계산 + 예전 버전의 빛남 끄기 */
+    @SubscribeEvent
+    public static void eliteJoin(net.minecraftforge.event.entity.EntityJoinLevelEvent e) {
+        if (e.getLevel().isClientSide || !(e.getEntity() instanceof Mob mob)) return;
+        MobData m = Combat.mob(mob);
+        if (m == null || !m.elite) return;
+        if (mob.hasGlowingTag()) mob.setGlowingTag(false);
+        mob.refreshDimensions();
+        mob.setPos(mob.getX(), mob.getY(), mob.getZ());
+    }
 
     /** 몹이 보이기 시작하면 레벨·체력 보내기 */
     @SubscribeEvent

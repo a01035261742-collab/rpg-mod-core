@@ -51,7 +51,7 @@ def zone_dist(shape, centers):
     for cx, cz in centers: d = np.minimum(d, np.hypot(X - cx, Z - cz))
     return d
 
-def natural_paths(V, H, MAT, I, polys, pal, allowed, seed=51):
+def natural_paths(V, H, MAT, I, polys, pal, allowed, seed=51, wscale=1.0, keep_old=False):
     """자연스러운 길: 폭이 길 따라 천천히 2~5칸으로 변함, 가장자리는 2~3칸짜리 덩어리로 들쭉날쭉,
     안쪽은 길 방향으로 길쭉한 바퀴자국 얼룩 (점 하나짜리 없음). pal(z, x) → (주재료, 보조, 드문) 블록 이름"""
     from scipy.spatial import cKDTree
@@ -78,7 +78,7 @@ def natural_paths(V, H, MAT, I, polys, pal, allowed, seed=51):
     dist = dist.reshape(D, W); idx = np.where(ok, idx, 0).reshape(D, W); ok = ok.reshape(D, W)
     s = S[idx]; tv = T[idx]; rel = np.stack([X - pts[idx][..., 0], Z - pts[idx][..., 1]], -1)
     t = rel[..., 0] * (-tv[..., 1]) + rel[..., 1] * tv[..., 0]                                  # 길 가로 위치 (부호 있음)
-    hw = 1.0 + 1.9 * w1[(s * 0.7).astype(int) % 4096] ** 1.3                                   # 반폭 1.0~2.9 (폭 2~6칸)
+    hw = (1.0 + 1.9 * w1[(s * 0.7).astype(int) % 4096] ** 1.3) * wscale                        # 반폭 1.0~2.9 (폭 2~6칸)
     inside = ok & allowed & (dist < hw + (clump - 0.5) * 1.4)
     core = inside & (dist < hw - 0.6)
     r = rut[(s * 1.0).astype(int) % 4096, np.clip(((t + 4) * 2).astype(int), 0, 15)]
@@ -89,7 +89,7 @@ def natural_paths(V, H, MAT, I, polys, pal, allowed, seed=51):
         V[H[z, x], z, x] = I[n]
     # 원래 길 칸인데 이번에 안 칠한 곳 = 가장 가까운 땅
     pm = (MAT == 'path') & ~inside
-    if pm.any():
+    if pm.any() and not keep_old:
         _, (iz, ix) = distance_transform_edt(MAT == 'path', return_indices=True)
         for z, x in zip(*np.nonzero(pm)): V[H[z, x], z, x] = V[H[iz[z, x], ix[z, x]], iz[z, x], ix[z, x]]
     return int(inside.sum())

@@ -33,6 +33,7 @@ import rpg.core.zone.ZoneWand;
  *  /rpg spawn <몹> <레벨> [마리]                 바로 앞에 소환 (테스트)
  *  /rpg mobs                                  몹 목록 (mobs.json)
  *  /rpg gear <1|10>                           테스트 장비 한 벌 받기
+ *  (NPC 는 내가 선 블록 가운데에, 내가 보는 방향을 보고 섬 · /rpg npc 방향 = 5칸 안 NPC 를 내가 보는 쪽으로 돌림)
  *  /rpg npc job <1~4>                         전직 교관 세우기 (1 전사 2 궁수 3 마법사 4 도적)
  *  /rpg npc shop <general|gear|gear2>         상점 NPC 세우기 (shops.json)
  *  /rpg npc craft <smith|jeweler|alchemist>   제작 NPC 세우기 (crafts.json)
@@ -64,7 +65,7 @@ public final class ZoneCommand {
             "§c── 관리자 ──",
             "§f/rpg level|exp|sp|gold|heal|damage|reset|resetscroll  캐릭터 조작",
             "§f/rpg zone ...  사냥터 · /rpg wand  사냥터 지팡이 · /rpg ground <번호>  사냥터 프리셋 · /rpg spawn|spawnelite <몹>  · /rpg mobs",
-            "§f/rpg npc job|shop|craft|quest|storage  NPC 세우기",
+            "§f/rpg npc job|shop|craft|quest|storage  NPC 세우기 (내가 보는 쪽을 봄) · /rpg npc 방향  5칸 안 NPC 돌리기",
             "§f/rpg town add|remove|list  마을 (귀환 도착지)",
             "§f/rpg 관리 (admin)  관리자 패널 (채팅 버튼) · /rpg npc 삭제  5칸 안 NPC 지우기",
             "§f/rpg daily reset|complete [플레이어]  일일 퀘스트 새로 뽑기 · 진행도 채우기",

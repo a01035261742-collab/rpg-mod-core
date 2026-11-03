@@ -89,6 +89,8 @@ public final class Balance {
     public static double eliteChance = 5, eliteHp = 5, eliteAtk = 1.5, eliteReward = 5, eliteGear = 3, eliteGoldMul = 10;
     /** 경직 (EF 방식): 충격 - 경직 방어 = 남는 충격. shortMin 이상 짧은 경직, longMin 이상 긴 경직 */
     public static double stunShortMin = 0.5, stunLongMin = 1.4, eliteStunArmor = 0.8;
+    /** 일반 몹 패턴 (_pattern): 한 사람에게 몹들이 번갈아 쓰는 공용 쿨(초) · 처음 마주친 뒤 첫 패턴까지(초) · 쿨 흔들림(±비율) */
+    public static double patShared = 2.5, patFirstMin = 2.0, patFirstMax = 5.0, patJitter = 0.25;
     public static int stunShortTicks = 6, stunLongTicks = 12, stunChain = 4, stunChainWindow = 40, stunImmuneTicks = 30;
 
     public record MobDef(String key, String entity, String name, java.util.TreeMap<Integer, MobStats> levels,
@@ -202,6 +204,10 @@ public final class Balance {
                 java.util.List<String> ms = new java.util.ArrayList<>();
                 o.getAsJsonArray("mobs").forEach(x -> ms.add(x.getAsString()));
                 GROUNDS.put(g.getKey(), new Ground(o.get("name").getAsString(), ms, (int) d(o, "min", 1), (int) d(o, "max", 1)));
+            }
+            if (root.has("_pattern")) {
+                JsonObject o = root.getAsJsonObject("_pattern");
+                patShared = d(o, "sharedSec", 2.5); patFirstMin = d(o, "firstMin", 2.0); patFirstMax = d(o, "firstMax", 5.0); patJitter = d(o, "jitter", 0.25);
             }
             if (root.has("_stun")) {
                 JsonObject o = root.getAsJsonObject("_stun");

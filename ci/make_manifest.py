@@ -6,7 +6,8 @@ import hashlib, json, os, re, sys, urllib.request, urllib.parse
 
 REPO = os.environ.get('GITHUB_REPOSITORY', 'a01035261742-collab/rpg-mod-core')
 props = dict(l.strip().split('=', 1) for l in open('gradle.properties') if '=' in l and not l.startswith('#'))
-ver, mc, forge = props['mod_version'], props['minecraft_version'], props['forge_version']
+# MANIFEST_VERSION: 코어 재빌드 없이 목록만 갱신할 때 최신 릴리스 버전을 지정 (mods-only.yml)
+ver, mc, forge = os.environ.get('MANIFEST_VERSION') or props['mod_version'], props['minecraft_version'], props['forge_version']
 jar = sys.argv[1]
 
 def sha256(data): return hashlib.sha256(data).hexdigest()

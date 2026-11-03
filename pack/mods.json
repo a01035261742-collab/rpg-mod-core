@@ -112,6 +112,54 @@
       "version": "",
       "optional": true,
       "side": "client"
+    },
+    {
+      "modrinth": "stardew-fishing",
+      "version": "3.7",
+      "optional": false,
+      "side": "both"
+    },
+    {
+      "modrinth": "curios",
+      "version": "5.14.1+1.20.1",
+      "optional": false,
+      "side": "both"
+    },
+    {
+      "modrinth": "lionfish-api",
+      "version": "3.0",
+      "optional": false,
+      "side": "both"
+    },
+    {
+      "modrinth": "l_enders-cataclysm",
+      "version": "3.31",
+      "optional": false,
+      "side": "both"
+    },
+    {
+      "modrinth": "distanthorizons",
+      "version": "3.3.3-1.20.1",
+      "optional": false,
+      "side": "both"
+    },
+    {
+      "modrinth": "searchables",
+      "version": "1.0.3",
+      "optional": false,
+      "side": "client"
+    },
+    {
+      "modrinth": "controlling",
+      "version": "12.0.2",
+      "optional": false,
+      "side": "client"
+    },
+    {
+      "modrinth": "korean-chat-patch",
+      "version": "mc1.20.1-1.9.6-forge",
+      "optional": false,
+      "side": "client"
     }
   ],
   "forge": "47.4.26",

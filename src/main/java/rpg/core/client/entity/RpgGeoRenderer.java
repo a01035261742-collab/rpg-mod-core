@@ -17,7 +17,7 @@ import software.bernie.geckolib.model.data.EntityModelData;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
 import software.bernie.geckolib.renderer.layer.AutoGlowingGeoLayer;
 
-/** GeckoLib 몹 공통 렌더러: 모델·애니·텍스처는 id 로 자동 연결, 머리는 시선 방향 추가 회전, 엘리트 1.3배, 선택적 발광 마스크 */
+/** GeckoLib 몹 공통 렌더러: 모델·애니·텍스처는 id 로 자동 연결, 머리는 시선 방향 추가 회전, 엘리트 1.5배 (Mobs.ELITE_SCALE), 선택적 발광 마스크 */
 public class RpgGeoRenderer extends GeoEntityRenderer<GeoRpgMonster> {
     public RpgGeoRenderer(EntityRendererProvider.Context ctx, String id, float shadow) {
         this(ctx, id, shadow, false);
@@ -42,7 +42,7 @@ public class RpgGeoRenderer extends GeoEntityRenderer<GeoRpgMonster> {
     @Override
     public void render(GeoRpgMonster e, float yaw, float pt, PoseStack ps, MultiBufferSource buf, int light) {
         boolean elite = WorldText.isElite(e);
-        if (elite) { ps.pushPose(); ps.scale(1.3f, 1.3f, 1.3f); }
+        if (elite) { float k = rpg.core.combat.Mobs.ELITE_SCALE; ps.pushPose(); ps.scale(k, k, k); }
         super.render(e, yaw, pt, ps, buf, light);
         if (elite) ps.popPose();
     }

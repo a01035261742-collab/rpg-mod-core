@@ -25,7 +25,7 @@ import org.jetbrains.annotations.Nullable;
 import rpg.core.RpgCore;
 import rpg.core.data.RpgData;
 
-/** 귀환 주문서: 3초 시전 (움직이거나 맞으면 취소) → 같은 차원의 가장 가까운 마을. 보스 경기장에서는 못 씀 */
+/** 귀환 주문서: 3초 시전 (움직이거나 맞으면 취소) → 같은 차원의 가장 가까운 마을. 레이드·보스 경기장·교관의 시련 중에는 못 씀 */
 @Mod.EventBusSubscriber(modid = RpgCore.MODID)
 public class ReturnScroll extends Item {
     public static final int CAST_TICKS = 60;
@@ -43,6 +43,7 @@ public class ReturnScroll extends Item {
         if (level.isClientSide || !(player instanceof ServerPlayer sp)) return InteractionResultHolder.success(stack);
         if (rpg.core.world.Raids.inRaid(sp)) { msg(sp, "레이드 중에는 귀환할 수 없어요 (/rpg 레이드 나가기)", ChatFormatting.RED); return InteractionResultHolder.fail(stack); }
         if (rpg.core.combat.Boss.inArena(sp)) { msg(sp, "보스 경기장에서는 귀환할 수 없어요", ChatFormatting.RED); return InteractionResultHolder.fail(stack); }
+        if (rpg.core.job.Trials.inRun(sp)) { msg(sp, "교관의 시련 중에는 귀환할 수 없어요 (끝나면 교관 앞으로 돌아가요)", ChatFormatting.RED); return InteractionResultHolder.fail(stack); }
         if (rpg.core.town.Towns.get(sp.serverLevel()).towns.isEmpty()) { msg(sp, "이 세계에 등록된 마을이 없어요", ChatFormatting.RED); return InteractionResultHolder.fail(stack); }
         if (CASTS.containsKey(sp.getUUID())) return InteractionResultHolder.fail(stack);
         CASTS.put(sp.getUUID(), new Cast(sp.position(), sp.level().getGameTime() + CAST_TICKS, RpgData.get(sp).hp, hand));

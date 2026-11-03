@@ -1,0 +1,14 @@
+name: lookup-mods
+# 일회용 조회: 모드 목록 후보를 Modrinth 먼저, 없으면 CurseForge 에서 찾아 로그에 찍는다. 아무것도 수정하지 않는다.
+on: workflow_dispatch
+permissions:
+  contents: read
+jobs:
+  lookup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Lookup
+        env:
+          CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_KEY }}
+        run: python3 ci/lookup_mods.py

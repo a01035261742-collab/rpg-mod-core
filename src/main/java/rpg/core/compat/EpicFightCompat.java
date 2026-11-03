@@ -90,6 +90,12 @@ public final class EpicFightCompat {
         }
     }
 
+    /** EF 전투 모드인가 — EF 를 못 찾으면 null (그땐 막지 않음) */
+    public static Boolean battleModeOrNull(net.minecraft.world.entity.player.Player p) {
+        boolean b = battleMode(p);
+        return getPatch == null ? null : b;
+    }
+
     private static java.lang.reflect.Method toVanilla;
     private static java.lang.reflect.Field restricted;
 

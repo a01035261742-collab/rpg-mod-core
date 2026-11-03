@@ -465,6 +465,8 @@ public final class Boss {
         // 큰 패턴 (예고 2초 이상): 화면 위 가운데에 이름 (알림이 따로 있는 패턴 빼고)
         if (!basic(def, p) && p.delay() >= 2.0 && !BossX.TYPES.contains(p.type()) && !java.util.Set.of("share", "mark", "counter").contains(p.type()))
             for (ServerPlayer x : arena(l, st, 16)) Net.alert(x, "◆ " + p.name(), ChatFormatting.YELLOW, 50);
+        // 여왕 추가 기믹 (BossX.TYPES) 은 전부 BossX.start — 목록에 "hide"(천장 숨기)가 빠져 있어서 기둥 없이 바로 "실 다 끊음" 되던 버그 (0.55.7)
+        if (BossX.TYPES.contains(p.type())) { BossX.start(mob, st, def, p, t, l, now); return; }
         switch (p.type()) {
             case "cone" -> Net.telegraph(l, st.pos, st.dir, MobAI.CONE, p.r(), p.angle(), dl);
             case "charge" -> { st.repeatLeft = st.phase >= 2 ? Math.max(1, p.repeat2()) : 1; beginCharge(mob, st, p, t, now); return; }
@@ -527,7 +529,6 @@ public final class Boss {
                 if (st.repeatLeft > 1) for (ServerPlayer x : arena(l, st, 16))
                     Net.alert(x, "◆ " + p.name() + " — 앞 · 뒤 번갈아 공격! 옆으로", ChatFormatting.YELLOW, 50);
             }
-            case "eggs", "pull", "lanes", "absorb", "collapse", "frenzy", "barrage", "volley", "webrain", "burst" -> { BossX.start(mob, st, def, p, t, l, now); return; }
             case "delayed", "jump" -> {
                 st.repeatLeft = p.type().equals("jump") && st.phase >= 2 ? Math.max(1, p.repeat2()) : 1;
                 if (p.type().equals("jump") && !basic(def, p) && st.props.isEmpty() && def.g("props", 0) > 0) placeProp(l, st, def);
