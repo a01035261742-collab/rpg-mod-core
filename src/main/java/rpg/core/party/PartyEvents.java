@@ -160,6 +160,18 @@ public final class PartyEvents {
         if (now % 20 == 0) RpgData.sync(sp);
     }
 
+    /** 다운 풀기 (살려 준 사람 없이): 교관의 시련 실패로 교관 앞에 돌려보낼 때 */
+    public static void standUp(ServerPlayer sp) {
+        PlayerData d = RpgData.get(sp);
+        if (!d.isDown()) return;
+        d.downEnd = 0;
+        d.reviver = null;
+        d.hp = Math.max(1, d.maxHp * Balance.reviveHpPct / 100.0);
+        sp.removeEffect(MobEffects.MOVEMENT_SLOWDOWN);
+        sp.removeEffect(MobEffects.GLOWING);
+        RpgData.sync(sp);
+    }
+
     private static void revive(ServerPlayer sp, PlayerData d, ServerPlayer helper) {
         d.downEnd = 0;
         d.reviver = null;

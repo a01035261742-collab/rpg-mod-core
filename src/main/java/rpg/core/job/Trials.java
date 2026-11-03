@@ -30,6 +30,7 @@ import rpg.core.quest.QuestPlaces;
 /**
  * 교관의 시련 (2차 전직 시험): 시련장에 "시련의 허수아비"(mobs.json trial_golem)가 나오고 3분 안에 쓰러뜨리면 통과.
  * 시련 받은 파티원(24칸 안)이 같이 들어감. 죽거나(다운) 시련장에서 24칸 넘게 벗어나면 그 사람은 실패, 다 실패하거나 시간이 끝나면 몹이 사라짐.
+ * 통과·실패하면 시작한 자리(교관 앞)로 돌려보냄 (0.55.8~). 다운이면 일으켜서, 죽었거나 시련장에서 64칸 넘게 떠났으면 안 보냄.
  * 시련장은 한 번에 한 무리만. 시련장 위치: /rpg trial point add
  */
 @Mod.EventBusSubscriber(modid = RpgCore.MODID)
@@ -43,9 +44,19 @@ public final class Trials {
     private static final class Run {
         final int point; final ServerLevel level; final BlockPos pos; final Mob mob; final long end;
         final List<UUID> members = new ArrayList<>();
+        ServerLevel backLevel; net.minecraft.world.phys.Vec3 back; float backYaw;   // 돌아올 자리 (시작한 사람이 서 있던 교관 앞)
         Run(int point, ServerLevel level, BlockPos pos, Mob mob, long end) {
             this.point = point; this.level = level; this.pos = pos; this.mob = mob; this.end = end;
         }
+    }
+
+    /** 교관 앞으로 돌려보내기 (다운이면 일으킴). 죽었으면 안 함 */
+    private static boolean sendBack(Run r, ServerPlayer m) {
+        if (m == null || !m.isAlive() || r.back == null || r.backLevel == null) return false;
+        rpg.core.party.PartyEvents.standUp(m);
+        m.teleportTo(r.backLevel, r.back.x, r.back.y, r.back.z, r.backYaw, 0);
+        m.fallDistance = 0;
+        return true;
     }
     private static final List<Run> RUNS = new ArrayList<>();
 
@@ -94,6 +105,14 @@ public final class Trials {
         if (mob == null) return "시련 몹을 만들 수 없어요 (mobs.json " + MOB_KEY + ")";
         mob.getPersistentData().putBoolean(TAG, true);
         Run run = new Run(best, level, pc.pos(), mob, level.getGameTime() + LIMIT_TICKS);
+        // 돌아올 자리: 시작한 사람 자리, 가장 가까운 그 계열 교관을 보게
+        run.backLevel = p.serverLevel();
+        run.back = p.position();
+        run.backYaw = p.getYRot();
+        net.minecraft.world.entity.npc.Villager ins = null;
+        for (var v : p.level().getEntitiesOfClass(net.minecraft.world.entity.npc.Villager.class, p.getBoundingBox().inflate(8), e -> Jobs.npcFamily(e) == family))
+            if (ins == null || v.distanceToSqr(p) < ins.distanceToSqr(p)) ins = v;
+        if (ins != null) run.backYaw = (float) Math.toDegrees(Math.atan2(-(ins.getX() - p.getX()), ins.getZ() - p.getZ()));
         // 같이 들어갈 사람: 24칸 안 파티원 중 시련을 받은 사람 (나 포함)
         for (ServerPlayer m : rpg.core.party.Parties.nearby(p)) {
             if (m != p && (m.distanceToSqr(p) > LEAVE * LEAVE || !holds(RpgData.get(m)) || inRun(m))) continue;
@@ -115,9 +134,9 @@ public final class Trials {
         return null;
     }
 
-    private static void fail(ServerPlayer p, String why) {
+    private static void fail(ServerPlayer p, String why, boolean back) {
         if (p == null) return;
-        p.sendSystemMessage(Component.literal("[교관의 시련] 실패: " + why + " — 교관에게 가서 바로 다시 도전할 수 있어요").withStyle(ChatFormatting.RED));
+        p.sendSystemMessage(Component.literal("[교관의 시련] 실패: " + why + (back ? " — 교관 앞으로 돌아왔어요. 바로 다시 도전할 수 있어요" : " — 교관에게 가서 바로 다시 도전할 수 있어요")).withStyle(ChatFormatting.RED));
         p.level().playSound(null, p.blockPosition(), SoundEvents.VILLAGER_NO, SoundSource.PLAYERS, 0.8f, 0.8f);
     }
 
@@ -136,8 +155,9 @@ public final class Trials {
                     PlayerData d = RpgData.get(m);
                     d.trialCleared = true;
                     RpgData.sync(m);
+                    boolean back = m.level() == r.level && m.blockPosition().distSqr(r.pos) <= 64 * 64 && sendBack(r, m);
                     m.sendSystemMessage(Component.literal("[교관의 시련] 통과! ").withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD)
-                            .append(Component.literal("교관에게 돌아가 2차 전직을 완료하세요").withStyle(ChatFormatting.YELLOW)));
+                            .append(Component.literal(back ? "교관 앞으로 돌아왔어요. 교관에게 말을 걸어 2차 전직을 완료하세요" : "교관에게 돌아가 2차 전직을 완료하세요").withStyle(ChatFormatting.YELLOW)));
                     m.serverLevel().sendParticles(ParticleTypes.TOTEM_OF_UNDYING, m.getX(), m.getY() + 1, m.getZ(), 40, 0.5, 1, 0.5, 0.3);
                     m.level().playSound(null, m.blockPosition(), SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundSource.PLAYERS, 0.8f, 1.2f);
                 }
@@ -152,7 +172,8 @@ public final class Trials {
                         : !m.isAlive() || RpgData.get(m).isDown() ? "쓰러졌어요"
                         : m.level() != r.level || m.blockPosition().distSqr(r.pos) > LEAVE * LEAVE ? "시련장을 벗어났어요" : null;
                 if (why == null) return false;
-                fail(m, why);
+                boolean back = m.level() == r.level && m.blockPosition().distSqr(r.pos) <= 64 * 64 && sendBack(r, m);   // 시련장 근처에 있으면 교관 앞으로
+                fail(m, why, back);
                 return true;
             });
             if (r.members.isEmpty()) {
