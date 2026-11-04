@@ -9,6 +9,10 @@
      1000
     ],
     [
+     "town_scroll",
+     2000
+    ],
+    [
      "red_potion",
      90
     ],
@@ -232,6 +236,10 @@
      1000
     ],
     [
+     "town_scroll",
+     2000
+    ],
+    [
      "red_potion",
      90
     ],
@@ -442,6 +450,7 @@
   "archer_bow_queen": 100000,
   "mage_staff_queen": 100000,
   "thief_dagger_queen": 100000,
-  "spider_queen_treasure": 80000
+  "spider_queen_treasure": 80000,
+  "town_scroll": 200
  }
 }

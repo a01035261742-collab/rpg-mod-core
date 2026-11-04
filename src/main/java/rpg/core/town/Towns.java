@@ -7,7 +7,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.saveddata.SavedData;
 
-/** 마을 위치 (차원별 저장). 귀환 주문서는 같은 차원에서 가장 가까운 마을로. /rpg town add <이름> */
+/** 마을 위치 (차원별 저장). 귀환 주문서는 같은 차원에서 가장 가까운 마을로, 이동의 돌·마을 이동 주문서는 고른 마을로 (Travel). /rpg town add <이름> */
 public class Towns extends SavedData {
     public final Map<String, BlockPos> towns = new LinkedHashMap<>();
 

@@ -49,6 +49,7 @@ if msg_path and os.path.exists(msg_path):
         if m and not title_line: title_line = m.group(1)
 if clean_title(title_line): TITLES[ver] = clean_title(title_line)
 elif ver not in TITLES and clean_title(first): TITLES[ver] = clean_title(first)
+lines = list(dict.fromkeys(lines))   # 같은 버전 커밋 여러 개에 같은 player: 줄이 있으면 한 번만
 if lines:
     add({'version': ver, 'date': datetime.date.today().isoformat(), 'changes': lines})
 if ver in merged and not merged[ver].get('date'):

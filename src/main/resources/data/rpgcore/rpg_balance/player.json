@@ -1,5 +1,5 @@
 {
- "_설명": "플레이어 기본 수치 (임시값). 고친 뒤 /reload 하면 바로 반영",
+ "_설명": "플레이어 기본 수치 (임시값). 고친 뒤 /reload 하면 바로 반영 · travelCost/travelBeginnerCost = 이동의 돌 비용 (전직 전), townDiscover = 마을 자동 발견 거리",
  "startStat": 4,
  "startStamina": 0,
  "staminaPerPoint": 1.0,
@@ -118,5 +118,8 @@
    "mpPct": 100,
    "cooldown": 60
   }
- }
+ },
+ "travelCost": 500,
+ "travelBeginnerCost": 50,
+ "townDiscover": 32
 }

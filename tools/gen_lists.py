@@ -53,6 +53,8 @@ for mk, md in drops['mobs'].items():
 for qk, q in quests['quests'].items():
     for it, n in q.get('reward', {}).get('items', []):
         src[short(it)].append(f'퀘스트 "{q["name"]}" ×{n}')
+    for it, n in q.get('reward', {}).get('choose', []):
+        src[short(it)].append(f'퀘스트 "{q["name"]}" 고르는 보상')
 for job, w in re.findall(r'case (\d) -> "(\w+_10)"', open(f'{J}/job/Jobs.java').read()):
     src[w].append('1차 전직 보상')
 for k, v in drops.get('enhance', {}).get('items', {}).items():

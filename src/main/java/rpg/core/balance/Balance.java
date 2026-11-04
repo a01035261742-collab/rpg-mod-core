@@ -48,6 +48,9 @@ public final class Balance {
     }
     public static int partyMax = 6;
     public static double partyRange = 40, partyBonusPerMember = 10, deathExpLossPct = 30;
+    /** 이동의 돌 비용 (전직 전 = beginner) · 마을 발견 거리 (player.json travelCost · travelBeginnerCost · townDiscover) */
+    public static long travelCost = 500, travelBeginnerCost = 50;
+    public static double townDiscover = 32;
     public static boolean downEverywhere = true;
     public static double downSeconds = 30, reviveSeconds = 3, reviveHpPct = 30;
     public static double dodgeCooldown = 3.0, dodgePower = 1.1;
@@ -179,6 +182,8 @@ public final class Balance {
             partyMax = i(o, "partyMax", partyMax); partyRange = d(o, "partyRange", partyRange);
             partyBonusPerMember = d(o, "partyBonusPerMember", partyBonusPerMember);
             deathExpLossPct = d(o, "deathExpLossPct", deathExpLossPct);
+            travelCost = Math.round(d(o, "travelCost", travelCost)); travelBeginnerCost = Math.round(d(o, "travelBeginnerCost", travelBeginnerCost));
+            townDiscover = d(o, "townDiscover", townDiscover);
             downEverywhere = o.has("downEverywhere") ? o.get("downEverywhere").getAsBoolean() : downEverywhere;
             downSeconds = d(o, "downSeconds", downSeconds); reviveSeconds = d(o, "reviveSeconds", reviveSeconds);
             reviveHpPct = d(o, "reviveHpPct", reviveHpPct);

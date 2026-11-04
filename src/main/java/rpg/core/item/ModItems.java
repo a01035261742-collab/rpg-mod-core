@@ -131,6 +131,8 @@ public final class ModItems {
 
     /** 귀환 주문서: 3초 뒤 가장 가까운 마을로 */
     public static final RegistryObject<Item> RETURN_SCROLL = ITEMS.register("return_scroll", () -> new ReturnScroll(new Item.Properties().stacksTo(64)));
+    /** 마을 이동 주문서: 가 본 마을 골라서 3초 뒤 이동 (rpg.core.town.Travel) */
+    public static final RegistryObject<Item> TOWN_SCROLL = ITEMS.register("town_scroll", () -> new TownScroll(new Item.Properties().stacksTo(64)));
 
     /** 잠재능력: 부여 주문서 (레어·에픽) · 수상한 큐브 (골드 대신 재설정) */
     public static final RegistryObject<Item> POTENTIAL_SCROLL = ITEMS.register("potential_scroll",
@@ -160,6 +162,8 @@ public final class ModItems {
             .displayItems((params, out) -> {
                 out.accept(STAT_RESET_SCROLL.get());
                 out.accept(RETURN_SCROLL.get());
+                out.accept(TOWN_SCROLL.get());
+                out.accept(rpg.core.world.ModBlocks.WAYSTONE_ITEM.get());
                 out.accept(POTENTIAL_SCROLL.get());
                 out.accept(EPIC_POTENTIAL_SCROLL.get());
                 out.accept(CUBE.get());

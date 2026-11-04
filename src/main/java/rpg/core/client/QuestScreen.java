@@ -104,12 +104,15 @@ public class QuestScreen extends Screen {
         abandon.setMessage(Component.literal(System.currentTimeMillis() < confirmUntil ? "§c정말?" : "포기"));
 
         Quests.Quest q = sel == null ? null : Quests.QUESTS.get(sel);
+        HOVER.clear();
         if (q != null) {   // 상세: 창 안에서만 보이게 자름
             g.enableScissor(x + LW + 12, y + 40, x + W - 6, y + H - Ui.FOOT - 6);
             detail(g, q);
             g.disableScissor();
         }
         super.render(g, mx, my, pt);
+        for (Hover hv : HOVER)   // 보상 아이콘 이름
+            if (mx >= hv.x() && mx < hv.x() + 16 && my >= hv.y() && my < hv.y() + 16 && my < y + H - Ui.FOOT - 6) { g.renderTooltip(font, hv.stack(), mx, my); break; }
     }
 
     private void detail(GuiGraphics g, Quests.Quest q) {
@@ -149,14 +152,31 @@ public class QuestScreen extends Screen {
         Quests.Reward r = q.reward();
         if (r.exp() > 0) { g.drawString(font, " · " + String.format("%,d", r.exp()) + " EXP", dx, dy, 0xFFB0FF80, false); dy += 10; }
         if (r.gold() > 0) { g.drawString(font, " · " + String.format("%,d", r.gold()) + " G", dx, dy, 0xFFFFD24A, false); dy += 10; }
-        for (String[] it : r.items()) {
-            ItemStack rs = rpg.core.item.ItemIds.stack(it[0], 1);
-            if (!rs.isEmpty()) g.renderFakeItem(rs, dx + 4, dy - 3);
-            String nm = (rs.isEmpty() ? it[0] : rs.getHoverName().getString()) + (it[1].equals("1") ? "" : " x" + it[1]);
-            g.drawString(font, Ui.cut(font, nm, dw - 24), dx + 24, dy + 2, 0xFF80E0FF, false);
-            dy += 17;
+        dy = icons(g, r.items(), dx, dy, dw, false);
+        if (!r.choose().isEmpty()) {   // 고르는 보상 (완료할 때 NPC 대화에서 하나)
+            g.drawString(font, "하나 골라 받기", dx, dy + 1, 0xFFC8A8FF, false);
+            dy = icons(g, r.choose(), dx, dy + 11, dw, true);
         }
     }
+
+    /** 보상 아이콘 줄 (마우스 올리면 이름) — 칸이 모자라면 다음 줄 */
+    private int icons(GuiGraphics g, List<String[]> items, int dx, int dy, int dw, boolean pick) {
+        int ix = dx + 2;
+        for (String[] it : items) {
+            if (ix + 18 > dx + dw) { ix = dx + 2; dy += 19; }
+            ItemStack rs = rpg.core.item.ItemIds.stack(it[0], Integer.parseInt(it[1]));
+            if (rs.isEmpty()) continue;
+            if (pick) g.fill(ix - 1, dy - 1, ix + 17, dy + 17, 0x60A080FF);
+            g.renderFakeItem(rs, ix, dy);
+            g.renderItemDecorations(font, rs, ix, dy);
+            HOVER.add(new Hover(ix, dy, rs));
+            ix += 20;
+        }
+        return dy + 20;
+    }
+
+    private record Hover(int x, int y, ItemStack stack) {}
+    private final List<Hover> HOVER = new java.util.ArrayList<>();
 
     @Override
     public boolean mouseClicked(double mx, double my, int button) {

@@ -67,6 +67,14 @@ public final class RpgCommand {
                 p.getInventory().add(new net.minecraft.world.item.ItemStack(rpg.core.world.ModBlocks.SHARED_STASH_ITEM.get(), 1));
                 return ok(c, "차원 문 2개 (세로로 쌓기) + 공유 창고 1개 지급");
             }));
+        // 마을 이동: 이동의 돌 블록 받기 (마을마다 하나 놓기)
+        for (String n : new String[]{"이동의돌", "waystone"})
+            root.then(Commands.literal(n).requires(s -> s.hasPermission(2)).executes(c -> {
+                ServerPlayer p = c.getSource().getPlayerOrException();
+                var it = new net.minecraft.world.item.ItemStack(rpg.core.world.ModBlocks.WAYSTONE_ITEM.get(), 1);
+                if (!p.getInventory().add(it)) p.drop(it, false);
+                return ok(c, "이동의 돌 지급 · 마을(/rpg town add) 근처에 놓으면 위에 마을 이름이 떠요");
+            }));
         // 레이드: 보스별 단말기 + 경기장
         for (String rn : new String[]{"레이드", "raid"}) {
             var raid = Commands.literal(rn);

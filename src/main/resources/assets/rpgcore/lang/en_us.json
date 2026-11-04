@@ -272,5 +272,7 @@
  "item.rpgcore.warrior_sword_queen": "Queen's Fang Greatsword",
  "item.rpgcore.archer_bow_queen": "Queen's Fang Bow",
  "item.rpgcore.mage_staff_queen": "Queen's Fang Staff",
- "item.rpgcore.thief_dagger_queen": "Queen's Fang Dagger"
+ "item.rpgcore.thief_dagger_queen": "Queen's Fang Dagger",
+ "item.rpgcore.town_scroll": "Town Travel Scroll",
+ "block.rpgcore.waystone": "Waystone"
 }
