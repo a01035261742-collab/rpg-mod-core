@@ -1,1 +1,1 @@
-{"parent": "minecraft:item/generated", "textures": {"layer0": "minecraft:item/chainmail_boots"}}
+{"parent": "minecraft:item/generated", "textures": {"layer0": "rpgcore:item/shoes_1"}}

@@ -166,6 +166,16 @@ public final class GearItems {
 
         @Override public String gearId() { return id; }
 
+        /** 입은 모습: rpgcore:textures/models/armor/<세트>_<단계>_layer_1/2.png (세트 = common, warrior, archer, mage, thief) */
+        @Override
+        public String getArmorTexture(ItemStack s, Entity e, net.minecraft.world.entity.EquipmentSlot slot, String type) {
+            int us = id.lastIndexOf('_');
+            int js = id.indexOf('_');
+            String set = js == us ? "common" : id.substring(0, js);
+            return "rpgcore:textures/models/armor/" + set + "_" + id.substring(us + 1) + "_layer_"
+                    + (slot == net.minecraft.world.entity.EquipmentSlot.LEGS ? 2 : 1) + ".png";
+        }
+
         @Override
         public void inventoryTick(ItemStack s, Level level, Entity e, int slot, boolean selected) {
             if (!level.isClientSide) Gear.roll(s);

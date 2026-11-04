@@ -88,8 +88,7 @@ public final class ModItems {
                 for (int j = 0; j < 3; j++) {
                     String job = new String[]{"archer", "mage", "thief"}[j];
                     String id = job + "_" + a[0] + "_" + tiers[t];
-                    int color = JOB_COLORS[j][t];
-                    GEAR.add(ITEMS.register(id, () -> new rpg.core.equip.GearItems.DyedArmor(type, new Item.Properties(), id, color)));
+                    GEAR.add(ITEMS.register(id, () -> new rpg.core.equip.GearItems.Armor(rpg.core.equip.GearItems.LEATHER, type, new Item.Properties(), id)));
                 }
             }
         }

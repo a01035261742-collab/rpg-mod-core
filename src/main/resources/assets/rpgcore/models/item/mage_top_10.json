@@ -1,1 +1,1 @@
-{"parent": "minecraft:item/generated", "textures": {"layer0": "minecraft:item/leather_chestplate", "layer1": "minecraft:item/leather_chestplate_overlay"}}
+{"parent": "minecraft:item/generated", "textures": {"layer0": "rpgcore:item/mage_top_10"}}
