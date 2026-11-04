@@ -1,1 +1,1 @@
-{ "parent": "minecraft:item/generated", "textures": { "layer0": "minecraft:item/paper" } }
+{"parent": "minecraft:item/generated", "textures": {"layer0": "rpgcore:item/stat_reset_scroll"}}
