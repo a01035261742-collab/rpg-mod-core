@@ -4,14 +4,13 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import rpg.core.equip.EquipMenu;
 import rpg.core.equip.PlayerEquip;
 
 /** 장비 창: 바닐라 인벤토리 배치 + 오른쪽 장비 칸 (Tab) */
 public class EquipScreen extends AbstractContainerScreen<EquipMenu> {
-    private static final String[] LABELS = {"무기", "장갑", "망토", "벨트", "귀걸", "반지", "반지", "반지", "반지", "펜던", "훈장"};
-
     public EquipScreen(EquipMenu menu, Inventory inv, Component title) {
         super(menu, inv, title);
         imageWidth = 230;
@@ -41,11 +40,12 @@ public class EquipScreen extends AbstractContainerScreen<EquipMenu> {
         g.drawString(font, "→", x + 138, y + 32, 0xFF8A90B0, false);
         // 칸 테두리
         for (var s : menu.slots) slotFrame(g, x + s.x, y + s.y);
-        // 장비 칸 이름 (빈 칸일 때)
-        for (int i = 0; i < PlayerEquip.SLOT_TYPES.length; i++) {
+        // 빈 장비 칸: 장신구 윤곽 실루엣
+        for (int i = 1; i < PlayerEquip.SLOT_TYPES.length; i++) {
             var s = menu.slots.get(i);
-            if (i == 0) continue;
-            if (!s.hasItem()) g.drawString(font, LABELS[i].substring(0, 1), x + s.x + 5, y + s.y + 4, 0xFF5A6080, false);
+            if (!s.hasItem())
+                g.blit(new ResourceLocation("rpgcore", "textures/gui/slot/" + PlayerEquip.SLOT_TYPES[i] + ".png"),
+                        x + s.x, y + s.y, 0, 0, 16, 16, 16, 16);
         }
     }
 
