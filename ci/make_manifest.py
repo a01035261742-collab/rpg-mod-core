@@ -22,6 +22,8 @@ files = [{'path': f'mods/{name}', 'url': f'https://github.com/{REPO}/releases/do
 
 pack = json.load(open('pack/mods.json')) if os.path.exists('pack/mods.json') else {}
 extra = pack.get('mods', [])
+# 시험판 전용 추가 모드 (preview-manifest.yml 만 EXTRA_PACK 을 준다. 평소 릴리스에는 영향 없음)
+if os.environ.get('EXTRA_PACK'): extra = extra + json.load(open(os.environ['EXTRA_PACK'])).get('mods', [])
 forge = pack.get('forge') or forge
 CF_KEY = os.environ.get('CURSEFORGE_API_KEY', '')
 def cf_get(path):
