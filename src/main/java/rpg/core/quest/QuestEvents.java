@@ -141,7 +141,7 @@ public final class QuestEvents {
     }
 
     // ───────── 완료 ─────────
-    public static void complete(ServerPlayer p, int entity, String qid) {
+    public static void complete(ServerPlayer p, int entity, String qid, int choice) {
         Quests.Quest q = Quests.QUESTS.get(qid);
         String npc = near(p, entity);
         if (q == null || npc == null || !npc.equals(q.turnIn())) return;
@@ -152,11 +152,15 @@ public final class QuestEvents {
             msg(p, "아직 목표를 다 못 채웠어요", ChatFormatting.RED);
             return;
         }
-        finish(p, q);
+        if (!q.reward().choose().isEmpty() && (choice < 0 || choice >= q.reward().choose().size())) {
+            msg(p, "받을 보상을 하나 골라 주세요", ChatFormatting.RED);
+            return;
+        }
+        finish(p, q, choice);
     }
 
     /** 완료 처리 (NPC 대화 또는 지점 도착) */
-    private static void finish(ServerPlayer p, Quests.Quest q) {
+    private static void finish(ServerPlayer p, Quests.Quest q, int choice) {
         String qid = q.id();
         PlayerData d = RpgData.get(p);
         // 수집 재료·배달 물건 가져가기
@@ -167,6 +171,10 @@ public final class QuestEvents {
         Quests.Reward r = q.reward();
         if (r.gold() > 0) d.gold += r.gold();
         for (String[] it : r.items()) give(p, it[0], Integer.parseInt(it[1]));
+        if (!r.choose().isEmpty()) {   // 고르는 보상 (지점 도착 완료는 첫 번째)
+            String[] c = r.choose().get(Math.max(0, Math.min(choice, r.choose().size() - 1)));
+            give(p, c[0], Integer.parseInt(c[1]));
+        }
         Net.reward(p, r.exp(), r.gold());
         if (r.exp() > 0) Progress.giveExp(p, r.exp());
         RpgData.sync(p);
@@ -215,7 +223,7 @@ public final class QuestEvents {
             }
             if (q.toPoint() && near(pl.points.get(q.point()), dim, p) && Quests.complete(q, prog, it -> count(p, it))) {
                 if (!q.done().isEmpty()) title(p, q.done().get(0));
-                finish(p, q);
+                finish(p, q, 0);
             }
         }
     }
@@ -256,6 +264,28 @@ public final class QuestEvents {
             }
             if (changed) Net.questSync(p);
         }
+    }
+
+    /** 강화·제작 진행도: type = enhance | craft, target = 스테이션 (craft) */
+    public static void onTask(ServerPlayer p, String type, String target, int n) {
+        PlayerData d = RpgData.get(p);
+        boolean changed = false;
+        for (var en : d.questActive.entrySet()) {
+            Quests.Quest q = Quests.QUESTS.get(en.getKey());
+            if (q == null) continue;
+            int[] prog = en.getValue();
+            if (prog.length < q.goals().size()) { prog = java.util.Arrays.copyOf(prog, q.goals().size()); en.setValue(prog); }
+            for (int i = 0; i < q.goals().size(); i++) {
+                Quests.Goal g = q.goals().get(i);
+                if (!g.type().equals(type) || prog[i] >= g.count()) continue;
+                if (!g.target().equals("*") && !g.target().equals(target)) continue;
+                prog[i] = Math.min(g.count(), prog[i] + Math.max(1, n));
+                changed = true;
+                String label = g.label().isEmpty() ? (type.equals("craft") ? "제작" : "강화") : g.label();
+                Net.itemNote(p, "§e" + label + " " + prog[i] + "/" + g.count() + (prog[i] >= g.count() ? " §a완료" : ""));
+            }
+        }
+        if (changed) Net.questSync(p);
     }
 
     private static void take(ServerPlayer p, String item, int n) {

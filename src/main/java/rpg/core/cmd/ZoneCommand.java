@@ -66,7 +66,7 @@ public final class ZoneCommand {
             "§f/rpg level|exp|sp|gold|heal|damage|reset|resetscroll  캐릭터 조작",
             "§f/rpg zone ...  사냥터 · /rpg wand  사냥터 지팡이 · /rpg ground <번호>  사냥터 프리셋 · /rpg spawn|spawnelite <몹>  · /rpg mobs",
             "§f/rpg npc job|shop|craft|quest|storage  NPC 세우기 (내가 보는 쪽을 봄) · /rpg npc 방향  5칸 안 NPC 돌리기",
-            "§f/rpg town add|remove|list  마을 (귀환 도착지)",
+            "§f/rpg town add|remove|list  마을 (귀환·이동 도착지) · /rpg 이동의돌  이동의 돌 받기 (마을마다 하나)",
             "§f/rpg 관리 (admin)  관리자 패널 (채팅 버튼) · /rpg npc 삭제  5칸 안 NPC 지우기",
             "§f/rpg daily reset|complete [플레이어]  일일 퀘스트 새로 뽑기 · 진행도 채우기",
             "§f/rpg boss point add|remove|list · /rpg boss spawn <보스> · /rpg boss respawn",

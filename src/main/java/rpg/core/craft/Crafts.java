@@ -174,6 +174,7 @@ public final class Crafts {
         RpgData.sync(p);
         p.inventoryMenu.broadcastChanges();
         if (made > 0) {
+            rpg.core.quest.QuestEvents.onTask(p, "craft", npcStation(e), made);   // 퀘스트: 제작
             String name = proto.getHoverName().getString();
             msg(p, name + (r.count() * made > 1 ? " x" + r.count() * made : "") + " 제작" + (r.gold() > 0 ? "  -" + String.format("%,d", r.gold() * made) + " G" : ""),
                     ChatFormatting.YELLOW);

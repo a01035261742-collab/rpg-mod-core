@@ -272,5 +272,7 @@
  "item.rpgcore.warrior_sword_queen": "여왕의 독니 대검",
  "item.rpgcore.archer_bow_queen": "여왕의 독니 활",
  "item.rpgcore.mage_staff_queen": "여왕의 독니 지팡이",
- "item.rpgcore.thief_dagger_queen": "여왕의 독니 단검"
+ "item.rpgcore.thief_dagger_queen": "여왕의 독니 단검",
+ "item.rpgcore.town_scroll": "마을 이동 주문서",
+ "block.rpgcore.waystone": "이동의 돌"
 }

@@ -132,6 +132,35 @@ public final class Net {
                 .encoder(PowerRes::encode).decoder(PowerRes::new).consumerMainThread(PowerRes::handle).add();
         CH.messageBuilder(Alert.class, id++, NetworkDirection.PLAY_TO_CLIENT)
                 .encoder(Alert::encode).decoder(Alert::new).consumerMainThread(Alert::handle).add();
+        CH.messageBuilder(TravelInfo.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(TravelInfo::encode).decoder(TravelInfo::new).consumerMainThread(TravelInfo::handle).add();
+        CH.messageBuilder(TravelAction.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(TravelAction::encode).decoder(TravelAction::new).consumerMainThread(TravelAction::handle).add();
+    }
+
+    // ───────── 마을 이동 (이동의 돌 · 마을 이동 주문서) ─────────
+    /** mode 0 이동의 돌 · 1 주문서, rows = 이름|발견1/0|여기1/0, cost = 돌 비용 (주문서 0) */
+    public record TravelInfo(int mode, java.util.List<String> rows, long cost, long gold) {
+        TravelInfo(FriendlyByteBuf b) { this(b.readByte(), b.readList(x -> x.readUtf(128)), b.readLong(), b.readLong()); }
+        void encode(FriendlyByteBuf b) { b.writeByte(mode); b.writeCollection(rows, (x, r) -> x.writeUtf(r, 128)); b.writeLong(cost); b.writeLong(gold); }
+        void handle(Supplier<NetworkEvent.Context> ctx) {
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> rpg.core.client.TravelScreen.open(this));
+            ctx.get().setPacketHandled(true);
+        }
+    }
+
+    public static void travelInfo(ServerPlayer p, int mode, java.util.List<String> rows, long cost, long gold) {
+        CH.send(PacketDistributor.PLAYER.with(() -> p), new TravelInfo(mode, rows, cost, gold));
+    }
+
+    public record TravelAction(int mode, String town) {
+        TravelAction(FriendlyByteBuf b) { this(b.readByte(), b.readUtf(64)); }
+        void encode(FriendlyByteBuf b) { b.writeByte(mode); b.writeUtf(town, 64); }
+        void handle(Supplier<NetworkEvent.Context> ctx) {
+            ServerPlayer p = ctx.get().getSender();
+            if (p != null) rpg.core.town.Travel.go(p, mode, town);
+            ctx.get().setPacketHandled(true);
+        }
     }
 
     // ───────── 보스 기믹 알림 (화면 위 가운데) ─────────
@@ -540,14 +569,16 @@ public final class Net {
     }
 
     /** 클라 → 서버: 퀘스트 (kind 0 수락 · 1 완료 · 2 포기) */
-    public record QuestAction(int kind, String quest, int entity) {
-        public QuestAction(FriendlyByteBuf b) { this(b.readVarInt(), b.readUtf(), b.readVarInt()); }
-        void encode(FriendlyByteBuf b) { b.writeVarInt(kind); b.writeUtf(quest); b.writeVarInt(entity); }
+    /** kind 0 수락 · 1 완료 (choice = 고른 보상 번호, 없으면 -1) · 2 포기 */
+    public record QuestAction(int kind, String quest, int entity, int choice) {
+        public QuestAction(int kind, String quest, int entity) { this(kind, quest, entity, -1); }
+        public QuestAction(FriendlyByteBuf b) { this(b.readVarInt(), b.readUtf(), b.readVarInt(), b.readVarInt()); }
+        void encode(FriendlyByteBuf b) { b.writeVarInt(kind); b.writeUtf(quest); b.writeVarInt(entity); b.writeVarInt(choice); }
         void handle(Supplier<NetworkEvent.Context> ctx) {
             ServerPlayer p = ctx.get().getSender();
             if (p != null) switch (kind) {
                 case 0 -> rpg.core.quest.QuestEvents.accept(p, entity, quest);
-                case 1 -> rpg.core.quest.QuestEvents.complete(p, entity, quest);
+                case 1 -> rpg.core.quest.QuestEvents.complete(p, entity, quest, choice);
                 case 2 -> rpg.core.quest.QuestEvents.abandon(p, quest);
                 default -> {}
             }

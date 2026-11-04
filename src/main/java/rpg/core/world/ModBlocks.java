@@ -24,7 +24,7 @@ import net.minecraftforge.registries.RegistryObject;
 import rpg.core.RpgCore;
 import rpg.core.item.ModItems;
 
-/** 차원 문 (들어가면 반대 월드) · 공유 창고 블록 */
+/** 차원 문 (들어가면 반대 월드) · 공유 창고 · 레이드 단말기 · 이동의 돌 블록 */
 public final class ModBlocks {
     private ModBlocks() {}
 
@@ -38,6 +38,11 @@ public final class ModBlocks {
     public static final RegistryObject<Block> RAID_GATE = BLOCKS.register("raid_gate", () -> new RaidGateBlock(
             BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_RED).strength(-1f, 3600000f).lightLevel(s -> 9).noLootTable()));
     public static final RegistryObject<Item> RAID_GATE_ITEM = ModItems.ITEMS.register("raid_gate", () -> new BlockItem(RAID_GATE.get(), new Item.Properties()));
+
+    /** 이동의 돌: 우클릭 → 마을 이동 창 (골드). OP 가 마을마다 설치 (/rpg 이동의돌) */
+    public static final RegistryObject<Block> WAYSTONE = BLOCKS.register("waystone", () -> new WaystoneBlock(
+            BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(-1f, 3600000f).lightLevel(s -> 7).noLootTable()));
+    public static final RegistryObject<Item> WAYSTONE_ITEM = ModItems.ITEMS.register("waystone", () -> new BlockItem(WAYSTONE.get(), new Item.Properties()));
 
     public static final RegistryObject<Item> WORLD_PORTAL_ITEM = ModItems.ITEMS.register("world_portal", () -> new BlockItem(WORLD_PORTAL.get(), new Item.Properties()));
     public static final RegistryObject<Item> SHARED_STASH_ITEM = ModItems.ITEMS.register("shared_stash", () -> new BlockItem(SHARED_STASH.get(), new Item.Properties()));
@@ -59,6 +64,23 @@ public final class ModBlocks {
         public StashBlock(Properties p) { super(p); }
         @Override public InteractionResult use(BlockState s, Level l, BlockPos pos, Player p, InteractionHand h, BlockHitResult hit) {
             if (!l.isClientSide && p instanceof ServerPlayer sp) SharedStash.open(sp);
+            return InteractionResult.sidedSuccess(l.isClientSide);
+        }
+    }
+
+    /** 이동의 돌: 놓으면 위에 마을 이름, 우클릭하면 이동 창 */
+    public static class WaystoneBlock extends Block {
+        public WaystoneBlock(Properties p) { super(p); }
+        @Override public void setPlacedBy(Level l, BlockPos pos, BlockState s, @org.jetbrains.annotations.Nullable net.minecraft.world.entity.LivingEntity placer, net.minecraft.world.item.ItemStack stack) {
+            super.setPlacedBy(l, pos, s, placer, stack);
+            if (l instanceof net.minecraft.server.level.ServerLevel sl) rpg.core.town.Travel.placed(sl, pos, placer);
+        }
+        @Override public void onRemove(BlockState s, Level l, BlockPos pos, BlockState ns, boolean moving) {
+            if (!s.is(ns.getBlock()) && l instanceof net.minecraft.server.level.ServerLevel sl) rpg.core.town.Travel.removed(sl, pos);
+            super.onRemove(s, l, pos, ns, moving);
+        }
+        @Override public InteractionResult use(BlockState s, Level l, BlockPos pos, Player p, InteractionHand h, BlockHitResult hit) {
+            if (!l.isClientSide && p instanceof ServerPlayer sp && h == InteractionHand.MAIN_HAND) rpg.core.town.Travel.openStone(sp, pos);
             return InteractionResult.sidedSuccess(l.isClientSide);
         }
     }

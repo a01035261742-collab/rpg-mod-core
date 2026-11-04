@@ -230,6 +230,7 @@ public final class Enhance {
         boolean guard = safeguard && destroyRate(st) > 0;
         PlayerData pd = RpgData.get(p);
         if (!pay(p, pd, cost(d, st, guard))) return;
+        rpg.core.quest.QuestEvents.onTask(p, "enhance", "starforce", 1);   // 퀘스트: 스타포스 시도 (성공·실패 상관없음)
         ThreadLocalRandom r = ThreadLocalRandom.current();
         double roll = r.nextDouble() * 100;
         if (roll < rate(st)) {
