@@ -106,6 +106,8 @@ public final class Travel {
     /** 이동의 돌 우클릭 */
     public static void openStone(ServerPlayer p, BlockPos pos) {
         OPENED.put(p.getUUID(), pos.immutable());
+        ServerLevel l = p.serverLevel();   // /setblock 으로 놓았거나 글자가 지워졌으면 다시 띄움
+        if (l.getEntities((Entity) null, new AABB(pos).inflate(0.5, 2, 0.5), x -> x.getTags().contains(LABEL_TAG)).isEmpty()) label(l, pos, townFor(l, pos));
         send(p, STONE);
     }
 
@@ -214,9 +216,13 @@ public final class Travel {
 
     // ───────── 이동의 돌 블록 ─────────
     /** 놓으면 위에 글자 (가장 가까운 마을 이름) */
-    public static void placed(ServerLevel l, BlockPos pos, Entity placer) {
+    private static String townFor(ServerLevel l, BlockPos pos) {
         var near = Towns.get(l).nearest(pos);
-        String town = near != null && near.getValue().distSqr(pos) <= 96 * 96 ? near.getKey() : "";
+        return near != null && near.getValue().distSqr(pos) <= 96 * 96 ? near.getKey() : "";
+    }
+
+    public static void placed(ServerLevel l, BlockPos pos, Entity placer) {
+        String town = townFor(l, pos);
         label(l, pos, town);
         if (placer instanceof ServerPlayer sp)
             sp.sendSystemMessage(Component.literal("[마을] 이동의 돌 설치 (" + pos.toShortString() + ")" + (town.isEmpty() ? " · 근처에 등록된 마을이 없어요 (/rpg town add <이름>)" : " · " + town))
