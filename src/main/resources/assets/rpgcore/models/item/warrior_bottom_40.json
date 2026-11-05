@@ -1,1 +1,1 @@
-{"parent": "minecraft:item/generated", "textures": {"layer0": "minecraft:item/netherite_leggings"}}
+{"parent": "minecraft:item/generated", "textures": {"layer0": "rpgcore:item/warrior_bottom_40"}}

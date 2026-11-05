@@ -1,1 +1,76 @@
-{"parent": "minecraft:item/handheld", "textures": {"layer0": "rpgcore:item/warrior_sword_queen"}}
+{
+ "parent": "minecraft:item/handheld",
+ "textures": {
+  "layer0": "rpgcore:item/warrior_sword_queen"
+ },
+ "display": {
+  "thirdperson_righthand": {
+   "rotation": [
+    -144.5,
+    -90,
+    -90
+   ],
+   "translation": [
+    -0.5,
+    6.38,
+    -2.36
+   ],
+   "scale": [
+    1.8,
+    1.8,
+    0.8
+   ]
+  },
+  "thirdperson_lefthand": {
+   "rotation": [
+    -144.5,
+    90,
+    90
+   ],
+   "translation": [
+    -0.5,
+    6.38,
+    -2.36
+   ],
+   "scale": [
+    1.8,
+    1.8,
+    0.8
+   ]
+  },
+  "firstperson_righthand": {
+   "rotation": [
+    0,
+    -90,
+    25
+   ],
+   "translation": [
+    1.13,
+    3.8,
+    1.13
+   ],
+   "scale": [
+    0.816,
+    0.816,
+    0.816
+   ]
+  },
+  "firstperson_lefthand": {
+   "rotation": [
+    0,
+    90,
+    -25
+   ],
+   "translation": [
+    1.13,
+    3.8,
+    1.13
+   ],
+   "scale": [
+    0.816,
+    0.816,
+    0.816
+   ]
+  }
+ }
+}

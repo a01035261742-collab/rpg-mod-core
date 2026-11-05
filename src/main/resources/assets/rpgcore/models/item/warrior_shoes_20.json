@@ -1,1 +1,1 @@
-{"parent": "minecraft:item/generated", "textures": {"layer0": "minecraft:item/gold_boots"}}
+{"parent": "minecraft:item/generated", "textures": {"layer0": "rpgcore:item/warrior_shoes_20"}}

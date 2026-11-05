@@ -107,6 +107,17 @@ public final class ClientEvents {
             e.enqueueWork(() -> net.minecraft.client.gui.screens.MenuScreens.register(rpg.core.equip.EquipMenu.TYPE.get(), EquipScreen::new));
             e.enqueueWork(() -> net.minecraft.client.gui.screens.MenuScreens.register(rpg.core.shop.Trade.TYPE.get(), TradeScreen::new));
             e.enqueueWork(() -> registerStorage());
+            // 궁수 활: 바닐라 활처럼 당김 단계 그림 (pull / pulling)
+            e.enqueueWork(() -> {
+                for (var ro : rpg.core.item.ModItems.GEAR) {
+                    if (!(ro.get() instanceof rpg.core.equip.GearItems.Bow bow)) continue;
+                    net.minecraft.client.renderer.item.ItemProperties.register(bow, new net.minecraft.resources.ResourceLocation("pull"),
+                            (stack, level, ent, seed) -> ent == null || ent.getUseItem() != stack ? 0f
+                                    : (stack.getUseDuration() - ent.getUseItemRemainingTicks()) / 20f);
+                    net.minecraft.client.renderer.item.ItemProperties.register(bow, new net.minecraft.resources.ResourceLocation("pulling"),
+                            (stack, level, ent, seed) -> ent != null && ent.isUsingItem() && ent.getUseItem() == stack ? 1f : 0f);
+                }
+            });
         }
 
         @SubscribeEvent

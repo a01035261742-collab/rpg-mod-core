@@ -1,0 +1,4 @@
+{
+  "_설명": "모드팩 먼저 받아 보기(시험판)에만 더 들어가는 모드. 정식 목록(pack/mods.json)에는 영향 없음. preview-manifest.yml 이 정식 목록에 이 목록을 합쳐 preview 릴리스에 올린다.",
+  "mods": []
+}

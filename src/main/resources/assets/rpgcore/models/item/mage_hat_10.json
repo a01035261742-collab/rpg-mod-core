@@ -1,1 +1,1 @@
-{"parent": "minecraft:item/generated", "textures": {"layer0": "minecraft:item/leather_helmet", "layer1": "minecraft:item/leather_helmet_overlay"}}
+{"parent": "minecraft:item/generated", "textures": {"layer0": "rpgcore:item/mage_hat_10"}}

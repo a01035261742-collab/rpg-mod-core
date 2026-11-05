@@ -1,0 +1,39 @@
+name: preview-manifest
+# 모드팩 "먼저 받아 보기"(시험판) 목록: 정식 목록 + preview/extra.json 을 합쳐 preview 릴리스에 올린다. 수동 실행.
+# preview 릴리스는 prerelease 로 만들고 latest 로 지정하지 않는다 (정식 목록 주소 releases/latest 가 바뀌지 않게).
+on: workflow_dispatch
+permissions:
+  contents: write
+concurrency: preview-manifest
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Build preview manifest and publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_KEY }}
+        run: |
+          set -o pipefail
+          TAG=$(gh release view --json tagName --jq .tagName)
+          case "$TAG" in v*) ;; *) echo "::error::최신 릴리스가 정식 버전이 아니에요: $TAG"; exit 1;; esac
+          echo "정식 최신 릴리스: $TAG"
+          mkdir -p /tmp/rel
+          gh release download "$TAG" --pattern '*.jar' --dir /tmp/rel
+          JAR=$(ls /tmp/rel/*.jar | grep -v -e sources -e slim | head -1)
+          MANIFEST_VERSION="${TAG#v}" EXTRA_PACK=preview/extra.json python3 ci/make_manifest.py "$JAR" > /tmp/manifest.json 2> /tmp/manifest.log
+          cat /tmp/manifest.log
+          if grep -q "건너뜀" /tmp/manifest.log; then
+            echo "::error title=preview::건너뛴 모드가 있어서 올리지 않았어요."
+            exit 1
+          fi
+          cat /tmp/manifest.json
+          if gh release view preview >/dev/null 2>&1; then
+            gh release upload preview /tmp/manifest.json --clobber
+          else
+            gh release create preview /tmp/manifest.json --prerelease --latest=false --title "시험판 모드팩" --notes "모드팩 먼저 받아 보기용 시험판 목록 (자동 생성)" --target "$GITHUB_SHA"
+          fi
+          # 안전 확인: 정식 최신 릴리스가 그대로여야 한다
+          NOW=$(gh release view --json tagName --jq .tagName)
+          [ "$NOW" = "$TAG" ] || { echo "::error::최신 릴리스가 $TAG 에서 $NOW 로 바뀌었어요!"; exit 1; }

@@ -160,6 +160,78 @@
       "version": "mc1.20.1-1.9.6-forge",
       "optional": false,
       "side": "client"
+    },
+    {
+      "curseforge": 1091339,
+      "file": 9188826,
+      "optional": false,
+      "side": "both"
+    },
+    {
+      "curseforge": 882495,
+      "file": 4884976,
+      "optional": false,
+      "side": "client"
+    },
+    {
+      "curseforge": 1619890,
+      "file": 9188552,
+      "optional": false,
+      "side": "client"
+    },
+    {
+      "modrinth": "mobtimizations",
+      "version": "1.20.1-1.0.0",
+      "optional": false,
+      "side": "both"
+    },
+    {
+      "modrinth": "coroutil",
+      "version": "1.20.1-1.3.7",
+      "optional": false,
+      "side": "both"
+    },
+    {
+      "curseforge": 840788,
+      "file": 4917082,
+      "optional": false,
+      "side": "client"
+    },
+    {
+      "modrinth": "gputape",
+      "version": "1.0.5.1-forge",
+      "optional": false,
+      "side": "client"
+    },
+    {
+      "modrinth": "moonlight",
+      "version": "1.20-2.16.38B",
+      "optional": false,
+      "side": "both"
+    },
+    {
+      "modrinth": "fast-paintings",
+      "version": "1.20-1.2.7",
+      "optional": false,
+      "side": "both"
+    },
+    {
+      "modrinth": "kotlin-for-forge",
+      "version": "4.12.0",
+      "optional": false,
+      "side": "both"
+    },
+    {
+      "modrinth": "fzzy-config",
+      "version": "0.7.7+1.20.1",
+      "optional": false,
+      "side": "both"
+    },
+    {
+      "modrinth": "particle-core",
+      "version": "0.3.3+1.20.1",
+      "optional": false,
+      "side": "client"
     }
   ],
   "forge": "47.4.26",

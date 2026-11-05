@@ -1,1 +1,1 @@
-{"parent": "minecraft:item/generated", "textures": {"layer0": "minecraft:item/diamond_helmet"}}
+{"parent": "minecraft:item/generated", "textures": {"layer0": "rpgcore:item/hat_30"}}

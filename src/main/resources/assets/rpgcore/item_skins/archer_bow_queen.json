@@ -1,0 +1,41 @@
+{
+ "renderer": "minecraft:ranged",
+ "transforms": {
+  "offhand": {
+   "Tool_L": {
+    "translation": [
+     0.07,
+     0.0,
+     -0.15
+    ],
+    "rotation": [
+     -90.0,
+     -8,
+     0.0
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   },
+   "Chest": {
+    "translation": [
+     -0.2,
+     0.0,
+     0.1
+    ],
+    "rotation": [
+     40.0,
+     100.0,
+     90.0
+    ],
+    "scale": [
+     1,
+     1,
+     1
+    ]
+   }
+  }
+ }
+}

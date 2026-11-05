@@ -1,1 +1,1 @@
-{"parent": "minecraft:item/generated", "textures": {"layer0": "minecraft:item/golden_chestplate"}}
+{"parent": "minecraft:item/generated", "textures": {"layer0": "rpgcore:item/top_20"}}
