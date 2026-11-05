@@ -1,1 +1,6 @@
-{"parent": "minecraft:item/handheld", "textures": {"layer0": "rpgcore:item/mage_staff_queen"}}
+{
+ "parent": "minecraft:item/handheld",
+ "textures": {
+  "layer0": "rpgcore:item/mage_staff_queen"
+ }
+}
