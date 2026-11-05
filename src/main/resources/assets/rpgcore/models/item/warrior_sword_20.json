@@ -1,1 +1,76 @@
-{"parent": "minecraft:item/handheld", "textures": {"layer0": "minecraft:item/golden_sword"}}
+{
+ "parent": "minecraft:item/handheld",
+ "textures": {
+  "layer0": "rpgcore:item/warrior_sword_20"
+ },
+ "display": {
+  "thirdperson_righthand": {
+   "rotation": [
+    0,
+    -90,
+    55
+   ],
+   "translation": [
+    0,
+    4.2,
+    0.5
+   ],
+   "scale": [
+    0.892,
+    0.892,
+    0.892
+   ]
+  },
+  "thirdperson_lefthand": {
+   "rotation": [
+    0,
+    90,
+    -55
+   ],
+   "translation": [
+    0,
+    4.2,
+    0.5
+   ],
+   "scale": [
+    0.892,
+    0.892,
+    0.892
+   ]
+  },
+  "firstperson_righthand": {
+   "rotation": [
+    0,
+    -90,
+    25
+   ],
+   "translation": [
+    1.13,
+    3.35,
+    1.13
+   ],
+   "scale": [
+    0.714,
+    0.714,
+    0.714
+   ]
+  },
+  "firstperson_lefthand": {
+   "rotation": [
+    0,
+    90,
+    -25
+   ],
+   "translation": [
+    1.13,
+    3.35,
+    1.13
+   ],
+   "scale": [
+    0.714,
+    0.714,
+    0.714
+   ]
+  }
+ }
+}

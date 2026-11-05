@@ -1,1 +1,76 @@
-{"parent": "minecraft:item/handheld", "textures": {"layer0": "minecraft:item/diamond_sword"}}
+{
+ "parent": "minecraft:item/handheld",
+ "textures": {
+  "layer0": "rpgcore:item/warrior_sword_30"
+ },
+ "display": {
+  "thirdperson_righthand": {
+   "rotation": [
+    0,
+    -90,
+    55
+   ],
+   "translation": [
+    0,
+    4.4,
+    0.5
+   ],
+   "scale": [
+    0.935,
+    0.935,
+    0.935
+   ]
+  },
+  "thirdperson_lefthand": {
+   "rotation": [
+    0,
+    90,
+    -55
+   ],
+   "translation": [
+    0,
+    4.4,
+    0.5
+   ],
+   "scale": [
+    0.935,
+    0.935,
+    0.935
+   ]
+  },
+  "firstperson_righthand": {
+   "rotation": [
+    0,
+    -90,
+    25
+   ],
+   "translation": [
+    1.13,
+    3.5,
+    1.13
+   ],
+   "scale": [
+    0.748,
+    0.748,
+    0.748
+   ]
+  },
+  "firstperson_lefthand": {
+   "rotation": [
+    0,
+    90,
+    -25
+   ],
+   "translation": [
+    1.13,
+    3.5,
+    1.13
+   ],
+   "scale": [
+    0.748,
+    0.748,
+    0.748
+   ]
+  }
+ }
+}
