@@ -24,5 +24,75 @@
    },
    "model": "rpgcore:item/archer_bow_10_pulling_2"
   }
- ]
+ ],
+ "display": {
+  "thirdperson_righthand": {
+   "rotation": [
+    -80,
+    260,
+    -40
+   ],
+   "translation": [
+    -1.02,
+    -2.11,
+    3.74
+   ],
+   "scale": [
+    1.17,
+    1.17,
+    1.17
+   ]
+  },
+  "thirdperson_lefthand": {
+   "rotation": [
+    -80,
+    -280,
+    40
+   ],
+   "translation": [
+    -1.02,
+    -2.11,
+    3.74
+   ],
+   "scale": [
+    1.17,
+    1.17,
+    1.17
+   ]
+  },
+  "firstperson_righthand": {
+   "rotation": [
+    0,
+    -90,
+    25
+   ],
+   "translation": [
+    1.13,
+    2.88,
+    2.01
+   ],
+   "scale": [
+    0.884,
+    0.884,
+    0.884
+   ]
+  },
+  "firstperson_lefthand": {
+   "rotation": [
+    0,
+    90,
+    -25
+   ],
+   "translation": [
+    1.13,
+    2.88,
+    2.01
+   ],
+   "scale": [
+    0.884,
+    0.884,
+    0.884
+   ]
+  }
+ }
 }
