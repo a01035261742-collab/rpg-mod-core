@@ -1,6 +1,9 @@
 {
  "entity.rpgcore.spider_queen": "어둠거미여왕",
- "itemGroup.rpgcore": "RPG",
+ "itemGroup.rpgcore": "RPG 기타",
+ "itemGroup.rpgcore.weapon": "RPG 무기",
+ "itemGroup.rpgcore.armor": "RPG 방어구",
+ "itemGroup.rpgcore.accessory": "RPG 장신구",
  "item.rpgcore.stat_reset_scroll": "스탯 초기화 주문서",
  "key.categories.rpgcore": "RPG",
  "key.rpgcore.stats": "능력치 창",

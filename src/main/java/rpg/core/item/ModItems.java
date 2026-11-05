@@ -4,6 +4,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.Rarity;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -155,9 +156,65 @@ public final class ModItems {
     public static final RegistryObject<Item> ZONE_WAND = ITEMS.register("zone_wand",
             () -> new rpg.core.zone.ZoneWand(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC)));
 
+    // 크리에이티브 탭: 무기 · 방어구 · 장신구 · 기타 (탭 안은 직업·세트·단계 순)
+    private static final java.util.List<String> JOBS = java.util.List.of("warrior", "archer", "mage", "thief");
+    private static final java.util.List<String> SETS = java.util.List.of("common", "warrior", "archer", "mage", "thief");
+    private static final java.util.List<String> PARTS = java.util.List.of("hat", "top", "bottom", "shoes");
+    private static final java.util.List<String> ACC = java.util.List.of("gloves", "cape", "belt", "earring", "ring", "pendant", "medal");
+
+    private static int tierOf(String id) {
+        String t = id.substring(id.lastIndexOf('_') + 1);
+        return t.chars().allMatch(Character::isDigit) ? Integer.parseInt(t) : 99;   // queen 등은 맨 뒤
+    }
+
+    private static java.util.List<Item> gear(java.util.function.Predicate<Item> f, java.util.Comparator<String> order) {
+        return GEAR.stream().map(RegistryObject::get).filter(f)
+                .sorted(java.util.Comparator.comparing(i -> ((rpg.core.equip.Gear.GearItem) i).gearId(), order)).toList();
+    }
+
+    private static boolean isWeapon(Item i) {
+        return i instanceof rpg.core.equip.GearItems.Weapon || i instanceof rpg.core.equip.GearItems.Bow;
+    }
+
+    private static boolean isArmor(Item i) { return i instanceof rpg.core.equip.GearItems.Armor; }
+
+    private static Item byId(String id) {
+        return GEAR.stream().map(RegistryObject::get).filter(i -> ((rpg.core.equip.Gear.GearItem) i).gearId().equals(id)).findFirst().orElse(Items.BARRIER);
+    }
+
+    public static final RegistryObject<CreativeModeTab> TAB_WEAPON = TABS.register("weapon", () -> CreativeModeTab.builder()
+            .title(Component.translatable("itemGroup.rpgcore.weapon"))
+            .icon(() -> byId("warrior_sword_40").getDefaultInstance())
+            .displayItems((params, out) -> gear(ModItems::isWeapon, java.util.Comparator
+                    .<String>comparingInt(id -> JOBS.indexOf(id.substring(0, id.indexOf('_'))))
+                    .thenComparingInt(ModItems::tierOf)).forEach(out::accept))
+            .build());
+
+    public static final RegistryObject<CreativeModeTab> TAB_ARMOR = TABS.register("armor", () -> CreativeModeTab.builder()
+            .title(Component.translatable("itemGroup.rpgcore.armor"))
+            .icon(() -> byId("warrior_top_40").getDefaultInstance())
+            .withTabsBefore(new net.minecraft.resources.ResourceLocation(RpgCore.MODID, "weapon"))
+            .displayItems((params, out) -> gear(ModItems::isArmor, java.util.Comparator
+                    .<String>comparingInt(id -> id.indexOf('_') == id.lastIndexOf('_') ? 0 : SETS.indexOf(id.substring(0, id.indexOf('_'))))
+                    .thenComparingInt(ModItems::tierOf)
+                    .thenComparingInt(id -> PARTS.indexOf(id.indexOf('_') == id.lastIndexOf('_') ? id.substring(0, id.indexOf('_'))
+                            : id.substring(id.indexOf('_') + 1, id.lastIndexOf('_'))))).forEach(out::accept))
+            .build());
+
+    public static final RegistryObject<CreativeModeTab> TAB_ACC = TABS.register("accessory", () -> CreativeModeTab.builder()
+            .title(Component.translatable("itemGroup.rpgcore.accessory"))
+            .icon(() -> byId("ring_40").getDefaultInstance())
+            .withTabsBefore(new net.minecraft.resources.ResourceLocation(RpgCore.MODID, "armor"))
+            .displayItems((params, out) -> gear(i -> !isWeapon(i) && !isArmor(i), java.util.Comparator
+                    .<String>comparingInt(id -> { int k = ACC.indexOf(id.substring(0, id.lastIndexOf('_'))); return k < 0 ? 100 : k; })
+                    .thenComparingInt(ModItems::tierOf)
+                    .thenComparingInt(id -> java.util.Arrays.asList(UNIQUE).indexOf(id))).forEach(out::accept))
+            .build());
+
     public static final RegistryObject<CreativeModeTab> TAB = TABS.register("main", () -> CreativeModeTab.builder()
             .title(Component.translatable("itemGroup.rpgcore"))
             .icon(() -> STAT_RESET_SCROLL.get().getDefaultInstance())
+            .withTabsBefore(new net.minecraft.resources.ResourceLocation(RpgCore.MODID, "accessory"))
             .displayItems((params, out) -> {
                 out.accept(STAT_RESET_SCROLL.get());
                 out.accept(RETURN_SCROLL.get());
@@ -173,7 +230,6 @@ public final class ModItems {
                 out.accept(Scroll.make("white", 0));
                 for (var po : new RegistryObject[]{RED_POTION, ORANGE_POTION, WHITE_POTION, BLUE_POTION, DEEP_BLUE_POTION, MANA_ELIXIR, ELIXIR, POWER_ELIXIR})
                     out.accept((Item) po.get());
-                for (var g : GEAR) out.accept(g.get());
                 for (var m : MATERIALS) out.accept(m.get());
                 for (var q : QUEST_ITEMS) out.accept(q.get());
                 out.accept(ZONE_WAND.get());

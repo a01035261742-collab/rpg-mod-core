@@ -20,7 +20,7 @@ import rpg.core.equip.Enhance;
 public class Scroll extends Item {
     public static final String[] KINDS = {"watk", "wmatk", "str", "dex", "int", "luk", "vit"};
     /** 등급별 아이콘 색 (100 · 60 · 30 · 10%), 순백 = 흰색 */
-    public static final int[] COLORS = {0x8FC8FF, 0x7CE07C, 0xFFB040, 0xFF5A5A};
+    public static final int[] COLORS = {0x8FC8FF, 0xFF9A30, 0x7CE07C, 0xFFE040}   // 100% 파랑 · 60% 주황 · 30% 초록 · 10% 노랑;
 
     public Scroll(Properties p) {
         super(p.stacksTo(64));

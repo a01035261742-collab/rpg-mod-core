@@ -1,6 +1,9 @@
 {
  "entity.rpgcore.spider_queen": "Dark Spider Queen",
- "itemGroup.rpgcore": "RPG",
+ "itemGroup.rpgcore": "RPG Misc",
+ "itemGroup.rpgcore.weapon": "RPG Weapons",
+ "itemGroup.rpgcore.armor": "RPG Armor",
+ "itemGroup.rpgcore.accessory": "RPG Accessories",
  "item.rpgcore.stat_reset_scroll": "Stat Reset Scroll",
  "key.categories.rpgcore": "RPG",
  "key.rpgcore.stats": "Stats",
