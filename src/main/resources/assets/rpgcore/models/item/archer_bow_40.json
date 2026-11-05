@@ -1,1 +1,28 @@
-{"parent": "minecraft:item/handheld", "textures": {"layer0": "minecraft:item/crossbow_standby"}}
+{
+ "parent": "minecraft:item/bow",
+ "textures": {
+  "layer0": "rpgcore:item/archer_bow_40"
+ },
+ "overrides": [
+  {
+   "predicate": {
+    "pulling": 1
+   },
+   "model": "rpgcore:item/archer_bow_40_pulling_0"
+  },
+  {
+   "predicate": {
+    "pulling": 1,
+    "pull": 0.65
+   },
+   "model": "rpgcore:item/archer_bow_40_pulling_1"
+  },
+  {
+   "predicate": {
+    "pulling": 1,
+    "pull": 0.9
+   },
+   "model": "rpgcore:item/archer_bow_40_pulling_2"
+  }
+ ]
+}

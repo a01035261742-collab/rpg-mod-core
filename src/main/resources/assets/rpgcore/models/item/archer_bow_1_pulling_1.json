@@ -1,0 +1,6 @@
+{
+ "parent": "minecraft:item/bow",
+ "textures": {
+  "layer0": "rpgcore:item/archer_bow_1_pulling_1"
+ }
+}
