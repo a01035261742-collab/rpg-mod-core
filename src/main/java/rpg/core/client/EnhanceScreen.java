@@ -571,8 +571,12 @@ public class EnhanceScreen extends ScaledScreen {
             powLine(g, s, "rpgPowPot", y + 218);
             if (confirmKeep && ng > gr) { center(g, "오른 등급이 사라져요", y + 232, 0xFFFF8040); center(g, "정말 이전 유지?", y + 244, 0xFFFF8040); }
         } else {
-            int yy = y + 142;
-            for (var c : rpg.core.equip.Potential.lines(pt)) { g.drawString(font, Ui.cut(font, c.getString(), 190), x + 170, yy, Ui.TXT, false); yy += 11; }
+            var pl = rpg.core.equip.Potential.lines(pt);
+            int b0 = y + 136, b1 = b0 + 8 + pl.size() * 11, bl = x + 164, br = x + 360;
+            g.fill(bl, b0, br, b1, Ui.IN1);
+            g.fill(bl, b0, br, b0 + 1, gc); g.fill(bl, b1 - 1, br, b1, gc); g.fill(bl, b0, bl + 1, b1, gc); g.fill(br - 1, b0, br, b1, gc);
+            int yy = y + 141;
+            for (var c : pl) { g.drawString(font, Ui.cut(font, c.getString(), 190), x + 170, yy, Ui.TXT, false); yy += 11; }
             if (gr < 3) center(g, "등급 상승 " + fmt(rpg.core.equip.Potential.upChance[gr]) + "% · 천장 " + rpg.core.equip.Potential.ceil(s)[gr] + "/" + rpg.core.equip.Potential.ceiling[gr], y + 210, Ui.GRAY);
             long c = rpg.core.equip.Potential.cost(d, gr);
             center(g, "골드 " + shortG(c) + " 또는 큐브 1개", y + 224, Ui.VAL);
