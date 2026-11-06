@@ -419,14 +419,14 @@ public class EnhanceScreen extends ScaledScreen {
             g.drawCenteredString(font, "조각 " + cost, bx + 48, by + 44, frags >= cost ? Ui.GREEN : Ui.GRAY);
             g.drawCenteredString(font, Ui.cut(font, k[i][1], 90), bx + 48, by + 58, Ui.GRAY);
         }
-        g.drawString(font, "등급 확률 (내 레벨)", x + CX - 100, y + 134, Ui.GRAY, false);
+        g.drawString(font, "등급 확률", x + CX - 100, y + 134, Ui.GRAY, false);
         double[] ch = Enhance.gradeChance(ClientData.level);
         int row = 0;
         for (int i = 0; i < ch.length && i < GR_NAME.length; i++) {
             if (Enhance.synthWeight[i] <= 0) continue;   // 100% 는 합성에서 안 나옴
             int ly = y + 148 + row++ * 12;
             g.drawString(font, (fragKind == 0 ? "공격력·마력 " : "스탯 ") + GR_NAME[i], x + CX - 92, ly, ch[i] > 0 ? Ui.TXT : Ui.GRAY, false);
-            String p = ch[i] > 0 ? fmt(Math.round(ch[i] * 10) / 10.0) + "%" : "Lv 부족";
+            String p = fmt(Math.round(ch[i] * 10) / 10.0) + "%";
             g.drawString(font, p, x + CX + 100 - font.width(p), ly, ch[i] > 0 ? Ui.VAL : Ui.GRAY, false);
         }
         center(g, "가진 조각 " + frags, y + 204, frags >= fragCost() ? Ui.GREEN : Ui.RED);

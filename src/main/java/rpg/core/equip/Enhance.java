@@ -46,7 +46,7 @@ public final class Enhance {
     /** 드롭·합성 등급 비중 · 등급이 나오기 시작하는 레벨 */
     public static int[] gradeWeight = {50, 30, 15, 5};
     /** 조각 합성 등급 비중 (100% 는 안 나옴 · 나머지는 조금씩만 차이) */
-    public static int[] synthWeight = {0, 40, 33, 27};
+    public static int[] synthWeight = {0, 40, 35, 25};   // 합은 100 → 그대로 %
     public static int[] gradeMinLevel = {1, 1, 20, 30};
     public static int whiteMinLevel = 30;
     public static double whiteChance = 3;
@@ -384,12 +384,12 @@ public final class Enhance {
 
     /** 레벨에 맞는 등급 확률 (%, 100%·60%·30%·10% 순) — 합성 창 표시용 */
     public static double[] gradeChance(int level) {
+        // 합성은 레벨 상관없이 고정
         int[] w = synthWeight;
         double[] out = new double[w.length];
         int total = 0;
-        for (int i = 0; i < w.length; i++) if (level >= gradeMinLevel[Math.min(i, gradeMinLevel.length - 1)]) total += w[i];
-        for (int i = 0; i < w.length; i++)
-            out[i] = total == 0 || level < gradeMinLevel[Math.min(i, gradeMinLevel.length - 1)] ? 0 : w[i] * 100.0 / total;
+        for (int v : w) total += v;
+        for (int i = 0; i < w.length; i++) out[i] = total == 0 ? 0 : w[i] * 100.0 / total;
         return out;
     }
 
@@ -401,10 +401,11 @@ public final class Enhance {
         if (only < 0 && level >= whiteMinLevel && r.nextDouble() * 100 < whiteChance) return Scroll.make("white", 0);
         int[] w = only >= 0 ? synthWeight : gradeWeight;   // 합성 = 합성 비중
         int total = 0;
-        for (int i = 0; i < w.length; i++) if (level >= gradeMinLevel[Math.min(i, gradeMinLevel.length - 1)]) total += w[i];
+        boolean gate = only < 0;   // 드롭만 레벨 조건 · 합성은 고정
+        for (int i = 0; i < w.length; i++) if (!gate || level >= gradeMinLevel[Math.min(i, gradeMinLevel.length - 1)]) total += w[i];
         int pick = r.nextInt(Math.max(1, total)), grade = 0;
         for (int i = 0; i < w.length; i++) {
-            if (level < gradeMinLevel[Math.min(i, gradeMinLevel.length - 1)] || w[i] <= 0) continue;
+            if ((gate && level < gradeMinLevel[Math.min(i, gradeMinLevel.length - 1)]) || w[i] <= 0) continue;
             pick -= w[i];
             if (pick < 0) { grade = i; break; }
         }
