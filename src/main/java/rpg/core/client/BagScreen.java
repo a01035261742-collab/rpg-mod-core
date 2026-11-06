@@ -37,7 +37,7 @@ public class BagScreen extends AbstractContainerScreen<EquipMenu> {
         ClientPotions.load();
         addRenderableWidget(Ui.button(Component.literal("정렬"), b -> Net.CH.sendToServer(new Net.QuickAct(1, "")))
                 .bounds(wx + 20, wy + 122, 50, 15).build());
-        addRenderableWidget(Ui.button(Component.literal("메뉴"), b -> minecraft.setScreen(new MenuScreen()))
+        addRenderableWidget(Ui.button(Component.literal("캐릭터"), b -> CharWin.open(CharWin.EQUIP))
                 .bounds(wx + WW - 70, wy + 122, 52, 15).accent(true).build());
     }
 

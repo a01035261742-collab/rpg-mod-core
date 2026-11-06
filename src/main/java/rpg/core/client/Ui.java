@@ -153,7 +153,7 @@ public final class Ui {
 
     /** [메뉴] 버튼 (왼쪽 아래) */
     public static Button menu(int x, int y, int h) {
-        return button(Component.literal("메뉴"), b -> Minecraft.getInstance().setScreen(new MenuScreen())).bounds(x + 6, y + h - FOOT, 40, BTN_H).build();
+        return button(Component.literal("메뉴"), b -> CharWin.open(CharWin.EQUIP)).bounds(x + 6, y + h - FOOT, 40, BTN_H).build();
     }
 
     // ───────── 납작한 버튼 (A안, 임시) ─────────

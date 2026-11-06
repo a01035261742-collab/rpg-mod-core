@@ -244,7 +244,7 @@ public final class ClientEvents {
             while (PASSIVE_KEY.consumeClick()) if (free) mc.setScreen(new PassiveScreen());
             while (PARTY_KEY.consumeClick()) if (free) mc.setScreen(new PartyScreen());
             while (QUEST_KEY.consumeClick()) if (free) mc.setScreen(new QuestScreen());
-            while (MENU_KEY.consumeClick()) if (free) mc.setScreen(new MenuScreen());
+            while (MENU_KEY.consumeClick()) if (free) CharWin.open(CharWin.EQUIP);   // M = 캐릭터 창 (장비 탭)
             for (int i = 0; i < 6; i++) {
                 if (wait[i] > 0) wait[i]--;
                 boolean pressed = false;

@@ -47,8 +47,13 @@ public final class CharWin {
     /** 탭 열기 */
     public static void open(int k) {
         Minecraft mc = Minecraft.getInstance();
+        // 화면을 닫지 않고 바로 바꿈 (닫으면 마우스가 가운데로 감)
+        if (k != EQUIP && mc.player != null && mc.player.containerMenu != mc.player.inventoryMenu) {
+            mc.player.connection.send(new net.minecraft.network.protocol.game.ServerboundContainerClosePacket(mc.player.containerMenu.containerId));
+            mc.player.containerMenu = mc.player.inventoryMenu;
+        }
         switch (k) {
-            case EQUIP -> { mc.setScreen(null); Net.CH.sendToServer(new Net.OpenEquip(0)); }
+            case EQUIP -> { BagScreen.wantBag = false; Net.CH.sendToServer(new Net.OpenEquip(0)); }
             case STAT -> mc.setScreen(new StatScreen());
             case SKILL -> mc.setScreen(new SkillScreen());
             case PASSIVE -> mc.setScreen(new PassiveScreen());
