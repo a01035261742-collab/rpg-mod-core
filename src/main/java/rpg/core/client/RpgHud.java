@@ -221,7 +221,11 @@ public final class RpgHud {
         java.util.List<ClientData.Buff> good = new java.util.ArrayList<>(), bad = new java.util.ArrayList<>();
         for (ClientData.Buff b : ClientData.BUFFS)
             if (b.left() >= 900_000_000 || ClientData.left(b.left()) > 0) (b.kind() == 3 ? bad : good).add(b);
-        if (good.isEmpty() && bad.isEmpty()) return boxY0;
+        java.util.List<net.minecraft.world.effect.MobEffectInstance> harm = new java.util.ArrayList<>();
+        var pl = Minecraft.getInstance().player;
+        if (pl != null) for (var e : pl.getActiveEffects())
+            if (e.getEffect().getCategory() == net.minecraft.world.effect.MobEffectCategory.HARMFUL && e.showIcon()) harm.add(e);
+        if (good.isEmpty() && bad.isEmpty() && harm.isEmpty()) return boxY0;
         int base = boxY0 - 4 - BOX, top = base;
         ClientData.Buff hover = null;
         int hx = 0, hy = 0;
@@ -262,6 +266,27 @@ public final class RpgHud {
                     g.pose().popPose();
                 }
                 if (mx >= x && mx < x + BOX && my >= y && my < y + BOX) { hover = b; hx = mx; hy = my; }
+            }
+        }
+        // 마크 나쁜 효과 (둔화·독 등) = 디버프: 오른쪽, 재사용 대기 뒤에
+        for (int i = 0; i < harm.size(); i++) {
+            var e = harm.get(i);
+            int n = bad.size() + i, row = n / PER_ROW, col = n % PER_ROW;
+            int x = w / 2 + 5 + col * (BOX + 2), y = base - row * (BOX + 3);
+            top = Math.min(top, y);
+            Ui.slot(g, x, y, BOX);
+            int e2 = 0xFFDC3232;
+            g.fill(x, y, x + BOX, y + 1, e2); g.fill(x, y + BOX - 1, x + BOX, y + BOX, e2);
+            g.fill(x, y, x + 1, y + BOX, e2); g.fill(x + BOX - 1, y, x + BOX, y + BOX, e2);
+            var spr = Minecraft.getInstance().getMobEffectTextures().get(e.getEffect());
+            g.blit(x + 1, y + 1, 0, BOX - 2, BOX - 2, spr);
+            int d = e.getDuration();
+            String t = e.isInfiniteDuration() ? "" : d >= 1200 ? (d / 1200) + "m" : String.valueOf((d + 19) / 20);
+            if (!t.isEmpty()) {
+                g.fill(x + 1, y + BOX - 8, x + BOX - 1, y + BOX - 1, 0xB0000000);
+                g.pose().pushPose(); g.pose().translate(x + BOX / 2f, y + BOX - 7, 0); g.pose().scale(0.7f, 0.7f, 1);
+                g.drawCenteredString(font, t, 0, 0, 0xFFFF6060);
+                g.pose().popPose();
             }
         }
         if (hover != null) {
