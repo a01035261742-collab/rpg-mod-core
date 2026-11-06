@@ -23,6 +23,7 @@ import rpg.core.skill.Defs;
 public class PassiveScreen extends ScaledScreen {
     private static final int GOLD = 0xFFFFD86A, CYAN = 0xFF40D0E0, PURP = 0xFFB060FF, HEAD = 42;
     private int CELL = 30;
+    private static int zoom = 0;   // 휠로 정한 크기 (0 = 자동)
     private int px, py, pw, ph, ax, ay, aw, ah;
     private double panX, panY, homeX, homeY;
     private boolean dragging;
@@ -58,7 +59,8 @@ public class PassiveScreen extends ScaledScreen {
         int minX = 0, maxX = 0, minY = 0, maxY = 0;
         for (Defs.Node n : nodes) { minX = Math.min(minX, n.x()); maxX = Math.max(maxX, n.x()); minY = Math.min(minY, n.y()); maxY = Math.max(maxY, n.y()); }
         int spanX = maxX - minX + 2, spanY = maxY - minY + 2;
-        CELL = Math.max(16, Math.min(40, Math.min(aw / spanX, (ah - 30) / spanY)));
+        int fit = Math.min(aw / spanX, (ah - 30) / spanY);
+        CELL = zoom > 0 ? zoom : Math.max(18, Math.min(56, fit * 13 / 10));   // 처음엔 30% 크게 (끌어서 보기) · 휠로 바꾼 크기는 기억
         homeX = -(minX + maxX) * CELL / 2.0;
         homeY = -(minY + maxY) * CELL / 2.0;
         panX = homeX; panY = homeY;
@@ -548,7 +550,8 @@ public class PassiveScreen extends ScaledScreen {
     @Override
     public boolean mouseScrolled(double mx, double my, double delta) {
         int old = CELL;
-        CELL = Math.max(14, Math.min(56, CELL + (delta > 0 ? 3 : -3)));
+        CELL = Math.max(14, Math.min(64, CELL + (delta > 0 ? 3 : -3)));
+        zoom = CELL;
         if (old != CELL) { panX = panX * CELL / old; panY = panY * CELL / old; homeX = homeX * CELL / old; homeY = homeY * CELL / old; }
         return true;
     }
