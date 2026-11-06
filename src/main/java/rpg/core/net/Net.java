@@ -440,7 +440,7 @@ public final class Net {
                     case 1 -> rpg.core.equip.Enhance.starforce(p, loc, arg == 1);
                     case 2 -> rpg.core.equip.Enhance.applyScroll(p, loc, arg);
                     case 3 -> rpg.core.equip.Enhance.restore(p, loc, arg);
-                    case 4 -> rpg.core.equip.Enhance.synth(p);
+                    case 4 -> rpg.core.equip.Enhance.synth(p, loc);
                     case 5 -> rpg.core.equip.Potential.grant(p, rpg.core.equip.Enhance.at(p, loc), arg == 1);
                     case 6 -> rpg.core.equip.Potential.reset(p, rpg.core.equip.Enhance.at(p, loc), false);
                     case 7 -> rpg.core.equip.Potential.reset(p, rpg.core.equip.Enhance.at(p, loc), true);

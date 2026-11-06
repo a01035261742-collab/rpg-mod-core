@@ -295,7 +295,7 @@ public class EnhanceScreen extends ScaledScreen {
                 }
             }
         } else if (tab == 2) {
-            btn("합성", c1, 60, true, bt -> Net.CH.sendToServer(new Net.EnhanceAction(4, 0, 0))).active = frags >= Enhance.fragments;
+            btn("합성 (" + fragCost() + ")", c1 - 10, 80, true, bt -> Net.CH.sendToServer(new Net.EnhanceAction(4, fragKind, 0))).active = frags >= fragCost();
         }
     }
 
@@ -395,15 +395,42 @@ public class EnhanceScreen extends ScaledScreen {
         return tip;
     }
 
+    /** 조각 합성: 0 무기 주문서 · 1 스탯 주문서 */
+    private static int fragKind = 0;
+    private static final String[] GR_NAME = {"100%", "60%", "30%", "10%"};
+
+    private int fragCost() { return fragKind == 0 ? Enhance.fragWeapon : Enhance.fragments; }
+
     private void renderFrag(GuiGraphics g) {
-        var it = net.minecraftforge.registries.ForgeRegistries.ITEMS.getValue(new net.minecraft.resources.ResourceLocation("rpgcore", "scroll_fragment"));
-        Ui.slot(g, x + CX - 9, y + 60);
-        if (it != null) g.renderItem(new ItemStack(it), x + CX - 8, y + 61);
-        center(g, "주문서 조각 합성", y + 84, Ui.VAL);
-        center(g, "조각 " + Enhance.fragments + "개 → 주문서 1장", y + 100, Ui.TXT);
-        center(g, "등급: 내 레벨 기준", y + 112, Ui.GRAY);
-        center(g, "가진 조각 " + frags + " / " + Enhance.fragments, y + 132, frags >= Enhance.fragments ? Ui.GREEN : Ui.RED);
-        Ui.bar(g, x + CX - 40, y + 146, 80, 4, frags / (float) Math.max(1, Enhance.fragments), 0xFF7CE07C);
+        center(g, "종류를 고르면 그 안에서 무작위", y + 34, Ui.VAL);
+        String[][] k = {{"무기 주문서", "공격력 · 마력"}, {"스탯 주문서", "힘·민첩·지력·운·체력"}};
+        String[] icon = {"warrior_sword_40", "warrior_top_40"};
+        for (int i = 0; i < 2; i++) {
+            int bx = x + CX - 100 + i * 104, by = y + 48;
+            boolean on = i == fragKind;
+            g.fill(bx, by, bx + 96, by + 76, Ui.IN1);
+            int e = on ? Ui.G4 : Ui.SEP;
+            g.fill(bx, by, bx + 96, by + 1, e); g.fill(bx, by + 75, bx + 96, by + 76, e); g.fill(bx, by, bx + 1, by + 76, e); g.fill(bx + 95, by, bx + 96, by + 76, e);
+            var it = net.minecraftforge.registries.ForgeRegistries.ITEMS.getValue(new net.minecraft.resources.ResourceLocation("rpgcore", icon[i]));
+            Ui.slot(g, bx + 39, by + 6);
+            if (it != null) g.renderItem(new ItemStack(it), bx + 40, by + 7);
+            g.drawCenteredString(font, k[i][0], bx + 48, by + 30, on ? Ui.VAL : Ui.TXT);
+            int cost = i == 0 ? Enhance.fragWeapon : Enhance.fragments;
+            g.drawCenteredString(font, "조각 " + cost, bx + 48, by + 44, frags >= cost ? Ui.GREEN : Ui.GRAY);
+            g.drawCenteredString(font, Ui.cut(font, k[i][1], 90), bx + 48, by + 58, Ui.GRAY);
+        }
+        g.drawString(font, "등급 확률 (내 레벨)", x + CX - 100, y + 134, Ui.GRAY, false);
+        double[] ch = Enhance.gradeChance(ClientData.level);
+        int row = 0;
+        for (int i = 0; i < ch.length && i < GR_NAME.length; i++) {
+            if (Enhance.synthWeight[i] <= 0) continue;   // 100% 는 합성에서 안 나옴
+            int ly = y + 148 + row++ * 12;
+            g.drawString(font, (fragKind == 0 ? "공격력·마력 " : "스탯 ") + GR_NAME[i], x + CX - 92, ly, ch[i] > 0 ? Ui.TXT : Ui.GRAY, false);
+            String p = ch[i] > 0 ? fmt(Math.round(ch[i] * 10) / 10.0) + "%" : "Lv 부족";
+            g.drawString(font, p, x + CX + 100 - font.width(p), ly, ch[i] > 0 ? Ui.VAL : Ui.GRAY, false);
+        }
+        center(g, "가진 조각 " + frags, y + 204, frags >= fragCost() ? Ui.GREEN : Ui.RED);
+        Ui.bar(g, x + CX - 60, y + 218, 120, 4, frags / (float) Math.max(1, fragCost()), 0xFF7CE07C);
     }
 
     /** 가운데 위: 고른 장비 칸 + 이름 */
@@ -448,10 +475,17 @@ public class EnhanceScreen extends ScaledScreen {
     }
 
     private List<Component> renderScroll(GuiGraphics g, ItemStack s, GearDefs.GearDef d, int mx, int my, List<Component> tip) {
-        int yy = head(g, s, y + 54);
+        int yy = head(g, s, y + 54) + 14;
         int um = Enhance.upgMax(d);
         if (um == 0) { center(g, "주문서 사용 불가", yy, Ui.RED); return tip; }
-        center(g, "업그레이드 " + Enhance.upgLeft(s) + "/" + um + " · 실패 " + Enhance.upgFail(s), yy, Ui.TXT);
+        int fail = Enhance.upgFail(s), left = Enhance.upgLeft(s), done = Math.max(0, um - left - fail);
+        int pw = Math.min(16, 200 / Math.max(1, um)), px0 = x + CX - (um * pw) / 2;
+        for (int i = 0; i < um; i++) {   // 성공 초록 · 실패 빨강 · 남은 칸 빈칸
+            int c = i < done ? 0xFF7CE07C : i < done + fail ? 0xFFDC3C3C : 0xFF281C18;
+            g.fill(px0 + i * pw, yy - 14, px0 + i * pw + pw - 2, yy - 7, Ui.G3);
+            g.fill(px0 + i * pw + 1, yy - 13, px0 + i * pw + pw - 3, yy - 8, c);
+        }
+        center(g, "업그레이드 남은 " + left + "/" + um + " · 실패 " + fail, yy, Ui.TXT);
         Ui.hsep(g, x + 170, x + 360, yy + 12);
         int px = x + 217, py = yy + 16;
         for (int i = 0; i < scrolls.size() && i < 10; i++) {
@@ -476,7 +510,31 @@ public class EnhanceScreen extends ScaledScreen {
     }
 
     /** 위: 작은 칸 + 이름 + 부제 (잠재·불꽃) */
+    private static final net.minecraft.resources.ResourceLocation FLAME_RING = new net.minecraft.resources.ResourceLocation("rpgcore", "textures/gui/ui/flame_ring.png");
+
+    /** 잠재: 등급 색 빛무리 두 겹 */
+    private void aura(GuiGraphics g, int cx, int cy, int col) {
+        for (int r : new int[]{15, 19}) {
+            for (int a = 0; a < 72; a++) {
+                double t = a / 72.0 * Math.PI * 2;
+                int px = (int) Math.round(cx + Math.cos(t) * r), py = (int) Math.round(cy + Math.sin(t) * r);
+                g.fill(px, py, px + 1, py + 1, (r == 15 ? 0xC0000000 : 0x70000000) | (col & 0xFFFFFF));
+            }
+        }
+    }
+
+    /** 불꽃: 불꽃 고리 (살짝 일렁임) */
+    private void flameRing(GuiGraphics g, int cx, int cy) {
+        com.mojang.blaze3d.systems.RenderSystem.enableBlend();
+        float k = 1f + 0.03f * (float) Math.sin(System.currentTimeMillis() / 160.0);
+        g.pose().pushPose(); g.pose().translate(cx, cy, 0); g.pose().scale(k, k, 1);
+        g.blit(FLAME_RING, -24, -24, 48, 48, 0, 0, 96, 96, 96, 96);
+        g.pose().popPose();
+    }
+
     private void small(GuiGraphics g, ItemStack s, String sub, int col) {
+        if (tab == 3) aura(g, x + 225, y + 63, col);
+        else if (tab == 4) flameRing(g, x + 225, y + 63);
         Ui.slot(g, x + 216, y + 54);
         g.renderItem(s, x + 217, y + 55);
         g.drawString(font, Ui.cut(font, s.getHoverName().getString(), 120), x + 237, y + 55, Ui.VAL, true);
@@ -585,6 +643,12 @@ public class EnhanceScreen extends ScaledScreen {
                 int cx = x + 384 + c * 26, cy = y + 50 + r * 26, i = idxOf(GRID[c][r]);
                 if (i >= 0 && mx >= cx && mx < cx + 18 && my >= cy && my < cy + 18) { sel = i; selScroll = -1; rebuildWidgets(); return true; }
             }
+        if (tab == 2) {
+            for (int i = 0; i < 2; i++) {
+                int bx = x + CX - 100 + i * 104, by = y + 48;
+                if (mx >= bx && mx < bx + 96 && my >= by && my < by + 76) { fragKind = i; rebuildWidgets(); return true; }
+            }
+        }
         if (tab == 1) {
             int px = x + 217, py = y + 54 + 34 + 16;
             for (int i = 0; i < scrolls.size() && i < 10; i++) {

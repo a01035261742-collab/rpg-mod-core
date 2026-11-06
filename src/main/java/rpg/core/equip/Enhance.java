@@ -45,10 +45,14 @@ public final class Enhance {
     public static double whiteRate = 30;
     /** 드롭·합성 등급 비중 · 등급이 나오기 시작하는 레벨 */
     public static int[] gradeWeight = {50, 30, 15, 5};
+    /** 조각 합성 등급 비중 (100% 는 안 나옴 · 나머지는 조금씩만 차이) */
+    public static int[] synthWeight = {0, 40, 33, 27};
     public static int[] gradeMinLevel = {1, 1, 20, 30};
     public static int whiteMinLevel = 30;
     public static double whiteChance = 3;
     public static int fragments = 10;
+    /** 무기 주문서 합성은 조각 더 많이 */
+    public static int fragWeapon = 20;
 
     public static final String[] STATS4 = {"str", "dex", "int", "luk"};
 
@@ -71,6 +75,7 @@ public final class Enhance {
             if (o.has("statScroll")) statScroll = iArr2(o.getAsJsonArray("statScroll"));
             if (o.has("gradeWeight")) gradeWeight = iArr(o.getAsJsonArray("gradeWeight"));
             if (o.has("gradeMinLevel")) gradeMinLevel = iArr(o.getAsJsonArray("gradeMinLevel"));
+            if (o.has("synthWeight")) synthWeight = iArr(o.getAsJsonArray("synthWeight"));
             if (o.has("upgrades")) for (var e : o.getAsJsonObject("upgrades").entrySet()) UPGRADES.put(e.getKey(), e.getValue().getAsInt());
             costBase = d(o, "costBase", costBase);
             safeguardMul = d(o, "safeguardMul", safeguardMul);
@@ -84,6 +89,7 @@ public final class Enhance {
             whiteMinLevel = (int) d(o, "whiteMinLevel", whiteMinLevel);
             whiteChance = d(o, "whiteChance", whiteChance);
             fragments = (int) d(o, "fragments", fragments);
+            fragWeapon = (int) d(o, "fragWeapon", fragWeapon);
         } catch (Exception ex) {
             rpg.core.RpgCore.LOG.error("[rpgcore] equipment.json enhance 읽기 실패", ex);
         }
@@ -356,10 +362,12 @@ public final class Enhance {
         return n;
     }
 
-    public static void synth(ServerPlayer p) {
+    /** 합성: kind 0 = 무기 주문서 (조각 fragWeapon) · 1 = 스탯 주문서 (조각 fragments) */
+    public static void synth(ServerPlayer p, int kind) {
         var frag = ModItems.SCROLL_FRAGMENT.get();
-        if (count(p, frag) < fragments) { msg(p, "주문서 조각이 " + fragments + "개 필요해요", ChatFormatting.RED); return; }
-        int need = fragments;
+        int cost = kind == 0 ? fragWeapon : fragments;
+        if (count(p, frag) < cost) { msg(p, "주문서 조각이 " + cost + "개 필요해요", ChatFormatting.RED); return; }
+        int need = cost;
         for (ItemStack s : p.getInventory().items) {
             if (need <= 0) break;
             if (s.getItem() != frag) continue;
@@ -367,25 +375,42 @@ public final class Enhance {
             s.shrink(take);
             need -= take;
         }
-        ItemStack out = randomScroll(RpgData.get(p).level, ThreadLocalRandom.current());
+        ItemStack out = randomScroll(RpgData.get(p).level, ThreadLocalRandom.current(), kind);
         msg(p, out.getHoverName().getString() + " 획득!", ChatFormatting.AQUA);
         sound(p, SoundEvents.ENCHANTMENT_TABLE_USE, 1.0f);
         if (!p.getInventory().add(out)) p.drop(out, false);
         p.getInventory().setChanged();
     }
 
-    /** 레벨에 맞는 무작위 주문서 (드롭·합성) */
-    public static ItemStack randomScroll(int level, ThreadLocalRandom r) {
-        if (level >= whiteMinLevel && r.nextDouble() * 100 < whiteChance) return Scroll.make("white", 0);
+    /** 레벨에 맞는 등급 확률 (%, 100%·60%·30%·10% 순) — 합성 창 표시용 */
+    public static double[] gradeChance(int level) {
+        int[] w = synthWeight;
+        double[] out = new double[w.length];
         int total = 0;
-        for (int i = 0; i < gradeWeight.length; i++) if (level >= gradeMinLevel[Math.min(i, gradeMinLevel.length - 1)]) total += gradeWeight[i];
+        for (int i = 0; i < w.length; i++) if (level >= gradeMinLevel[Math.min(i, gradeMinLevel.length - 1)]) total += w[i];
+        for (int i = 0; i < w.length; i++)
+            out[i] = total == 0 || level < gradeMinLevel[Math.min(i, gradeMinLevel.length - 1)] ? 0 : w[i] * 100.0 / total;
+        return out;
+    }
+
+    /** 레벨에 맞는 무작위 주문서 (드롭·합성) */
+    public static ItemStack randomScroll(int level, ThreadLocalRandom r) { return randomScroll(level, r, -1); }
+
+    /** kind: -1 아무거나 · 0 무기 주문서만 · 1 스탯 주문서만 */
+    public static ItemStack randomScroll(int level, ThreadLocalRandom r, int only) {
+        if (only < 0 && level >= whiteMinLevel && r.nextDouble() * 100 < whiteChance) return Scroll.make("white", 0);
+        int[] w = only >= 0 ? synthWeight : gradeWeight;   // 합성 = 합성 비중
+        int total = 0;
+        for (int i = 0; i < w.length; i++) if (level >= gradeMinLevel[Math.min(i, gradeMinLevel.length - 1)]) total += w[i];
         int pick = r.nextInt(Math.max(1, total)), grade = 0;
-        for (int i = 0; i < gradeWeight.length; i++) {
-            if (level < gradeMinLevel[Math.min(i, gradeMinLevel.length - 1)]) continue;
-            pick -= gradeWeight[i];
+        for (int i = 0; i < w.length; i++) {
+            if (level < gradeMinLevel[Math.min(i, gradeMinLevel.length - 1)] || w[i] <= 0) continue;
+            pick -= w[i];
             if (pick < 0) { grade = i; break; }
         }
-        String kind = Scroll.KINDS[r.nextInt(Scroll.KINDS.length)];
+        java.util.List<String> ks = new java.util.ArrayList<>();
+        for (String k : Scroll.KINDS) if (only < 0 || Scroll.isWeapon(k) == (only == 0)) ks.add(k);
+        String kind = ks.get(r.nextInt(ks.size()));
         return Scroll.make(kind, grade);
     }
 }
