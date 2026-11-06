@@ -514,11 +514,11 @@ public class EnhanceScreen extends ScaledScreen {
 
     /** 잠재: 등급 색 빛무리 두 겹 */
     private void aura(GuiGraphics g, int cx, int cy, int col) {
-        for (int r : new int[]{22, 27, 31}) {
+        for (int r : new int[]{22, 26}) {
             for (int a = 0; a < 160; a++) {
                 double t = a / 160.0 * Math.PI * 2;
                 int px = (int) Math.round(cx + Math.cos(t) * r), py = (int) Math.round(cy + Math.sin(t) * r);
-                g.fill(px, py, px + 1, py + 1, (r == 22 ? 0xE0000000 : r == 27 ? 0x90000000 : 0x50000000) | (col & 0xFFFFFF));
+                g.fill(px, py, px + 1, py + 1, (r == 22 ? 0xE0000000 : 0x80000000) | (col & 0xFFFFFF));
             }
         }
     }
@@ -534,10 +534,12 @@ public class EnhanceScreen extends ScaledScreen {
 
     private void small(GuiGraphics g, ItemStack s, String sub, int col) {
         int cx = x + CX, cy = y + 70;
-        if (tab == 3) aura(g, cx, cy, col);
+        if (tab == 3) aura(g, cx, cy, 0xFFFFD86A);   // 시안: 금빛 두 겹 고리
         else if (tab == 4) flameRing(g, cx, cy);
-        Ui.slot(g, cx - 9, cy - 9);
-        g.renderItem(s, cx - 8, cy - 8);
+        Ui.slot(g, cx - 14, cy - 14, 28);
+        g.pose().pushPose(); g.pose().translate(cx - 12, cy - 12, 0); g.pose().scale(1.5f, 1.5f, 1);
+        g.renderItem(s, 0, 0);
+        g.pose().popPose();
         center(g, s.getHoverName().getString() + "  §7" + sub, y + 124, Ui.VAL);
     }
 
