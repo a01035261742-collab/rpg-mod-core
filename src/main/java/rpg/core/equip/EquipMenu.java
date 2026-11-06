@@ -35,12 +35,12 @@ public class EquipMenu extends AbstractContainerMenu {
 
     public final Player player;
     /** 가방 팝업 위치 · 화면이 열렸는지 (클라만) */
-    public static final int BAG_X = 84, BAG_Y = 52;
+    /** 가방 칸 시작 (장비 탭: 캐릭터 창 오른쪽에 붙은 가방 창 안) */
+    public static final int BAG_X = 316, BAG_Y = 46;
     public static boolean bagOpen;
 
     private static class BagSlot extends Slot {
         BagSlot(net.minecraft.world.Container c, int i, int x, int y) { super(c, i, x, y); }
-        @Override public boolean isActive() { return bagOpen; }
     }
     /** 바닐라 인벤토리 2×2 제작 */
     public final net.minecraft.world.inventory.CraftingContainer craft = new net.minecraft.world.inventory.TransientCraftingContainer(this, 2, 2);

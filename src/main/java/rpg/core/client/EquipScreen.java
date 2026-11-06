@@ -10,12 +10,17 @@ import rpg.core.equip.EquipMenu;
 import rpg.core.equip.PlayerEquip;
 
 /** 장비 탭 (시안 ui_d2): 왼쪽 갑옷 · 가운데 캐릭터 · 오른쪽 장갑·망토·벨트·무기 · 아래 장신구 · 오른쪽 능력치 · [가방] 팝업 */
-public class EquipScreen extends AbstractContainerScreen<EquipMenu> {
+public class EquipScreen extends ScaledContainerScreen<EquipMenu> {
     private static final String[] EMPTY = {"", "장갑", "망토", "벨트", "귀걸이", "반지", "반지", "반지", "반지", "펜던트", "훈장"};
+
+    /** 오른쪽 가방 창 폭 */
+    static final int BW = 186;
+
+    @Override public int baseW() { return CharWin.W + 4 + BW; }
 
     public EquipScreen(EquipMenu menu, Inventory inv, Component title) {
         super(menu, inv, title);
-        imageWidth = CharWin.W;
+        imageWidth = CharWin.W + 4 + BW;
         imageHeight = CharWin.H;
         EquipMenu.bagOpen = false;
     }
@@ -24,8 +29,8 @@ public class EquipScreen extends AbstractContainerScreen<EquipMenu> {
     protected void init() {
         super.init();
         CharWin.addTabs(this::addRenderableWidget, leftPos, topPos, CharWin.EQUIP);
-        addRenderableWidget(Ui.button(Component.literal("가방"), b -> { EquipMenu.bagOpen = !EquipMenu.bagOpen; rebuildWidgets(); })
-                .bounds(leftPos + 228, topPos + 156, 56, 15).accent(EquipMenu.bagOpen).build());
+        addRenderableWidget(Ui.button(Component.literal("정렬"), b -> rpg.core.net.Net.CH.sendToServer(new rpg.core.net.Net.QuickAct(1, "")))
+                .bounds(leftPos + CharWin.W + 16, topPos + 156, 44, 15).build());
     }
 
     @Override
@@ -41,13 +46,11 @@ public class EquipScreen extends AbstractContainerScreen<EquipMenu> {
         // 캐릭터 상자
         g.fill(x + 98, y + 30, x + 143, y + 116, 0xFF12040A);
         Ui.hsep(g, x + 98, x + 143, y + 116);
-        if (!EquipMenu.bagOpen)
-            InventoryScreen.renderEntityInInventoryFollowsMouse(g, x + 120, y + 108, 34, (float) (x + 120 - mx), (float) (y + 50 - my), minecraft.player);
+        InventoryScreen.renderEntityInInventoryFollowsMouse(g, x + 120, y + 108, 34, (float) (x + 120 - mx), (float) (y + 50 - my), minecraft.player);
         // 칸 테두리 (보이는 칸만)
-        for (var s : menu.slots) if (s.isActive() && s.x > -1000) Ui.slot(g, x + s.x - 1, y + s.y - 1);
+        for (var s : menu.slots) if (s.isActive() && s.x > -1000 && s.x < EquipMenu.BAG_X) Ui.slot(g, x + s.x - 1, y + s.y - 1);
         // 빈 장비 칸: 장신구 윤곽
-        if (!EquipMenu.bagOpen)
-            for (int i = 1; i < PlayerEquip.SLOT_TYPES.length; i++) {
+        for (int i = 1; i < PlayerEquip.SLOT_TYPES.length; i++) {
                 var s = menu.slots.get(i);
                 if (!s.hasItem())
                     g.blit(new ResourceLocation("rpgcore", "textures/gui/slot/" + PlayerEquip.SLOT_TYPES[i] + ".png"), x + s.x, y + s.y, 0, 0, 16, 16, 16, 16);
@@ -64,14 +67,12 @@ public class EquipScreen extends AbstractContainerScreen<EquipMenu> {
         ry = line(g, rx, rr, ry, "방어력", String.format("%,.0f", ClientData.defPct));
         ry = line(g, rx, rr, ry, "치명", String.format("%.1f%%", ClientData.crit));
         ry = line(g, rx, rr, ry, "보스", String.format("+%.0f%%", ClientData.bossPct));
-        // 가방 팝업
-        if (EquipMenu.bagOpen) {
-            int bx = x + EquipMenu.BAG_X - 9, by = y + EquipMenu.BAG_Y - 20;
-            Ui.window(g, bx, by, 180, 112);
-            g.drawString(font, "가방", bx + 10, by + 8, Ui.VAL, true);
-            g.drawString(font, "Shift+클릭: 입기", bx + 72, by + 8, Ui.GRAY, false);
-            for (var s : menu.slots) if (s.isActive() && s.x > -1000) Ui.slot(g, x + s.x - 1, y + s.y - 1);
-        }
+        // 오른쪽 가방 창 (끌어서 장비 칸에 넣기)
+        int bx = x + CharWin.W + 4;
+        Ui.window(g, bx, y, BW, CharWin.H);
+        Ui.plaque(g, font, bx + BW / 2, y + 1, "가방");
+        g.drawString(font, "Shift+클릭: 입기", bx + 12, y + 30, Ui.GRAY, false);
+        for (var s : menu.slots) if (s.isActive() && s.x >= EquipMenu.BAG_X) Ui.slot(g, x + s.x - 1, y + s.y - 1);
     }
 
     private int line(GuiGraphics g, int rx, int rr, int ry, String k, String v) {
@@ -88,24 +89,12 @@ public class EquipScreen extends AbstractContainerScreen<EquipMenu> {
         renderBackground(g);
         super.render(g, mx, my, pt);
         RpgHud.buffBar(g, font, width, mx, my);
-        if (!EquipMenu.bagOpen && hoveredSlot != null && !hoveredSlot.hasItem() && menu.getCarried().isEmpty()) {
+        if (hoveredSlot != null && !hoveredSlot.hasItem() && menu.getCarried().isEmpty()) {
             int i = menu.slots.indexOf(hoveredSlot);
             String n = i > 0 && i < EMPTY.length ? EMPTY[i] : i == EquipMenu.INV_END - 9 ? "무기" : i >= 11 && i <= 14 ? new String[]{"모자", "상의", "하의", "신발"}[i - 11] : null;
             if (n != null) g.renderComponentTooltip(font, java.util.List.of(Component.literal("§6" + n + " 칸"), Component.literal("§7비어 있음")), mx, my);
         }
         renderTooltip(g, mx, my);
-    }
-
-    @Override
-    public boolean mouseClicked(double mx, double my, int button) {
-        if (EquipMenu.bagOpen) {   // 팝업 밖 누르면 닫기 (들고 있는 게 없을 때)
-            int bx = leftPos + EquipMenu.BAG_X - 9, by = topPos + EquipMenu.BAG_Y - 20;
-            boolean in = mx >= bx && mx < bx + 180 && my >= by && my < by + 112;
-            if (!in && menu.getCarried().isEmpty() && !(mx >= leftPos + 228 && mx < leftPos + 284 && my >= topPos + 156 && my < topPos + 171)) {
-                EquipMenu.bagOpen = false; rebuildWidgets(); return true;
-            }
-        }
-        return super.mouseClicked(mx, my, button);
     }
 
     @Override

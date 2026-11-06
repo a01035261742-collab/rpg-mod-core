@@ -6,7 +6,7 @@ import net.minecraft.network.chat.Component;
 import rpg.core.net.Net;
 
 /** 첫 접속: 야생으로 시작 / RPG로 시작 (한 번만) */
-public class WorldChoiceScreen extends Screen {
+public class WorldChoiceScreen extends ScaledScreen {
     private static final int W = 260, H = 130;
     private int x, y;
 

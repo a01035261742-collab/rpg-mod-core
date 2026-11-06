@@ -8,7 +8,7 @@ import net.minecraft.network.chat.Component;
 import rpg.core.net.Net;
 
 /** 레이드 단말기 창: 보스 · 빈 경기장 · 파티원 레벨·거리·오늘 보상 + [입장 요청] */
-public class RaidScreen extends Screen {
+public class RaidScreen extends ScaledScreen {
     private static final int W = 270;
     private Net.RaidInfo info;
     private int x, y, h;

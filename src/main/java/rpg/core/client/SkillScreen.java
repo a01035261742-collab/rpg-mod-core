@@ -10,7 +10,7 @@ import rpg.core.net.Net;
 import rpg.core.skill.Defs;
 
 /** 스킬 탭 (L): 1차 · 2차 · 패시브 + 스킬 줄 (시안 ui_d2) */
-public class SkillScreen extends Screen {
+public class SkillScreen extends ScaledScreen {
     private static final int ROW = 26, TOP = 48, ROWS = 5;
     private static int tab = 0;
     private int x, y, rows, scroll;
@@ -123,8 +123,8 @@ public class SkillScreen extends Screen {
 
     @Override
     public void mouseMoved(double mx, double my) {
-        this.mx = (int) mx;
-        this.my = (int) my;
+        this.mx = (int) (mx / uiS);
+        this.my = (int) (my / uiS);
     }
 
     @Override

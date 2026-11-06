@@ -8,7 +8,7 @@ import net.minecraft.network.chat.Component;
 import rpg.core.net.Net;
 
 /** 메뉴 (M): 다른 창으로 가는 버튼 모음 */
-public class MenuScreen extends Screen {
+public class MenuScreen extends ScaledScreen {
     private static final int W = 180, BH = 20, GAP = 4;
     private static final String[][] ITEMS = {
             {"스탯", "K"}, {"스킬", "L"}, {"패시브", "N"}, {"장비", "Tab"},

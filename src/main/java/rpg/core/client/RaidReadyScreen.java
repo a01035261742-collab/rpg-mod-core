@@ -6,7 +6,7 @@ import net.minecraft.network.chat.Component;
 import rpg.core.net.Net;
 
 /** 파티원 준비 확인 (30초) */
-public class RaidReadyScreen extends Screen {
+public class RaidReadyScreen extends ScaledScreen {
     private static final int W = 240, H = 96;
     private final String raid, leader;
     private final long until = System.currentTimeMillis() + 30_000;

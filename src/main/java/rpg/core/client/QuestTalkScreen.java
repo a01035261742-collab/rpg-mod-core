@@ -20,7 +20,7 @@ import rpg.core.quest.Quests;
  * 처음: 인사 + 이 NPC 퀘스트 목록 → 고르면 대사를 한 줄씩(다음) → 마지막에 [수락]/[거절] 또는 [완료]
  * 고르는 보상(reward.choose)이 있으면 마지막 장 아래에 칸이 생기고, 완료할 때 하나를 눌러 골라야 함
  */
-public class QuestTalkScreen extends Screen {
+public class QuestTalkScreen extends ScaledScreen {
     private static final int W = 340, H0 = 176, PICK = 24, SLOT = 20;
     private final int entity;
     private final String npc;

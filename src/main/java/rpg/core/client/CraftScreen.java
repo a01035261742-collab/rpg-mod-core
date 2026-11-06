@@ -16,7 +16,7 @@ import rpg.core.equip.Gear;
 import rpg.core.net.Net;
 
 /** 제작 창: 위 탭 · 왼쪽 레시피 목록 · 오른쪽 재료(가진 수/필요 수)·골드·[제작] */
-public class CraftScreen extends Screen {
+public class CraftScreen extends ScaledScreen {
     private static final int W = 340, ROW = 20, ROWS = 8;
     private int H = 260, off;
     private final int npc;

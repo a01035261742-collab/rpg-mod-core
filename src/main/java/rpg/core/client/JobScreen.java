@@ -15,7 +15,7 @@ import rpg.core.skill.Defs;
  * 전직 교관 대화 창.
  * state (Jobs.state): 0 1차 전직 가능 · 1 레벨 부족 · 2 2차까지 끝 · 3 다른 직업 · 4 2차 레벨 부족 · 5 갈래 고르기 · 6 시련 중 · 7 시련 통과
  */
-public class JobScreen extends Screen {
+public class JobScreen extends ScaledScreen {
     private static final String[] NAMES = {"", "전사", "궁수", "마법사", "도적"};
     private static final String[][] DESC = {
             {},

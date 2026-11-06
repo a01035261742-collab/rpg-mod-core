@@ -16,7 +16,7 @@ import rpg.core.net.Net;
 import rpg.core.quest.Quests;
 
 /** 퀘스트 창 (J): 왼쪽 목록 (진행 중 / 받을 수 있음 / 완료 탭), 오른쪽 상세 */
-public class QuestScreen extends Screen {
+public class QuestScreen extends ScaledScreen {
     private static final int W = CharWin.W, H = CharWin.H, LW = 96, ROW = 14, LX = 74, LY = 46, LB = 172, DB = 152;
     private static final String[] TABS = {"진행", "받기", "완료"};
     private int x, y, tab, scroll;
@@ -105,7 +105,7 @@ public class QuestScreen extends Screen {
         Quests.Quest q = sel == null ? null : Quests.QUESTS.get(sel);
         HOVER.clear();
         if (q != null) {   // 상세: 창 안에서만 보이게 자름
-            g.enableScissor(x + LX + LW + 8, y + 28, x + W - 14, y + DB);
+            Scaled.scissor(g, x + LX + LW + 8, y + 28, x + W - 14, y + DB);
             detail(g, q);
             g.disableScissor();
         }

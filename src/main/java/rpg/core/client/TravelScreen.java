@@ -8,7 +8,7 @@ import net.minecraft.network.chat.Component;
 import rpg.core.net.Net;
 
 /** 마을 이동 창: 이동의 돌(골드) · 마을 이동 주문서(3초 시전). 가 본 마을만 [이동], 안 가 본 곳은 ??? */
-public class TravelScreen extends Screen {
+public class TravelScreen extends ScaledScreen {
     private static final int W = 240, ROW = 22;
     private final Net.TravelInfo info;
     private int x, y, h;

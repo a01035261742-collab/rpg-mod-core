@@ -20,7 +20,7 @@ import rpg.core.skill.Defs;
  * 툴팁: 아이콘·이름·종류·랭크 / 지금 → 찍으면 / 전투력 변화 (서버 계산). 오른쪽 아래 [초기화] [검색] [가운데로].
  * 드래그 = 이동, 휠 = 확대, 클릭 = 1포인트.
  */
-public class PassiveScreen extends Screen {
+public class PassiveScreen extends ScaledScreen {
     private static final int GOLD = 0xFFFFD86A, CYAN = 0xFF40D0E0, PURP = 0xFFB060FF, HEAD = 42;
     private int CELL = 30;
     private int px, py, pw, ph, ax, ay, aw, ah;
@@ -226,7 +226,7 @@ public class PassiveScreen extends Screen {
             return;
         }
 
-        g.enableScissor(ax, ay, ax + aw, ay + ah);
+        Scaled.scissor(g, ax, ay, ax + aw, ay + ah);
         Defs.Node[] hov = new Defs.Node[1];
         g.drawManaged(() -> hov[0] = drawTree(g, mx, my));   // 모아서 한 번에 그림 (렉 줄이기)
         Defs.Node hover = hov[0];

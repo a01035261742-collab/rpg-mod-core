@@ -169,6 +169,28 @@ public final class ClientEvents {
             }
         }
 
+        // ───────── 1.5배 창: 마우스 좌표를 창 배율로 나눠서 전달 ─────────
+        @SubscribeEvent
+        public static void scaledClick(net.minecraftforge.client.event.ScreenEvent.MouseButtonPressed.Pre e) {
+            if (e.getScreen() instanceof Scaled sc) { double s = sc.uiScale(); e.setCanceled(true); e.getScreen().mouseClicked(e.getMouseX() / s, e.getMouseY() / s, e.getButton()); }
+        }
+
+        @SubscribeEvent
+        public static void scaledRelease(net.minecraftforge.client.event.ScreenEvent.MouseButtonReleased.Pre e) {
+            if (e.getScreen() instanceof Scaled sc) { double s = sc.uiScale(); e.setCanceled(true); e.getScreen().mouseReleased(e.getMouseX() / s, e.getMouseY() / s, e.getButton()); }
+        }
+
+        @SubscribeEvent
+        public static void scaledDrag(net.minecraftforge.client.event.ScreenEvent.MouseDragged.Pre e) {
+            if (e.getScreen() instanceof Scaled sc) { double s = sc.uiScale(); e.setCanceled(true);
+                e.getScreen().mouseDragged(e.getMouseX() / s, e.getMouseY() / s, e.getMouseButton(), e.getDragX() / s, e.getDragY() / s); }
+        }
+
+        @SubscribeEvent
+        public static void scaledScroll(net.minecraftforge.client.event.ScreenEvent.MouseScrolled.Pre e) {
+            if (e.getScreen() instanceof Scaled sc) { double s = sc.uiScale(); e.setCanceled(true); e.getScreen().mouseScrolled(e.getMouseX() / s, e.getMouseY() / s, e.getScrollDelta()); }
+        }
+
         /** RPG 월드: 핫바 없음 → 손은 늘 1번 칸 (장비창 무기칸), 숫자 1~4 = 물약 칸, 5~9·휠 = 안 씀.
          *  바닐라가 키를 읽기 전에 (틱 시작) 먼저 가져감 */
         @SubscribeEvent

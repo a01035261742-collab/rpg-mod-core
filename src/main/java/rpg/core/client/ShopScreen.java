@@ -16,7 +16,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import rpg.core.net.Net;
 
 /** 상점 창: 왼쪽 사기 목록 (클릭 1개 / Shift 10개), 오른쪽 내 인벤 (클릭 1개 팔기 / Shift 한 묶음) */
-public class ShopScreen extends Screen {
+public class ShopScreen extends ScaledScreen {
     private static final int W = 330, ROW = 20, ROWS = 8, CELL = 18;
     private int H = 250, off;   // off = 탭이 2줄 이상이면 내용이 내려가는 만큼
     private final int npc;

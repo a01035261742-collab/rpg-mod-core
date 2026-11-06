@@ -8,7 +8,7 @@ import net.minecraft.world.entity.player.Inventory;
 import rpg.core.shop.Trade;
 
 /** 거래창: 왼쪽 내 물건 · 오른쪽 상대 물건 · 골드 · [확인] [거래] */
-public class TradeScreen extends AbstractContainerScreen<Trade.TradeMenu> {
+public class TradeScreen extends ScaledContainerScreen<Trade.TradeMenu> {
     private Button ok, deal;
 
     public TradeScreen(Trade.TradeMenu menu, Inventory inv, Component title) {

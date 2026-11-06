@@ -10,7 +10,7 @@ import net.minecraft.network.chat.Component;
 import rpg.core.net.Net;
 
 /** 파티 창 (P): 파티원 목록, 초대, 수락/거절, 나가기, 추방 */
-public class PartyScreen extends Screen {
+public class PartyScreen extends ScaledScreen {
     private static final int W = CharWin.W, H = CharWin.H, MR = 198, ROWH = 28;
     private int x, y;
     private EditBox nameBox;

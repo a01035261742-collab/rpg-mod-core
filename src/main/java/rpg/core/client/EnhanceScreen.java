@@ -17,7 +17,7 @@ import rpg.core.item.Scroll;
 import rpg.core.net.Net;
 
 /** 강화 탭 (시안 ui_d1): 왼쪽 강화 종류 · 가운데 강화 · 오른쪽 입은 장비 칸 + [가방] 팝업 */
-public class EnhanceScreen extends Screen {
+public class EnhanceScreen extends ScaledScreen {
     private static final int W = CharWin.W, H = CharWin.H, CELL = 18;
     private List<Integer> locs;
     private List<ItemStack> gear;

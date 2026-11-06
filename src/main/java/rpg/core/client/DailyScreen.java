@@ -8,7 +8,7 @@ import net.minecraft.network.chat.Component;
 import rpg.core.net.Net;
 
 /** 일일 퀘스트 창 (메뉴 M → 일일 퀘스트): 오늘 3개, 진행도, [완료] [다시 뽑기] */
-public class DailyScreen extends Screen {
+public class DailyScreen extends ScaledScreen {
     private static int W = 300;
     private static final int ROW = 30;
     private int H = 190;
