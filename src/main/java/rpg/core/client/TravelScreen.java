@@ -59,12 +59,12 @@ public class TravelScreen extends Screen {
             String[] c = row(i);
             boolean known = "1".equals(c[1]), here = "1".equals(c[2]);
             int ry = y + 40 + i * ROW;
-            g.fill(x + 10, ry - 2, x + W - 10, ry + 20, i % 2 == 0 ? 0x30FFFFFF : 0x18FFFFFF);
+            g.fill(x + 10, ry - 2, x + W - 10, ry + 20, i % 2 == 0 ? 0xFF4A2028 : 0x18FFFFFF);
             g.drawString(font, known ? c[0] : "???", x + 16, ry + 5, known ? 0xFFFFFFFF : 0xFF707070, false);
             String st = here ? "지금 있는 마을" : known ? "" : "아직 가 보지 않음";
-            if (!st.isEmpty()) g.drawString(font, st, x + W - 80 - font.width(st), ry + 5, 0xFF8A90B0, false);
+            if (!st.isEmpty()) g.drawString(font, st, x + W - 80 - font.width(st), ry + 5, 0xFFA89890, false);
         }
-        g.drawString(font, "마을 근처에 가면 자동으로 등록돼요", x + 12, y + h - Ui.FOOT + 8, 0xFF707888, false);
+        g.drawString(font, "마을 근처에 가면 자동으로 등록돼요", x + 12, y + h - Ui.FOOT + 8, 0xFF8A6A60, false);
         super.render(g, mx, my, pt);
     }
 

@@ -33,7 +33,7 @@ import rpg.core.net.Net;
 public final class RpgTooltip {
     private RpgTooltip() {}
 
-    static final int BG = 0xF0121420, GRAY = 0xFF6A7090;
+    static final int BG = 0xF01E080C, GRAY = 0xFF6A7090;
 
     private static boolean ours(ItemStack s) {
         if (s.isEmpty()) return false;
@@ -171,7 +171,7 @@ public final class RpgTooltip {
         }
         @Override public void renderText(Font f, int x, int y, Matrix4f m, net.minecraft.client.renderer.MultiBufferSource.BufferSource buf) {}
         @Override public void renderImage(Font f, int x, int y, GuiGraphics g) {
-            g.fill(x, y, x + 26, y + 26, 0xFF0A0A12);
+            g.fill(x, y, x + 26, y + 26, 0xFF12040A);
             int c = h.color();
             g.fill(x, y, x + 26, y + 1, c); g.fill(x, y + 25, x + 26, y + 26, c);
             g.fill(x, y, x + 1, y + 26, c); g.fill(x + 25, y, x + 26, y + 26, c);
@@ -185,7 +185,7 @@ public final class RpgTooltip {
             g.pose().translate(x + 30, y + 11, 0);
             g.pose().scale(0.8f, 0.8f, 1);
             g.drawString(f, h.sub(), 0, 0, c, true);
-            if (!h.stars().isEmpty()) g.drawString(f, h.stars(), 0, 10, 0xFFFFD24A, true);
+            if (!h.stars().isEmpty()) g.drawString(f, h.stars(), 0, 10, 0xFFFFD86A, true);
             g.pose().popPose();
         }
     }
@@ -196,7 +196,7 @@ public final class RpgTooltip {
         @Override public int getHeight() { return 5; }
         @Override public int getWidth(Font f) { return 10; }
         @Override public void renderImage(Font f, int x, int y, GuiGraphics g) {
-            g.fill(x, y + 2, x + Math.max(10, w), y + 3, 0xFF3A4260);
+            g.fill(x, y + 2, x + Math.max(10, w), y + 3, 0xFF5A3A10);
         }
     }
 

@@ -125,7 +125,7 @@ public class CraftScreen extends Screen {
         if (sel >= 0) {
             Net.CraftLine l = lines.get(sel);
             ItemStack s = stack(l.result(), l.count());
-            g.fill(rx - 2, top, x + W - 6, top + 22, 0x30FFFFFF);
+            g.fill(rx - 2, top, x + W - 6, top + 22, 0xFF4A2028);
             g.renderItem(s, rx, top + 3);
             String nm = s.getHoverName().getString() + (l.count() > 1 ? " x" + l.count() : "");
             if (font.width(nm) > 130) nm = font.plainSubstrByWidth(nm, 126) + "…";
@@ -152,7 +152,7 @@ public class CraftScreen extends Screen {
             if (l.gold() > 0) {
                 String gc = String.format("%,d", l.gold()) + " G";
                 g.drawString(font, "골드", rx + 20, ly, 0xFFDDDDDD, false);
-                g.drawString(font, gc, x + W - 10 - font.width(gc), ly, ClientData.gold >= l.gold() ? 0xFFFFD24A : 0xFFFF6060, false);
+                g.drawString(font, gc, x + W - 10 - font.width(gc), ly, ClientData.gold >= l.gold() ? 0xFFFFD86A : 0xFFFF6060, false);
             }
             ok = canMake(l);
             craft10.visible = Gear.def(s) == null;

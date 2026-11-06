@@ -21,7 +21,7 @@ import rpg.core.skill.Defs;
  * 드래그 = 이동, 휠 = 확대, 클릭 = 1포인트.
  */
 public class PassiveScreen extends Screen {
-    private static final int GOLD = 0xFFFFD24A, CYAN = 0xFF40D0E0, PURP = 0xFFB060FF, HEAD = 34;
+    private static final int GOLD = 0xFFFFD86A, CYAN = 0xFF40D0E0, PURP = 0xFFB060FF, HEAD = 42;
     private int CELL = 30;
     private int px, py, pw, ph, ax, ay, aw, ah;
     private double panX, panY, homeX, homeY;
@@ -53,7 +53,8 @@ public class PassiveScreen extends Screen {
         pw = width - 2 * Ui.MARGIN;
         ph = height - 2 * Ui.MARGIN;
         px = Ui.MARGIN; py = Ui.MARGIN;
-        ax = px + 2; ay = py + HEAD; aw = pw - 4; ah = ph - HEAD - 2;
+        ax = px + 70; ay = py + HEAD; aw = pw - 70 - 12; ah = ph - HEAD - 13;
+        CharWin.addTabs(this::addRenderableWidget, px, py, CharWin.PASSIVE);
         int minX = 0, maxX = 0, minY = 0, maxY = 0;
         for (Defs.Node n : nodes) { minX = Math.min(minX, n.x()); maxX = Math.max(maxX, n.x()); minY = Math.min(minY, n.y()); maxY = Math.max(maxY, n.y()); }
         int spanX = maxX - minX + 2, spanY = maxY - minY + 2;
@@ -66,19 +67,14 @@ public class PassiveScreen extends Screen {
         stars = new long[160];
         for (int i = 0; i < stars.length; i++) stars[i] = ((long) r.nextInt(Math.max(1, aw)) << 32) | (r.nextInt(Math.max(1, ah)) & 0xFFFFFFFFL) | ((long) r.nextInt(3) << 60);
         // 버튼: 오른쪽 아래
-        int bw = 70, by = py + ph - 24, bx = px + pw - 3 * (bw + 6) - 4;
+        int bw = 56, by = ay + ah - 22, bx = ax + aw - 3 * (bw + 4) - 6;
         addRenderableWidget(Ui.button(Component.literal("초기화"), b -> reset()).bounds(bx, by, bw, 18).build());
-        addRenderableWidget(Ui.button(Component.literal("검색"), b -> { searching = !searching; search.visible = searching; if (searching) setFocused(search); }).bounds(bx + bw + 6, by, bw, 18).build());
-        addRenderableWidget(Ui.button(Component.literal("가운데로"), b -> { panX = homeX; panY = homeY; }).bounds(bx + 2 * (bw + 6), by, bw, 18).build());
+        addRenderableWidget(Ui.button(Component.literal("검색"), b -> { searching = !searching; search.visible = searching; if (searching) setFocused(search); }).bounds(bx + bw + 4, by, bw, 18).build());
+        addRenderableWidget(Ui.button(Component.literal("가운데로"), b -> { panX = homeX; panY = homeY; }).bounds(bx + 2 * (bw + 4), by, bw, 18).build());
         search = new EditBox(font, bx - 128, by + 1, 120, 16, Component.literal("검색"));
         search.setHint(Component.literal("칸 이름·효과"));
         search.visible = searching;
         addRenderableWidget(search);
-        // 메뉴 · 스킬 · 닫기: 아래 가운데 (범례 오른쪽)
-        int mxb = px + 166;
-        addRenderableWidget(Ui.button(Component.literal("메뉴"), b -> minecraft.setScreen(new MenuScreen())).bounds(mxb, by, 44, 18).build());
-        addRenderableWidget(Ui.button(Component.literal("스킬 (L)"), b -> minecraft.setScreen(new SkillScreen())).bounds(mxb + 48, by, 56, 18).build());
-        addRenderableWidget(Ui.button(Component.literal("닫기"), b -> onClose()).bounds(mxb + 108, by, 44, 18).build());
     }
 
     private void reset() {
@@ -212,22 +208,17 @@ public class PassiveScreen extends Screen {
     @Override
     public void render(GuiGraphics g, int mx, int my, float pt) {
         renderBackground(g);
-        g.fill(px, py, px + pw, py + ph, 0xFF0C0E16);
-        // 위 바
-        g.fill(px, py, px + pw, py + HEAD, 0xFF12141E);
-        g.fill(px, py + HEAD - 1, px + pw, py + HEAD, GOLD);
-        g.pose().pushPose(); g.pose().translate(px + 10, py + 9, 0); g.pose().scale(1.4f, 1.4f, 1);
-        g.drawString(font, "패시브 트리", 0, 0, GOLD, true); g.pose().popPose();
+        CharWin.draw(g, font, px, py, pw, ph);
+        g.fill(ax, ay, ax + aw, ay + ah, 0xFF0C0408);
+        g.drawString(font, "패시브 트리", ax + 2, py + 29, GOLD, true);
         String jn = jobName();
-        g.drawString(font, jn, px + 100, py + 13, 0xFFD2D2E1, false);
+        g.drawString(font, jn, ax + 70, py + 29, 0xFFF0E6C8, false);
         String pts = "남은 포인트  " + ClientData.passivePoints;
         int scrolls = scrolls();
         String rs = "무료 초기화 " + ClientData.freeTreeReset + "회  ·  초기화 주문서 " + scrolls + "개";
-        int rx = px + pw - font.width(rs) - 22, prx = rx - font.width(pts) - 30;
-        box(g, prx, py + 7, font.width(pts) + 16, 20, 0xFF18281C, 0xFF6EC86E);
-        g.drawString(font, pts, prx + 8, py + 13, 0xFF96EB96, false);
-        box(g, rx, py + 7, font.width(rs) + 16, 20, 0xFF1A1C28, 0xFF464A64);
-        g.drawString(font, rs, rx + 8, py + 13, 0xFFD2D2E1, false);
+        int rx = ax + aw - font.width(rs) - 2, prx = rx - font.width(pts) - 14;
+        g.drawString(font, pts, prx, py + 29, 0xFF96EB96, true);
+        g.drawString(font, rs, rx, py + 29, 0xFFA89890, false);
 
         if (ClientData.job <= 0 || nodes.isEmpty()) {
             g.drawCenteredString(font, "1차 전직 후 열려요", ax + aw / 2, ay + ah / 2 - 4, 0xFFA0A0A0);
@@ -252,11 +243,11 @@ public class PassiveScreen extends Screen {
         int cx = (int) (ax + aw / 2.0 + panX), cy = (int) (ay + ah / 2.0 + panY);
         for (int r = 1; r <= 16; r++) {
             int rr = r * CELL * 3 / 2;
-            ellipse(g, cx, cy, rr * 5 / 4, rr, 0xFF1C2030);
+            ellipse(g, cx, cy, rr * 5 / 4, rr, 0xFF1E080C);
         }
         for (long s : stars) {
             int sx = ax + (int) ((s >> 32) & 0x0FFFFFFF), sy = ay + (int) (s & 0xFFFFFFFFL);
-            int c = switch ((int) (s >>> 60)) { case 0 -> 0xFF464864; case 1 -> 0xFF64688C; default -> 0xFF9696BE; };
+            int c = switch ((int) (s >>> 60)) { case 0 -> 0xFF4A2028; case 1 -> 0xFF8A6A60; default -> 0xFFA89890; };
             g.fill(sx, sy, sx + 1, sy + 1, c);
         }
         // 구역 이름 (옅게)
@@ -264,11 +255,11 @@ public class PassiveScreen extends Screen {
         int[][] lp = {{0, -7}, {0, 7}, {-8, -7}, {8, -7}, {-8, 7}, {8, 7}, {-4, 1}, {4, 1}};
         for (int i = 0; i < lab.length && i < lp.length; i++) {
             int lx = (int) (ax + aw / 2.0 + panX + lp[i][0] * CELL), ly = (int) (ay + ah / 2.0 + panY + lp[i][1] * CELL);
-            int col = 0xFF6E7088;
+            int col = 0xFF8A6A60;
             if (i >= 6) {
                 boolean left = i == 6;
                 boolean mine = nodes.stream().anyMatch(n -> n.branch() != 0 && usable(n) && (left ? n.x() < 0 : n.x() > 0));
-                col = mine ? 0xFFE07070 : 0xFF5A5A70;
+                col = mine ? 0xFFE07070 : 0xFF6A4A48;
             }
             g.drawCenteredString(font, lab[i], lx, ly - 4, col);
         }
@@ -279,8 +270,8 @@ public class PassiveScreen extends Screen {
                 if (p == null || !nodes.contains(p)) continue;
                 int x1 = nx(p), y1 = ny(p), x2 = nx(n), y2 = ny(n);
                 if (taken(n) && taken(p) && usable(n)) { line(g, x1, y1, x2, y2, 5, 0xFF7A5A18); line(g, x1, y1, x2, y2, 3, GOLD); }
-                else if ((taken(p) && canLearn(n)) || (taken(n) && canLearn(p))) line(g, x1, y1, x2, y2, 2, 0xFF6973A0);
-                else line(g, x1, y1, x2, y2, 2, 0xFF262A3A);
+                else if ((taken(p) && canLearn(n)) || (taken(n) && canLearn(p))) line(g, x1, y1, x2, y2, 2, 0xFF8A6A60);
+                else line(g, x1, y1, x2, y2, 2, 0xFF2A0E14);
             }
         }
         // 칸
@@ -311,16 +302,16 @@ public class PassiveScreen extends Screen {
             }
             case "k" -> {
                 if (t) disc(g, x, y, r + 7, 0xFF2E1846);
-                int c = t || can ? PURP : !use ? 0xFF323240 : 0xFF402A60;
+                int c = t || can ? PURP : !use ? 0xFF3A1420 : 0xFF402A60;
                 ring(g, x, y, r + 4, 2, c);
                 disc(g, x, y, r, c);
-                disc(g, x, y, r - 3, !use ? 0xFF0C0C10 : 0xFF1C122C);
+                disc(g, x, y, r - 3, !use ? 0xFF12040A : 0xFF1C122C);
             }
             default -> {
                 if (t && rk >= n.maxRank()) disc(g, x, y, r + 4, 0xFF3A2E10);
-                ring(g, x, y, r, 3, !use ? 0xFF22222A : 0xFF343850);
+                ring(g, x, y, r, 3, !use ? 0xFF2A0E14 : 0xFF4A2028);
                 if (rk > 0 && use) arc(g, x, y, r, 3, (double) rk / n.maxRank(), GOLD);
-                disc(g, x, y, r - 3, t ? 0xFF221E16 : can ? 0xFF181A26 : 0xFF0D0D13);
+                disc(g, x, y, r - 3, t ? 0xFF221E16 : can ? 0xFF1E080C : 0xFF12040A);
             }
         }
         if (!use) { lock(g, x, y, 0xFF64646E); return; }
@@ -333,14 +324,14 @@ public class PassiveScreen extends Screen {
         g.pose().popPose();
         if (!t && !can) {   // 못 찍는 칸은 아이콘 어둡게
             g.pose().pushPose(); g.pose().translate(0, 0, 200);
-            disc(g, x, y, r - 3, 0xB00D0D13);
+            disc(g, x, y, r - 3, 0xB012040A);
             g.pose().popPose();
         }
         if (n.maxRank() > 1 && CELL >= 20) {
             g.pose().pushPose();
             g.pose().translate(x + r - 1, y + r - 4, 210);
             g.pose().scale(0.6f, 0.6f, 1);
-            g.drawString(font, rk + "/" + n.maxRank(), 0, 0, rk > 0 ? GOLD : 0xFF6E6E82, true);
+            g.drawString(font, rk + "/" + n.maxRank(), 0, 0, rk > 0 ? GOLD : 0xFF8A6A60, true);
             g.pose().popPose();
         }
     }
@@ -360,7 +351,7 @@ public class PassiveScreen extends Screen {
 
     /** 마우스가 왼쪽 아래 설명 칸 위 (그 뒤 칸은 고를 수 없음) */
     private boolean overLegend(int mx, int my) {
-        return mx >= px + 8 && mx <= px + 158 && my >= py + ph - 82 && my <= py + ph - 8;
+        return mx >= ax + 6 && mx <= ax + 156 && my >= ay + ah - 80 && my <= ay + ah - 6;
     }
 
     private void legend(GuiGraphics g) {
@@ -371,17 +362,17 @@ public class PassiveScreen extends Screen {
     }
 
     private void legendBody(GuiGraphics g) {
-        int lx = px + 8, ly = py + ph - 82, w = 150;
-        box(g, lx, ly, w, 74, 0xFF12141E, 0xFF2C3042);
+        int lx = ax + 6, ly = ay + ah - 80, w = 150;
+        box(g, lx, ly, w, 74, 0xFF16060A, 0xFF2A0E14);
         int cx = lx + 12, cy = ly + 12;
-        ring(g, cx, cy, 6, 2, 0xFF343850); arc(g, cx, cy, 6, 2, 0.6, GOLD);
-        g.drawString(font, "스탯 칸 (고리 = 랭크)", lx + 24, cy - 4, 0xFFD7D7E4, false);
+        ring(g, cx, cy, 6, 2, 0xFF4A2028); arc(g, cx, cy, 6, 2, 0.6, GOLD);
+        g.drawString(font, "스탯 칸 (고리 = 랭크)", lx + 24, cy - 4, 0xFFF0E6C8, false);
         cy += 16; hexagon(g, cx, cy, 6, 0xFF10202A, CYAN);
         g.drawString(font, "보석 · 특수 효과", lx + 24, cy - 4, CYAN, false);
         cy += 16; ring(g, cx, cy, 7, 1, PURP); disc(g, cx, cy, 4, PURP);
         g.drawString(font, "핵심 · 강한 특수 효과", lx + 24, cy - 4, PURP, false);
         cy += 16; lock(g, cx, cy, 0xFF64646E);
-        g.drawString(font, "다른 2차 갈래 (잠김)", lx + 24, cy - 4, 0xFF9696A5, false);
+        g.drawString(font, "다른 2차 갈래 (잠김)", lx + 24, cy - 4, 0xFFA89890, false);
     }
 
     // ───────── 툴팁 ─────────
@@ -419,46 +410,46 @@ public class PassiveScreen extends Screen {
         if (y + h > height - 4) y = height - 4 - h;
         g.pose().pushPose(); g.pose().translate(0, 0, 400);
         box(g, x + 2, y + 2, w, h, 0xC0000000, 0xC0000000);
-        box(g, x, y, w, h, 0xF8121420, GOLD);
+        box(g, x, y, w, h, 0xF81E080C, GOLD);
         g.fill(x + 3, y + 1, x + w - 3, y + 3, GOLD);
         // 머리
-        disc(g, x + 18, y + 20, 12, 0xFFDCDCEB); disc(g, x + 18, y + 20, 10, 0xFF181A26);
+        disc(g, x + 18, y + 20, 12, 0xFFF0E6C8); disc(g, x + 18, y + 20, 10, 0xFF1E080C);
         g.renderItem(new ItemStack(iconOf(n)), x + 10, y + 12);
         g.drawString(font, mage ? n.name().replace("공격력", "마력") : n.name(), x + 36, y + 9, 0xFFFFFFFF, true);
         String sub = kind + (n.maxRank() > 0 ? "  ·  " + rk + " / " + n.maxRank() : "");
         g.drawString(font, sub, x + 36, y + 21, GOLD, false);
         int yy = y + 36;
-        g.fill(x + 6, yy, x + w - 6, yy + 1, 0xFF3A4260);
+        g.fill(x + 6, yy, x + w - 6, yy + 1, 0xFF5A3A10);
         yy += 5;
         if (n.kind().equals("start")) {
-            g.drawString(font, "여기서 사방으로 뻗어 나가요", x + 8, yy, 0xFFB4B4C8, false); yy += 14;
+            g.drawString(font, "여기서 사방으로 뻗어 나가요", x + 8, yy, 0xFFA89890, false); yy += 14;
         } else {
             if (rk > 0 && n.desc().isEmpty()) {
                 for (int i = 0; i < now.size(); i++) {
-                    if (i == 0) g.drawString(font, "지금", x + 8, yy, 0xFF9696AA, false);
-                    g.drawString(font, now.get(i), x + 60, yy, 0xFFE1E1EB, false); yy += 11;
+                    if (i == 0) g.drawString(font, "지금", x + 8, yy, 0xFFA89890, false);
+                    g.drawString(font, now.get(i), x + 60, yy, 0xFFF0E6C8, false); yy += 11;
                 }
                 yy += 2;
             }
             for (int i = 0; i < wrapNext.size(); i++) {
-                if (i == 0) g.drawString(font, full ? "효과" : rk > 0 ? "찍으면" : n.desc().isEmpty() ? "찍으면" : "효과", x + 8, yy, full ? 0xFF9696AA : 0xFF8CE68C, false);
-                g.drawString(font, wrapNext.get(i) + (i == wrapNext.size() - 1 && !full && n.desc().isEmpty() ? "  ▲" : ""), x + 60, yy, full ? 0xFFE1E1EB : 0xFF8CE68C, false);
+                if (i == 0) g.drawString(font, full ? "효과" : rk > 0 ? "찍으면" : n.desc().isEmpty() ? "찍으면" : "효과", x + 8, yy, full ? 0xFFA89890 : 0xFF8CE68C, false);
+                g.drawString(font, wrapNext.get(i) + (i == wrapNext.size() - 1 && !full && n.desc().isEmpty() ? "  ▲" : ""), x + 60, yy, full ? 0xFFF0E6C8 : 0xFF8CE68C, false);
                 yy += 11;
             }
             yy += 4;
-            g.fill(x + 6, yy, x + w - 6, yy + 1, 0xFF3A4260);
+            g.fill(x + 6, yy, x + w - 6, yy + 1, 0xFF5A3A10);
             yy += 5;
             if (can) {
                 g.fill(x + 6, yy, x + w - 6, yy + 16, 0xFF143018);
                 String ps = pw0 == null ? "전투력 계산 중…" : pw0[0] > 0 ? String.format("전투력  +%,d  ▲", pw0[0]) : pw0[0] < 0 ? String.format("전투력  %,d  ▼", pw0[0]) : "전투력 변화 없음";
-                g.drawString(font, ps, x + 12, yy + 4, pw0 != null && pw0[0] > 0 ? 0xFF6EE66E : 0xFFA0A0B4, false);
+                g.drawString(font, ps, x + 12, yy + 4, pw0 != null && pw0[0] > 0 ? 0xFF6EE66E : 0xFFA89890, false);
                 yy += 22;
             }
         }
         String foot = !usable(n) ? (n.branch() == 1 ? branchName(1) : branchName(2)) + " 전용 (잠김)"
                 : full ? "다 찍었어요" : n.maxRank() == 0 ? "" : !Defs.unlocked(n, k -> ClientData.passives.getOrDefault(k, 0)) ? "이어진 칸을 먼저 찍어야 해요"
                 : ClientData.passivePoints <= 0 ? "포인트가 없어요" : "클릭: 찍기 (포인트 1)";
-        int fc = foot.startsWith("클릭") ? 0xFF9696AA : 0xFFE07070;
+        int fc = foot.startsWith("클릭") ? 0xFFA89890 : 0xFFE07070;
         g.drawString(font, foot, x + 8, yy, fc, false);
         g.pose().popPose();
     }

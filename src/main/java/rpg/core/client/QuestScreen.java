@@ -17,8 +17,8 @@ import rpg.core.quest.Quests;
 
 /** 퀘스트 창 (J): 왼쪽 목록 (진행 중 / 받을 수 있음 / 완료 탭), 오른쪽 상세 */
 public class QuestScreen extends Screen {
-    private static final int W = 360, H = 230, LW = 130, ROW = 14;
-    private static final String[] TABS = {"진행 중", "받을 수 있음", "완료"};
+    private static final int W = CharWin.W, H = CharWin.H, LW = 96, ROW = 14, LX = 74, LY = 46, LB = 172, DB = 152;
+    private static final String[] TABS = {"진행", "받기", "완료"};
     private int x, y, tab, scroll;
     private String sel;
     private net.minecraft.client.gui.components.Button pin;
@@ -51,10 +51,11 @@ public class QuestScreen extends Screen {
     protected void init() {
         x = Ui.cx(width, W);
         y = Ui.cy(height, H);
+        CharWin.addTabs(this::addRenderableWidget, x, y, CharWin.QUEST);
         for (int i = 0; i < 3; i++) {
             int t = i;
-            addRenderableWidget(Ui.button(Component.literal(TABS[i]), b -> { tab = t; scroll = 0; sel = null; })
-                    .bounds(x + 6 + i * 84, y + 20, 82, 16).build());
+            addRenderableWidget(Ui.button(Component.literal(TABS[i]), b -> { tab = t; scroll = 0; sel = null; rebuildWidgets(); })
+                    .bounds(x + LX + 1 + i * 32, y + 28, 30, 14).accent(i == tab).build());
         }
         abandon = addRenderableWidget(Ui.button(Component.literal("포기"), b -> {
             if (sel == null) return;
@@ -64,39 +65,37 @@ public class QuestScreen extends Screen {
                 sel = null;
                 confirmUntil = 0;
             } else confirmUntil = now + 3000;
-        }).bounds(x + W - 104, y + H - Ui.FOOT, 48, Ui.BTN_H).build());
+        }).bounds(x + W - 58, y + 156, 40, 15).build());
         pin = addRenderableWidget(Ui.button(Component.literal("고정"), b -> {
             if (sel == null) return;
             if (!ClientQuests.togglePin(sel)) pinFullUntil = System.currentTimeMillis() + 2000;
-        }).bounds(x + W - 166, y + H - Ui.FOOT, 58, Ui.BTN_H).build());
-        addRenderableWidget(Ui.menu(x, y, H));
-        addRenderableWidget(Ui.close(x, y, W, H, this::onClose));
+        }).bounds(x + W - 112, y + 156, 50, 15).build());
     }
 
     @Override
     public void render(GuiGraphics g, int mx, int my, float pt) {
         renderBackground(g);
-        Ui.frame(g, font, x, y, W, H, 0xFFFFE070, "퀘스트 (J)", "완료 " + ClientQuests.DONE.size() + " / " + Quests.QUESTS.size(), 0xFF909090);
-        Ui.footLine(g, x, y, W, H);
+        CharWin.draw(g, font, x, y);
+        String cnt = ClientQuests.DONE.size() + "/" + Quests.QUESTS.size();
+        g.drawString(font, cnt, x + W - 20 - font.width(cnt), y + 31, Ui.GRAY, false);
 
         List<Quests.Quest> l = list();
         if (sel != null && l.stream().noneMatch(q -> q.id().equals(sel))) sel = null;
         if (sel == null && !l.isEmpty()) sel = l.get(0).id();
-        int ly = y + 42, rows = (H - 42 - Ui.FOOT - 8) / ROW;
-        g.fill(x + 6, ly - 2, x + 6 + LW, y + H - Ui.FOOT - 6, 0x30FFFFFF);
+        int ly = y + LY, rows = (LB - LY) / ROW;
+        Ui.vsep(g, x + LX + LW + 4, y + 28, y + LB);
         for (int r = 0; r < rows; r++) {
             int i = r + scroll;
             if (i >= l.size()) break;
             Quests.Quest q = l.get(i);
             int ry = ly + r * ROW;
-            boolean hover = mx >= x + 6 && mx < x + 6 + LW && my >= ry && my < ry + ROW;
-            if (q.id().equals(sel)) g.fill(x + 6, ry, x + 6 + LW, ry + ROW, 0x60FFE070);
-            else if (hover) g.fill(x + 6, ry, x + 6 + LW, ry + ROW, 0x30FFFFFF);
+            boolean hover = mx >= x + LX && mx < x + LX + LW && my >= ry && my < ry + ROW;
+            if (q.id().equals(sel) || hover) Ui.row(g, x + LX, ry, x + LX + LW, ry + ROW - 1, q.id().equals(sel));
             String mark = tab == 0 ? (ClientQuests.complete(q) ? "§a✔ " : ClientQuests.pinned(q.id()) ? "§e◆ " : "§7· ") : tab == 1 ? "§e! " : "§8✔ ";
-            String nm = mark + "§fLv." + q.minLevel() + " " + q.name();
-            g.drawString(font, Ui.cut(font, nm, LW - 6), x + 9, ry + 3, 0xFFFFFFFF, false);
+            String nm = mark + "§f" + q.name();
+            g.drawString(font, Ui.cut(font, nm, LW - 6), x + LX + 4, ry + 3, 0xFFFFFFFF, false);
         }
-        if (l.isEmpty()) g.drawString(font, tab == 1 ? "받을 수 있는 퀘스트 없음" : "없음", x + 10, ly + 2, 0xFF808080, false);
+        if (l.isEmpty()) g.drawString(font, "없음", x + LX + 4, ly + 2, Ui.GRAY, false);
 
         abandon.visible = tab == 0 && sel != null;
         pin.visible = tab == 0 && sel != null;
@@ -106,19 +105,21 @@ public class QuestScreen extends Screen {
         Quests.Quest q = sel == null ? null : Quests.QUESTS.get(sel);
         HOVER.clear();
         if (q != null) {   // 상세: 창 안에서만 보이게 자름
-            g.enableScissor(x + LW + 12, y + 40, x + W - 6, y + H - Ui.FOOT - 6);
+            g.enableScissor(x + LX + LW + 8, y + 28, x + W - 14, y + DB);
             detail(g, q);
             g.disableScissor();
         }
         super.render(g, mx, my, pt);
         for (Hover hv : HOVER)   // 보상 아이콘 이름
-            if (mx >= hv.x() && mx < hv.x() + 16 && my >= hv.y() && my < hv.y() + 16 && my < y + H - Ui.FOOT - 6) { g.renderTooltip(font, hv.stack(), mx, my); break; }
+            if (mx >= hv.x() && mx < hv.x() + 16 && my >= hv.y() && my < hv.y() + 16 && my < y + DB) { g.renderTooltip(font, hv.stack(), mx, my); break; }
     }
 
     private void detail(GuiGraphics g, Quests.Quest q) {
-        int dx = x + LW + 16, dy = y + 42, dw = W - LW - 24;
-        g.drawString(font, Ui.cut(font, q.name(), dw), dx, dy, 0xFFFFE070, true);
-        dy += 13;
+        int dx = x + LX + LW + 10, dy = y + 30, dw = W - LX - LW - 28;
+        g.drawString(font, Ui.cut(font, q.name(), dw), dx, dy, Ui.VAL, true);
+        dy += 11;
+        g.drawString(font, "Lv " + q.minLevel(), dx, dy, Ui.GRAY, false);
+        dy += 12;
         String from = "받는 곳: " + Quests.npcName(q.npc());
         if (q.toPoint()) from += "  →  " + Quests.pointName(q.point()) + "에 두고 오기";
         else if (!q.turnIn().equals(q.npc())) from += "  →  완료: " + Quests.npcName(q.turnIn());
@@ -151,7 +152,7 @@ public class QuestScreen extends Screen {
         dy += 11;
         Quests.Reward r = q.reward();
         if (r.exp() > 0) { g.drawString(font, " · " + String.format("%,d", r.exp()) + " EXP", dx, dy, 0xFFB0FF80, false); dy += 10; }
-        if (r.gold() > 0) { g.drawString(font, " · " + String.format("%,d", r.gold()) + " G", dx, dy, 0xFFFFD24A, false); dy += 10; }
+        if (r.gold() > 0) { g.drawString(font, " · " + String.format("%,d", r.gold()) + " G", dx, dy, 0xFFFFD86A, false); dy += 10; }
         dy = icons(g, r.items(), dx, dy, dw, false);
         if (!r.choose().isEmpty()) {   // 고르는 보상 (완료할 때 NPC 대화에서 하나)
             g.drawString(font, "하나 골라 받기", dx, dy + 1, 0xFFC8A8FF, false);
@@ -182,12 +183,12 @@ public class QuestScreen extends Screen {
     public boolean mouseClicked(double mx, double my, int button) {
         if (super.mouseClicked(mx, my, button)) return true;
         List<Quests.Quest> l = list();
-        int ly = y + 42, rows = (H - 42 - Ui.FOOT - 8) / ROW;
+        int ly = y + LY, rows = (LB - LY) / ROW;
         for (int r = 0; r < rows; r++) {
             int i = r + scroll;
             if (i >= l.size()) break;
             int ry = ly + r * ROW;
-            if (mx >= x + 6 && mx < x + 6 + LW && my >= ry && my < ry + ROW) {
+            if (mx >= x + LX && mx < x + LX + LW && my >= ry && my < ry + ROW) {
                 sel = l.get(i).id();
                 confirmUntil = 0;
                 return true;
@@ -198,7 +199,7 @@ public class QuestScreen extends Screen {
 
     @Override
     public boolean mouseScrolled(double mx, double my, double delta) {
-        int rows = (H - 42 - Ui.FOOT - 8) / ROW;
+        int rows = (LB - LY) / ROW;
         scroll = Math.max(0, Math.min(Math.max(0, list().size() - rows), scroll - (int) Math.signum(delta)));
         return true;
     }

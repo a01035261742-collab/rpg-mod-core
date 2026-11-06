@@ -104,7 +104,11 @@ public final class ClientEvents {
 
         @SubscribeEvent
         public static void setup(net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent e) {
-            e.enqueueWork(() -> net.minecraft.client.gui.screens.MenuScreens.register(rpg.core.equip.EquipMenu.TYPE.get(), EquipScreen::new));
+            e.enqueueWork(() -> net.minecraft.client.gui.screens.MenuScreens.register(rpg.core.equip.EquipMenu.TYPE.get(),
+                    (rpg.core.equip.EquipMenu m, net.minecraft.world.entity.player.Inventory inv, net.minecraft.network.chat.Component t) -> {
+                        boolean bag = BagScreen.wantBag; BagScreen.wantBag = false;
+                        return bag ? new BagScreen(m, inv, t) : new EquipScreen(m, inv, t);
+                    }));
             e.enqueueWork(() -> net.minecraft.client.gui.screens.MenuScreens.register(rpg.core.shop.Trade.TYPE.get(), TradeScreen::new));
             e.enqueueWork(() -> registerStorage());
             // 궁수 활: 바닐라 활처럼 당김 단계 그림 (pull / pulling)
@@ -141,7 +145,9 @@ public final class ClientEvents {
                     || o == VanillaGuiOverlay.FOOD_LEVEL.type()
                     || o == VanillaGuiOverlay.ARMOR_LEVEL.type()
                     || o == VanillaGuiOverlay.EXPERIENCE_BAR.type()
-                    || o == VanillaGuiOverlay.AIR_LEVEL.type()) {
+                    || o == VanillaGuiOverlay.AIR_LEVEL.type()
+                    || (o == VanillaGuiOverlay.HOTBAR.type() && Minecraft.getInstance().player != null && !Minecraft.getInstance().player.isCreative())
+                    || o == VanillaGuiOverlay.ITEM_NAME.type()) {
                 e.setCanceled(true);
             }
             // Epic Fight 무기 고유 스킬 아이콘 (오른쪽 아래, 스킬바와 겹침) 숨김
@@ -158,8 +164,28 @@ public final class ClientEvents {
             if (e.getNewScreen() instanceof net.minecraft.client.gui.screens.inventory.InventoryScreen
                     && mc.player != null && !mc.player.isCreative()) {
                 e.setCanceled(true);
+                BagScreen.wantBag = true;   // 인벤토리 키 (Tab) = 가방 창
                 Net.CH.sendToServer(new Net.OpenEquip(0));
             }
+        }
+
+        /** RPG 월드: 핫바 없음 → 손은 늘 1번 칸 (장비창 무기칸), 숫자 1~4 = 물약 칸, 5~9·휠 = 안 씀.
+         *  바닐라가 키를 읽기 전에 (틱 시작) 먼저 가져감 */
+        @SubscribeEvent
+        public static void hotbarKeys(TickEvent.ClientTickEvent e) {
+            if (e.phase != TickEvent.Phase.START) return;
+            Minecraft mc = Minecraft.getInstance();
+            if (mc.player == null || !ClientRpg.inRpg() || mc.player.isCreative()) return;
+            var keys = mc.options.keyHotbarSlots;
+            for (int i = 0; i < keys.length; i++)
+                while (keys[i].consumeClick()) if (i < 4 && mc.screen == null) ClientPotions.use(i);
+            if (mc.player.getInventory().selected != 0) mc.player.getInventory().selected = 0;
+        }
+
+        @SubscribeEvent
+        public static void noHotbarScroll(net.minecraftforge.client.event.InputEvent.MouseScrollingEvent e) {
+            Minecraft mc = Minecraft.getInstance();
+            if (mc.player != null && mc.screen == null && ClientRpg.inRpg() && !mc.player.isCreative()) e.setCanceled(true);
         }
 
         private static int faceTicks;

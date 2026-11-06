@@ -46,10 +46,10 @@ public class RaidScreen extends Screen {
         g.drawCenteredString(font, t[0] + " 레이드", x + W / 2, y + 10, 0xFFE0A0FF);
         g.drawString(font, "Lv." + t[1] + " 보스 · 입장 Lv." + info.minLevel() + " 이상 · 1~4명 · 15분", x + 16, y + 28, 0xFFC8C8C8, false);
         g.drawString(font, "빈 경기장 " + t[2] + " / " + t[3] + " · 보상은 하루 1번 (오전 6시)", x + 16, y + 42, 0xFFC8C8C8, false);
-        g.drawString(font, "파티원", x + 16, y + 60, 0xFF8A90B0, false);
-        g.drawString(font, "레벨", x + 116, y + 60, 0xFF8A90B0, false);
-        g.drawString(font, "근처", x + 170, y + 60, 0xFF8A90B0, false);
-        g.drawString(font, "오늘 보상", x + 206, y + 60, 0xFF8A90B0, false);
+        g.drawString(font, "파티원", x + 16, y + 60, 0xFFA89890, false);
+        g.drawString(font, "레벨", x + 116, y + 60, 0xFFA89890, false);
+        g.drawString(font, "근처", x + 170, y + 60, 0xFFA89890, false);
+        g.drawString(font, "오늘 보상", x + 206, y + 60, 0xFFA89890, false);
         int ry = y + 74;
         for (String row : info.rows()) {
             String[] c = row.split("\\|");
@@ -60,10 +60,10 @@ public class RaidScreen extends Screen {
             g.drawString(font, rw ? "가능" : "받음", x + 212, ry, rw ? 0xFF7CFC7C : 0xFFFFB040, false);
             ry += 14;
         }
-        g.drawString(font, "\"받음\" = 같이 클리어는 되지만 보상 없음", x + 16, ry + 2, 0xFF8A90B0, false);
+        g.drawString(font, "\"받음\" = 같이 클리어는 되지만 보상 없음", x + 16, ry + 2, 0xFFA89890, false);
         ry += 14;
         if (!info.busy().isEmpty()) g.drawString(font, info.busy(), x + 16, ry + 2, 0xFFFFB040, false);
-        else if (!info.canGo()) g.drawString(font, "파티장만, 모두 조건을 채워야 해요", x + 16, ry + 2, 0xFF8A90B0, false);
+        else if (!info.canGo()) g.drawString(font, "파티장만, 모두 조건을 채워야 해요", x + 16, ry + 2, 0xFFA89890, false);
         super.render(g, mx, my, pt);
     }
 

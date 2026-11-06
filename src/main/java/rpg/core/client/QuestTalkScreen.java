@@ -176,8 +176,8 @@ public class QuestTalkScreen extends Screen {
         for (int i = 0; i < n; i++) {
             int sx = slotX(i);
             boolean on = i == choice;
-            g.fill(sx, sy, sx + SLOT, sy + SLOT, on ? 0xFFFFD24A : 0xFF505060);
-            g.fill(sx + 1, sy + 1, sx + SLOT - 1, sy + SLOT - 1, on ? 0xFF3A3220 : 0xFF202030);
+            g.fill(sx, sy, sx + SLOT, sy + SLOT, on ? 0xFFFFD86A : 0xFF6A4A48);
+            g.fill(sx + 1, sy + 1, sx + SLOT - 1, sy + SLOT - 1, on ? 0xFF3A3220 : 0xFF2A0E14);
             ItemStack st = pickStack(i);
             g.renderFakeItem(st, sx + 2, sy + 2);
             g.renderItemDecorations(font, st, sx + 2, sy + 2);

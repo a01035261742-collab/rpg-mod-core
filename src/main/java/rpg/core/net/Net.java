@@ -64,6 +64,8 @@ public final class Net {
                 .encoder(OpenEquip::encode).decoder(OpenEquip::new).consumerMainThread(OpenEquip::handle).add();
         CH.messageBuilder(OpenJob.class, id++, NetworkDirection.PLAY_TO_CLIENT)
                 .encoder(OpenJob::encode).decoder(OpenJob::new).consumerMainThread(OpenJob::handle).add();
+        CH.messageBuilder(QuickAct.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(QuickAct::encode).decoder(QuickAct::new).consumerMainThread(QuickAct::handle).add();
         CH.messageBuilder(JobAdvance.class, id++, NetworkDirection.PLAY_TO_SERVER)
                 .encoder(JobAdvance::encode).decoder(JobAdvance::new).consumerMainThread(JobAdvance::handle).add();
         CH.messageBuilder(Basic.class, id++, NetworkDirection.PLAY_TO_SERVER)
@@ -745,6 +747,26 @@ public final class Net {
         void handle(Supplier<NetworkEvent.Context> ctx) {
             ServerPlayer p = ctx.get().getSender();
             if (p != null) rpg.core.job.BasicAttack.fire(p);
+            ctx.get().setPacketHandled(true);
+        }
+    }
+
+    // ───────── 클라 → 서버: 물약 칸 (0 = 그 물약 마시기) · 가방 정렬 (1) ─────────
+    public record QuickAct(int action, String id) {
+        QuickAct(FriendlyByteBuf b) { this(b.readVarInt(), b.readUtf(100)); }
+        void encode(FriendlyByteBuf b) { b.writeVarInt(action); b.writeUtf(id, 100); }
+        void handle(Supplier<NetworkEvent.Context> ctx) {
+            ServerPlayer p = ctx.get().getSender();
+            if (p != null) {
+                if (action == 0) {
+                    var it = net.minecraftforge.registries.ForgeRegistries.ITEMS.getValue(new net.minecraft.resources.ResourceLocation(id));
+                    if (it instanceof rpg.core.item.Potion pot && !p.getCooldowns().isOnCooldown(it)) {
+                        var inv = p.getInventory().items;
+                        for (int i = inv.size() - 1; i >= 0; i--)
+                            if (inv.get(i).getItem() == it) { pot.drink(p, inv.get(i)); break; }
+                    }
+                } else if (action == 1) rpg.core.item.Potion.sortBag(p);
+            }
             ctx.get().setPacketHandled(true);
         }
     }

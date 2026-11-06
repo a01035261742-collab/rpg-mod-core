@@ -9,11 +9,12 @@ import net.minecraft.network.chat.Component;
 import rpg.core.net.Net;
 import rpg.core.skill.Defs;
 
-/** 스킬 창 (L): 쓸 수 있는 스킬 목록 + 레벨업 버튼 */
+/** 스킬 탭 (L): 1차 · 2차 · 패시브 + 스킬 줄 (시안 ui_d2) */
 public class SkillScreen extends Screen {
-    private static final int ROW = 26;
-    private int W = 360;   // 화면 폭에 맞춰 init 에서 정함
-    private int x, y, h, rows, scroll;
+    private static final int ROW = 26, TOP = 48, ROWS = 5;
+    private static int tab = 0;
+    private int x, y, rows, scroll;
+    private final int W = CharWin.W;
     private final List<Defs.SkillDef> list = new ArrayList<>();
 
     public SkillScreen() {
@@ -26,67 +27,86 @@ public class SkillScreen extends Screen {
         return s.branch() == 0 || s.branch() == ClientData.branch;
     }
 
+    private static boolean inTab(Defs.SkillDef s) {
+        return switch (tab) { case 0 -> !s.passive() && s.tier() < 2; case 1 -> !s.passive() && s.tier() >= 2; default -> s.passive(); };
+    }
+
     @Override
     protected void init() {
         clearWidgets();
         list.clear();
-        for (Defs.SkillDef s : Defs.SKILLS.values()) if (available(s)) list.add(s);
-        W = Math.max(230, Math.min(400, width - 20));
-        rows = Math.max(1, Math.min(list.size(), (height - 8 - 30 - Ui.FOOT - 6) / ROW));   // 화면에 다 안 들어가면 스크롤
+        for (Defs.SkillDef s : Defs.SKILLS.values()) if (available(s) && inTab(s)) list.add(s);
+        rows = Math.min(ROWS, list.size());
         scroll = Math.max(0, Math.min(scroll, list.size() - rows));
-        h = 30 + rows * ROW + Ui.FOOT + 6;
         x = Ui.cx(width, W);
-        y = Ui.cy(height, h);
-        for (int r = 0; r < rows && r + scroll < list.size(); r++) {
-            String id = list.get(r + scroll).id();
-            addRenderableWidget(Ui.button(Component.literal("+"), b -> Net.CH.sendToServer(new Net.Learn(0, id)))
-                    .bounds(x + W - 24, y + 30 + r * ROW + 4, 16, 14).build());
+        y = Ui.cy(height, CharWin.H);
+        CharWin.addTabs(this::addRenderableWidget, x, y, CharWin.SKILL);
+        String[] tn = {"1차", "2차", "패시브"};
+        for (int i = 0; i < 3; i++) {
+            final int k = i;
+            addRenderableWidget(Ui.button(Component.literal(tn[i]), b -> { tab = k; scroll = 0; init(); })
+                    .bounds(x + 75 + i * 40, y + 29, 36, 14).accent(i == tab).build());
         }
-        addRenderableWidget(Ui.menu(x, y, h));
-        addRenderableWidget(Ui.button(Component.literal("패시브 (N)"), b -> minecraft.setScreen(new PassiveScreen()))
-                .bounds(x + 50, y + h - Ui.FOOT, 70, Ui.BTN_H).build());
-        addRenderableWidget(Ui.close(x, y, W, h, this::onClose));
+        for (int r = 0; r < rows && r + scroll < list.size(); r++) {
+            Defs.SkillDef sd = list.get(r + scroll);
+            String id = sd.id();
+            int lv = ClientData.skills.getOrDefault(id, 0);
+            addRenderableWidget(Ui.button(Component.literal("+"), b -> Net.CH.sendToServer(new Net.Learn(0, id)))
+                    .bounds(x + W - 36, y + TOP + r * ROW + 5, 16, 14).accent(ClientData.skillPoints > 0 && lv < sd.maxLevel()).build())
+                    .active = ClientData.skillPoints > 0 && lv < sd.maxLevel();
+        }
     }
 
     @Override
     public void render(GuiGraphics g, int mx, int my, float pt) {
         renderBackground(g);
-        Ui.frame(g, font, x, y, W, h, Ui.GOLD, "스킬 (L)", "스킬 포인트: " + ClientData.skillPoints, ClientData.skillPoints > 0 ? 0xFF80FF80 : 0xFFA0A0A0);
-        g.drawString(font, ClientData.jobName() + " 스킬", x + 8, y + 18, 0xFFA0A0C0, false);
-        if (list.isEmpty()) g.drawString(font, "배울 수 있는 스킬이 없어요", x + 8, y + 36, 0xFF808080, false);
+        CharWin.draw(g, font, x, y);
+        String sp = "SP " + ClientData.skillPoints;
+        g.drawString(font, sp, x + W - 20 - font.width(sp), y + 32, ClientData.skillPoints > 0 ? Ui.GREEN : Ui.GRAY, true);
+        if (list.isEmpty()) g.drawString(font, tab == 1 ? "2차 전직 후 열려요" : "배울 수 있는 스킬이 없어요", x + 80, y + 60, Ui.GRAY, false);
         if (list.size() > rows) {
-            String sc = (scroll + 1) + "-" + Math.min(list.size(), scroll + rows) + " / " + list.size() + " (휠)";
-            g.drawString(font, sc, x + W - 8 - font.width(sc), y + 18, 0xFF808080, false);
+            String sc = (scroll + 1) + "-" + Math.min(list.size(), scroll + rows) + "/" + list.size();
+            g.drawString(font, sc, x + W - 20 - font.width(sc) - font.width(sp) - 8, y + 32, Ui.GRAY, false);
         }
-        Ui.footLine(g, x, y, W, h);
+        String hover = null;
         for (int r = 0; r < rows && r + scroll < list.size(); r++) {
             Defs.SkillDef s = list.get(r + scroll);
-            int ry = y + 30 + r * ROW;
+            int ry = y + TOP + r * ROW;
             int lv = ClientData.skills.getOrDefault(s.id(), 0);
-            g.fill(x + 6, ry, x + W - 6, ry + ROW - 2, s.passive() ? 0x3080C0FF : 0x40FFFFFF);
-            SkillIcons.draw(g, s.id(), x + 9, ry + 3);
-            String tag = s.passive() ? " [패시브]" : s.tier() == 2 ? " [2차]" : "";
-            g.drawString(font, Ui.cut(font, s.name() + "  " + lv + "/" + s.maxLevel() + tag, W - 100), x + 30, ry + 2, lv > 0 ? 0xFFFFFFFF : 0xFF909090, true);
+            boolean on = mx >= x + 74 && mx < x + W - 40 && my >= ry && my < ry + ROW - 2;
+            Ui.row(g, x + 74, ry, x + W - 17, ry + ROW - 2, on);
+            Ui.slot(g, x + 77, ry + 3);
+            SkillIcons.draw(g, s.id(), x + 78, ry + 4);
+            if (lv == 0) g.fill(x + 78, ry + 4, x + 94, ry + 20, 0x90000000);
+            g.drawString(font, Ui.cut(font, s.name(), 110), x + 99, ry + 3, lv > 0 ? Ui.TXT : Ui.GRAY, true);
+            g.drawString(font, lv > 0 ? "Lv " + lv + "/" + s.maxLevel() : "안 배움", x + 99, ry + 13, lv > 0 ? Ui.VAL : Ui.GRAY, false);
+            if (lv >= s.maxLevel()) g.drawString(font, "MAX", x + W - 60, ry + 13, Ui.VAL, false);
             String key = keyOf(s.id());
-            if (key != null) g.drawString(font, "[" + key + "]", x + W - 30 - font.width("[" + key + "]") - 4, ry + 2, 0xFF80E0FF, true);
-            g.drawString(font, Ui.cut(font, s.describe(Math.max(1, lv)), W - 60), x + 30, ry + 13, 0xFFB0B0B0, false);
-            if (mx >= x + 6 && mx < x + W - 30 && my >= ry && my < ry + ROW - 2) {
-                List<Component> tip = new ArrayList<>();
-                tip.add(Component.literal(s.name()));
-                tip.add(Component.literal("현재: " + (lv > 0 ? s.describe(lv) : "안 배움")));
-                if (lv < s.maxLevel()) tip.add(Component.literal("다음: " + s.describe(lv + 1)));
-                if (s.passive()) {
-                    tip.add(Component.literal("패시브: 배우면 항상 켜져요 (칸에 넣지 않아요)").withStyle(net.minecraft.ChatFormatting.DARK_GRAY));
-                } else {
-                    tip.add(Component.literal("MP " + Defs.fmt(s.mp(Math.max(1, lv))) + (lv > 0 && lv < s.maxLevel() ? " (다음 " + Defs.fmt(s.mp(lv + 1)) + ")" : "")
-                            + " · 쿨타임 " + Defs.fmt(s.cooldown(Math.max(1, lv))) + "초"));
-                    tip.add(Component.literal(lv > 0 ? (key == null ? "마우스 올리고 Q E R F Z X 를 누르면 그 칸에 넣어요" : "현재 " + key + " 칸 · 같은 키 = 빼기")
-                            : "배워야 칸에 넣을 수 있어요").withStyle(net.minecraft.ChatFormatting.DARK_GRAY));
-                }
-                g.renderComponentTooltip(font, tip, mx, my);
+            if (key != null) {
+                int kx = x + W - 58;
+                Ui.slot(g, kx - 2, ry + 3);
+                g.drawString(font, key, kx + 7 - font.width(key) / 2, ry + 8, Ui.VAL, true);
             }
+            if (on) hover = s.id();
         }
         super.render(g, mx, my, pt);
+        if (hover != null) {
+            Defs.SkillDef s = Defs.SKILLS.get(hover);
+            int lv = ClientData.skills.getOrDefault(s.id(), 0);
+            String key = keyOf(s.id());
+            List<Component> tip = new ArrayList<>();
+            tip.add(Component.literal("§6" + s.name() + (lv > 0 ? "  Lv " + lv + "/" + s.maxLevel() : "")));
+            tip.add(Component.literal("현재: " + (lv > 0 ? s.describe(lv) : "안 배움")));
+            if (lv < s.maxLevel()) tip.add(Component.literal("§7다음: " + s.describe(lv + 1)));
+            if (s.passive()) {
+                tip.add(Component.literal("§8패시브: 배우면 항상 켜져요"));
+            } else {
+                tip.add(Component.literal("§bMP " + Defs.fmt(s.mp(Math.max(1, lv))) + " · 쿨타임 " + Defs.fmt(s.cooldown(Math.max(1, lv))) + "초"));
+                tip.add(Component.literal(lv > 0 ? (key == null ? "§8마우스 올리고 Q E R F Z X = 그 칸에 넣기" : "§8" + key + " 칸 · 같은 키 = 빼기")
+                        : "§8배워야 칸에 넣을 수 있어요"));
+            }
+            g.renderComponentTooltip(font, tip, mx, my);
+        }
     }
 
     @Override
@@ -121,8 +141,8 @@ public class SkillScreen extends Screen {
         for (int k = 0; k < 6; k++) {
             if (!ClientEvents.SKILL_KEYS[k].matches(key, scan)) continue;
             for (int r = 0; r < rows && r + scroll < list.size(); r++) {
-                int ry = y + 30 + r * ROW;
-                if (mx >= x + 6 && mx < x + W - 30 && my >= ry && my < ry + ROW - 2) {
+                int ry = y + TOP + r * ROW;
+                if (mx >= x + 74 && mx < x + W - 40 && my >= ry && my < ry + ROW - 2) {
                     Defs.SkillDef sd = list.get(r + scroll);
                     String id = sd.id();
                     if (!sd.passive() && ClientData.skills.getOrDefault(id, 0) > 0) Net.CH.sendToServer(new Net.SetSlot(k, id));

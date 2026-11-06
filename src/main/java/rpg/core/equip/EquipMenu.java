@@ -34,6 +34,14 @@ public class EquipMenu extends AbstractContainerMenu {
             InventoryMenu.EMPTY_ARMOR_SLOT_LEGGINGS, InventoryMenu.EMPTY_ARMOR_SLOT_BOOTS};
 
     public final Player player;
+    /** 가방 팝업 위치 · 화면이 열렸는지 (클라만) */
+    public static final int BAG_X = 84, BAG_Y = 52;
+    public static boolean bagOpen;
+
+    private static class BagSlot extends Slot {
+        BagSlot(net.minecraft.world.Container c, int i, int x, int y) { super(c, i, x, y); }
+        @Override public boolean isActive() { return bagOpen; }
+    }
     /** 바닐라 인벤토리 2×2 제작 */
     public final net.minecraft.world.inventory.CraftingContainer craft = new net.minecraft.world.inventory.TransientCraftingContainer(this, 2, 2);
     public final net.minecraft.world.inventory.ResultContainer result = new net.minecraft.world.inventory.ResultContainer();
@@ -43,25 +51,25 @@ public class EquipMenu extends AbstractContainerMenu {
         super(TYPE.get(), id);
         this.player = inv.player;
         PlayerEquip eq = PlayerEquip.get(player);
-        // 장비 11칸: 2열 (무기·장갑·망토·벨트·귀걸이·펜던트 / 반지 4·훈장)
-        // 0(숨김) · 장갑 망토 벨트 귀걸이 / 반지 4 / 펜던트 / 훈장 — 2열 × 5줄
-        int[][] pos = {{0, 0}, {0, 0}, {0, 1}, {0, 2}, {0, 3}, {1, 0}, {1, 1}, {1, 2}, {1, 3}, {0, 4}, {1, 4}};
+        // 장비 칸 (시안 ui_d2 장비 탭): 0(숨김) · 장갑 망토 벨트 / 귀걸이 / 반지 4 / 펜던트 / 훈장
+        int[][] pos = {{-10000, 0}, {147, 31}, {147, 53}, {147, 75}, {77, 146}, {77, 124}, {99, 124}, {121, 124}, {143, 124}, {99, 146}, {121, 146}};
         for (int i = 0; i < PlayerEquip.SLOT_TYPES.length; i++) {
             final int slot = i;
-            int sx = i == 0 ? -10000 : EQ_X + pos[i][0] * 20;   // 0번(예전 무기 칸)은 숨김
-            addSlot(new SlotItemHandler(eq.items, i, sx, EQ_Y + pos[i][1] * 20) {
+            addSlot(new SlotItemHandler(eq.items, i, pos[i][0], pos[i][1]) {
                 @Override
                 public boolean mayPlace(ItemStack s) {
                     return super.mayPlace(s) && Gear.canEquip(player, s);
                 }
+                @Override public boolean isActive() { return !bagOpen; }
             });
         }
         // 갑옷 4칸 (바닐라 위치)
         for (int i = 0; i < 4; i++) {
             final EquipmentSlot es = ARMOR[i];
             final ResourceLocation icon = ARMOR_ICONS[i];
-            addSlot(new Slot(inv, 39 - i, 8, 8 + i * 18) {
+            addSlot(new Slot(inv, 39 - i, 77, 31 + i * 22) {
                 @Override public int getMaxStackSize() { return 1; }
+                @Override public boolean isActive() { return !bagOpen; }
                 @Override public boolean mayPlace(ItemStack s) {
                     return s.canEquip(es, player) && (Gear.def(s) == null || Gear.canEquip(player, s));
                 }
@@ -71,17 +79,25 @@ public class EquipMenu extends AbstractContainerMenu {
             });
         }
         // 왼손
-        addSlot(new Slot(inv, 40, 77, 62) {
+        addSlot(new Slot(inv, 40, -10000, 0) {
+            @Override public boolean isActive() { return false; }
             @Override public @Nullable Pair<ResourceLocation, ResourceLocation> getNoItemIcon() {
                 return Pair.of(InventoryMenu.BLOCK_ATLAS, InventoryMenu.EMPTY_ARMOR_SLOT_SHIELD);
             }
         });
         // 가방 27 + 핫바 9
-        for (int r = 0; r < 3; r++) for (int c = 0; c < 9; c++) addSlot(new Slot(inv, 9 + r * 9 + c, 8 + c * 18, 84 + r * 18));
-        for (int c = 0; c < 9; c++) addSlot(new Slot(inv, c, 8 + c * 18, 142));
+        // 가방 (화면에서 [가방] 눌렀을 때만 보이고 눌림)
+        for (int r = 0; r < 3; r++) for (int c = 0; c < 9; c++) addSlot(new BagSlot(inv, 9 + r * 9 + c, BAG_X + c * 18, BAG_Y + r * 18));
+        // 핫바: 0번 = 무기 칸 (장비 탭 오른쪽 열 맨 아래), 1~8 = 가방 마지막 줄
+        addSlot(new Slot(inv, 0, 147, 97) {
+            @Override public int getMaxStackSize() { return 1; }
+            @Override public boolean mayPlace(ItemStack s) { return "weapon".equals(Gear.slotOf(s)) && Gear.canEquip(player, s); }
+            @Override public boolean isActive() { return !bagOpen; }
+        });
+        for (int c = 1; c < 9; c++) addSlot(new BagSlot(inv, c, BAG_X + (c - 1) * 18, BAG_Y + 54));
         // 2×2 제작 (바닐라 위치)
-        addSlot(new net.minecraft.world.inventory.ResultSlot(player, craft, result, 0, 154, 28));
-        for (int r = 0; r < 2; r++) for (int c = 0; c < 2; c++) addSlot(new Slot(craft, c + r * 2, 98 + c * 18, 18 + r * 18));
+        addSlot(new net.minecraft.world.inventory.ResultSlot(player, craft, result, 0, -10000, 0) { @Override public boolean isActive() { return false; } });
+        for (int r = 0; r < 2; r++) for (int c = 0; c < 2; c++) addSlot(new Slot(craft, c + r * 2, -10000, 0) { @Override public boolean isActive() { return false; } });
     }
 
     /** 제작칸이 바뀌면 결과 다시 계산 (서버) */
@@ -138,13 +154,16 @@ public class EquipMenu extends AbstractContainerMenu {
             if (!moveItemStackTo(stack, invStart, invEnd, true)) return ItemStack.EMPTY;
         } else {
             boolean moved = false;
+            int wp = invEnd - 9;   // 무기 칸 (핫바 0번)
+            if (index != wp && !slots.get(wp).hasItem() && slots.get(wp).mayPlace(stack)) moved = moveItemStackTo(stack, wp, wp + 1, false);
             for (int i = 0; i < armorEnd && !moved; i++) {
                 Slot t = slots.get(i);
                 if (!t.hasItem() && t.mayPlace(stack)) moved = moveItemStackTo(stack, i, i + 1, false);
             }
             if (!moved) {
                 int hotbarStart = invEnd - 9;
-                if (index < hotbarStart) { if (!moveItemStackTo(stack, hotbarStart, invEnd, false)) return ItemStack.EMPTY; }
+                if (index == hotbarStart) { if (!moveItemStackTo(stack, invStart, hotbarStart, false) && !moveItemStackTo(stack, hotbarStart + 1, invEnd, false)) return ItemStack.EMPTY; }
+                else if (index < hotbarStart) { if (!moveItemStackTo(stack, hotbarStart + 1, invEnd, false)) return ItemStack.EMPTY; }
                 else if (!moveItemStackTo(stack, invStart, hotbarStart, false)) return ItemStack.EMPTY;
             }
         }

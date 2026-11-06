@@ -53,14 +53,14 @@ public class StorageScreen extends ContainerScreen {
         Ui.panel(g, leftPos, topPos, imageWidth, imageHeight, 0xFF80C0FF);
         for (var s : menu.slots) {
             int sx = leftPos + s.x, sy = topPos + s.y;
-            g.fill(sx - 1, sy - 1, sx + 17, sy + 17, 0xFF3A4260);
-            g.fill(sx, sy, sx + 16, sy + 16, 0xFF1C2132);
+            g.fill(sx - 1, sy - 1, sx + 17, sy + 17, 0xFF5A3A10);
+            g.fill(sx, sy, sx + 16, sy + 16, 0xFF1E080C);
         }
     }
 
     @Override
     protected void renderLabels(net.minecraft.client.gui.GuiGraphics g, int mx, int my) {
         g.drawString(font, "창고 " + (sm.info.get(0) + 1) + " / " + sm.info.get(1), titleLabelX, titleLabelY, 0xFF80C0FF, false);
-        g.drawString(font, "인벤토리", inventoryLabelX, inventoryLabelY, 0xFFA0A0B0, false);
+        g.drawString(font, "인벤토리", inventoryLabelX, inventoryLabelY, 0xFFA89890, false);
     }
 }

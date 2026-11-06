@@ -16,16 +16,17 @@ import rpg.core.equip.GearDefs;
 import rpg.core.item.Scroll;
 import rpg.core.net.Net;
 
-/** 강화 창 (메뉴 M → 강화): 왼쪽 장비 목록, 위 탭 [스타포스] [주문서] [조각 합성] */
+/** 강화 탭 (시안 ui_d1): 왼쪽 강화 종류 · 가운데 강화 · 오른쪽 입은 장비 칸 + [가방] 팝업 */
 public class EnhanceScreen extends Screen {
-    private static final int W = 370, H = 236, ROW = 20, ROWS = 8, CELL = 18;
+    private static final int W = CharWin.W, H = CharWin.H, CELL = 18;
     private List<Integer> locs;
     private List<ItemStack> gear;
     private List<Integer> slots;
     private List<ItemStack> scrolls;
     private int frags;
     private List<Integer> extra = List.of(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-    private int x, y, scroll, tab, sel = -1, selScroll = -1;
+    private int x, y, tab, sel = -1, selScroll = -1;
+    private boolean bag;
     private boolean guard;
     /** 잠재 결과: 0.7초 동안 고르기 버튼 막기 · 등급업 기존 유지 확인 창 */
     private long readyAt;
@@ -95,306 +96,348 @@ public class EnhanceScreen extends Screen {
         return -1;
     }
 
+    // 왼쪽 종류 (tab 번호: 0 스타포스 · 1 주문서 · 2 조각 · 3 잠재능력 · 4 추가 옵션)
+    private static final String[] KINDS = {"스타포스", "주문서", "조각", "잠재능력", "추가 옵션"};
+    private static final int CX = 172, BY = 156;
+    /** 입은 장비 칸: 열마다 위→아래 (위치 번호) — 1열 모자·상의·하의·신발·무기 / 2열 장갑·망토·벨트·펜던트·훈장 / 3열 반지 4·귀걸이 */
+    private static final int[][] GRID = {{103, 102, 101, 100, 0}, {201, 202, 203, 209, 210}, {205, 206, 207, 208, 204}};
+
+    private int idxOf(int loc) { return locs.indexOf(loc); }
+
+    private List<Integer> bagIdx() {
+        List<Integer> l = new ArrayList<>();
+        for (int i = 0; i < locs.size(); i++) { int lc = locs.get(i); if (lc > 0 && lc < 36) l.add(i); }
+        return l;
+    }
+
+    private Button btn(String t, int bx, int w, boolean accent, Button.OnPress p) {
+        Button b = Ui.button(Component.literal(t), p).bounds(bx, y + BY, w, 15).accent(accent).build();
+        addRenderableWidget(b);
+        return b;
+    }
+
     @Override
     protected void init() {
         x = Ui.cx(width, W);
         y = Ui.cy(height, H);
-        String[] names = {"스타포스", "주문서", "조각", "잠재능력", "추가옵션"};
-        int[] order = {0, 1, 3, 4, 2};   // 조각은 맨 뒤
-        int tx = x + 158;
-        for (int i : order) {
-            final int k = i;
-            int w = font.width(names[i]) + 8;
-            Button b = Ui.button(Component.literal(names[i]), bt -> { tab = k; lastTab = k; rebuildWidgets(); }).bounds(tx, y + 19, w, 14).build();
-            b.active = tab != i;
-            addRenderableWidget(b);
-            tx += w + 2;
-        }
-        addRenderableWidget(Ui.menu(x, y, H));
-        addRenderableWidget(Ui.close(x, y, W, H, this::onClose));
+        CharWin.addTabs(this::addRenderableWidget, x, y, CharWin.ENHANCE);
+        addRenderableWidget(Ui.button(Component.literal("가방"), b -> { bag = !bag; rebuildWidgets(); })
+                .bounds(x + 228, y + BY, 54, 15).accent(bag).build());
+        if (bag) return;   // 가방 팝업 동안은 강화 버튼 숨김
 
         ItemStack s = cur();
         GearDefs.GearDef d = Gear.def(s);
-        int bx = x + 158, by = y + H - 48;
+        int c1 = x + CX - 30, l2 = x + 126, r2 = x + 174;
         if (tab == 0 && d != null) {
             if (Enhance.broken(s)) {
-                Button b = Ui.button(Component.literal("복구 (★" + Enhance.restoreStar + ")"), bt ->
-                        Net.CH.sendToServer(new Net.EnhanceAction(3, curLoc(), material()))).bounds(bx, by, 110, 18).build();
-                b.active = material() >= 0 && ClientData.gold >= Enhance.restoreCost(d);
-                addRenderableWidget(b);
+                btn("복구", c1, 60, true, bt -> Net.CH.sendToServer(new Net.EnhanceAction(3, curLoc(), material())))
+                        .active = material() >= 0 && ClientData.gold >= Enhance.restoreCost(d);
             } else {
                 int st = Enhance.star(s);
                 boolean can = st < Enhance.maxStar(d);
                 if (can && Enhance.destroyRate(st) > 0) {
                     addRenderableWidget(Ui.button(Component.literal((guard ? "☑" : "☐") + " 파괴 방지"), bt -> { guard = !guard; rebuildWidgets(); })
-                            .bounds(bx + 114, by, 66, 18).build());
+                            .bounds(x + CX - 34, y + 120, 68, 13).build());
                 }
-                Button b = Ui.button(Component.literal("강화"), bt ->
-                        Net.CH.sendToServer(new Net.EnhanceAction(1, curLoc(), guard ? 1 : 0))).bounds(bx, by, 110, 18).build();
-                b.active = can && ClientData.gold >= Enhance.cost(d, st, guard);
-                addRenderableWidget(b);
+                btn("강화", c1, 60, true, bt -> Net.CH.sendToServer(new Net.EnhanceAction(1, curLoc(), guard ? 1 : 0)))
+                        .active = can && ClientData.gold >= Enhance.cost(d, st, guard);
             }
         } else if (tab == 1 && d != null) {
-            Button b = Ui.button(Component.literal("주문서 바르기"), bt ->
-                    Net.CH.sendToServer(new Net.EnhanceAction(2, curLoc(), slots.get(selScroll)))).bounds(bx, by, 110, 18).build();
-            b.active = selScroll >= 0 && selScroll < scrolls.size() && Enhance.scrollBlock(s, scrolls.get(selScroll)) == null;
-            addRenderableWidget(b);
+            btn("주문서 바르기", x + CX - 40, 80, true, bt -> Net.CH.sendToServer(new Net.EnhanceAction(2, curLoc(), slots.get(selScroll))))
+                    .active = selScroll >= 0 && selScroll < scrolls.size() && Enhance.scrollBlock(s, scrolls.get(selScroll)) == null;
         } else if (tab == 3 && d != null && rpg.core.equip.Potential.can(d)) {
             if (!rpg.core.equip.Potential.has(s)) {
-                Button b1 = Ui.button(Component.literal("레어 부여 (" + extra.get(1) + ")"), bt -> Net.CH.sendToServer(new Net.EnhanceAction(5, curLoc(), 0))).bounds(bx, by, 86, 18).build();
-                b1.active = extra.get(1) > 0;
-                addRenderableWidget(b1);
-                Button b2 = Ui.button(Component.literal("에픽 부여 (" + extra.get(2) + ")"), bt -> Net.CH.sendToServer(new Net.EnhanceAction(5, curLoc(), 1))).bounds(bx + 90, by, 86, 18).build();
-                b2.active = extra.get(2) > 0;
-                addRenderableWidget(b2);
+                btn("레어 (" + extra.get(1) + ")", l2, 46, false, bt -> Net.CH.sendToServer(new Net.EnhanceAction(5, curLoc(), 0))).active = extra.get(1) > 0;
+                btn("에픽 (" + extra.get(2) + ")", r2, 46, true, bt -> Net.CH.sendToServer(new Net.EnhanceAction(5, curLoc(), 1))).active = extra.get(2) > 0;
             } else if (rpg.core.equip.Potential.pending(s)) {
                 String key = curLoc() + ":" + rpg.core.equip.Potential.pot(s).getCompound("new");
                 boolean up = rpg.core.equip.Potential.pendingUp(s);
-                if (!key.equals(pendKey)) { pendKey = key; readyAt = up ? System.currentTimeMillis() + 700 : 0; confirmKeep = false; }   // 대기는 등급업일 때만
+                if (!key.equals(pendKey)) { pendKey = key; readyAt = up ? System.currentTimeMillis() + 700 : 0; confirmKeep = false; }
                 waiting = System.currentTimeMillis() < readyAt;
-                // 등급업이면 버튼을 아래 줄 가운데로 (재설정 버튼 자리 연타해도 안 눌리게)
-                int ax = up ? x + 120 : bx, ay = up ? y + H - Ui.FOOT : by;   // 등급업: 아래 줄 (메뉴·닫기 사이 가운데)
                 Button b1, b2;
                 if (up && confirmKeep) {
-                    b1 = Ui.button(Component.literal("유지할게요"), bt -> { confirmKeep = false; Net.CH.sendToServer(new Net.EnhanceAction(9, curLoc(), 1)); }).bounds(ax, ay, 90, 18).build();
-                    b2 = Ui.button(Component.literal("취소"), bt -> { confirmKeep = false; rebuildWidgets(); }).bounds(ax + 96, ay, 90, 18).build();
+                    b1 = btn("취소", l2, 46, false, bt -> { confirmKeep = false; rebuildWidgets(); });
+                    b2 = btn("유지할게요", r2, 46, false, bt -> { confirmKeep = false; Net.CH.sendToServer(new Net.EnhanceAction(9, curLoc(), 1)); });
                 } else {
-                    b1 = Ui.button(Component.literal(up ? "새 옵션 적용 ▲" : "새 옵션 적용"), bt -> Net.CH.sendToServer(new Net.EnhanceAction(8, curLoc(), 0))).bounds(ax, ay, up ? 90 : 86, 18).build();
-                    b2 = Ui.button(Component.literal("기존 유지"), bt -> {
+                    b1 = btn("이전 유지", l2, 46, false, bt -> {
                         if (up) { confirmKeep = true; readyAt = System.currentTimeMillis() + 700; rebuildWidgets(); }
                         else Net.CH.sendToServer(new Net.EnhanceAction(9, curLoc(), 0));
-                    }).bounds(up ? ax + 96 : bx + 90, ay, up ? 90 : 86, 18).build();
+                    });
+                    b2 = btn(up ? "새 옵션▲" : "새 옵션", r2, 46, true, bt -> Net.CH.sendToServer(new Net.EnhanceAction(8, curLoc(), 0)));
                 }
                 b1.active = b2.active = !waiting;
-                addRenderableWidget(b1);
-                addRenderableWidget(b2);
             } else {
                 long c = rpg.core.equip.Potential.cost(d, rpg.core.equip.Potential.grade(s));
-                Button b1 = Ui.button(Component.literal(String.format("%,d G", c)), bt -> Net.CH.sendToServer(new Net.EnhanceAction(6, curLoc(), 0))).bounds(bx, by, 86, 18).build();
-                b1.active = ClientData.gold >= c;
-                addRenderableWidget(b1);
-                Button b2 = Ui.button(Component.literal("큐브 (" + extra.get(0) + ")"), bt -> Net.CH.sendToServer(new Net.EnhanceAction(7, curLoc(), 0))).bounds(bx + 90, by, 86, 18).build();
-                b2.active = extra.get(0) > 0;
-                addRenderableWidget(b2);
+                btn(shortG(c), l2, 46, false, bt -> Net.CH.sendToServer(new Net.EnhanceAction(6, curLoc(), 0))).active = ClientData.gold >= c;
+                btn("큐브 " + extra.get(0), r2, 46, true, bt -> Net.CH.sendToServer(new Net.EnhanceAction(7, curLoc(), 0))).active = extra.get(0) > 0;
             }
         } else if (tab == 4 && d != null && rpg.core.equip.Flame.can(d) && !Enhance.broken(s)) {
             if (rpg.core.equip.Flame.pending(s)) {
-                addRenderableWidget(Ui.button(Component.literal("새 옵션 적용"), bt -> Net.CH.sendToServer(new Net.EnhanceAction(11, curLoc(), 0))).bounds(bx, by, 100, 18).build());
-                addRenderableWidget(Ui.button(Component.literal("이전 유지"), bt -> Net.CH.sendToServer(new Net.EnhanceAction(11, curLoc(), 1))).bounds(bx + 104, by, 100, 18).build());
+                btn("이전 유지", l2, 46, false, bt -> Net.CH.sendToServer(new Net.EnhanceAction(11, curLoc(), 1)));
+                btn("새 옵션", r2, 46, true, bt -> Net.CH.sendToServer(new Net.EnhanceAction(11, curLoc(), 0)));
             } else {
-                String[] nm = {"강력한", "영원한", "검은"};
+                String[] nm = {"강력", "영원", "검은"};
                 long c = rpg.core.equip.Flame.cost(d);
                 for (int i = 0; i < 3; i++) {
                     final int k = i;
-                    Button b = Ui.button(Component.literal(nm[i] + " (" + extra.get(6 + i) + ")"), bt -> Net.CH.sendToServer(new Net.EnhanceAction(10, curLoc(), k)))
-                            .bounds(bx + i * 70, by, 66, 18).build();
-                    b.active = extra.get(6 + i) > 0 && ClientData.gold >= c;
-                    addRenderableWidget(b);
+                    btn(nm[i] + " " + extra.get(6 + i), x + 125 + i * 33, 31, i == 1, bt -> Net.CH.sendToServer(new Net.EnhanceAction(10, curLoc(), k)))
+                            .active = extra.get(6 + i) > 0 && ClientData.gold >= c;
                 }
             }
         } else if (tab == 2) {
-            Button b = Ui.button(Component.literal("합성 (조각 " + Enhance.fragments + "개)"), bt ->
-                    Net.CH.sendToServer(new Net.EnhanceAction(4, 0, 0))).bounds(bx, by, 130, 18).build();
-            b.active = frags >= Enhance.fragments;
-            addRenderableWidget(b);
+            btn("합성", c1, 60, true, bt -> Net.CH.sendToServer(new Net.EnhanceAction(4, 0, 0))).active = frags >= Enhance.fragments;
         }
+    }
+
+    private static String shortG(long c) {
+        return c >= 100000 ? (c / 10000) + "만 G" : String.format("%,d G", c);
     }
 
     @Override
     public void tick() {
         super.tick();
-        if (waiting && System.currentTimeMillis() >= readyAt) { waiting = false; rebuildWidgets(); }   // 0.7초 지나면 버튼 켜기
+        if (waiting && System.currentTimeMillis() >= readyAt) { waiting = false; rebuildWidgets(); }
+    }
+
+    private void center(GuiGraphics g, String t, int yy, int col) {
+        String c = Ui.cut(font, t, 96);
+        g.drawString(font, c, x + CX - font.width(c) / 2, yy, col, true);
+    }
+
+    /** 작은 별 (5×5) */
+    private static void star(GuiGraphics g, int sx, int sy, int col) {
+        g.fill(sx + 2, sy, sx + 3, sy + 1, col);
+        g.fill(sx, sy + 1, sx + 5, sy + 3, col);
+        g.fill(sx + 1, sy + 3, sx + 4, sy + 4, col);
+        g.fill(sx, sy + 4, sx + 2, sy + 5, col); g.fill(sx + 3, sy + 4, sx + 5, sy + 5, col);
+    }
+
+    private void stars(GuiGraphics g, int n, int max, int yy) {
+        int sp = max > 15 ? 4 : 6, w = max * sp + (max - 1) / 5 * 3;
+        int sx = x + CX - w / 2;
+        for (int i = 0; i < max; i++) star(g, sx + i * sp + (i / 5) * 3, yy, i < n ? 0xFFFFD86A : 0xFF3A2A2A);
+    }
+
+    /** 장비 칸 + 아이템 (+ 고르면 금 테두리) */
+    private void cell(GuiGraphics g, int cx, int cy, ItemStack it, boolean on) {
+        Ui.slot(g, cx, cy);
+        if (!it.isEmpty()) { g.renderItem(it, cx + 1, cy + 1); g.renderItemDecorations(font, it, cx + 1, cy + 1); }
+        if (on) Ui.selBox(g, cx, cy, 18, 18);
+        if (!it.isEmpty() && Enhance.broken(it)) g.fill(cx + 1, cy + 1, cx + 17, cy + 17, 0x70FF2020);
     }
 
     @Override
     public void render(GuiGraphics g, int mx, int my, float pt) {
         renderBackground(g);
-        Ui.frame(g, font, x, y, W, H, Ui.GOLD, "장비 강화", "전투력 " + String.format("%,d", extra.get(9)) + "   " + String.format("%,d", ClientData.gold) + " G", Ui.GOLD);
-        Ui.footLine(g, x, y, W, H);
-
-        // 왼쪽: 장비 목록
+        CharWin.draw(g, font, x, y);
         List<Component> tip = null;
-        g.drawString(font, "장비 (착용 → 인벤)", x + 8, y + 24, 0xFFA0A0A0, false);
-        if (gear.isEmpty()) g.drawString(font, "장비가 없어요", x + 10, y + 40, 0xFF808080, false);
-        for (int r = 0; r < ROWS; r++) {
-            int i = r + scroll;
-            if (i >= gear.size()) break;
-            int ry = y + 36 + r * ROW;
-            boolean hover = mx >= x + 6 && mx < x + 152 && my >= ry && my < ry + ROW - 2;
-            g.fill(x + 6, ry, x + 152, ry + ROW - 2, i == sel ? 0x70FFD24A : hover ? 0x50FFFFFF : 0x30FFFFFF);
-            ItemStack s = gear.get(i);
-            g.renderItem(s, x + 8, ry + 1);
-            String nm = s.getHoverName().getString();
-            if (font.width(nm) > 92) nm = font.plainSubstrByWidth(nm, 88) + "…";
-            g.drawString(font, nm, x + 28, ry + 5, Enhance.broken(s) ? 0xFFFF5555 : 0xFFFFFFFF, false);
-            String w = where(locs.get(i));
-            g.drawString(font, w, x + 150 - font.width(w), ry + 5, w.equals("착용") ? 0xFF55FF55 : 0xFF808080, false);
-            if (hover) tip = new ArrayList<>(Screen.getTooltipFromItem(Minecraft.getInstance(), s));
+        // 왼쪽: 종류
+        for (int i = 0; i < KINDS.length; i++) {
+            int ry = y + 30 + i * 15;
+            boolean on = mx >= x + 72 && mx < x + 120 && my >= ry - 2 && my < ry + 12;
+            if (i == tab || on) Ui.row(g, x + 72, ry - 2, x + 120, ry + 11, i == tab);
+            g.drawString(font, KINDS[i], x + 76, ry, i == tab ? Ui.VAL : Ui.GRAY, i == tab);
         }
-        if (gear.size() > ROWS) g.drawString(font, "휠로 스크롤 (" + (scroll + 1) + "-" + Math.min(gear.size(), scroll + ROWS) + "/" + gear.size() + ")",
-                x + 8, y + 36 + ROWS * ROW + 2, 0xFF808080, false);
-
-        // 오른쪽
-        int px = x + 158, py = y + 40;
-        g.fill(px - 2, py - 4, x + W - 6, y + H - 54, 0x30FFFFFF);
-        ItemStack s = cur();
-        GearDefs.GearDef d = Gear.def(s);
-        if (tab == 2) {
-            g.drawString(font, "주문서 조각 합성", px, py, 0xFF55FFFF, false);
-            g.drawString(font, "주문서 조각 " + Enhance.fragments + "개 → 무작위 주문서 1장", px, py + 14, 0xFFFFFFFF, false);
-            g.drawString(font, "등급은 내 레벨 기준", px, py + 26, 0xFFA0A0A0, false);
-            g.drawString(font, "가진 조각: " + frags + "개", px, py + 44, frags >= Enhance.fragments ? 0xFF55FF55 : 0xFFFF5555, false);
-        } else if (d == null) {
-            g.drawString(font, "왼쪽에서 장비를 고르세요", px, py, 0xFF808080, false);
-        } else if (tab == 3) {
-            renderPot(g, s, d, px, py);
-        } else if (tab == 4) {
-            renderFlame(g, s, d, px, py);
-        } else if (tab == 0) {
-            renderStar(g, s, d, px, py);
-        } else {
-            tip = renderScroll(g, s, d, px, py, mx, my, tip);
+        Ui.vsep(g, x + 122, y + 28, y + 172);
+        Ui.vsep(g, x + 223, y + 28, y + 172);
+        // 오른쪽: 입은 장비
+        g.drawString(font, "입은 장비", x + 255 - font.width("입은 장비") / 2, y + 29, Ui.TXT, true);
+        for (int c = 0; c < 3; c++)
+            for (int r = 0; r < 5; r++) {
+                int lc = GRID[c][r], i = idxOf(lc), cx = x + 228 + c * 18, cy = y + 41 + r * 19;
+                ItemStack it = i >= 0 ? gear.get(i) : ItemStack.EMPTY;
+                cell(g, cx, cy, it, i >= 0 && i == sel);
+                if (i >= 0 && mx >= cx && mx < cx + 18 && my >= cy && my < cy + 18 && !bag) tip = new ArrayList<>(Screen.getTooltipFromItem(Minecraft.getInstance(), it));
+            }
+        // 가운데
+        if (!bag) {
+            ItemStack s = cur();
+            GearDefs.GearDef d = Gear.def(s);
+            if (tab == 2) renderFrag(g);
+            else if (d == null) { center(g, "강화할 장비를", y + 80, Ui.GRAY); center(g, "오른쪽에서 고르세요", y + 92, Ui.GRAY); }
+            else if (tab == 0) renderStar(g, s, d);
+            else if (tab == 1) tip = renderScroll(g, s, d, mx, my, tip);
+            else if (tab == 3) renderPot(g, s, d);
+            else renderFlame(g, s, d);
         }
         super.render(g, mx, my, pt);
+        if (bag) tip = renderBag(g, mx, my);
         if (tip != null) g.renderComponentTooltip(font, tip, mx, my);
     }
 
-    private void renderStar(GuiGraphics g, ItemStack s, GearDefs.GearDef d, int px, int py) {
-        int st = Enhance.star(s), max = Enhance.maxStar(d);
-        g.drawString(font, s.getHoverName(), px, py, 0xFFFFFFFF, false);
-        if (max == 0) { g.drawString(font, "스타포스 강화 불가", px, py + 14, 0xFFFF5555, false); return; }
-        g.drawString(font, "★".repeat(Math.min(st, max)) + "☆".repeat(Math.max(0, max - st)), px, py + 12, 0xFFFFD24A, false);
-        if (Enhance.broken(s)) {
-            g.drawString(font, "파괴된 장비", px, py + 28, 0xFFFF5555, false);
-            g.drawString(font, "같은 장비 1개 + 골드 → ★" + Enhance.restoreStar, px, py + 40, 0xFFFFFFFF, false);
-            boolean has = material() >= 0;
-            g.drawString(font, has ? "재료: 인벤의 같은 장비 (자동 선택)" : "재료 없음: 인벤에 같은 장비 필요", px, py + 52, has ? 0xFF55FF55 : 0xFFFF5555, false);
-            long c = Enhance.restoreCost(d);
-            g.drawString(font, "비용 " + String.format("%,d", c) + " G", px, py + 64, ClientData.gold >= c ? 0xFFFFD24A : 0xFFFF5555, false);
-            return;
+    private List<Component> renderBag(GuiGraphics g, int mx, int my) {
+        g.pose().pushPose(); g.pose().translate(0, 0, 300);
+        int bx = x + 76, by = y + 40, bw = 146, bh = 110;
+        Ui.window(g, bx, by, bw, bh);
+        g.drawString(font, "가방 속 장비", bx + 10, by + 8, Ui.VAL, true);
+        List<Integer> l = bagIdx();
+        List<Component> tip = null;
+        for (int k = 0; k < l.size() && k < 28; k++) {
+            int i = l.get(k), cx = bx + 9 + (k % 7) * 18, cy = by + 21 + (k / 7) * 19;
+            cell(g, cx, cy, gear.get(i), i == sel);
+            if (mx >= cx && mx < cx + 18 && my >= cy && my < cy + 18) {
+                tip = new ArrayList<>(Screen.getTooltipFromItem(Minecraft.getInstance(), gear.get(i)));
+                tip.add(Component.literal("클릭: 이 장비 강화").withStyle(ChatFormatting.GRAY));
+            }
         }
-        if (st >= max) { g.drawString(font, "최대 ★" + max + " 달성", px, py + 28, 0xFF55FF55, false); return; }
-        double ok = Enhance.rate(st), br = guard ? 0 : Enhance.destroyRate(st);
-        g.drawString(font, "★" + st + " → ★" + (st + 1), px, py + 26, 0xFFFFFFFF, false);
-        g.drawString(font, "성공 " + fmt(ok) + "%", px, py + 38, 0xFF55FF55, false);
-        g.drawString(font, "실패(유지) " + fmt(100 - ok - br) + "%", px + 62, py + 38, 0xFFA0A0A0, false);
-        if (Enhance.destroyRate(st) > 0) g.drawString(font, guard ? "파괴 0% (방지)" : "파괴 " + fmt(br) + "%", px, py + 50, guard ? 0xFF55FF55 : 0xFFFF5555, false);
-        // 다음 ★ 상승치
-        Map<String, Integer> now = Enhance.starStats(d, Enhance.scr(s), st), next = Enhance.starStats(d, Enhance.scr(s), st + 1);
-        StringBuilder sb = new StringBuilder();
-        for (var e : next.entrySet()) {
-            int diff = e.getValue() - now.getOrDefault(e.getKey(), 0);
-            if (diff == 0) continue;
-            if (sb.length() > 0) sb.append(" · ");
-            sb.append(GearDefs.label(e.getKey())).append(" +").append(diff);
-        }
-        List<net.minecraft.util.FormattedCharSequence> lines = font.split(Component.literal("성공 시: " + sb), x + W - 10 - px);
-        for (int i = 0; i < lines.size() && i < 3; i++) g.drawString(font, lines.get(i), px, py + 64 + i * 10, 0xFFFFE080, false);
-        long c = Enhance.cost(d, st, guard);
-        g.drawString(font, "비용 " + String.format("%,d", c) + " G" + (guard && Enhance.destroyRate(st) > 0 ? " (방지 ×" + fmt(Enhance.safeguardMul) + ")" : ""),
-                px, py + 98, ClientData.gold >= c ? 0xFFFFD24A : 0xFFFF5555, false);
+        if (l.isEmpty()) g.drawString(font, "가방에 장비가 없어요", bx + 10, by + 30, Ui.GRAY, false);
+        g.pose().popPose();
+        return tip;
     }
 
-    private List<Component> renderScroll(GuiGraphics g, ItemStack s, GearDefs.GearDef d, int px, int py, int mx, int my, List<Component> tip) {
-        g.drawString(font, s.getHoverName(), px, py, 0xFFFFFFFF, false);
+    private void renderFrag(GuiGraphics g) {
+        var it = net.minecraftforge.registries.ForgeRegistries.ITEMS.getValue(new net.minecraft.resources.ResourceLocation("rpgcore", "scroll_fragment"));
+        Ui.slot(g, x + CX - 9, y + 34);
+        if (it != null) g.renderItem(new ItemStack(it), x + CX - 8, y + 35);
+        center(g, "주문서 조각 합성", y + 58, Ui.VAL);
+        center(g, "조각 " + Enhance.fragments + "개 → 주문서 1장", y + 74, Ui.TXT);
+        center(g, "등급: 내 레벨 기준", y + 86, Ui.GRAY);
+        center(g, "가진 조각 " + frags + " / " + Enhance.fragments, y + 106, frags >= Enhance.fragments ? Ui.GREEN : Ui.RED);
+        Ui.bar(g, x + CX - 40, y + 120, 80, 4, frags / (float) Math.max(1, Enhance.fragments), 0xFF7CE07C);
+    }
+
+    /** 가운데 위: 고른 장비 칸 + 이름 */
+    private int head(GuiGraphics g, ItemStack s, int top) {
+        Ui.slot(g, x + CX - 9, top);
+        g.renderItem(s, x + CX - 8, top + 1);
+        Ui.selBox(g, x + CX - 9, top, 18, 18);
+        center(g, s.getHoverName().getString(), top + 22, Enhance.broken(s) ? Ui.RED : Ui.VAL);
+        return top + 34;
+    }
+
+    private void renderStar(GuiGraphics g, ItemStack s, GearDefs.GearDef d) {
+        int st = Enhance.star(s), max = Enhance.maxStar(d);
+        if (max > 0) stars(g, Math.min(st, max), max, y + 30);
+        int yy = head(g, s, y + 40);
+        if (max == 0) { center(g, "스타포스 강화 불가", yy, Ui.RED); return; }
+        if (Enhance.broken(s)) {
+            center(g, "파괴된 장비", yy, Ui.RED);
+            center(g, "같은 장비 1개 + 골드", yy + 14, Ui.TXT);
+            center(g, "→ ★" + Enhance.restoreStar + " 로 복구", yy + 26, Ui.VAL);
+            boolean has = material() >= 0;
+            center(g, has ? "재료 있음 (가방)" : "재료 없음", yy + 40, has ? Ui.GREEN : Ui.RED);
+            long c = Enhance.restoreCost(d);
+            center(g, String.format("%,d G", c), yy + 54, ClientData.gold >= c ? Ui.VAL : Ui.RED);
+            return;
+        }
+        if (st >= max) { center(g, "★" + max + " 최대 강화", yy, Ui.VAL); center(g, "더 강화할 수 없어요", yy + 12, Ui.GRAY); return; }
+        double ok = Enhance.rate(st), br = guard ? 0 : Enhance.destroyRate(st);
+        center(g, "★" + st + " → ★" + (st + 1), yy, Ui.TXT);
+        int bx = x + CX - 42;
+        Ui.bar(g, bx, yy + 13, 84, 4, (float) (ok / 100), 0xFF5AC85A);
+        if (br > 0) g.fill(bx + (int) (84 * ok / 100), yy + 13, bx + (int) (84 * ok / 100) + Math.max(1, (int) (84 * br / 100)), yy + 17, 0xFFDC3232);
+        center(g, "성공 " + fmt(ok) + "%" + (Enhance.destroyRate(st) > 0 ? " · 파괴 " + fmt(br) + "%" : ""), yy + 21, Ui.TXT);
+        long c = Enhance.cost(d, st, guard);
+        center(g, String.format("%,d G", c), y + 138, ClientData.gold >= c ? Ui.VAL : Ui.RED);
+    }
+
+    private List<Component> renderScroll(GuiGraphics g, ItemStack s, GearDefs.GearDef d, int mx, int my, List<Component> tip) {
+        int yy = head(g, s, y + 28);
         int um = Enhance.upgMax(d);
-        if (um == 0) { g.drawString(font, "주문서 사용 불가", px, py + 14, 0xFFFF5555, false); return tip; }
-        g.drawString(font, "업그레이드 가능 " + Enhance.upgLeft(s) + " / " + um + " (실패 " + Enhance.upgFail(s) + ")", px, py + 12, 0xFFA0A0A0, false);
-        g.drawString(font, "내 주문서 (초록 = 사용 가능)", px, py + 26, 0xFFA0A0A0, false);
-        int cols = 9;
-        for (int i = 0; i < scrolls.size() && i < 27; i++) {
-            int cx = px + (i % cols) * CELL, cy = py + 38 + (i / cols) * CELL;
+        if (um == 0) { center(g, "주문서 사용 불가", yy, Ui.RED); return tip; }
+        center(g, "업그레이드 " + Enhance.upgLeft(s) + "/" + um + " · 실패 " + Enhance.upgFail(s), yy, Ui.TXT);
+        Ui.hsep(g, x + 126, x + 220, yy + 12);
+        int px = x + 127, py = yy + 16;
+        for (int i = 0; i < scrolls.size() && i < 10; i++) {
+            int cx = px + (i % 5) * 19, cy = py + (i / 5) * 19;
             ItemStack sc = scrolls.get(i);
             boolean ok = Enhance.scrollBlock(s, sc) == null;
-            boolean hover = mx >= cx && mx < cx + CELL && my >= cy && my < cy + CELL;
-            g.fill(cx, cy, cx + CELL - 1, cy + CELL - 1, i == selScroll ? 0xA0FFD24A : hover ? 0x80FFFFFF : ok ? 0x5050C050 : 0x50803030);
-            g.renderItem(sc, cx + 1, cy + 1);
-            g.renderItemDecorations(font, sc, cx + 1, cy + 1);
-            if (hover) {
+            cell(g, cx, cy, sc, i == selScroll);
+            if (!ok) g.fill(cx + 1, cy + 1, cx + 17, cy + 17, 0x90000000);
+            if (mx >= cx && mx < cx + 18 && my >= cy && my < cy + 18) {
                 tip = new ArrayList<>(Screen.getTooltipFromItem(Minecraft.getInstance(), sc));
                 String why = Enhance.scrollBlock(s, sc);
                 tip.add(Component.literal(why == null ? "클릭해서 선택" : why).withStyle(why == null ? ChatFormatting.GREEN : ChatFormatting.RED));
             }
         }
-        if (scrolls.isEmpty()) g.drawString(font, "주문서가 없어요", px, py + 40, 0xFF808080, false);
+        if (scrolls.isEmpty()) center(g, "주문서가 없어요", py + 6, Ui.GRAY);
         if (selScroll >= 0 && selScroll < scrolls.size()) {
             String why = Enhance.scrollBlock(s, scrolls.get(selScroll));
-            g.drawString(font, "선택: " + scrolls.get(selScroll).getHoverName().getString(), px, py + 98, 0xFFFFE080, false);
-            if (why != null) g.drawString(font, why, px, py + 108, 0xFFFF5555, false);
+            center(g, scrolls.get(selScroll).getHoverName().getString(), y + 132, why == null ? Ui.GREEN : Ui.RED);
+            if (why != null) center(g, why, y + 143, Ui.RED);
         }
         return tip;
     }
 
-    private void renderPot(GuiGraphics g, ItemStack s, GearDefs.GearDef d, int px, int py) {
-        g.drawString(font, s.getHoverName(), px, py, 0xFFFFFFFF, false);
-        if (!rpg.core.equip.Potential.can(d)) { g.drawString(font, "잠재능력 불가", px, py + 14, 0xFFFF5555, false); return; }
+    /** 위: 작은 칸 + 이름 + 부제 (잠재·불꽃) */
+    private void small(GuiGraphics g, ItemStack s, String sub, int col) {
+        Ui.slot(g, x + 126, y + 28);
+        g.renderItem(s, x + 127, y + 29);
+        g.drawString(font, Ui.cut(font, s.getHoverName().getString(), 74), x + 147, y + 29, Ui.VAL, true);
+        g.drawString(font, Ui.cut(font, sub, 74), x + 147, y + 39, col, false);
+    }
+
+    private void box(GuiGraphics g, int bx, String title, int col, List<Component> lines, boolean on) {
+        g.fill(bx, y + 52, bx + 47, y + 112, Ui.IN1);
+        int e = on ? Ui.G4 : Ui.SEP;
+        g.fill(bx, y + 52, bx + 47, y + 53, e); g.fill(bx, y + 111, bx + 47, y + 112, e); g.fill(bx, y + 52, bx + 1, y + 112, e); g.fill(bx + 46, y + 52, bx + 47, y + 112, e);
+        String t = Ui.cut(font, title, 44);
+        g.drawString(font, t, bx + 24 - font.width(t) / 2, y + 55, col, true);
+        int yy = y + 67;
+        for (Component c : lines) { g.drawString(font, Ui.cut(font, c.getString(), 43), bx + 3, yy, Ui.TXT, false); yy += 10; }
+    }
+
+    private void renderPot(GuiGraphics g, ItemStack s, GearDefs.GearDef d) {
+        if (!rpg.core.equip.Potential.can(d)) { small(g, s, "잠재능력 불가", Ui.RED); return; }
         if (!rpg.core.equip.Potential.has(s)) {
-            g.drawString(font, "잠재능력 없음", px, py + 14, 0xFFA0A0A0, false);
-            g.drawString(font, "부여 주문서로 처음 부여해요", px, py + 26, 0xFFA0A0A0, false);
+            small(g, s, "잠재능력 없음", Ui.GRAY);
+            center(g, "부여 주문서로", y + 80, Ui.GRAY); center(g, "처음 부여해요", y + 92, Ui.GRAY);
             return;
         }
         var pt = rpg.core.equip.Potential.pot(s);
         int gr = Math.max(0, Math.min(3, pt.getInt("g")));
-        int y0 = py + 13;
+        int gc = 0xFF000000 | rpg.core.equip.Potential.COLOR[gr];
         boolean pend = rpg.core.equip.Potential.pending(s);
-        g.drawString(font, (pend ? "지금 " : "") + "[" + rpg.core.equip.Potential.GRADE[gr] + "]", px, y0, 0xFF000000 | rpg.core.equip.Potential.COLOR[gr], false);
-        int yy = y0 + 10;
-        for (var c : rpg.core.equip.Potential.lines(pt)) { g.drawString(font, c, px, yy, 0xFFFFFFFF, false); yy += 10; }
+        small(g, s, "잠재 [" + rpg.core.equip.Potential.GRADE[gr] + "]", gc);
         if (pend) {
             var nw = pt.getCompound("new");
             int ng = Math.max(0, Math.min(3, nw.getInt("g")));
-            yy += 2;
-            g.drawString(font, "새 옵션 [" + rpg.core.equip.Potential.GRADE[ng] + "]" + (ng > gr ? " ▲" : ""), px, yy, 0xFF000000 | rpg.core.equip.Potential.COLOR[ng], false);
-            yy += 10;
-            for (var c : rpg.core.equip.Potential.lines(nw)) { g.drawString(font, c, px, yy, 0xFFFFFFFF, false); yy += 10; }
-            powLine(g, s, "rpgPowPot", px, yy + 2);
-            if (confirmKeep && ng > gr) {
-                g.drawString(font, "등급이 올랐어요 (" + rpg.core.equip.Potential.GRADE[gr] + " → " + rpg.core.equip.Potential.GRADE[ng] + ")", px, y + H - 60, 0xFFFF8040, false);
-                g.drawString(font, "정말 이전 옵션 유지? 오른 등급은 사라져요", px, y + H - 48, 0xFFFF8040, false);
-            }
-        } else if (gr < 3) {
-            yy += 4;
-            g.drawString(font, "등급 상승 " + fmt(rpg.core.equip.Potential.upChance[gr]) + "% · 천장 " + rpg.core.equip.Potential.ceil(s)[gr] + " / " + rpg.core.equip.Potential.ceiling[gr], px, yy, 0xFFA0A0A0, false);
+            box(g, x + 125, "이전", gc, rpg.core.equip.Potential.lines(pt), false);
+            box(g, x + 174, (ng > gr ? "▲" : "") + rpg.core.equip.Potential.GRADE[ng], 0xFF000000 | rpg.core.equip.Potential.COLOR[ng], rpg.core.equip.Potential.lines(nw), true);
+            powLine(g, s, "rpgPowPot", y + 118);
+            if (confirmKeep && ng > gr) { center(g, "오른 등급이 사라져요", y + 130, 0xFFFF8040); center(g, "정말 이전 유지?", y + 141, 0xFFFF8040); }
+        } else {
+            int yy = y + 56;
+            for (var c : rpg.core.equip.Potential.lines(pt)) { g.drawString(font, Ui.cut(font, c.getString(), 94), x + 127, yy, Ui.TXT, false); yy += 11; }
+            if (gr < 3) center(g, "등급 상승 " + fmt(rpg.core.equip.Potential.upChance[gr]) + "% · 천장 " + rpg.core.equip.Potential.ceil(s)[gr] + "/" + rpg.core.equip.Potential.ceiling[gr], y + 124, Ui.GRAY);
+            long c = rpg.core.equip.Potential.cost(d, gr);
+            center(g, "골드 " + shortG(c) + " 또는 큐브 1개", y + 138, Ui.VAL);
         }
     }
 
-    private void renderFlame(GuiGraphics g, ItemStack s, GearDefs.GearDef d, int px, int py) {
-        g.drawString(font, s.getHoverName(), px, py, 0xFFFFFFFF, false);
-        if (!rpg.core.equip.Flame.can(d)) { g.drawString(font, "추가 옵션 불가 (훈장)", px, py + 14, 0xFFFF5555, false); return; }
-        if (Enhance.broken(s)) { g.drawString(font, "파괴된 장비예요", px, py + 14, 0xFFFF5555, false); return; }
-        int yy = py + 13;
+    private void renderFlame(GuiGraphics g, ItemStack s, GearDefs.GearDef d) {
+        if (!rpg.core.equip.Flame.can(d)) { small(g, s, "추가 옵션 불가", Ui.RED); return; }
+        if (Enhance.broken(s)) { small(g, s, "파괴된 장비예요", Ui.RED); return; }
         boolean pend = rpg.core.equip.Flame.pending(s);
-        g.drawString(font, pend ? "이전 옵션" : "지금 옵션", px, yy, 0xFF55FF55, false);
-        yy = flameLines(g, Gear.opts(s), rpg.core.equip.Flame.tiers(s), px, yy + 10);
+        small(g, s, pend ? "검은 불꽃: 골라요" : "추가 옵션", pend ? Ui.RED : Ui.BLUE);
         if (pend) {
             var nw = rpg.core.equip.Flame.pendingTag(s);
-            g.drawString(font, "새 옵션", px, yy + 2, 0xFFB070FF, false);
-            int ny = flameLines(g, nw.getCompound("o"), nw.getCompound("t"), px, yy + 12);
-            powLine(g, s, "rpgPowFlame", px, ny + 2);
+            box(g, x + 125, "이전", Ui.GRAY, flameList(Gear.opts(s), rpg.core.equip.Flame.tiers(s)), false);
+            box(g, x + 174, "새", Ui.VAL, flameList(nw.getCompound("o"), nw.getCompound("t")), true);
+            powLine(g, s, "rpgPowFlame", y + 118);
         } else {
+            int yy = y + 56;
+            for (Component c : flameList(Gear.opts(s), rpg.core.equip.Flame.tiers(s))) { g.drawString(font, Ui.cut(font, c.getString(), 94), x + 127, yy, Ui.BLUE, false); yy += 11; }
             long c = rpg.core.equip.Flame.cost(d);
-            g.drawString(font, "강력한 3~6단계 · 영원한 4~7 · 검은 4~7 (선택)", px, y + H - 76, 0xFFA0A0A0, false);
-            g.drawString(font, "비용: 불꽃 1개 + " + String.format("%,d", c) + " G", px, y + H - 66, ClientData.gold >= c ? 0xFFFFD24A : 0xFFFF5555, false);
+            center(g, "불꽃 1개 + " + shortG(c), y + 140, ClientData.gold >= c ? Ui.VAL : Ui.RED);
         }
+    }
+
+    private static List<Component> flameList(net.minecraft.nbt.CompoundTag o, net.minecraft.nbt.CompoundTag t) {
+        List<Component> l = new ArrayList<>();
+        if (o.isEmpty()) l.add(Component.literal("없음"));
+        for (String k : o.getAllKeys()) l.add(Component.literal(rpg.core.equip.Flame.text(k, o.getInt(k), t.getInt(k))));
+        return l;
     }
 
     /** 전투력 변화 (서버가 계산해서 장비 복사본에 붙여 보냄) */
-    private void powLine(GuiGraphics g, ItemStack s, String key, int px, int yy) {
+    private void powLine(GuiGraphics g, ItemStack s, String key, int yy) {
         String w = where(curLoc());
-        boolean weapon = "weapon".equals(Gear.slotOf(s));   // 무기는 손에 없어도 든 걸로 계산
-        if (!w.equals("착용") && !weapon) { g.drawString(font, "전투력: 착용하면 표시", px, yy, 0xFF808080, false); return; }
+        boolean weapon = "weapon".equals(Gear.slotOf(s));
+        if (!w.equals("착용") && !weapon) { center(g, "입으면 전투력 표시", yy, Ui.GRAY); return; }
         long dlt = s.hasTag() ? s.getTag().getLong(key) : 0;
         String t = dlt == 0 ? "전투력 변화 없음" : String.format("전투력 %+,d %s", dlt, dlt > 0 ? "▲" : "▼");
-        g.drawString(font, t, px, yy, dlt > 0 ? 0xFF55FF55 : dlt < 0 ? 0xFFFF5555 : 0xFFA0A0A0, false);
-    }
-
-    private int flameLines(GuiGraphics g, net.minecraft.nbt.CompoundTag o, net.minecraft.nbt.CompoundTag t, int px, int yy) {
-        if (o.isEmpty()) { g.drawString(font, " 없음", px, yy, 0xFF808080, false); return yy + 10; }
-        for (String k : o.getAllKeys()) {
-            g.drawString(font, " " + rpg.core.equip.Flame.text(k, o.getInt(k), t.getInt(k)), px, yy, 0xFFFFFFFF, false);
-            yy += 10;
-        }
-        return yy;
+        center(g, t, yy, dlt > 0 ? Ui.GREEN : dlt < 0 ? Ui.RED : Ui.GRAY);
     }
 
     private static String fmt(double v) {
@@ -403,36 +446,36 @@ public class EnhanceScreen extends Screen {
 
     @Override
     public boolean mouseClicked(double mx, double my, int button) {
-        if (super.mouseClicked(mx, my, button)) return true;
-        for (int r = 0; r < ROWS; r++) {
-            int i = r + scroll;
-            if (i >= gear.size()) break;
-            int ry = y + 36 + r * ROW;
-            if (mx >= x + 6 && mx < x + 152 && my >= ry && my < ry + ROW - 2) {
-                sel = i;
-                selScroll = -1;
-                rebuildWidgets();
-                return true;
+        if (bag) {
+            int bx = x + 76, by = y + 40;
+            List<Integer> l = bagIdx();
+            for (int k = 0; k < l.size() && k < 28; k++) {
+                int cx = bx + 9 + (k % 7) * 18, cy = by + 21 + (k / 7) * 19;
+                if (mx >= cx && mx < cx + 18 && my >= cy && my < cy + 18) { sel = l.get(k); selScroll = -1; bag = false; rebuildWidgets(); return true; }
             }
+            if (mx >= bx && mx < bx + 146 && my >= by && my < by + 110) return true;
+            if (super.mouseClicked(mx, my, button)) return true;
+            bag = false; rebuildWidgets();
+            return true;
         }
+        if (super.mouseClicked(mx, my, button)) return true;
+        for (int i = 0; i < KINDS.length; i++) {
+            int ry = y + 30 + i * 15;
+            if (mx >= x + 72 && mx < x + 120 && my >= ry - 2 && my < ry + 12) { tab = i; lastTab = i; selScroll = -1; rebuildWidgets(); return true; }
+        }
+        for (int c = 0; c < 3; c++)
+            for (int r = 0; r < 5; r++) {
+                int cx = x + 228 + c * 18, cy = y + 41 + r * 19, i = idxOf(GRID[c][r]);
+                if (i >= 0 && mx >= cx && mx < cx + 18 && my >= cy && my < cy + 18) { sel = i; selScroll = -1; rebuildWidgets(); return true; }
+            }
         if (tab == 1) {
-            int px = x + 158, py = y + 40;
-            for (int i = 0; i < scrolls.size() && i < 27; i++) {
-                int cx = px + (i % 9) * CELL, cy = py + 38 + (i / 9) * CELL;
-                if (mx >= cx && mx < cx + CELL && my >= cy && my < cy + CELL) {
-                    selScroll = i;
-                    rebuildWidgets();
-                    return true;
-                }
+            int px = x + 127, py = y + 28 + 34 + 16;
+            for (int i = 0; i < scrolls.size() && i < 10; i++) {
+                int cx = px + (i % 5) * 19, cy = py + (i / 5) * 19;
+                if (mx >= cx && mx < cx + 18 && my >= cy && my < cy + 18) { selScroll = i; rebuildWidgets(); return true; }
             }
         }
         return false;
-    }
-
-    @Override
-    public boolean mouseScrolled(double mx, double my, double delta) {
-        scroll = Math.max(0, Math.min(Math.max(0, gear.size() - ROWS), scroll - (int) Math.signum(delta)));
-        return true;
     }
 
     @Override

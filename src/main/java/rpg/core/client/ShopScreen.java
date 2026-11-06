@@ -117,7 +117,7 @@ public class ShopScreen extends Screen {
             int i = shown.get(r + scroll);
             int ry = y + 50 + off + r * ROW;
             boolean hover = mx >= x + 6 && mx < x + 160 && my >= ry && my < ry + ROW - 2;
-            g.fill(x + 6, ry, x + 160, ry + ROW - 2, hover ? 0x60FFFFFF : 0x30FFFFFF);
+            g.fill(x + 6, ry, x + 160, ry + ROW - 2, hover ? 0x60FFFFFF : 0xFF4A2028);
             ItemStack s = offers.get(i);
             g.renderItem(s, x + 8, ry + 1);
             String nm = s.isEmpty() ? "?" : s.getHoverName().getString();
@@ -125,7 +125,7 @@ public class ShopScreen extends Screen {
             g.drawString(font, nm, x + 28, ry + 5, 0xFFFFFFFF, false);
             String pr = String.format("%,d", prices.get(i)) + " G";
             boolean afford = ClientData.gold >= prices.get(i);
-            g.drawString(font, pr, x + 156 - font.width(pr), ry + 5, afford ? 0xFFFFD24A : 0xFFFF5555, false);
+            g.drawString(font, pr, x + 156 - font.width(pr), ry + 5, afford ? 0xFFFFD86A : 0xFFFF5555, false);
             if (hover && !s.isEmpty()) {
                 tip = new ArrayList<>(Screen.getTooltipFromItem(Minecraft.getInstance(), s));
                 tip.add(Component.literal("가격: " + String.format("%,d", prices.get(i)) + " G").withStyle(ChatFormatting.GOLD));
@@ -142,7 +142,7 @@ public class ShopScreen extends Screen {
             ItemStack s = inv(i);
             long p = sellPrice(s);
             boolean hover = mx >= cx && mx < cx + CELL && my >= cy && my < cy + CELL;
-            g.fill(cx, cy, cx + CELL - 1, cy + CELL - 1, hover ? 0x80FFFFFF : s.isEmpty() ? 0x30FFFFFF : p > 0 ? 0x5050C050 : 0x50803030);
+            g.fill(cx, cy, cx + CELL - 1, cy + CELL - 1, hover ? 0x80FFFFFF : s.isEmpty() ? 0xFF4A2028 : p > 0 ? 0x5050C050 : 0x50803030);
             if (!s.isEmpty()) {
                 g.renderItem(s, cx + 1, cy + 1);
                 g.renderItemDecorations(font, s, cx + 1, cy + 1);

@@ -134,8 +134,8 @@ public class JobScreen extends Screen {
             int n = Math.max(skillLines(1).size(), skillLines(2).size());
             for (int b = 1; b <= 2; b++) {
                 int cx = x + 10 + (b - 1) * 145, cy = ly + 16;
-                g.fill(cx - 4, cy - 3, cx + 136, cy - 3 + boxH(n), b == pending ? 0x40FFD24A : 0x30FFFFFF);
-                g.drawString(font, Jobs.branchName(family, b), cx, cy, 0xFFFFD24A, true);
+                g.fill(cx - 4, cy - 3, cx + 136, cy - 3 + boxH(n), b == pending ? 0x40FFD86A : 0xFF4A2028);
+                g.drawString(font, Jobs.branchName(family, b), cx, cy, 0xFFFFD86A, true);
                 g.drawString(font, Ui.cut(font, Jobs.branchRole(family, b), 132), cx, cy + 12, 0xFFA0C0FF, false);
                 int sy = cy + 28;
                 for (String line : skillLines(b)) { g.drawString(font, Ui.cut(font, line, 132), cx, sy, 0xFFE0E0E0, false); sy += 11; }

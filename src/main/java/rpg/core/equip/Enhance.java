@@ -192,7 +192,7 @@ public final class Enhance {
     /** 강화 창에 보여줄 장비 목록 (장착 → 인벤 순) */
     public static List<Integer> gearLocs(ServerPlayer p) {
         List<Integer> l = new ArrayList<>();
-        int sel = p.getInventory().selected;
+        int sel = 0;   // 무기 칸 = 핫바 1번 (장비창 무기칸)
         if (Gear.def(at(p, sel)) != null) l.add(sel);
         for (int i = 3; i >= 0; i--) if (Gear.def(at(p, 100 + i)) != null) l.add(100 + i);
         for (int i = 1; i < PlayerEquip.SLOT_TYPES.length; i++) if (Gear.def(at(p, 200 + i)) != null) l.add(200 + i);

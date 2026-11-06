@@ -6,6 +6,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 
 /**
@@ -15,36 +16,122 @@ import net.minecraft.util.FormattedCharSequence;
 public final class Ui {
     private Ui() {}
 
-    public static final int BG = 0xF0141420, EDGE = 0xFF303044, BOTTOM = 0xFF505060, GOLD = 0xFFFFD24A;
+    // 와인 고급 판타지 (시안 ui_d*): 색
+    public static final int BG = 0xF0141420, EDGE = 0xFF4A2028, BOTTOM = 0xFF6A4A48, GOLD = 0xFFFFD86A;
+    public static final int BG1 = 0xFF3A1018, BG2 = 0xFF16060A, IN1 = 0xFF1E080C, IN2 = 0xFF2A0E14, SEP = 0xFF4A2028,
+            TXT = 0xFFF0E6C8, VAL = 0xFFFFD86A, GRAY = 0xFFA89890, OUT = 0xFF0A0608,
+            G1 = 0xFF5A3A10, G2 = 0xFF8C5E1C, G3 = 0xFFC8902E, G4 = 0xFFECC25A, G5 = 0xFFFFF0B0,
+            GREEN = 0xFF7CE07C, RED = 0xFFFF6060, BLUE = 0xFF80C0FF, PURPLE = 0xFFC080FF;
     public static final int FOOT = 24, BTN_H = 18, MARGIN = 4;
+
+    private static ResourceLocation tex(String n) { return new ResourceLocation("rpgcore", "textures/gui/ui/" + n + ".png"); }
+    private static final ResourceLocation FRAME = tex("frame"), PATTERN = tex("pattern"), SLOT = tex("slot"),
+            PL = tex("plaque_l"), PM = tex("plaque_m"), PR = tex("plaque_r"),
+            CTL = tex("corner_tl"), CTR = tex("corner_tr"), CBL = tex("corner_bl"), CBR = tex("corner_br");
 
     /** 화면 안에 들어오는 가운데 위치 (작은 화면에서도 위·왼쪽이 잘리지 않게) */
     public static int cx(int screenW, int w) { return Math.max(MARGIN, (screenW - w) / 2); }
     public static int cy(int screenH, int h) { return Math.max(MARGIN, (screenH - h) / 2); }
 
-    /** 창 바탕 + 위 색줄 + 테두리 */
-    public static void panel(GuiGraphics g, int x, int y, int w, int h, int accent) {
-        g.fill(x, y, x + w, y + h, BG);
-        g.fill(x, y, x + 1, y + h, EDGE);
-        g.fill(x + w - 1, y, x + w, y + h, EDGE);
-        g.fill(x, y + h - 1, x + w, y + h, BOTTOM);
-        g.fill(x, y, x + w, y + 1, accent);
+    /** 9조각 그리기: 텍스처(ts×ts, 테두리 b) → 화면 (x,y,w,h). half = 2배 텍스처를 반 크기로 */
+    public static void nine(GuiGraphics g, ResourceLocation t, int x, int y, int w, int h, int ts, int b, boolean half) {
+        com.mojang.blaze3d.systems.RenderSystem.enableBlend();
+        int d = half ? b / 2 : b, m = ts - 2 * b;
+        g.blit(t, x, y, d, d, 0, 0, b, b, ts, ts);
+        g.blit(t, x + w - d, y, d, d, ts - b, 0, b, b, ts, ts);
+        g.blit(t, x, y + h - d, d, d, 0, ts - b, b, b, ts, ts);
+        g.blit(t, x + w - d, y + h - d, d, d, ts - b, ts - b, b, b, ts, ts);
+        g.blit(t, x + d, y, w - 2 * d, d, b, 0, m, b, ts, ts);
+        g.blit(t, x + d, y + h - d, w - 2 * d, d, b, ts - b, m, b, ts, ts);
+        g.blit(t, x, y + d, d, h - 2 * d, 0, b, b, m, ts, ts);
+        g.blit(t, x + w - d, y + d, d, h - 2 * d, ts - b, b, b, m, ts, ts);
+        g.blit(t, x + d, y + d, w - 2 * d, h - 2 * d, b, b, m, m, ts, ts);
     }
 
-    /** 창 + 제목 + 오른쪽 정보 (right 는 빈 글자면 안 그림) */
+    /** 창 바탕: 붉은 그라데이션 + 마름모 무늬 + 금 테두리 + 모서리 메달 */
+    public static void window(GuiGraphics g, int x, int y, int w, int h) {
+        g.fillGradient(x + 3, y + 3, x + w - 3, y + h - 3, BG1, BG2);
+        com.mojang.blaze3d.systems.RenderSystem.enableBlend();
+        for (int ty = y + 4; ty < y + h - 4; ty += 12)
+            for (int tx = x + 4; tx < x + w - 4; tx += 12) {
+                int cw = Math.min(12, x + w - 4 - tx), ch = Math.min(12, y + h - 4 - ty);
+                g.blit(PATTERN, tx, ty, 0, 0, cw, ch, 12, 12);
+            }
+        nine(g, FRAME, x, y, w, h, 32, 8, false);
+        g.blit(CTL, x - 2, y - 2, 0, 0, 26, 26, 26, 26);
+        g.blit(CTR, x + w - 24, y - 2, 0, 0, 26, 26, 26, 26);
+        g.blit(CBL, x - 2, y + h - 24, 0, 0, 26, 26, 26, 26);
+        g.blit(CBR, x + w - 24, y + h - 24, 0, 0, 26, 26, 26, 26);
+    }
+
+    /** 위 가운데 현판 (제목) */
+    public static void plaque(GuiGraphics g, Font f, int cxp, int y, String title) {
+        com.mojang.blaze3d.systems.RenderSystem.enableBlend();
+        int mw = f.width(title) + 14, x0 = cxp - mw / 2 - 9;
+        g.blit(PL, x0, y, 9, 14, 0, 0, 18, 28, 18, 28);
+        g.blit(PM, x0 + 9, y, mw, 14, 0, 0, 4, 28, 4, 28);
+        g.blit(PR, x0 + 9 + mw, y, 9, 14, 0, 0, 18, 28, 18, 28);
+        g.drawString(f, title, cxp - f.width(title) / 2, y + 3, VAL, true);
+    }
+
+    /** 오른쪽 위 금 상자 (골드 등): 오른쪽 끝 xr 기준 */
+    public static void goldBox(GuiGraphics g, Font f, int xr, int y, String s, boolean coin) {
+        int w = f.width(s) + (coin ? 17 : 8), x0 = xr - w;
+        g.fill(x0, y, xr, y + 13, OUT); g.fill(x0 + 1, y + 1, xr - 1, y + 12, G2); g.fill(x0 + 2, y + 2, xr - 2, y + 11, IN1);
+        if (coin) { g.fill(x0 + 4, y + 4, x0 + 9, y + 9, G4); g.fill(x0 + 5, y + 3, x0 + 8, y + 10, G4); g.fill(x0 + 3, y + 5, x0 + 10, y + 8, G4); }
+        g.drawString(f, s, x0 + (coin ? 13 : 4), y + 3, VAL, false);
+    }
+
+    /** 안쪽 판 (내용 칸) */
+    public static void inset(GuiGraphics g, int x0, int y0, int x1, int y1) {
+        g.fillGradient(x0, y0, x1, y1, IN1, IN2);
+        g.fill(x0, y0, x1, y0 + 1, 0xFF000000); g.fill(x0, y0, x0 + 1, y1, 0xFF000000);
+        g.fill(x0, y1 - 1, x1, y1, G2); g.fill(x1 - 1, y0, x1, y1, G2);
+    }
+
+    /** 아이템 칸 (18×18, 아이템은 x+1,y+1) */
+    public static void slot(GuiGraphics g, int x, int y) { com.mojang.blaze3d.systems.RenderSystem.enableBlend(); g.blit(SLOT, x, y, 18, 18, 0, 0, 36, 36, 36, 36); }
+
+    /** 고른 칸 금 테두리 */
+    public static void selBox(GuiGraphics g, int x, int y, int w, int h) {
+        g.fill(x - 1, y - 1, x + w + 1, y, G4); g.fill(x - 1, y + h, x + w + 1, y + h + 1, G4);
+        g.fill(x - 1, y, x, y + h, G4); g.fill(x + w, y, x + w + 1, y + h, G4);
+    }
+
+    /** 가로·세로 구분선 */
+    public static void hsep(GuiGraphics g, int x0, int x1, int y) { g.fill(x0, y, x1, y + 1, SEP); }
+    public static void vsep(GuiGraphics g, int x, int y0, int y1) { g.fill(x, y0, x + 1, y1, SEP); }
+
+    /** 줄 바탕 (고르면 금 막대) */
+    public static void row(GuiGraphics g, int x0, int y0, int x1, int y1, boolean sel) {
+        g.fill(x0, y0, x1, y1, sel ? SEP : IN2);
+        if (sel) g.fill(x0, y0, x0 + 2, y1, G4);
+    }
+
+    /** 막대 (금 테두리) */
+    public static void bar(GuiGraphics g, int x, int y, int w, int h, float f, int color) {
+        g.fill(x - 1, y - 1, x + w + 1, y + h + 1, G2); g.fill(x, y, x + w, y + h, 0xFF000000);
+        int fw = Math.round(w * Math.max(0, Math.min(1, f)));
+        if (fw > 0) g.fill(x, y, x + fw, y + h, color);
+    }
+
+    /** 창 바탕 (예전 이름) */
+    public static void panel(GuiGraphics g, int x, int y, int w, int h, int accent) { window(g, x, y, w, h); }
+
+    /** 창 + 현판 제목 + 오른쪽 위 금 상자 (right 는 빈 글자면 안 그림) */
     public static void frame(GuiGraphics g, Font f, int x, int y, int w, int h, int accent, String title, String right, int rightColor) {
-        panel(g, x, y, w, h, accent);
-        g.drawString(f, title, x + 8, y + 7, accent, true);
+        window(g, x, y, w, h);
+        plaque(g, f, x + w / 2, y + 1, title);
         if (right != null && !right.isEmpty()) {
-            int max = w - 24 - f.width(title);
+            int max = w / 2 - f.width(title) / 2 - 36;
             String r = cut(f, right, max);
-            g.drawString(f, r, x + w - 8 - f.width(r), y + 7, rightColor, true);
+            if (!r.isEmpty()) goldBox(g, f, x + w - 14, y + 4, r, r.endsWith(" G") || r.endsWith("G"));
         }
     }
 
     /** 아래 줄 위 얇은 구분선 */
     public static void footLine(GuiGraphics g, int x, int y, int w, int h) {
-        g.fill(x + 6, y + h - FOOT - 3, x + w - 6, y + h - FOOT - 2, 0x30FFFFFF);
+        g.fill(x + 8, y + h - FOOT - 3, x + w - 8, y + h - FOOT - 2, SEP);
     }
 
     /** [닫기] 버튼 (오른쪽 아래) */
@@ -88,17 +175,12 @@ public final class Ui {
         public void renderWidget(GuiGraphics g, int mx, int my, float pt) {
             int x = getX(), y = getY(), w = getWidth(), h = getHeight();
             boolean hov = active && isHoveredOrFocused();
-            int bg, edge, top;
-            if (!active) { bg = 0xFF16161E; edge = 0xFF2C2C38; top = 0xFF22222C; }
-            else if (accent) { bg = hov ? 0xFF6A4220 : 0xFF4E3018; edge = hov ? GOLD : 0xFFB07030; top = 0xFF8A5A2C; }
-            else { bg = hov ? 0xFF323A58 : 0xFF232A40; edge = hov ? GOLD : 0xFF4A5274; top = 0xFF3C4668; }
-            g.fill(x, y, x + w, y + h, edge);
-            g.fill(x + 1, y + 1, x + w - 1, y + h - 1, bg);
-            g.fill(x + 1, y + 1, x + w - 1, y + 2, top);   // 윗줄 살짝 밝게
+            String t9 = !active ? "btn_off" : accent ? (hov ? "btn_accent_hover" : "btn_accent") : (hov ? "btn_hover" : "btn");
+            nine(g, tex(t9), x, y, w, h, 40, 6, true);
             Font f = Minecraft.getInstance().font;
             String t = cut(f, getMessage().getString(), w - 6);
-            int col = !active ? 0xFF6A6A78 : hov ? 0xFFFFFFFF : 0xFFE6E6F0;
-            g.drawString(f, t, x + (w - f.width(t)) / 2, y + (h - 8) / 2, col, false);
+            int col = !active ? 0xFF7A6A68 : hov ? 0xFFFFFFFF : TXT;
+            g.drawString(f, t, x + (w - f.width(t)) / 2, y + (h - 8) / 2, col, true);
         }
     }
 

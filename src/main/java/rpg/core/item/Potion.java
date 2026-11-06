@@ -35,15 +35,21 @@ public class Potion extends Item {
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (level.isClientSide || !(player instanceof ServerPlayer sp)) return InteractionResultHolder.success(stack);
+        return drink(sp, stack) ? InteractionResultHolder.consume(stack) : InteractionResultHolder.fail(stack);
+    }
+
+    /** 마시기 (손에 든 것 · 물약 칸 키 둘 다): 마셨으면 true. 쿨타임은 물약 전부 같이 */
+    public boolean drink(ServerPlayer sp, ItemStack stack) {
+        Level level = sp.level();
         PlayerData d = RpgData.get(sp);
-        if (d.isDown()) return InteractionResultHolder.fail(stack);
+        if (d.isDown()) return false;
         Balance.PotionDef p = def();
         boolean heals = p.hp() > 0 || p.hpPct() > 0, mana = p.mp() > 0 || p.mpPct() > 0;
         boolean hpFull = d.hp >= d.maxHp, mpFull = d.mp >= d.maxMp;
         if ((!heals || hpFull) && (!mana || mpFull)) {
             String what = heals && mana ? "HP·MP가" : heals ? "HP가" : "MP가";
             sp.displayClientMessage(Component.literal(what + " 가득 차 있어요").withStyle(ChatFormatting.GRAY), true);
-            return InteractionResultHolder.fail(stack);
+            return false;
         }
         double mul = 1 + d.bonus("healPct") / 100.0;
         if (heals) d.hp = Math.min(d.maxHp, d.hp + (p.hp() + d.maxHp * p.hpPct() / 100.0) * mul);
@@ -51,10 +57,38 @@ public class Potion extends Item {
         if (!sp.getAbilities().instabuild) stack.shrink(1);
         double cd = p.cooldown() > 0 ? p.cooldown() : Balance.potionCooldown;
         if (rpg.core.combat.Boss.inArena(sp)) cd = Math.max(cd, Balance.bossPotionCooldown);   // 보스전: 물약 쿨 5초
-        sp.getCooldowns().addCooldown(this, (int) Math.round(cd * 20));
+        int ticks = (int) Math.round(cd * 20);
+        for (Item it : net.minecraftforge.registries.ForgeRegistries.ITEMS) if (it instanceof Potion) sp.getCooldowns().addCooldown(it, ticks);
         level.playSound(null, sp.blockPosition(), SoundEvents.GENERIC_DRINK, SoundSource.PLAYERS, 0.6f, 1.2f);
         RpgData.sync(sp);
-        return InteractionResultHolder.consume(stack);
+        return true;
+    }
+
+    /** 가방 정렬 (핫바 0번 = 무기 칸은 그대로): 같은 물건 합치고 물약 먼저 · 이름순 */
+    public static void sortBag(ServerPlayer p) {
+        var inv = p.getInventory().items;
+        java.util.List<ItemStack> merged = new java.util.ArrayList<>();
+        for (int i = 1; i < 36; i++) {
+            ItemStack s = inv.get(i);
+            inv.set(i, ItemStack.EMPTY);
+            if (s.isEmpty()) continue;
+            for (ItemStack m : merged) {
+                if (s.isEmpty()) break;
+                if (ItemStack.isSameItemSameTags(m, s) && m.getCount() < m.getMaxStackSize()) {
+                    int mv = Math.min(s.getCount(), m.getMaxStackSize() - m.getCount());
+                    m.grow(mv); s.shrink(mv);
+                }
+            }
+            if (!s.isEmpty()) merged.add(s);
+        }
+        merged.sort(java.util.Comparator.comparing((ItemStack s) -> !(s.getItem() instanceof Potion))
+                .thenComparing(s -> String.valueOf(net.minecraftforge.registries.ForgeRegistries.ITEMS.getKey(s.getItem()))));
+        int[] order = new int[35];
+        for (int i = 0; i < 27; i++) order[i] = 9 + i;
+        for (int i = 0; i < 8; i++) order[27 + i] = 1 + i;
+        for (int i = 0; i < merged.size() && i < 35; i++) inv.set(order[i], merged.get(i));
+        p.getInventory().setChanged();
+        p.containerMenu.broadcastChanges();
     }
 
     @Override

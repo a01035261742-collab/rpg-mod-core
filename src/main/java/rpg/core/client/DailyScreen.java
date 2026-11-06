@@ -9,8 +9,9 @@ import rpg.core.net.Net;
 
 /** 일일 퀘스트 창 (메뉴 M → 일일 퀘스트): 오늘 3개, 진행도, [완료] [다시 뽑기] */
 public class DailyScreen extends Screen {
-    private static final int W = 300, ROW = 30;
-    private int H = 160;
+    private static int W = 300;
+    private static final int ROW = 30;
+    private int H = 190;
     private Net.DailySync data;
     private int x, y;
 
@@ -29,47 +30,62 @@ public class DailyScreen extends Screen {
         else mc.setScreen(new DailyScreen(d));
     }
 
+    private static final int TOP = 44;
+
     @Override
     protected void init() {
-        H = 26 + data.rows().size() * ROW + 14 + Ui.FOOT + 4;   // 줄 · 보너스 줄 · 버튼줄
+        W = CharWin.W; H = CharWin.H;
         x = Ui.cx(width, W);
         y = Ui.cy(height, H);
+        CharWin.addTabs(this::addRenderableWidget, x, y, CharWin.DAILY);
         for (int i = 0; i < data.rows().size(); i++) {
             final int k = i;
             Net.DailyRow r = data.rows().get(i);
-            int ry = y + 26 + i * ROW;
-            Button done = Ui.button(Component.literal(r.done() ? "완료됨" : "완료"), b -> Net.CH.sendToServer(new Net.DailyAction(1, k)))
-                    .bounds(x + W - 104, ry + 4, 48, 18).build();
-            done.active = !r.done() && r.prog() >= r.need();
-            addRenderableWidget(done);
-            Button re = Ui.button(Component.literal("다시"), b -> Net.CH.sendToServer(new Net.DailyAction(2, k))).bounds(x + W - 52, ry + 4, 44, 18).build();
-            re.active = !r.done() && data.rerolls() > 0;
-            addRenderableWidget(re);
+            int ry = y + TOP + i * ROW;
+            if (r.done()) continue;
+            if (r.prog() >= r.need()) {
+                addRenderableWidget(Ui.button(Component.literal("완료"), b -> Net.CH.sendToServer(new Net.DailyAction(1, k)))
+                        .bounds(x + W - 66, ry + 6, 46, 16).accent(true).build());
+            } else {
+                Button re = Ui.button(Component.literal("다시 " + data.rerolls()), b -> Net.CH.sendToServer(new Net.DailyAction(2, k)))
+                        .bounds(x + W - 66, ry + 6, 46, 16).build();
+                re.active = data.rerolls() > 0;
+                addRenderableWidget(re);
+            }
         }
-        addRenderableWidget(Ui.menu(x, y, H));
-        addRenderableWidget(Ui.close(x, y, W, H, this::onClose));
     }
 
     @Override
     public void render(GuiGraphics g, int mx, int my, float pt) {
         renderBackground(g);
-        String reset = "초기화까지 " + data.minutes() / 60 + "시간 " + data.minutes() % 60 + "분 · 다시 뽑기 " + data.rerolls() + "번";
-        Ui.frame(g, font, x, y, W, H, 0xFFD27FFF, "일일 퀘스트", reset, 0xFF909090);
-        Ui.footLine(g, x, y, W, H);
+        CharWin.draw(g, font, x, y);
+        g.drawString(font, "일일 퀘스트", x + 76, y + 30, Ui.VAL, true);
+        String reset = "초기화까지 " + data.minutes() / 60 + "시간 " + data.minutes() % 60 + "분";
+        g.drawString(font, reset, x + W - 20 - font.width(reset), y + 30, Ui.GRAY, false);
         for (int i = 0; i < data.rows().size(); i++) {
             Net.DailyRow r = data.rows().get(i);
-            int ry = y + 26 + i * ROW;
-            g.fill(x + 6, ry, x + W - 6, ry + ROW - 4, r.done() ? 0x3030C030 : 0x30FFFFFF);
-            g.drawString(font, Ui.cut(font, r.label(), W - 124), x + 12, ry + 4, r.done() ? 0xFF80C080 : 0xFFFFFFFF, false);
-            String p = r.prog() + " / " + r.need();
-            g.drawString(font, p, x + 12, ry + 15, r.prog() >= r.need() ? 0xFF55FF55 : 0xFFFFD24A, false);
-            // 진행 막대
-            int bw = 90, bx = x + 60, by = ry + 17;
-            g.fill(bx, by, bx + bw, by + 4, 0xFF303030);
-            g.fill(bx, by, bx + (int) (bw * Math.min(1.0, r.prog() / (double) Math.max(1, r.need()))), by + 4, 0xFFD27FFF);
+            int ry = y + TOP + i * ROW;
+            Ui.row(g, x + 74, ry, x + W - 17, ry + ROW - 3, false);
+            g.drawString(font, Ui.cut(font, r.label(), W - 160), x + 79, ry + 4, r.done() ? Ui.GREEN : Ui.TXT, true);
+            String p = r.prog() + "/" + r.need();
+            boolean full = r.prog() >= r.need();
+            g.drawString(font, p, x + 79, ry + 15, full ? Ui.GREEN : Ui.GRAY, false);
+            Ui.bar(g, x + 120, ry + 17, 90, 3, (float) Math.min(1.0, r.prog() / (double) Math.max(1, r.need())), full ? 0xFF5AC85A : 0xFFC89632);
+            if (r.done()) g.drawString(font, "✔ 완료", x + W - 60, ry + 9, Ui.GREEN, true);
         }
-        String bonus = data.bonus() ? "오늘 보너스 받음 ✔" : "3개 다 하면 보너스: 주문서 조각 · 물약 · 귀환 주문서 · 강력한 불꽃";
-        g.drawString(font, Ui.cut(font, bonus, W - 16), x + 8, y + H - Ui.FOOT - 14, data.bonus() ? 0xFF55FF55 : 0xFFA0A0A0, false);
+        int by = y + TOP + data.rows().size() * ROW + 2;
+        Ui.hsep(g, x + 74, x + W - 17, by);
+        String bonus = data.bonus() ? "오늘 보너스 받음 ✔" : "3개 다 하면 보너스";
+        g.drawString(font, bonus, x + 78, by + 6, data.bonus() ? Ui.GREEN : Ui.GRAY, false);
+        if (!data.bonus()) {
+            String[] ic = {"scroll_fragment", "red_potion", "return_scroll", "powerful_flame"};
+            for (int i = 0; i < ic.length; i++) {
+                int sx = x + W - 96 + i * 20;
+                Ui.slot(g, sx, by + 3);
+                var it = net.minecraftforge.registries.ForgeRegistries.ITEMS.getValue(new net.minecraft.resources.ResourceLocation("rpgcore", ic[i]));
+                if (it != null) g.renderItem(new net.minecraft.world.item.ItemStack(it), sx + 1, by + 4);
+            }
+        }
         super.render(g, mx, my, pt);
     }
 
