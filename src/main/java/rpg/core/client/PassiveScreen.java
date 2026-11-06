@@ -53,7 +53,7 @@ public class PassiveScreen extends ScaledScreen {
         pw = width - 2 * Ui.MARGIN;
         ph = height - 2 * Ui.MARGIN;
         px = Ui.MARGIN; py = Ui.MARGIN;
-        ax = px + 70; ay = py + HEAD; aw = pw - 70 - 12; ah = ph - HEAD - 13;
+        ax = px + 70; ay = py + HEAD; aw = pw - 70 - 12; ah = ph - HEAD - 13 - 22;   // 아래 22 = 버튼 줄 (트리와 안 겹치게)
         CharWin.addTabs(this::addRenderableWidget, px, py, CharWin.PASSIVE);
         int minX = 0, maxX = 0, minY = 0, maxY = 0;
         for (Defs.Node n : nodes) { minX = Math.min(minX, n.x()); maxX = Math.max(maxX, n.x()); minY = Math.min(minY, n.y()); maxY = Math.max(maxY, n.y()); }
@@ -67,7 +67,7 @@ public class PassiveScreen extends ScaledScreen {
         stars = new long[160];
         for (int i = 0; i < stars.length; i++) stars[i] = ((long) r.nextInt(Math.max(1, aw)) << 32) | (r.nextInt(Math.max(1, ah)) & 0xFFFFFFFFL) | ((long) r.nextInt(3) << 60);
         // 버튼: 오른쪽 아래
-        int bw = 56, by = ay + ah - 22, bx = ax + aw - 3 * (bw + 4) - 6;
+        int bw = 56, by = ay + ah + 3, bx = ax + aw - 3 * (bw + 4) + 4;
         addRenderableWidget(Ui.button(Component.literal("초기화"), b -> reset()).bounds(bx, by, bw, 18).build());
         addRenderableWidget(Ui.button(Component.literal("검색"), b -> { searching = !searching; search.visible = searching; if (searching) setFocused(search); }).bounds(bx + bw + 4, by, bw, 18).build());
         addRenderableWidget(Ui.button(Component.literal("가운데로"), b -> { panX = homeX; panY = homeY; }).bounds(bx + 2 * (bw + 4), by, bw, 18).build());

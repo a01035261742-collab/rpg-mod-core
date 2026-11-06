@@ -28,7 +28,7 @@ public class SkillScreen extends ScaledScreen {
     }
 
     private static boolean inTab(Defs.SkillDef s) {
-        return switch (tab) { case 0 -> !s.passive() && s.tier() < 2; case 1 -> !s.passive() && s.tier() >= 2; default -> s.passive(); };
+        return tab == 0 ? s.tier() < 2 : s.tier() >= 2;   // 패시브도 1차·2차 안에
     }
 
     @Override
@@ -41,11 +41,12 @@ public class SkillScreen extends ScaledScreen {
         x = Ui.cx(width, W);
         y = Ui.cy(height, CharWin.H);
         CharWin.addTabs(this::addRenderableWidget, x, y, CharWin.SKILL);
-        String[] tn = {"1차", "2차", "패시브"};
-        for (int i = 0; i < 3; i++) {
+        String[] tn = {"1차", "2차"};
+        if (tab > 1) tab = 0;
+        for (int i = 0; i < 2; i++) {
             final int k = i;
             addRenderableWidget(Ui.button(Component.literal(tn[i]), b -> { tab = k; scroll = 0; init(); })
-                    .bounds(x + 75 + i * 40, y + 29, 36, 14).accent(i == tab).build());
+                    .bounds(x + 75 + i * 44, y + 29, 40, 14).accent(i == tab).build());
         }
         for (int r = 0; r < rows && r + scroll < list.size(); r++) {
             Defs.SkillDef sd = list.get(r + scroll);
@@ -78,7 +79,7 @@ public class SkillScreen extends ScaledScreen {
             Ui.slot(g, x + 77, ry + 3);
             SkillIcons.draw(g, s.id(), x + 78, ry + 4);
             if (lv == 0) g.fill(x + 78, ry + 4, x + 94, ry + 20, 0x90000000);
-            g.drawString(font, Ui.cut(font, s.name(), 110), x + 99, ry + 3, lv > 0 ? Ui.TXT : Ui.GRAY, true);
+            g.drawString(font, Ui.cut(font, s.name() + (s.passive() ? " §7(패시브)" : ""), 130), x + 99, ry + 3, lv > 0 ? Ui.TXT : Ui.GRAY, true);
             g.drawString(font, lv > 0 ? "Lv " + lv + "/" + s.maxLevel() : "안 배움", x + 99, ry + 13, lv > 0 ? Ui.VAL : Ui.GRAY, false);
             if (lv >= s.maxLevel()) g.drawString(font, "MAX", x + W - 60, ry + 13, Ui.VAL, false);
             String key = keyOf(s.id());
