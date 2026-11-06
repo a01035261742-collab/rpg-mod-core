@@ -514,11 +514,11 @@ public class EnhanceScreen extends ScaledScreen {
 
     /** 잠재: 등급 색 빛무리 두 겹 */
     private void aura(GuiGraphics g, int cx, int cy, int col) {
-        for (int r : new int[]{15, 19}) {
-            for (int a = 0; a < 72; a++) {
-                double t = a / 72.0 * Math.PI * 2;
+        for (int r : new int[]{22, 27, 31}) {
+            for (int a = 0; a < 160; a++) {
+                double t = a / 160.0 * Math.PI * 2;
                 int px = (int) Math.round(cx + Math.cos(t) * r), py = (int) Math.round(cy + Math.sin(t) * r);
-                g.fill(px, py, px + 1, py + 1, (r == 15 ? 0xC0000000 : 0x70000000) | (col & 0xFFFFFF));
+                g.fill(px, py, px + 1, py + 1, (r == 22 ? 0xE0000000 : r == 27 ? 0x90000000 : 0x50000000) | (col & 0xFFFFFF));
             }
         }
     }
@@ -528,21 +528,22 @@ public class EnhanceScreen extends ScaledScreen {
         com.mojang.blaze3d.systems.RenderSystem.enableBlend();
         float k = 1f + 0.03f * (float) Math.sin(System.currentTimeMillis() / 160.0);
         g.pose().pushPose(); g.pose().translate(cx, cy, 0); g.pose().scale(k, k, 1);
-        g.blit(FLAME_RING, -24, -24, 48, 48, 0, 0, 96, 96, 96, 96);
+        g.blit(FLAME_RING, -48, -48, 96, 96, 0, 0, 96, 96, 96, 96);
         g.pose().popPose();
     }
 
     private void small(GuiGraphics g, ItemStack s, String sub, int col) {
-        if (tab == 3) aura(g, x + 225, y + 63, col);
-        else if (tab == 4) flameRing(g, x + 225, y + 63);
-        Ui.slot(g, x + 216, y + 54);
-        g.renderItem(s, x + 217, y + 55);
-        g.drawString(font, Ui.cut(font, s.getHoverName().getString(), 120), x + 237, y + 55, Ui.VAL, true);
-        g.drawString(font, Ui.cut(font, sub, 120), x + 237, y + 65, col, false);
+        int cx = x + CX, cy = y + 70;
+        if (tab == 3) aura(g, cx, cy, col);
+        else if (tab == 4) flameRing(g, cx, cy);
+        Ui.slot(g, cx - 9, cy - 9);
+        g.renderItem(s, cx - 8, cy - 8);
+        center(g, s.getHoverName().getString() + "  §7" + sub, y + 124, Ui.VAL);
     }
 
+
     private void box(GuiGraphics g, int bx, String title, int col, List<Component> lines, boolean on) {
-        int bw = 100, t0 = y + 78, t1 = y + 150;
+        int bw = 100, t0 = y + 138, t1 = y + 210;
         g.fill(bx, t0, bx + bw, t1, Ui.IN1);
         int e = on ? Ui.G4 : Ui.SEP;
         g.fill(bx, t0, bx + bw, t0 + 1, e); g.fill(bx, t1 - 1, bx + bw, t1, e); g.fill(bx, t0, bx + 1, t1, e); g.fill(bx + bw - 1, t0, bx + bw, t1, e);
@@ -556,7 +557,7 @@ public class EnhanceScreen extends ScaledScreen {
         if (!rpg.core.equip.Potential.can(d)) { small(g, s, "잠재능력 불가", Ui.RED); return; }
         if (!rpg.core.equip.Potential.has(s)) {
             small(g, s, "잠재능력 없음", Ui.GRAY);
-            center(g, "부여 주문서로", y + 106, Ui.GRAY); center(g, "처음 부여해요", y + 118, Ui.GRAY);
+            center(g, "부여 주문서로", y + 166, Ui.GRAY); center(g, "처음 부여해요", y + 178, Ui.GRAY);
             return;
         }
         var pt = rpg.core.equip.Potential.pot(s);
@@ -569,14 +570,14 @@ public class EnhanceScreen extends ScaledScreen {
             int ng = Math.max(0, Math.min(3, nw.getInt("g")));
             box(g, x + 158, "이전", gc, rpg.core.equip.Potential.lines(pt), false);
             box(g, x + 266, (ng > gr ? "▲" : "") + rpg.core.equip.Potential.GRADE[ng], 0xFF000000 | rpg.core.equip.Potential.COLOR[ng], rpg.core.equip.Potential.lines(nw), true);
-            powLine(g, s, "rpgPowPot", y + 158);
-            if (confirmKeep && ng > gr) { center(g, "오른 등급이 사라져요", y + 172, 0xFFFF8040); center(g, "정말 이전 유지?", y + 184, 0xFFFF8040); }
+            powLine(g, s, "rpgPowPot", y + 218);
+            if (confirmKeep && ng > gr) { center(g, "오른 등급이 사라져요", y + 232, 0xFFFF8040); center(g, "정말 이전 유지?", y + 244, 0xFFFF8040); }
         } else {
-            int yy = y + 82;
+            int yy = y + 142;
             for (var c : rpg.core.equip.Potential.lines(pt)) { g.drawString(font, Ui.cut(font, c.getString(), 190), x + 170, yy, Ui.TXT, false); yy += 11; }
-            if (gr < 3) center(g, "등급 상승 " + fmt(rpg.core.equip.Potential.upChance[gr]) + "% · 천장 " + rpg.core.equip.Potential.ceil(s)[gr] + "/" + rpg.core.equip.Potential.ceiling[gr], y + 150, Ui.GRAY);
+            if (gr < 3) center(g, "등급 상승 " + fmt(rpg.core.equip.Potential.upChance[gr]) + "% · 천장 " + rpg.core.equip.Potential.ceil(s)[gr] + "/" + rpg.core.equip.Potential.ceiling[gr], y + 210, Ui.GRAY);
             long c = rpg.core.equip.Potential.cost(d, gr);
-            center(g, "골드 " + shortG(c) + " 또는 큐브 1개", y + 164, Ui.VAL);
+            center(g, "골드 " + shortG(c) + " 또는 큐브 1개", y + 224, Ui.VAL);
         }
     }
 
@@ -589,12 +590,12 @@ public class EnhanceScreen extends ScaledScreen {
             var nw = rpg.core.equip.Flame.pendingTag(s);
             box(g, x + 158, "이전", Ui.GRAY, flameList(Gear.opts(s), rpg.core.equip.Flame.tiers(s)), false);
             box(g, x + 266, "새", Ui.VAL, flameList(nw.getCompound("o"), nw.getCompound("t")), true);
-            powLine(g, s, "rpgPowFlame", y + 158);
+            powLine(g, s, "rpgPowFlame", y + 218);
         } else {
-            int yy = y + 82;
+            int yy = y + 142;
             for (Component c : flameList(Gear.opts(s), rpg.core.equip.Flame.tiers(s))) { g.drawString(font, Ui.cut(font, c.getString(), 190), x + 170, yy, Ui.BLUE, false); yy += 11; }
             long c = rpg.core.equip.Flame.cost(d);
-            center(g, "불꽃 1개 + " + shortG(c), y + 166, ClientData.gold >= c ? Ui.VAL : Ui.RED);
+            center(g, "불꽃 1개 + " + shortG(c), y + 226, ClientData.gold >= c ? Ui.VAL : Ui.RED);
         }
     }
 
