@@ -286,13 +286,9 @@ public class EnhanceScreen extends ScaledScreen {
                 btn("이전 유지", l2, 50, false, bt -> Net.CH.sendToServer(new Net.EnhanceAction(11, curLoc(), 1)));
                 btn("새 옵션", r2, 50, true, bt -> Net.CH.sendToServer(new Net.EnhanceAction(11, curLoc(), 0)));
             } else {
-                String[] nm = {"강력", "영원", "검은"};
                 long c = rpg.core.equip.Flame.cost(d);
-                for (int i = 0; i < 3; i++) {
-                    final int k = i;
-                    btn(nm[i] + " " + extra.get(6 + i), x + CX - 62 + i * 42, 40, i == 1, bt -> Net.CH.sendToServer(new Net.EnhanceAction(10, curLoc(), k)))
-                            .active = extra.get(6 + i) > 0 && ClientData.gold >= c;
-                }
+                btn("불꽃 쓰기", x + CX - 35, 70, true, bt -> Net.CH.sendToServer(new Net.EnhanceAction(10, curLoc(), flameKind)))
+                        .active = extra.get(6 + flameKind) > 0 && ClientData.gold >= c;
             }
         } else if (tab == 2) {
             btn("합성 (" + fragCost() + ")", c1 - 10, 80, true, bt -> Net.CH.sendToServer(new Net.EnhanceAction(4, fragKind, 0))).active = frags >= fragCost();
@@ -583,6 +579,8 @@ public class EnhanceScreen extends ScaledScreen {
         }
     }
 
+    private static int flameKind = 1;
+
     private void renderFlame(GuiGraphics g, ItemStack s, GearDefs.GearDef d) {
         if (!rpg.core.equip.Flame.can(d)) { small(g, s, "추가 옵션 불가", Ui.RED); return; }
         if (Enhance.broken(s)) { small(g, s, "파괴된 장비예요", Ui.RED); return; }
@@ -594,10 +592,37 @@ public class EnhanceScreen extends ScaledScreen {
             box(g, x + 266, "새", Ui.VAL, flameList(nw.getCompound("o"), nw.getCompound("t")), true);
             powLine(g, s, "rpgPowFlame", y + 218);
         } else {
-            int yy = y + 142;
-            for (Component c : flameList(Gear.opts(s), rpg.core.equip.Flame.tiers(s))) { g.drawString(font, Ui.cut(font, c.getString(), 190), x + 170, yy, Ui.BLUE, false); yy += 11; }
+            // 시안: 옵션 줄 = 이름 · 단계 칸 7개 · 수치
+            var o = Gear.opts(s); var t = rpg.core.equip.Flame.tiers(s);
+            int yy = y + 140;
+            if (o.isEmpty()) center(g, "추가 옵션 없음", yy, Ui.GRAY);
+            for (String k : o.getAllKeys()) {
+                int n = t.getInt(k), v = o.getInt(k);
+                g.drawString(font, Ui.cut(font, GearDefs.label(k), 90), x + 166, yy, Ui.TXT, false);
+                for (int i = 0; i < 7; i++) {
+                    int px = x + 258 + i * 10;
+                    g.fill(px, yy, px + 8, yy + 8, i < n ? 0xFFF0A030 : 0xFF3A2626);
+                    if (i < n) g.fill(px, yy, px + 8, yy + 1, 0xFFFFD070);
+                }
+                String vs = (k.equals("reqLv") ? "-" : "+") + v + (k.endsWith("Pct") ? "%" : "");
+                g.drawString(font, vs, x + 364 - font.width(vs), yy, Ui.BLUE, false);
+                yy += 12;
+            }
+            // 불꽃 고르기 (아이콘 + 개수)
+            String[] kn = {"powerful", "eternal", "black"};
+            for (int i = 0; i < 3; i++) {
+                int ix = x + CX - 51 + i * 40, iy = y + 194;
+                Ui.slot(g, ix, iy, 22);
+                if (i == flameKind) { int e = Ui.G4; g.fill(ix - 1, iy - 1, ix + 23, iy, e); g.fill(ix - 1, iy + 22, ix + 23, iy + 23, e); g.fill(ix - 1, iy, ix, iy + 22, e); g.fill(ix + 22, iy, ix + 23, iy + 22, e); }
+                g.renderItem(new ItemStack(rpg.core.equip.Flame.item(kn[i])), ix + 3, iy + 3);
+                String cnt = String.valueOf(extra.get(6 + i));
+                g.pose().pushPose(); g.pose().translate(0, 0, 200);
+                g.drawString(font, cnt, ix + 21 - font.width(cnt), iy + 13, extra.get(6 + i) > 0 ? Ui.TXT : Ui.RED, true);
+                g.pose().popPose();
+            }
             long c = rpg.core.equip.Flame.cost(d);
-            center(g, "불꽃 1개 + " + shortG(c), y + 226, ClientData.gold >= c ? Ui.VAL : Ui.RED);
+            String[] nm = {"강력한 불꽃", "영원한 불꽃", "검은 불꽃"};
+            center(g, nm[flameKind] + " 1개 + " + shortG(c), y + 228, ClientData.gold >= c ? Ui.VAL : Ui.RED);
         }
     }
 
@@ -637,6 +662,10 @@ public class EnhanceScreen extends ScaledScreen {
             return true;
         }
         if (super.mouseClicked(mx, my, button)) return true;
+        if (tab == 4) for (int i = 0; i < 3; i++) {
+            int ix = x + CX - 51 + i * 40, iy = y + 194;
+            if (mx >= ix && mx < ix + 22 && my >= iy && my < iy + 22) { flameKind = i; rebuildWidgets(); return true; }
+        }
         for (int i = 0; i < KINDS.length; i++) {
             int ry = y + 36 + i * 20;
             if (mx >= x + 85 && mx < x + 148 && my >= ry - 4 && my < ry + 13) { tab = i; lastTab = i; selScroll = -1; rebuildWidgets(); return true; }
