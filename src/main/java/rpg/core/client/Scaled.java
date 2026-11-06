@@ -8,6 +8,7 @@ import net.minecraft.client.Minecraft;
  */
 public interface Scaled {
     double uiScale();
+    void setUiScale(double s);
 
     /** 원래 크기 기준 창 폭·높이 (화면에 들어가는지 볼 때) */
     default int baseW() { return CharWin.W; }

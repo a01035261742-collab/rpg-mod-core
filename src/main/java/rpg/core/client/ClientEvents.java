@@ -169,7 +169,32 @@ public final class ClientEvents {
             }
         }
 
-        // ───────── 1.5배 창: 마우스 좌표를 창 배율로 나눠서 전달 ─────────
+        // ───────── 1.5배 창: 창 크기를 배율로 나눠 배치 → 그릴 때 키우기 · 마우스 좌표 나누기 ─────────
+        @SubscribeEvent
+        public static void scaledInit(net.minecraftforge.client.event.ScreenEvent.Init.Pre e) {
+            if (!(e.getScreen() instanceof Scaled sc)) return;
+            var win = Minecraft.getInstance().getWindow();
+            int w = win.getGuiScaledWidth(), h = win.getGuiScaledHeight();
+            double s = Scaled.calc(w, h, sc.baseW(), sc.baseH());
+            sc.setUiScale(s);
+            e.getScreen().width = (int) Math.floor(w / s);
+            e.getScreen().height = (int) Math.floor(h / s);
+        }
+
+        @SubscribeEvent
+        public static void scaledRender(net.minecraftforge.client.event.ScreenEvent.Render.Pre e) {
+            if (!(e.getScreen() instanceof Scaled sc)) return;
+            e.setCanceled(true);
+            double s = sc.uiScale();
+            var g = e.getGuiGraphics();
+            Scaled.CUR[0] = s;
+            g.pose().pushPose();
+            g.pose().scale((float) s, (float) s, 1f);
+            e.getScreen().renderWithTooltip(g, (int) (e.getMouseX() / s), (int) (e.getMouseY() / s), e.getPartialTick());
+            g.pose().popPose();
+            Scaled.CUR[0] = 1.0;
+        }
+
         @SubscribeEvent
         public static void scaledClick(net.minecraftforge.client.event.ScreenEvent.MouseButtonPressed.Pre e) {
             if (e.getScreen() instanceof Scaled sc) { double s = sc.uiScale(); e.setCanceled(true); e.getScreen().mouseClicked(e.getMouseX() / s, e.getMouseY() / s, e.getButton()); }

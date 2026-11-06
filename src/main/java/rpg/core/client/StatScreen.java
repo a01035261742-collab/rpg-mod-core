@@ -79,22 +79,22 @@ public class StatScreen extends ScaledScreen {
             int dx = x + CharWin.W + 4;
             Ui.window(g, dx, y, DW, CharWin.H);
             Ui.plaque(g, font, dx + DW / 2, y + 1, "상세 능력치");
-            int lx = dx + 12, lr = dx + DW - 12, ly = y + 24;
-            ly = line2(g, lx, lr, ly, ClientData.job == 3 ? "마력 스공" : "스공", String.format("%,.0f~%,.0f", ClientData.atkMin, ClientData.atkMax));
-            ly = line2(g, lx, lr, ly, "최대 HP", String.format("%,.0f", ClientData.maxHp));
-            ly = line2(g, lx, lr, ly, "최대 MP", String.format("%,.0f", ClientData.maxMp));
-            ly = line2(g, lx, lr, ly, "방어력", String.format("%,.0f", ClientData.defPct));
+            int dlx = dx + 12, lr = dx + DW - 12, ly = y + 24;
+            ly = line2(g, dlx, lr, ly, ClientData.job == 3 ? "마력 스공" : "스공", String.format("%,.0f~%,.0f", ClientData.atkMin, ClientData.atkMax));
+            ly = line2(g, dlx, lr, ly, "최대 HP", String.format("%,.0f", ClientData.maxHp));
+            ly = line2(g, dlx, lr, ly, "최대 MP", String.format("%,.0f", ClientData.maxMp));
+            ly = line2(g, dlx, lr, ly, "방어력", String.format("%,.0f", ClientData.defPct));
             double k = rpg.core.balance.Balance.defBase + Math.max(1, ClientData.level) * rpg.core.balance.Balance.defPerMobLevel;
-            ly = line2(g, lx, lr, ly, "피해 감소", String.format("%.0f%%", ClientData.defPct / (ClientData.defPct + k) * 100));
-            ly = line2(g, lx, lr, ly, "치명타 확률", String.format("%.1f%%", ClientData.crit));
-            ly = line2(g, lx, lr, ly, "치명타 피해", String.format("%.0f%%", ClientData.critDmgPct));
-            ly = line2(g, lx, lr, ly, "보스 데미지", String.format("+%.0f%%", ClientData.bossPct));
-            ly = line2(g, lx, lr, ly, "방어율 무시", String.format("%.1f%%", ClientData.ignoreDef));
-            if (ClientData.overloadPct > 0) ly = line2(g, lx, lr, ly, "마력 과부하", String.format("+%.1f%%", ClientData.overloadPct));
-            ly = line2(g, lx, lr, ly, "회복량", String.format("+%.1f%%", ClientData.healBonus));
-            ly = line2(g, lx, lr, ly, "드롭률", String.format("+%.1f%%", ClientData.dropBonus));
-            ly = line2(g, lx, lr, ly, "골드 획득", String.format("+%.1f%%", ClientData.goldBonus));
-            ly = line2(g, lx, lr, ly, "최대 스태미나", String.format("15+%.0f", ClientData.staminaBonus));
+            ly = line2(g, dlx, lr, ly, "피해 감소", String.format("%.0f%%", ClientData.defPct / (ClientData.defPct + k) * 100));
+            ly = line2(g, dlx, lr, ly, "치명타 확률", String.format("%.1f%%", ClientData.crit));
+            ly = line2(g, dlx, lr, ly, "치명타 피해", String.format("%.0f%%", ClientData.critDmgPct));
+            ly = line2(g, dlx, lr, ly, "보스 데미지", String.format("+%.0f%%", ClientData.bossPct));
+            ly = line2(g, dlx, lr, ly, "방어율 무시", String.format("%.1f%%", ClientData.ignoreDef));
+            if (ClientData.overloadPct > 0) ly = line2(g, dlx, lr, ly, "마력 과부하", String.format("+%.1f%%", ClientData.overloadPct));
+            ly = line2(g, dlx, lr, ly, "회복량", String.format("+%.1f%%", ClientData.healBonus));
+            ly = line2(g, dlx, lr, ly, "드롭률", String.format("+%.1f%%", ClientData.dropBonus));
+            ly = line2(g, dlx, lr, ly, "골드 획득", String.format("+%.1f%%", ClientData.goldBonus));
+            ly = line2(g, dlx, lr, ly, "최대 스태미나", String.format("15+%.0f", ClientData.staminaBonus));
         }
         super.render(g, mx, my, pt);
     }
