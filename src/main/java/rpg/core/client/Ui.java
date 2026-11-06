@@ -92,6 +92,18 @@ public final class Ui {
     /** 아이템 칸 (18×18, 아이템은 x+1,y+1) */
     public static void slot(GuiGraphics g, int x, int y) { com.mojang.blaze3d.systems.RenderSystem.enableBlend(); g.blit(SLOT, x, y, 18, 18, 0, 0, 36, 36, 36, 36); }
 
+    /** 아이템 칸 (크기 지정) */
+    public static void slot(GuiGraphics g, int x, int y, int size) { com.mojang.blaze3d.systems.RenderSystem.enableBlend(); g.blit(SLOT, x, y, size, size, 0, 0, 36, 36, 36, 36); }
+
+    /** HUD 상자: 반투명 와인 + 금 테두리 + 네 귀 금점 */
+    public static void hudBox(GuiGraphics g, int x0, int y0, int x1, int y1) {
+        g.fill(x0, y0, x1, y1, 0xDC1E080C);
+        g.fill(x0, y0, x1, y0 + 1, G3); g.fill(x0, y1 - 1, x1, y1, G3); g.fill(x0, y0, x0 + 1, y1, G3); g.fill(x1 - 1, y0, x1, y1, G3);
+        g.fill(x0 + 2, y0 + 2, x1 - 2, y0 + 3, SEP); g.fill(x0 + 2, y1 - 3, x1 - 2, y1 - 2, SEP);
+        g.fill(x0 + 2, y0 + 2, x0 + 3, y1 - 2, SEP); g.fill(x1 - 3, y0 + 2, x1 - 2, y1 - 2, SEP);
+        for (int[] c : new int[][]{{x0, y0}, {x1 - 1, y0}, {x0, y1 - 1}, {x1 - 1, y1 - 1}}) { g.fill(c[0] - 1, c[1] - 1, c[0] + 2, c[1] + 2, G4); }
+    }
+
     /** 고른 칸 금 테두리 */
     public static void selBox(GuiGraphics g, int x, int y, int w, int h) {
         g.fill(x - 1, y - 1, x + w + 1, y, G4); g.fill(x - 1, y + h, x + w + 1, y + h + 1, G4);

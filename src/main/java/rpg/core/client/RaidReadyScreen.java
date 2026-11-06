@@ -34,7 +34,7 @@ public class RaidReadyScreen extends Screen {
     public void render(GuiGraphics g, int mx, int my, float pt) {
         renderBackground(g);
         Ui.panel(g, x, y, W, H, 0xFFB050E0);
-        g.drawCenteredString(font, "레이드 [" + raid + "] 입장 요청", x + W / 2, y + 12, 0xFFE0A0FF);
+        Ui.plaque(g, font, x + W / 2, y + 1, "레이드 [" + raid + "] 입장 요청");
         g.drawCenteredString(font, leader + "님이 입장을 요청했어요", x + W / 2, y + 30, 0xFFC8C8C8);
         long left = Math.max(0, (until - System.currentTimeMillis()) / 1000);
         g.drawCenteredString(font, left + "초 남음", x + W / 2, y + 44, 0xFFFFB040);

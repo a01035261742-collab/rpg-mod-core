@@ -54,14 +54,13 @@ public class TradeScreen extends AbstractContainerScreen<Trade.TradeMenu> {
         g.fill(x + 113, y + 25, x + 169, y + 81, theirs);
         for (var s : menu.slots) {
             int sx = x + s.x, sy = y + s.y;
-            g.fill(sx - 1, sy - 1, sx + 17, sy + 17, 0xFF5A3A10);
-            g.fill(sx, sy, sx + 16, sy + 16, 0xFF1E080C);
+            Ui.slot(g, sx - 1, sy - 1);
         }
     }
 
     @Override
     protected void renderLabels(GuiGraphics g, int mx, int my) {
-        g.drawString(font, title, 8, 5, Ui.GOLD, false);
+        Ui.plaque(g, font, imageWidth / 2, 1, title.getString());
         String mg = String.format("%,d G", menu.myGold()), tg = String.format("%,d G", menu.theirGold());
         // 내 골드 = 왼쪽, 상대 골드 = 오른쪽 끝 정렬 (겹치지 않게)
         String me = Ui.cut(font, "나 " + mg, 84), them = Ui.cut(font, "상대 " + tg, 84);

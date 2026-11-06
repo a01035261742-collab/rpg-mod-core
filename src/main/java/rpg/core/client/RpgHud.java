@@ -11,12 +11,10 @@ public final class RpgHud {
 
     private record Note(String text, int color, long time) {}
     private static final java.util.List<Note> NOTES = new java.util.ArrayList<>();
-    /** 스킬바 크기·위치 (GUI 크기 2 기준, Epic Fight 스태미나 바 왼쪽) */
-    static final int SIZE = 24, GAP = 2, EF_RIGHT = 128;
 
     public static void addReward(long exp, long gold) {
         if (exp > 0) addNote("+" + String.format("%,d", exp) + " EXP", 0xFFB0FF80);
-        if (gold > 0) addNote("+" + String.format("%,d", gold) + " G", 0xFFFFD24A);
+        if (gold > 0) addNote("+" + String.format("%,d", gold) + " G", 0xFFFFD86A);
     }
 
     public static void addNote(String text, int color) {
@@ -60,29 +58,12 @@ public final class RpgHud {
         g.drawString(font, t3, w / 2 - font.width(t3) / 2, 72, alpha | 0xA0E0A0, true);
     }
 
-    /**
-     * 스킬바 위치 {x0, y0}: 기본 = 오른쪽 아래 (Epic Fight 스태미나 왼쪽).
-     * 화면이 좁아(GUI 크기 큼) HP·MP·EXP 바와 겹치면 → 바 오른쪽 끝 바깥에 붙이고 위로 올려 EF 표시도 피함.
-     */
-    static int[] skillPos(Font font, int w, int h) {
-        int bw = 3 * (SIZE + GAP);
-        int x0 = w - EF_RIGHT - bw;
-        int y0 = h - 2 * (SIZE + GAP) - 4;
-        int barsRight = w / 2 + 91 + 4 + font.width("100.00%") + 6;   // EXP % 글자 끝
-        if (x0 < barsRight) {
-            x0 = Math.min(w - bw - 2, barsRight);
-            y0 = h - 2 * (SIZE + GAP) - 4 - 36;
-        }
-        return new int[]{x0, y0};
-    }
-
     /** 획득 알림: 스킬바 위, 오른쪽 정렬, 3초 */
     private static void notes(GuiGraphics g, Font font, int w, int h) {
         long now = System.currentTimeMillis();
         NOTES.removeIf(n -> now - n.time() > 3000);
-        int[] sp = skillPos(font, w, h);
-        int right = sp[0] + 3 * (SIZE + GAP);
-        int ny = sp[1] - 12;
+        int right = boxX1;
+        int ny = boxY0 - 12 - (ClientData.BUFFS.isEmpty() ? 0 : BOX + 14);
         for (int i = NOTES.size() - 1; i >= 0; i--) {
             Note n = NOTES.get(i);
             long age = now - n.time();
@@ -92,137 +73,197 @@ public final class RpgHud {
         }
     }
 
+    // ───────── 아래 가운데 상자 (시안 ui_sym_A3): HP·MP + 물약2 | 스킬6 | 물약2 + EXP ─────────
+    static final int SLOT = 22, SG = 2, DIV = 8;
+    static int boxX0, boxX1, boxY0, boxY1;
+
+    /** 칸 줄 폭 (물약 2+2, 스킬 6, 칸막이 2) */
+    static int rowW() { return 10 * SLOT + 7 * SG + 2 * DIV; }
+
+    static void layout(int w, int h) {
+        int rw = rowW();
+        boxX0 = w / 2 - rw / 2 - 6; boxX1 = boxX0 + rw + 12;
+        boxY1 = h - 3; boxY0 = boxY1 - 56;
+    }
+
+    /** 스킬 6칸 시작 {x0, y0} */
+    static int[] skillPos(Font font, int w, int h) {
+        layout(w, h);
+        return new int[]{boxX0 + 6 + 2 * (SLOT + SG) + DIV - SG, boxY1 - 32};
+    }
+
     public static void render(ForgeGui gui, GuiGraphics g, float partialTick, int w, int h) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null || mc.options.hideGui || !ClientData.ready || mc.player.isSpectator() || !ClientRpg.inRpg()) return;   // 야생: RPG HUD 숨김
-        skillBar(g, mc.font, w, h);
-        partyHud(g, mc.font, w, h);
-        downHud(g, mc.font, w, h);
-        notes(g, mc.font, w, h);
-        topY = buffBar(g, mc.font, w, -1, -1);
-        topY = goldBox(g, mc.font, w, topY);
-        questTracker(g, mc.font, w, h);
-        levelUpBanner(g, mc.font, w);
-        if (mc.player.isCreative()) return;
         Font font = mc.font;
-        int cx = w / 2;
-        int left = cx - 91;
+        layout(w, h);
+        partyHud(g, font, w, h);
+        downHud(g, font, w, h);
+        topY = goldBox(g, font, w, 4);
+        questTracker(g, font, w, h);
+        levelUpBanner(g, font, w);
+        if (mc.player.isCreative()) { skillRowOnly(g, font, w, h); return; }
 
-        // EXP 바 (핫바 바로 위, 얇게)
-        int ey = h - 22 - 6;
+        Ui.hudBox(g, boxX0, boxY0, boxX1, boxY1);
+        int bx = boxX0 + 6, bw = boxX1 - boxX0 - 12;
+        // HP (보호막은 옅은 파랑으로 이어 붙임) · MP
+        int hy = boxY0 + 5;
+        double max = Math.max(1, ClientData.maxHp);
+        float hr = (float) Math.max(0, Math.min(1, ClientData.hp / max));
+        Ui.bar(g, bx, hy, bw, 9, hr, 0xFFC82832);
+        if (ClientData.shield > 0) {
+            int s0 = bx + Math.round(bw * hr), s1 = Math.min(bx + bw, s0 + (int) Math.round(bw * ClientData.shield / max));
+            if (s1 > s0) g.fill(s0, hy, s1, hy + 9, 0xFF96AAC8);
+        }
+        g.fill(bx, hy, bx + Math.round(bw * hr), hy + 1, 0x60FFFFFF);
+        String hs = (long) Math.ceil(ClientData.hp) + (ClientData.shield > 0 ? "+" + (long) Math.ceil(ClientData.shield) : "") + " / " + (long) Math.ceil(ClientData.maxHp);
+        g.drawString(font, hs, bx + bw / 2 - font.width(hs) / 2, hy + 1, 0xFFFFFFFF, true);
+        float mr = (float) (ClientData.maxMp <= 0 ? 0 : Math.max(0, Math.min(1, ClientData.mp / ClientData.maxMp)));
+        Ui.bar(g, bx, hy + 11, bw, 3, mr, 0xFF3270DC);
+        Ui.hsep(g, bx, bx + bw, hy + 17);
+        // 칸 줄: 물약 1 2 | Q E R F Z X | 물약 3 4
+        int ry = boxY1 - 32;
+        int x = potions(g, font, bx, ry, 0, 2);
+        x += DIV - SG;
+        g.fill(x - DIV / 2 - 1, ry + 3, x - DIV / 2, ry + SLOT - 3, Ui.G3);
+        x = skills(g, font, x, ry);
+        x += DIV - SG;
+        g.fill(x - DIV / 2 - 1, ry + 3, x - DIV / 2, ry + SLOT - 3, Ui.G3);
+        potions(g, font, x, ry, 2, 2);
+        // EXP
         double ratio = ClientData.need <= 0 || ClientData.need == Long.MAX_VALUE ? 1.0 : (double) ClientData.exp / ClientData.need;
         ratio = Math.max(0, Math.min(1, ratio));
-        g.fill(left, ey, left + 182, ey + 4, 0xFF1A1A1A);
-        g.fill(left, ey, left + (int) (182 * ratio), ey + 4, 0xFFE8C030);
-        String pct = String.format("%.2f%%", ratio * 100);
-        g.drawString(font, pct, left + 182 + 4, ey - 2, 0xFFE8C030, true);
-
-        // HP / MP 바 (그 위)
-        int by = ey - 12;
-        // 검은 테두리(1칸) 포함 바깥 끝이 핫바(182칸) 양 끝과 딱 맞게
-        if (ClientData.shield > 0) shieldBar(g, font, left + 1, by, 88, 10);   // 보호막: HP+보호막, 보호막 색
-        else bar(g, font, left + 1, by, 88, 10, ClientData.hp, ClientData.maxHp, 0xFFD02828, 0xFF4A1414, "HP");
-        bar(g, font, left + 93, by, 88, 10, ClientData.mp, ClientData.maxMp, 0xFF2A68E0, 0xFF142448, "MP");
-
-        // 레벨 (왼쪽)
+        Ui.bar(g, bx, boxY1 - 7, bw, 2, (float) ratio, 0xFFF0C83C);
+        // 레벨 · EXP % · 남은 스탯 (상자 왼쪽 바깥)
         String lv = "Lv." + ClientData.level;
-        g.drawString(font, lv, left - font.width(lv) - 5, by + 1, 0xFFFFD24A, true);
-
+        g.drawString(font, lv, boxX0 - 4 - font.width(lv), boxY0 + 5, Ui.VAL, true);
+        String pc = String.format("%.1f%%", ratio * 100);
+        g.drawString(font, pc, boxX0 - 4 - font.width(pc), boxY1 - 10, 0xFFF0C83C, true);
         if (ClientData.statPoints > 0) {
             String sp = "+" + ClientData.statPoints;
-            g.drawString(font, sp, left - font.width(sp) - 5, by + 11, 0xFF80FF80, true);
+            g.drawString(font, sp, boxX0 - 4 - font.width(sp), boxY0 + 16, Ui.GREEN, true);
         }
+        buffBar(g, font, w, -1, -1);
+        notes(g, font, w, h);
+        charge(g, font, w, h);
     }
 
-    /** 스킬바: 화면 오른쪽 아래 3칸 × 2줄 (Q E R / F Z X) + 구르기 */
-    private static void skillBar(GuiGraphics g, Font font, int w, int h) {
-        int size = SIZE, gap = GAP;
-        int[] sp = skillPos(font, w, h);
-        int x0 = sp[0], y0 = sp[1];
+    /** 크리에이티브: 상자 없이 스킬 줄만 (바닐라 핫바 위) */
+    private static void skillRowOnly(GuiGraphics g, Font font, int w, int h) {
+        skills(g, font, w / 2 - (6 * SLOT + 5 * SG) / 2, h - 22 - SLOT - 4);
+        charge(g, font, w, h);
+    }
+
+    /** 물약 칸 n개 (1~4 키) → 다음 x */
+    private static int potions(GuiGraphics g, Font font, int x, int y, int k0, int n) {
+        for (int k = k0; k < k0 + n; k++) {
+            Ui.slot(g, x, y, SLOT);
+            var it = ClientPotions.item(k);
+            g.pose().pushPose();
+            if (it != null) {
+                int c = ClientPotions.count(k);
+                g.renderItem(new net.minecraft.world.item.ItemStack(it), x + 3, y + 3);
+                g.pose().translate(0, 0, 200);
+                if (c == 0) g.fill(x + 3, y + 3, x + 19, y + 19, 0xA0000000);
+                float cd = ClientPotions.cooldown(k);
+                if (cd > 0) g.fill(x + 2, y + 2, x + SLOT - 2, y + 2 + Math.round((SLOT - 4) * cd), 0xB0000000);
+                String cs = String.valueOf(c);
+                g.drawString(font, cs, x + SLOT - 2 - font.width(cs), y + SLOT - 9, c == 0 ? Ui.RED : 0xFFFFFFFF, true);
+            } else g.pose().translate(0, 0, 200);
+            g.drawString(font, String.valueOf(k + 1), x + 2, y + 2, Ui.VAL, true);
+            g.pose().popPose();
+            x += SLOT + SG;
+        }
+        return x;
+    }
+
+    /** 스킬 6칸 (Q E R F Z X) → 다음 x */
+    private static int skills(GuiGraphics g, Font font, int x, int y) {
         for (int i = 0; i < 6; i++) {
-            int x = x0 + (i % 3) * (size + gap), y = y0 + (i / 3) * (size + gap);
-            g.fill(x, y, x + size, y + size, 0xB0101018);
-            g.fill(x, y, x + size, y + 1, 0xFF505068);
+            Ui.slot(g, x, y, SLOT);
             String id = ClientData.slots[i];
             if (id != null) {
-                SkillIcons.draw(g, id, x + 4, y + 4);
+                SkillIcons.draw(g, id, x + 3, y + 3);
                 int left = ClientData.left(ClientData.cdLeft[i]);
                 int len = ClientData.cdLen[i];
-                if (left > 0 && len > 0) {
-                    int fh = (int) Math.ceil(size * (double) left / len);
-                    g.fill(x, y + size - fh, x + size, y + size, 0xA0000000);
+                if (left > 0 && len > 0) {   // 쿨타임: 위에서부터 어둡게
+                    int fh = (int) Math.ceil((SLOT - 4) * (double) left / len);
+                    g.fill(x + 2, y + 2, x + SLOT - 2, y + 2 + fh, 0xB0000000);
                     String sec = String.valueOf((left + 19) / 20);
-                    g.drawString(font, sec, x + size / 2 - font.width(sec) / 2, y + 8, 0xFFFF7070, true);
+                    g.drawString(font, sec, x + SLOT / 2 - font.width(sec) / 2, y + 7, 0xFFFFFFFF, true);
                 }
             }
-            g.drawString(font, rpg.core.client.ClientEvents.SLOT_LABELS[i], x + 1, y + size - 8, 0xFFC8C8C8, true);
+            g.drawString(font, ClientEvents.SLOT_LABELS[i], x + 2, y + SLOT - 9, Ui.VAL, true);
+            x += SLOT + SG;
         }
-        // 구르기는 Epic Fight (Left Alt) — 자체 표시 사용
-        // 질주 버프 남은 시간
-        // (버프는 오른쪽 위 buffBar 로 옮김)
-        // 차지 게이지 (화면 가운데 아래)
-        if (ClientData.charging) {
-            int ticks = ClientData.chargeTicks + (int) ((System.currentTimeMillis() - ClientData.receivedAt) / 50);
-            double r = Math.max(0, Math.min(1, (ticks - 6) / 24.0));
-            int cx = w / 2, cy = h / 2 + 18;
-            g.fill(cx - 31, cy - 1, cx + 31, cy + 5, 0xC0000000);
-            g.fill(cx - 30, cy, cx - 30 + (int) (60 * r), cy + 4, r >= 1 ? 0xFFFF8030 : 0xFFFFD24A);
-            if (r >= 1) g.drawString(font, "MAX", cx - font.width("MAX") / 2, cy + 7, 0xFFFF8030, true);
-        }
+        return x;
+    }
+
+    /** 차지 게이지 (화면 가운데 아래) */
+    private static void charge(GuiGraphics g, Font font, int w, int h) {
+        if (!ClientData.charging) return;
+        int ticks = ClientData.chargeTicks + (int) ((System.currentTimeMillis() - ClientData.receivedAt) / 50);
+        double r = Math.max(0, Math.min(1, (ticks - 6) / 24.0));
+        int cx = w / 2, cy = h / 2 + 18;
+        g.fill(cx - 31, cy - 1, cx + 31, cy + 5, 0xC0000000);
+        g.fill(cx - 30, cy, cx - 30 + (int) (60 * r), cy + 4, r >= 1 ? 0xFFFF8030 : 0xFFFFD86A);
+        if (r >= 1) g.drawString(font, "MAX", cx - font.width("MAX") / 2, cy + 7, 0xFFFF8030, true);
     }
 
     // ───────── 오른쪽 위: 버프 칸 + 골드 ─────────
     private static int topY = 58;
-    static final int BOX = 20, BGAP = 4, PER_ROW = 10;
+    static final int BOX = 18, BGAP = 4, PER_ROW = 8;
     private static final int[] KIND_COL = {0xFF5AC8FF, 0xFF6EDC6E, 0xFFFFC83C, 0xFF8C8C8C};   // 스킬 · 파티 · 트리 · 재사용 대기
 
-    /** 버프 칸 그리기 (mx,my 가 칸 위면 툴팁). 아래 끝 y 를 돌려줌 */
+    /** 버프 칸 (아래 상자 위 가운데): 좋은 것 = 가운데 왼쪽으로, 재사용 대기·나쁜 것 = 가운데 오른쪽으로.
+     *  남은 시간은 칸 아래쪽 안 (어두운 띠). mx,my 가 칸 위면 툴팁. 맨 위 y 를 돌려줌 */
     public static int buffBar(GuiGraphics g, Font font, int w, int mx, int my) {
-        java.util.List<ClientData.Buff> list = new java.util.ArrayList<>();
-        for (ClientData.Buff b : ClientData.BUFFS) if (b.left() >= 900_000_000 || ClientData.left(b.left()) > 0) list.add(b);
-        if (list.isEmpty()) return 4;
-        int rowH = BOX + 12;
+        java.util.List<ClientData.Buff> good = new java.util.ArrayList<>(), bad = new java.util.ArrayList<>();
+        for (ClientData.Buff b : ClientData.BUFFS)
+            if (b.left() >= 900_000_000 || ClientData.left(b.left()) > 0) (b.kind() == 3 ? bad : good).add(b);
+        if (good.isEmpty() && bad.isEmpty()) return boxY0;
+        int base = boxY0 - 4 - BOX, top = base;
         ClientData.Buff hover = null;
         int hx = 0, hy = 0;
-        for (int i = 0; i < list.size(); i++) {
-            ClientData.Buff b = list.get(i);
-            int row = i / PER_ROW, col = i % PER_ROW;
-            int x = w - 4 - (col + 1) * BOX - col * BGAP, y = 4 + row * rowH;
-            boolean inf = b.left() >= 900_000_000;
-            int left = inf ? Integer.MAX_VALUE : ClientData.left(b.left());
-            int c = KIND_COL[Math.max(0, Math.min(3, b.kind()))];
-            boolean blink = !inf && b.kind() != 3 && left < 60 && (System.currentTimeMillis() / 250) % 2 == 0;
-            g.fill(x, y, x + BOX, y + BOX, 0xD0101018);
-            if (!blink) {
-                g.fill(x, y, x + BOX, y + 1, c); g.fill(x, y + BOX - 1, x + BOX, y + BOX, c);
-                g.fill(x, y, x + 1, y + BOX, c); g.fill(x + BOX - 1, y, x + BOX, y + BOX, c);
-            }
-            String nm = b.name().replace(" ", "");
-            String two = nm.length() > 2 ? nm.substring(0, 2) : nm;
-            g.pose().pushPose();
-            g.pose().translate(x + BOX / 2f, y + 4, 0);
-            g.pose().scale(0.75f, 0.75f, 1);
-            g.drawCenteredString(font, two, 0, 0, c);
-            g.pose().popPose();
-            String ex = b.extra();
-            if (ex.startsWith("×")) {   // 중첩: 칸 오른쪽 아래
+        for (int side = 0; side < 2; side++) {
+            var list = side == 0 ? good : bad;
+            for (int i = 0; i < list.size(); i++) {
+                ClientData.Buff b = list.get(i);
+                int row = i / PER_ROW, col = i % PER_ROW;
+                int x = side == 0 ? w / 2 - 5 - (col + 1) * (BOX + 2) : w / 2 + 5 + col * (BOX + 2);
+                int y = base - row * (BOX + 3);
+                top = Math.min(top, y);
+                boolean inf = b.left() >= 900_000_000;
+                int left = inf ? Integer.MAX_VALUE : ClientData.left(b.left());
+                int c = KIND_COL[Math.max(0, Math.min(3, b.kind()))];
+                boolean blink = !inf && b.kind() != 3 && left < 60 && (System.currentTimeMillis() / 250) % 2 == 0;
+                Ui.slot(g, x, y, BOX);
+                if (!blink) {
+                    int e = side == 1 ? 0xFFDC3232 : c;
+                    g.fill(x, y, x + BOX, y + 1, e); g.fill(x, y + BOX - 1, x + BOX, y + BOX, e);
+                    g.fill(x, y, x + 1, y + BOX, e); g.fill(x + BOX - 1, y, x + BOX, y + BOX, e);
+                }
+                String nm = b.name().replace(" ", "");
+                String two = nm.length() > 2 ? nm.substring(0, 2) : nm;
                 g.pose().pushPose();
-                g.pose().translate(x + BOX - 2, y + BOX - 7, 0);
-                g.pose().scale(0.7f, 0.7f, 1);
-                g.drawString(font, ex.substring(1), -font.width(ex.substring(1)), 0, 0xFFFFFFFF, true);
+                g.pose().translate(x + BOX / 2f, y + 3, 0);
+                g.pose().scale(0.75f, 0.75f, 1);
+                g.drawCenteredString(font, two, 0, 0, c);
                 g.pose().popPose();
+                String ex = b.extra();
+                String under = ex.startsWith("×") ? ex : !ex.isEmpty() ? ex : inf ? "" : left >= 1200 ? (left / 1200) + "m" : String.valueOf((left + 19) / 20);
+                if (!under.isEmpty()) {
+                    g.fill(x + 1, y + BOX - 8, x + BOX - 1, y + BOX - 1, 0xB0000000);
+                    g.pose().pushPose();
+                    g.pose().translate(x + BOX / 2f, y + BOX - 7, 0);
+                    g.pose().scale(0.7f, 0.7f, 1);
+                    boolean soon = !inf && left < 100 && !ex.startsWith("×");
+                    g.drawCenteredString(font, under, 0, 0, side == 1 || soon ? 0xFFFF6060 : 0xFFFFFFFF);
+                    g.pose().popPose();
+                }
+                if (mx >= x && mx < x + BOX && my >= y && my < y + BOX) { hover = b; hx = mx; hy = my; }
             }
-            String under = !ex.isEmpty() && !ex.startsWith("×") ? ex : inf ? "" : left >= 1200 ? (left / 1200) + "m" : String.valueOf((left + 19) / 20);
-            if (!under.isEmpty()) {
-                g.pose().pushPose();
-                g.pose().translate(x + BOX / 2f, y + BOX + 2, 0);
-                g.pose().scale(0.7f, 0.7f, 1);
-                g.drawCenteredString(font, under, 0, 0, 0xFFE0E0E0);
-                g.pose().popPose();
-            }
-            if (mx >= x && mx < x + BOX && my >= y && my < y + BOX) { hover = b; hx = mx; hy = my; }
         }
-        int rows = (list.size() + PER_ROW - 1) / PER_ROW;
         if (hover != null) {
             java.util.List<net.minecraft.network.chat.Component> tip = new java.util.ArrayList<>();
             String[] kinds = {"스킬", "파티원 버프", "패시브 트리", "재사용 대기"};
@@ -232,15 +273,12 @@ public final class RpgHud {
             if (hover.left() < 900_000_000) tip.add(net.minecraft.network.chat.Component.literal("§7남은 시간 " + (ClientData.left(hover.left()) + 19) / 20 + "초"));
             g.renderComponentTooltip(font, tip, hx, hy);
         }
-        return 4 + rows * rowH;
+        return top;
     }
 
-    /** 골드 박스 (버프 칸 아래 오른쪽) */
+    /** 골드 박스 (오른쪽 위) */
     static int goldBox(GuiGraphics g, Font font, int w, int y) {
-        String t = String.format("%,d G", ClientData.gold);
-        int tw = font.width(t), x1 = w - 4, x0 = x1 - tw - 10;
-        g.fill(x0, y, x1, y + 13, 0x90101018);
-        g.drawString(font, t, x0 + 5, y + 3, 0xFFFFD24A, true);
+        Ui.goldBox(g, font, w - 4, y, String.format("%,d G", ClientData.gold), true);
         return y + 15;
     }
 
@@ -256,7 +294,7 @@ public final class RpgHud {
             if (shown >= 3) break;
             boolean done = ClientQuests.complete(q);
             if (shown > 0) lines.add(new Object[]{"", 0, false});
-            lines.add(new Object[]{(done ? "✔ " : "") + q.name(), done ? 0xFF80E080 : 0xFFFFD24A, true});
+            lines.add(new Object[]{(done ? "✔ " : "") + q.name(), done ? 0xFF80E080 : 0xFFFFD86A, true});
             if (done) {
                 lines.add(new Object[]{"→ " + rpg.core.quest.Quests.finishName(q) + (q.toPoint() ? "에 두고 오기" : "에게 가기"), 0xFFFFC040, false});
             } else if (q.goals().isEmpty()) {
@@ -273,9 +311,8 @@ public final class RpgHud {
         for (Object[] l : lines) width = Math.max(width, font.width((String) l[0]) + ((boolean) l[2] ? 0 : 6));
         int pad = 6, right = w - 4, x0 = right - width - pad * 2, y = topY + 4;
         int height = 13 + lines.size() * 10 + pad;
-        g.fill(x0, y, right, y + height, 0x90101018);
-        g.fill(x0, y, right, y + 1, 0xC0FFD24A);
-        g.drawString(font, "퀘스트", x0 + pad, y + 4, 0xFFFFD24A, true);
+        Ui.hudBox(g, x0, y, right, y + height);
+        g.drawString(font, "퀘스트", x0 + pad, y + 4, Ui.VAL, true);
         int ty = y + 16;
         for (Object[] l : lines) {
             String s = (String) l[0];
@@ -284,19 +321,19 @@ public final class RpgHud {
         }
     }
 
-    /** 왼쪽: 파티원 체력 (나 빼고) */
+    /** 왼쪽 중간 조금 위: 파티원 체력 (나 빼고) */
     private static void partyHud(GuiGraphics g, Font font, int w, int h) {
         String me = Minecraft.getInstance().getUser().getName();
-        int y = h / 2 - 40;
+        int y = h / 2 - 70;
         for (rpg.core.net.Net.Member m : ClientParty.MEMBERS) {
             if (m.name().equals(me)) continue;
-            String name = (m.leader() ? "★" : "") + m.name() + " Lv." + m.level();
-            g.drawString(font, name, 6, y, m.down() ? 0xFFFF6060 : m.near() ? 0xFFFFFFFF : 0xFF909090, true);
+            Ui.hudBox(g, 4, y, 112, y + 24);
+            g.drawString(font, Ui.cut(font, (m.leader() ? "★" : "") + m.name(), 64), 9, y + 4, m.down() ? Ui.RED : m.near() ? Ui.TXT : Ui.GRAY, true);
+            String r2 = m.down() ? "다운!" : "Lv." + m.level();
+            g.drawString(font, r2, 107 - font.width(r2), y + 4, m.down() ? Ui.RED : Ui.GRAY, false);
             double r = m.maxHp() <= 0 ? 0 : Math.max(0, Math.min(1, m.hp() / m.maxHp()));
-            g.fill(6, y + 10, 86, y + 14, 0xFF401010);
-            g.fill(6, y + 10, 6 + (int) (80 * r), y + 14, m.down() ? 0xFF808080 : 0xFFD03030);
-            if (m.down()) g.drawString(font, "다운!", 90, y + 7, 0xFFFF6060, true);
-            y += 20;
+            Ui.bar(g, 9, y + 15, 98, 4, (float) r, m.down() ? 0xFF808080 : 0xFFC82832);
+            y += 28;
         }
     }
 
@@ -304,14 +341,12 @@ public final class RpgHud {
     private static void downHud(GuiGraphics g, Font font, int w, int h) {
         if (ClientData.downLeft < 0) return;
         int left = ClientData.left(ClientData.downLeft);
-        g.fill(0, 0, w, h, 0x40FF0000);
-        String t = "쓰러졌어요! " + (left + 19) / 20 + "초 안에 동료가 우클릭하면 부활";
-        g.drawCenteredString(font, t, w / 2, h / 2 - 30, 0xFFFF8080);
-        if (ClientData.reviveProgress >= 0) {
-            int bw = 120, bx = w / 2 - bw / 2, by = h / 2 - 16;
-            g.fill(bx - 1, by - 1, bx + bw + 1, by + 7, 0xFF000000);
-            g.fill(bx, by, bx + bw * ClientData.reviveProgress / 100, by + 6, 0xFF60FF60);
-        }
+        g.fill(0, 0, w, h, 0x50300000);
+        int bw = 220, x0 = w / 2 - bw / 2, y0 = h / 2 - 48;
+        Ui.hudBox(g, x0, y0, x0 + bw, y0 + 42);
+        g.drawCenteredString(font, "쓰러졌어요!", w / 2, y0 + 6, Ui.RED);
+        g.drawCenteredString(font, (left + 19) / 20 + "초 안에 동료가 우클릭하면 부활", w / 2, y0 + 18, Ui.TXT);
+        if (ClientData.reviveProgress >= 0) Ui.bar(g, x0 + 20, y0 + 32, bw - 40, 4, ClientData.reviveProgress / 100f, 0xFF60D060);
     }
 
     /** HP 바 (보호막 있을 때): 바는 보호막 색, 글자 "HP 현재+보호막/최대" */

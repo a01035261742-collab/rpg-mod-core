@@ -43,7 +43,7 @@ public class RaidScreen extends Screen {
         renderBackground(g);
         String[] t = head();
         Ui.panel(g, x, y, W, h, 0xFFB050E0);
-        g.drawCenteredString(font, t[0] + " 레이드", x + W / 2, y + 10, 0xFFE0A0FF);
+        Ui.plaque(g, font, x + W / 2, y + 1, t[0] + " 레이드");
         g.drawString(font, "Lv." + t[1] + " 보스 · 입장 Lv." + info.minLevel() + " 이상 · 1~4명 · 15분", x + 16, y + 28, 0xFFC8C8C8, false);
         g.drawString(font, "빈 경기장 " + t[2] + " / " + t[3] + " · 보상은 하루 1번 (오전 6시)", x + 16, y + 42, 0xFFC8C8C8, false);
         g.drawString(font, "파티원", x + 16, y + 60, 0xFFA89890, false);
