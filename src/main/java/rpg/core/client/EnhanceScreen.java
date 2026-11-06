@@ -34,6 +34,113 @@ public class EnhanceScreen extends ScaledScreen {
     private boolean waiting, confirmKeep;
     private static int lastTab;
 
+    // ───────── 스타포스 연출 (마법진 회전 · 누르면 빨라짐 · 결과 섬광) ─────────
+    private static final net.minecraft.resources.ResourceLocation CIRCLE = new net.minecraft.resources.ResourceLocation("rpgcore", "textures/gui/ui/magic_circle.png");
+    private static boolean skipFx;
+    private static double ang;
+    private static long lastFrame, pressAt, fxAt;
+    private static int fxKind, prevStar = -1, prevLoc = -1;   // fxKind 1 성공 · 2 실패 · 3 파괴
+    private static boolean fxSound;
+    private static final int CHARGE = 800, SHOW = 1700;
+
+    private void startFx(int st) {
+        pressAt = System.currentTimeMillis(); fxKind = 0; fxAt = 0; fxSound = false;
+        prevStar = st; prevLoc = curLoc();
+        if (!skipFx) Minecraft.getInstance().getSoundManager().play(net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(net.minecraft.sounds.SoundEvents.ENCHANTMENT_TABLE_USE, 1.2f, 0.8f));
+    }
+
+    /** 연출 중엔 강화 버튼 막기 (연타 방지) */
+    private static boolean busy() {
+        long now = System.currentTimeMillis();
+        if (pressAt == 0) return false;
+        if (fxKind == 0) return now - pressAt < 5000;   // 결과 기다리는 중
+        return !skipFx && now < fxAt + SHOW;
+    }
+
+    /** 서버 새 정보 → 결과 판정 */
+    private void judge() {
+        if (pressAt == 0 || fxKind != 0 || prevLoc < 0) return;
+        int i = locs.indexOf(prevLoc);
+        if (i < 0) return;
+        ItemStack s = gear.get(i);
+        fxKind = Enhance.broken(s) ? 3 : Enhance.star(s) > prevStar ? 1 : 2;
+        fxAt = skipFx ? System.currentTimeMillis() : Math.max(System.currentTimeMillis(), pressAt + CHARGE);
+    }
+
+    private static void sound(net.minecraft.sounds.SoundEvent e, float pitch) {
+        Minecraft.getInstance().getSoundManager().play(net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(e, pitch, 0.9f));
+    }
+
+    /** 마법진 + 효과 (가운데 cx, cy) */
+    private void circle(GuiGraphics g, int cx, int cy) {
+        long now = System.currentTimeMillis();
+        long dt = lastFrame == 0 ? 0 : Math.min(100, now - lastFrame);
+        lastFrame = now;
+        boolean charging = pressAt > 0 && (fxKind == 0 || now < fxAt) && now - pressAt < 5000 && !skipFx;
+        double k = charging ? Math.min(1, (now - pressAt) / (double) CHARGE) : 0;
+        ang += (18 + k * k * 520) * dt / 1000.0;   // 시계 방향
+        var ps = g.pose();
+        com.mojang.blaze3d.systems.RenderSystem.enableBlend();
+        if (charging) {   // 빛남 (조금 큰 마법진을 겹쳐)
+            ps.pushPose(); ps.translate(cx, cy, 0); ps.mulPose(com.mojang.math.Axis.ZP.rotationDegrees((float) -ang * 0.7f));
+            g.setColor(1f, 0.9f, 0.6f, (float) (0.25 + 0.45 * k));
+            g.blit(CIRCLE, -62, -62, 124, 124, 0, 0, 128, 128, 128, 128);
+            g.setColor(1f, 1f, 1f, 1f);
+            ps.popPose();
+        }
+        ps.pushPose(); ps.translate(cx, cy, 0); ps.mulPose(com.mojang.math.Axis.ZP.rotationDegrees((float) ang));
+        g.blit(CIRCLE, -56, -56, 112, 112, 0, 0, 128, 128, 128, 128);
+        ps.popPose();
+        // 결과
+        if (fxKind != 0 && now >= fxAt) {
+            if (!fxSound) {
+                fxSound = true;
+                if (fxKind == 1) sound(net.minecraft.sounds.SoundEvents.PLAYER_LEVELUP, 1.2f);
+                else if (fxKind == 2) sound(net.minecraft.sounds.SoundEvents.ANVIL_LAND, 0.7f);
+                else sound(net.minecraft.sounds.SoundEvents.ANVIL_DESTROY, 0.8f);
+            }
+            long t = now - fxAt;
+            int show = skipFx ? 900 : SHOW;
+            if (t < show) {
+                float f = t / (float) show;
+                if (!skipFx && fxKind != 2 && t < 700) {   // 섬광 + 가루
+                    float a = 1f - t / 700f;
+                    int col = fxKind == 1 ? 0xFFE68C : 0xFF3030;
+                    ps.pushPose(); ps.translate(cx, cy, 0);
+                    float sc = 1f + t / 700f * 0.6f;
+                    ps.scale(sc, sc, 1);
+                    g.setColor(((col >> 16) & 255) / 255f, ((col >> 8) & 255) / 255f, (col & 255) / 255f, a * 0.8f);
+                    g.blit(CIRCLE, -56, -56, 112, 112, 0, 0, 128, 128, 128, 128);
+                    g.setColor(1f, 1f, 1f, 1f);
+                    ps.popPose();
+                    java.util.Random r = new java.util.Random(7);
+                    for (int i = 0; i < 36; i++) {
+                        double dir = r.nextDouble() * Math.PI * 2, sp = 30 + r.nextDouble() * 60;
+                        double d = sp * t / 700.0;
+                        int px = (int) (cx + Math.cos(dir) * d), py = (int) (cy + Math.sin(dir) * d + (fxKind == 3 ? t * t / 9000.0 : 0));
+                        int pc = fxKind == 1 ? (i % 3 == 0 ? 0xFFFFFFFF : 0xFFFFE070) : (i % 2 == 0 ? 0xFFDC3C3C : 0xFF786050);
+                        int al = (int) (255 * a);
+                        if (al > 8) g.fill(px, py, px + 2, py + 2, (al << 24) | (pc & 0xFFFFFF));
+                    }
+                }
+                if (fxKind == 2 && !skipFx) g.fill(cx - 9, cy - 9, cx + 9, cy + 9, ((int) (140 * Math.min(1, t / 400f)) << 24));
+                // 글자 (끝에 서서히 사라짐)
+                String lb = fxKind == 1 ? "강화 성공!" : fxKind == 2 ? "강화 실패" : "장비 파괴!";
+                int lc = fxKind == 1 ? 0xFFD86A : fxKind == 2 ? 0xAA968F : 0xFF6060;
+                float alpha = f < 0.6f ? 1f : 1f - (f - 0.6f) / 0.4f;
+                int al = (int) (255 * alpha);
+                if (al > 10) {
+                    ps.pushPose(); ps.translate(cx, cy + 40, 300); ps.scale(2f, 2f, 1);
+                    int w = font.width(lb);
+                    int oc = (al << 24) | 0x28080C;
+                    for (int[] o : new int[][]{{-1, 0}, {1, 0}, {0, -1}, {0, 1}}) g.drawString(font, lb, -w / 2 + o[0], o[1], oc, false);
+                    g.drawString(font, lb, -w / 2, 0, (al << 24) | lc, false);
+                    ps.popPose();
+                }
+            } else if (pressAt != 0 && t >= show) { pressAt = 0; rebuildWidgets(); }
+        }
+    }
+
     private EnhanceScreen(List<Integer> locs, List<ItemStack> gear, List<Integer> slots, List<ItemStack> scrolls, int frags, List<Integer> extra) {
         super(Component.literal("장비 강화"));
         this.tab = lastTab;
@@ -60,6 +167,7 @@ public class EnhanceScreen extends ScaledScreen {
             es.sel = locs.indexOf(keepLoc);
             if (es.sel < 0 && !gear.isEmpty()) es.sel = 0;
             es.selScroll = slots.indexOf(keepSlot);
+            es.judge();
             es.rebuildWidgets();
         } else if (open) {
             mc.setScreen(new EnhanceScreen(locs, gear, slots, scrolls, frags, extra));
@@ -124,6 +232,8 @@ public class EnhanceScreen extends ScaledScreen {
         addRenderableWidget(Ui.button(Component.literal("가방"), b -> { bag = !bag; rebuildWidgets(); })
                 .bounds(x + 380, y + BY, 80, 16).accent(bag).build());
         if (bag) return;   // 가방 팝업 동안은 강화 버튼 숨김
+        if (tab == 0) addRenderableWidget(Ui.button(Component.literal((skipFx ? "☑" : "☐") + " 연출 끄기"), b -> { skipFx = !skipFx; rebuildWidgets(); })
+                .bounds(x + CX + 40, y + BY + 1, 66, 14).build());
 
         ItemStack s = cur();
         GearDefs.GearDef d = Gear.def(s);
@@ -137,10 +247,10 @@ public class EnhanceScreen extends ScaledScreen {
                 boolean can = st < Enhance.maxStar(d);
                 if (can && Enhance.destroyRate(st) > 0) {
                     addRenderableWidget(Ui.button(Component.literal((guard ? "☑" : "☐") + " 파괴 방지"), bt -> { guard = !guard; rebuildWidgets(); })
-                            .bounds(x + CX - 40, y + 230, 80, 14).build());
+                            .bounds(x + CX - 40, y + 240, 80, 14).build());
                 }
-                btn("강화", c1, 60, true, bt -> Net.CH.sendToServer(new Net.EnhanceAction(1, curLoc(), guard ? 1 : 0)))
-                        .active = can && ClientData.gold >= Enhance.cost(d, st, guard);
+                btn("강화", c1, 60, true, bt -> { startFx(st); Net.CH.sendToServer(new Net.EnhanceAction(1, curLoc(), guard ? 1 : 0)); rebuildWidgets(); })
+                        .active = can && ClientData.gold >= Enhance.cost(d, st, guard) && !busy();
             }
         } else if (tab == 1 && d != null) {
             btn("주문서 바르기", x + CX - 40, 80, true, bt -> Net.CH.sendToServer(new Net.EnhanceAction(2, curLoc(), slots.get(selScroll))))
@@ -307,8 +417,14 @@ public class EnhanceScreen extends ScaledScreen {
 
     private void renderStar(GuiGraphics g, ItemStack s, GearDefs.GearDef d) {
         int st = Enhance.star(s), max = Enhance.maxStar(d);
-        if (max > 0) stars(g, Math.min(st, max), max, y + 56);
-        int yy = head(g, s, y + 66);
+        if (max > 0) stars(g, Math.min(st, max), max, y + 34);
+        int ccy = y + 102;
+        circle(g, x + CX, ccy);
+        Ui.slot(g, x + CX - 9, ccy - 9);
+        g.renderItem(s, x + CX - 8, ccy - 8);
+        Ui.selBox(g, x + CX - 9, ccy - 9, 18, 18);
+        center(g, s.getHoverName().getString(), y + 164, Enhance.broken(s) ? Ui.RED : Ui.VAL);
+        int yy = y + 178;
         if (max == 0) { center(g, "스타포스 강화 불가", yy, Ui.RED); return; }
         if (Enhance.broken(s)) {
             center(g, "파괴된 장비", yy, Ui.RED);
@@ -328,7 +444,7 @@ public class EnhanceScreen extends ScaledScreen {
         if (br > 0) g.fill(bx + (int) (84 * ok / 100), yy + 13, bx + (int) (84 * ok / 100) + Math.max(1, (int) (84 * br / 100)), yy + 17, 0xFFDC3232);
         center(g, "성공 " + fmt(ok) + "%" + (Enhance.destroyRate(st) > 0 ? " · 파괴 " + fmt(br) + "%" : ""), yy + 21, Ui.TXT);
         long c = Enhance.cost(d, st, guard);
-        center(g, String.format("%,d G", c), y + 164, ClientData.gold >= c ? Ui.VAL : Ui.RED);
+        center(g, String.format("%,d G", c), yy + 34, ClientData.gold >= c ? Ui.VAL : Ui.RED);
     }
 
     private List<Component> renderScroll(GuiGraphics g, ItemStack s, GearDefs.GearDef d, int mx, int my, List<Component> tip) {
