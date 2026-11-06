@@ -9,7 +9,10 @@ import rpg.core.net.Net;
 /** 스탯 탭 (K, 시안 uiA2_02): 왼쪽 = 스탯 찍기 (한 줄 설명) · 오른쪽 = 능력치 전부 */
 public class StatScreen extends ScaledScreen {
     private int x, y;
-    private static final int W = CharWin.W, LX = 88, ROW = 24;
+    private static final int W = CharWin.W, LX = 88, ROW = 24, DW = 180;
+    private static boolean detail = false;   // 상세 창 펼침 기억
+
+    @Override public int baseW() { return W + 4 + DW; }
 
     public StatScreen() {
         super(Component.literal("능력치"));
@@ -17,10 +20,12 @@ public class StatScreen extends ScaledScreen {
 
     @Override
     protected void init() {
-        x = Ui.cx(width, W);
+        x = Math.min(Ui.cx(width, W), Math.max(Ui.MARGIN, width - Ui.MARGIN - (detail ? W + 4 + DW : W)));
         y = Ui.cy(height, CharWin.H);
         CharWin.addTabs(this::addRenderableWidget, x, y, CharWin.STAT);
         boolean on = ClientData.statPoints > 0;
+        addRenderableWidget(Ui.button(Component.literal(detail ? "상세 ◀" : "상세 ▶"), b -> { detail = !detail; rebuildWidgets(); })
+                .bounds(x + W - 84, y + 260, 64, 18).accent(detail).build());
         for (int i = 0; i < 6; i++) {
             final int stat = i;
             addRenderableWidget(Ui.button(Component.literal("+"), b -> send(stat, hasShiftDown() ? 5 : 1))
@@ -78,17 +83,30 @@ public class StatScreen extends ScaledScreen {
         ry = line(g, rx, rr, ry, "최대 HP", String.format("%,.0f", ClientData.maxHp));
         ry = line(g, rx, rr, ry, "최대 MP", String.format("%,.0f", ClientData.maxMp));
         ry = line(g, rx, rr, ry, "방어력", String.format("%,.0f", ClientData.defPct));
-        double k = rpg.core.balance.Balance.defBase + Math.max(1, ClientData.level) * rpg.core.balance.Balance.defPerMobLevel;
-        ry = line(g, rx, rr, ry, "피해 감소 (같은 Lv 몹)", String.format("%.0f%%", ClientData.defPct / (ClientData.defPct + k) * 100));
         ry = line(g, rx, rr, ry, "치명타 확률", String.format("%.1f%%", ClientData.crit));
         ry = line(g, rx, rr, ry, "치명타 피해", String.format("%.0f%%", ClientData.critDmgPct));
         ry = line(g, rx, rr, ry, "보스 데미지", String.format("+%.0f%%", ClientData.bossPct));
-        ry = line(g, rx, rr, ry, "방어율 무시", String.format("%.1f%%", ClientData.ignoreDef));
-        if (ClientData.overloadPct > 0) ry = line(g, rx, rr, ry, "마력 과부하", String.format("+%.1f%%", ClientData.overloadPct));
-        ry = line(g, rx, rr, ry, "회복량 증가", String.format("+%.1f%%", ClientData.healBonus));
-        ry = line(g, rx, rr, ry, "드롭률 증가", String.format("+%.1f%%", ClientData.dropBonus));
-        ry = line(g, rx, rr, ry, "골드 획득 증가", String.format("+%.1f%%", ClientData.goldBonus));
-        ry = line(g, rx, rr, ry, "최대 스태미나", String.format("15 + %.0f", ClientData.staminaBonus));
+        // 상세 창 (오른쪽에 붙어서 펼침 · 캐릭터 창은 안 움직임)
+        if (detail) {
+            int dx = x + W + 4, lx2 = dx + 12, lr = dx + DW - 14, ly = y + 30;
+            Ui.window(g, dx, y, DW, CharWin.H);
+            Ui.plaque(g, font, dx + DW / 2, y + 1, "상세 능력치");
+            ly = line(g, lx2, lr, ly, ClientData.job == 3 ? "마력 스공" : "스공", String.format("%,.0f~%,.0f", ClientData.atkMin, ClientData.atkMax));
+            ly = line(g, lx2, lr, ly, "최대 HP", String.format("%,.0f", ClientData.maxHp));
+            ly = line(g, lx2, lr, ly, "최대 MP", String.format("%,.0f", ClientData.maxMp));
+            ly = line(g, lx2, lr, ly, "방어력", String.format("%,.0f", ClientData.defPct));
+            double k = rpg.core.balance.Balance.defBase + Math.max(1, ClientData.level) * rpg.core.balance.Balance.defPerMobLevel;
+            ly = line(g, lx2, lr, ly, "피해 감소", String.format("%.0f%%", ClientData.defPct / (ClientData.defPct + k) * 100));
+            ly = line(g, lx2, lr, ly, "치명타 확률", String.format("%.1f%%", ClientData.crit));
+            ly = line(g, lx2, lr, ly, "치명타 피해", String.format("%.0f%%", ClientData.critDmgPct));
+            ly = line(g, lx2, lr, ly, "보스 데미지", String.format("+%.0f%%", ClientData.bossPct));
+            ly = line(g, lx2, lr, ly, "방어율 무시", String.format("%.1f%%", ClientData.ignoreDef));
+            if (ClientData.overloadPct > 0) ly = line(g, lx2, lr, ly, "마력 과부하", String.format("+%.1f%%", ClientData.overloadPct));
+            ly = line(g, lx2, lr, ly, "회복량 증가", String.format("+%.1f%%", ClientData.healBonus));
+            ly = line(g, lx2, lr, ly, "드롭률 증가", String.format("+%.1f%%", ClientData.dropBonus));
+            ly = line(g, lx2, lr, ly, "골드 획득 증가", String.format("+%.1f%%", ClientData.goldBonus));
+            ly = line(g, lx2, lr, ly, "최대 스태미나", String.format("15 + %.0f", ClientData.staminaBonus));
+        }
         super.render(g, mx, my, pt);
     }
 

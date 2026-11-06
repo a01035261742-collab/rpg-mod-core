@@ -101,6 +101,11 @@ public class EquipScreen extends ScaledContainerScreen<EquipMenu> {
         g.fill(x0 + 34, y + 32, x0 + 130, y + 152, 0xFF12040A);
         InventoryScreen.renderEntityInInventoryFollowsMouse(g, x0 + 82, y + 145, 52, (float) (x0 + 82 - mx), (float) (y + 70 - my), minecraft.player);
         g.drawCenteredString(font, "장신구", x0 + 16, y + 170, Ui.GRAY);
+        // 가방 창 (칸보다 먼저 그려야 칸이 보임)
+        int bx = bagX();
+        Ui.window(g, bx, y, BW, CharWin.H);
+        Ui.plaque(g, font, bx + BW / 2, y + 1, "가방");
+        g.drawString(font, "Shift+클릭: 입기", bx + 12, y + 30, Ui.GRAY, false);
         // 칸
         Cell hov = at(mx, my);
         for (Cell c : cells) {
@@ -134,11 +139,6 @@ public class EquipScreen extends ScaledContainerScreen<EquipMenu> {
         Ui.hsep(g, rx, rr, ry);
         g.drawString(font, "세트 효과", rx, ry + 5, Ui.GRAY, false);
         setLines(g, rx, rr, ry + 18);
-        // 가방 창
-        int bx = bagX();
-        Ui.window(g, bx, y, BW, CharWin.H);
-        Ui.plaque(g, font, bx + BW / 2, y + 1, "가방");
-        g.drawString(font, "Shift+클릭: 입기", bx + 12, y + 30, Ui.GRAY, false);
     }
 
     /** 입은 장비로 세트 효과 (켜진 단계 초록, 다음 단계 회색) */

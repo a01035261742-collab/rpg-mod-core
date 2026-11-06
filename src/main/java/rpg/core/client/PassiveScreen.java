@@ -23,7 +23,8 @@ import rpg.core.skill.Defs;
 public class PassiveScreen extends ScaledScreen {
     private static final int GOLD = 0xFFFFD86A, CYAN = 0xFF40D0E0, PURP = 0xFFB060FF, HEAD = 42;
     private int CELL = 30;
-    private static int zoom = 0;   // 휠로 정한 크기 (0 = 자동)
+    private static int zoom = 0;
+    private boolean panned;   // 휠로 정한 크기 (0 = 자동)
     private int px, py, pw, ph, ax, ay, aw, ah;
     private double panX, panY, homeX, homeY;
     private boolean dragging;
@@ -62,7 +63,8 @@ public class PassiveScreen extends ScaledScreen {
         CELL = zoom > 0 ? zoom : Math.max(18, Math.min(56, fit * 13 / 10));   // 처음엔 30% 크게 (끌어서 보기) · 휠로 바꾼 크기는 기억
         homeX = -(minX + maxX) * CELL / 2.0;
         homeY = -(minY + maxY) * CELL / 2.0;
-        panX = homeX; panY = homeY;
+        // 창을 옮겨도 보던 곳 유지 (처음 열 때만 가운데)
+        if (!panned) { panX = homeX; panY = homeY; panned = true; }
         // 별가루 (고정 위치)
         java.util.Random r = new java.util.Random(7);
         stars = new long[160];
