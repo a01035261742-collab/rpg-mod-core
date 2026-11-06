@@ -37,7 +37,7 @@ public class BagScreen extends ScaledContainerScreen<EquipMenu> {
         ClientPotions.load();
         addRenderableWidget(Ui.button(Component.literal("정렬"), b -> Net.CH.sendToServer(new Net.QuickAct(1, "")))
                 .bounds(wx + 12, wy + 118, 44, 15).build());
-        addRenderableWidget(Ui.button(Component.literal("캐릭터"), b -> CharWin.open(CharWin.EQUIP))
+        addRenderableWidget(Ui.button(Component.literal("장비 ▶"), b -> CharWin.open(CharWin.EQUIP))
                 .bounds(wx + 60, wy + 118, 52, 15).accent(true).build());
     }
 
