@@ -9,7 +9,7 @@ import rpg.core.net.Net;
 
 /** 마을 이동 창: 이동의 돌(골드) · 마을 이동 주문서(3초 시전). 가 본 마을만 [이동], 안 가 본 곳은 ??? */
 public class TravelScreen extends ScaledScreen {
-    private static final int W = 240, ROW = 22;
+    private static final int W = 320, ROW = 24;
     private final Net.TravelInfo info;
     private int x, y, h;
 

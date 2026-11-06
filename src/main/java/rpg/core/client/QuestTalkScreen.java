@@ -21,7 +21,7 @@ import rpg.core.quest.Quests;
  * 고르는 보상(reward.choose)이 있으면 마지막 장 아래에 칸이 생기고, 완료할 때 하나를 눌러 골라야 함
  */
 public class QuestTalkScreen extends ScaledScreen {
-    private static final int W = 340, H0 = 176, PICK = 24, SLOT = 20;
+    private static final int W = 400, H0 = 190, PICK = 24, SLOT = 20;
     private final int entity;
     private final String npc;
     private int x, y;

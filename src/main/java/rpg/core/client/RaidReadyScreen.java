@@ -7,7 +7,7 @@ import rpg.core.net.Net;
 
 /** 파티원 준비 확인 (30초) */
 public class RaidReadyScreen extends ScaledScreen {
-    private static final int W = 240, H = 96;
+    private static final int W = 300, H = 110;
     private final String raid, leader;
     private final long until = System.currentTimeMillis() + 30_000;
     private int x, y;

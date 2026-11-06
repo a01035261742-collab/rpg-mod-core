@@ -9,7 +9,7 @@ import rpg.core.net.Net;
 
 /** 레이드 단말기 창: 보스 · 빈 경기장 · 파티원 레벨·거리·오늘 보상 + [입장 요청] */
 public class RaidScreen extends ScaledScreen {
-    private static final int W = 270;
+    private static final int W = 340;
     private Net.RaidInfo info;
     private int x, y, h;
     private Button go;
@@ -47,17 +47,17 @@ public class RaidScreen extends ScaledScreen {
         g.drawString(font, "Lv." + t[1] + " 보스 · 입장 Lv." + info.minLevel() + " 이상 · 1~4명 · 15분", x + 16, y + 28, 0xFFC8C8C8, false);
         g.drawString(font, "빈 경기장 " + t[2] + " / " + t[3] + " · 보상은 하루 1번 (오전 6시)", x + 16, y + 42, 0xFFC8C8C8, false);
         g.drawString(font, "파티원", x + 16, y + 60, 0xFFA89890, false);
-        g.drawString(font, "레벨", x + 116, y + 60, 0xFFA89890, false);
-        g.drawString(font, "근처", x + 170, y + 60, 0xFFA89890, false);
-        g.drawString(font, "오늘 보상", x + 206, y + 60, 0xFFA89890, false);
+        g.drawString(font, "레벨", x + 150, y + 60, 0xFFA89890, false);
+        g.drawString(font, "근처", x + 220, y + 60, 0xFFA89890, false);
+        g.drawString(font, "오늘 보상", x + 268, y + 60, 0xFFA89890, false);
         int ry = y + 74;
         for (String row : info.rows()) {
             String[] c = row.split("\\|");
             boolean lv = c.length > 2 && "1".equals(c[2]), near = c.length > 3 && "1".equals(c[3]), rw = c.length <= 4 || "1".equals(c[4]);
             g.drawString(font, c[0], x + 16, ry, 0xFFFFFFFF, false);
-            g.drawString(font, "Lv." + (c.length > 1 ? c[1] : "?") + (lv ? " ✓" : " ✗"), x + 116, ry, lv ? 0xFF7CFC7C : 0xFFFF6060, false);
-            g.drawString(font, near ? "✓" : "✗", x + 178, ry, near ? 0xFF7CFC7C : 0xFFFF6060, false);
-            g.drawString(font, rw ? "가능" : "받음", x + 212, ry, rw ? 0xFF7CFC7C : 0xFFFFB040, false);
+            g.drawString(font, "Lv." + (c.length > 1 ? c[1] : "?") + (lv ? " ✓" : " ✗"), x + 150, ry, lv ? 0xFF7CFC7C : 0xFFFF6060, false);
+            g.drawString(font, near ? "✓" : "✗", x + 228, ry, near ? 0xFF7CFC7C : 0xFFFF6060, false);
+            g.drawString(font, rw ? "가능" : "받음", x + 274, ry, rw ? 0xFF7CFC7C : 0xFFFFB040, false);
             ry += 14;
         }
         g.drawString(font, "\"받음\" = 같이 클리어는 되지만 보상 없음", x + 16, ry + 2, 0xFFA89890, false);

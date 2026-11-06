@@ -17,8 +17,8 @@ import rpg.core.net.Net;
 
 /** 제작 창: 위 탭 · 왼쪽 레시피 목록 · 오른쪽 재료(가진 수/필요 수)·골드·[제작] */
 public class CraftScreen extends ScaledScreen {
-    private static final int W = 340, ROW = 20, ROWS = 8;
-    private int H = 260, off;
+    private static final int W = 420, ROW = 22, ROWS = 9;
+    private int H = 290, off;
     private final int npc;
     private final String name;
     private final List<String> tabs;
@@ -57,7 +57,7 @@ public class CraftScreen extends ScaledScreen {
         for (String t : tabs) labels.add(t.isEmpty() ? "전체" : t);
         int[][] fl = Ui.flow(font, labels, 0, 0, W - 16, 14, 3, 18);
         off = (Math.max(1, Ui.rows(fl, 18)) - 1) * 18;
-        H = 260 + off;
+        H = 290 + off;
         x = Ui.cx(width, W);
         y = Ui.cy(height, H);
         for (int i = 0; i < labels.size(); i++) {
@@ -67,8 +67,8 @@ public class CraftScreen extends ScaledScreen {
         }
         // 제작 버튼: 오른쪽 칸 아래 (버튼줄 위) · [닫기]: 버튼줄
         int cy = y + H - Ui.FOOT - 26;
-        craft1 = addRenderableWidget(Ui.button(Component.literal("제작"), b -> send(1)).bounds(x + 182, cy, 70, Ui.BTN_H).build());
-        craft10 = addRenderableWidget(Ui.button(Component.literal("10번 제작"), b -> send(10)).bounds(x + 256, cy, 76, Ui.BTN_H).build());
+        craft1 = addRenderableWidget(Ui.button(Component.literal("제작"), b -> send(1)).bounds(x + 232, cy, 80, Ui.BTN_H).build());
+        craft10 = addRenderableWidget(Ui.button(Component.literal("10번 제작"), b -> send(10)).bounds(x + 318, cy, 90, Ui.BTN_H).build());
         addRenderableWidget(Ui.close(x, y, W, H, this::onClose));
         if (shown.isEmpty() && sel < 0) filter();
     }
@@ -107,8 +107,8 @@ public class CraftScreen extends ScaledScreen {
             int i = shown.get(k);
             Net.CraftLine l = lines.get(i);
             int ry = top + r * ROW;
-            boolean hover = mx >= x + 6 && mx < x + 174 && my >= ry && my < ry + ROW - 2;
-            g.fill(x + 6, ry, x + 174, ry + ROW - 2, i == sel ? 0x70FFAA30 : hover ? 0x50FFFFFF : 0x28FFFFFF);
+            boolean hover = mx >= x + 6 && mx < x + 222 && my >= ry && my < ry + ROW - 2;
+            g.fill(x + 6, ry, x + 222, ry + ROW - 2, i == sel ? 0x70FFAA30 : hover ? 0x50FFFFFF : 0x28FFFFFF);
             ItemStack s = stack(l.result(), l.count());
             g.renderItem(s, x + 8, ry + 1);
             String nm = s.isEmpty() ? l.result() : s.getHoverName().getString() + (l.count() > 1 ? " x" + l.count() : "");
@@ -120,7 +120,7 @@ public class CraftScreen extends ScaledScreen {
                 x + 8, top + ROWS * ROW + 2, 0xFF808080, false);
 
         // 오른쪽: 고른 레시피
-        int rx = x + 182;
+        int rx = x + 232;
         boolean ok = false;
         if (sel >= 0) {
             Net.CraftLine l = lines.get(sel);
@@ -174,7 +174,7 @@ public class CraftScreen extends ScaledScreen {
             int k = r + scroll;
             if (k >= shown.size()) break;
             int ry = top + r * ROW;
-            if (mx >= x + 6 && mx < x + 174 && my >= ry && my < ry + ROW - 2) {
+            if (mx >= x + 6 && mx < x + 222 && my >= ry && my < ry + ROW - 2) {
                 sel = shown.get(k);
                 return true;
             }
