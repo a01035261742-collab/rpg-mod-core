@@ -98,7 +98,7 @@ public class EnhanceScreen extends ScaledScreen {
 
     // 왼쪽 종류 (tab 번호: 0 스타포스 · 1 주문서 · 2 조각 · 3 잠재능력 · 4 추가 옵션)
     private static final String[] KINDS = {"스타포스", "주문서", "조각", "잠재능력", "추가 옵션"};
-    private static final int CX = 172, BY = 156;
+    private static final int CX = 262, BY = 262;
     /** 입은 장비 칸: 열마다 위→아래 (위치 번호) — 1열 모자·상의·하의·신발·무기 / 2열 장갑·망토·벨트·펜던트·훈장 / 3열 반지 4·귀걸이 */
     private static final int[][] GRID = {{103, 102, 101, 100, 0}, {201, 202, 203, 209, 210}, {205, 206, 207, 208, 204}};
 
@@ -111,7 +111,7 @@ public class EnhanceScreen extends ScaledScreen {
     }
 
     private Button btn(String t, int bx, int w, boolean accent, Button.OnPress p) {
-        Button b = Ui.button(Component.literal(t), p).bounds(bx, y + BY, w, 15).accent(accent).build();
+        Button b = Ui.button(Component.literal(t), p).bounds(bx, y + BY, w, 16).accent(accent).build();
         addRenderableWidget(b);
         return b;
     }
@@ -122,12 +122,12 @@ public class EnhanceScreen extends ScaledScreen {
         y = Ui.cy(height, H);
         CharWin.addTabs(this::addRenderableWidget, x, y, CharWin.ENHANCE);
         addRenderableWidget(Ui.button(Component.literal("가방"), b -> { bag = !bag; rebuildWidgets(); })
-                .bounds(x + 228, y + BY, 54, 15).accent(bag).build());
+                .bounds(x + 380, y + BY, 80, 16).accent(bag).build());
         if (bag) return;   // 가방 팝업 동안은 강화 버튼 숨김
 
         ItemStack s = cur();
         GearDefs.GearDef d = Gear.def(s);
-        int c1 = x + CX - 30, l2 = x + 126, r2 = x + 174;
+        int c1 = x + CX - 30, l2 = x + CX - 56, r2 = x + CX + 6;
         if (tab == 0 && d != null) {
             if (Enhance.broken(s)) {
                 btn("복구", c1, 60, true, bt -> Net.CH.sendToServer(new Net.EnhanceAction(3, curLoc(), material())))
@@ -137,7 +137,7 @@ public class EnhanceScreen extends ScaledScreen {
                 boolean can = st < Enhance.maxStar(d);
                 if (can && Enhance.destroyRate(st) > 0) {
                     addRenderableWidget(Ui.button(Component.literal((guard ? "☑" : "☐") + " 파괴 방지"), bt -> { guard = !guard; rebuildWidgets(); })
-                            .bounds(x + CX - 34, y + 120, 68, 13).build());
+                            .bounds(x + CX - 40, y + 230, 80, 14).build());
                 }
                 btn("강화", c1, 60, true, bt -> Net.CH.sendToServer(new Net.EnhanceAction(1, curLoc(), guard ? 1 : 0)))
                         .active = can && ClientData.gold >= Enhance.cost(d, st, guard);
@@ -147,8 +147,8 @@ public class EnhanceScreen extends ScaledScreen {
                     .active = selScroll >= 0 && selScroll < scrolls.size() && Enhance.scrollBlock(s, scrolls.get(selScroll)) == null;
         } else if (tab == 3 && d != null && rpg.core.equip.Potential.can(d)) {
             if (!rpg.core.equip.Potential.has(s)) {
-                btn("레어 (" + extra.get(1) + ")", l2, 46, false, bt -> Net.CH.sendToServer(new Net.EnhanceAction(5, curLoc(), 0))).active = extra.get(1) > 0;
-                btn("에픽 (" + extra.get(2) + ")", r2, 46, true, bt -> Net.CH.sendToServer(new Net.EnhanceAction(5, curLoc(), 1))).active = extra.get(2) > 0;
+                btn("레어 (" + extra.get(1) + ")", l2, 50, false, bt -> Net.CH.sendToServer(new Net.EnhanceAction(5, curLoc(), 0))).active = extra.get(1) > 0;
+                btn("에픽 (" + extra.get(2) + ")", r2, 50, true, bt -> Net.CH.sendToServer(new Net.EnhanceAction(5, curLoc(), 1))).active = extra.get(2) > 0;
             } else if (rpg.core.equip.Potential.pending(s)) {
                 String key = curLoc() + ":" + rpg.core.equip.Potential.pot(s).getCompound("new");
                 boolean up = rpg.core.equip.Potential.pendingUp(s);
@@ -156,31 +156,31 @@ public class EnhanceScreen extends ScaledScreen {
                 waiting = System.currentTimeMillis() < readyAt;
                 Button b1, b2;
                 if (up && confirmKeep) {
-                    b1 = btn("취소", l2, 46, false, bt -> { confirmKeep = false; rebuildWidgets(); });
-                    b2 = btn("유지할게요", r2, 46, false, bt -> { confirmKeep = false; Net.CH.sendToServer(new Net.EnhanceAction(9, curLoc(), 1)); });
+                    b1 = btn("취소", l2, 50, false, bt -> { confirmKeep = false; rebuildWidgets(); });
+                    b2 = btn("유지할게요", r2, 50, false, bt -> { confirmKeep = false; Net.CH.sendToServer(new Net.EnhanceAction(9, curLoc(), 1)); });
                 } else {
-                    b1 = btn("이전 유지", l2, 46, false, bt -> {
+                    b1 = btn("이전 유지", l2, 50, false, bt -> {
                         if (up) { confirmKeep = true; readyAt = System.currentTimeMillis() + 700; rebuildWidgets(); }
                         else Net.CH.sendToServer(new Net.EnhanceAction(9, curLoc(), 0));
                     });
-                    b2 = btn(up ? "새 옵션▲" : "새 옵션", r2, 46, true, bt -> Net.CH.sendToServer(new Net.EnhanceAction(8, curLoc(), 0)));
+                    b2 = btn(up ? "새 옵션▲" : "새 옵션", r2, 50, true, bt -> Net.CH.sendToServer(new Net.EnhanceAction(8, curLoc(), 0)));
                 }
                 b1.active = b2.active = !waiting;
             } else {
                 long c = rpg.core.equip.Potential.cost(d, rpg.core.equip.Potential.grade(s));
-                btn(shortG(c), l2, 46, false, bt -> Net.CH.sendToServer(new Net.EnhanceAction(6, curLoc(), 0))).active = ClientData.gold >= c;
-                btn("큐브 " + extra.get(0), r2, 46, true, bt -> Net.CH.sendToServer(new Net.EnhanceAction(7, curLoc(), 0))).active = extra.get(0) > 0;
+                btn(shortG(c), l2, 50, false, bt -> Net.CH.sendToServer(new Net.EnhanceAction(6, curLoc(), 0))).active = ClientData.gold >= c;
+                btn("큐브 " + extra.get(0), r2, 50, true, bt -> Net.CH.sendToServer(new Net.EnhanceAction(7, curLoc(), 0))).active = extra.get(0) > 0;
             }
         } else if (tab == 4 && d != null && rpg.core.equip.Flame.can(d) && !Enhance.broken(s)) {
             if (rpg.core.equip.Flame.pending(s)) {
-                btn("이전 유지", l2, 46, false, bt -> Net.CH.sendToServer(new Net.EnhanceAction(11, curLoc(), 1)));
-                btn("새 옵션", r2, 46, true, bt -> Net.CH.sendToServer(new Net.EnhanceAction(11, curLoc(), 0)));
+                btn("이전 유지", l2, 50, false, bt -> Net.CH.sendToServer(new Net.EnhanceAction(11, curLoc(), 1)));
+                btn("새 옵션", r2, 50, true, bt -> Net.CH.sendToServer(new Net.EnhanceAction(11, curLoc(), 0)));
             } else {
                 String[] nm = {"강력", "영원", "검은"};
                 long c = rpg.core.equip.Flame.cost(d);
                 for (int i = 0; i < 3; i++) {
                     final int k = i;
-                    btn(nm[i] + " " + extra.get(6 + i), x + 125 + i * 33, 31, i == 1, bt -> Net.CH.sendToServer(new Net.EnhanceAction(10, curLoc(), k)))
+                    btn(nm[i] + " " + extra.get(6 + i), x + CX - 62 + i * 42, 40, i == 1, bt -> Net.CH.sendToServer(new Net.EnhanceAction(10, curLoc(), k)))
                             .active = extra.get(6 + i) > 0 && ClientData.gold >= c;
                 }
             }
@@ -200,7 +200,7 @@ public class EnhanceScreen extends ScaledScreen {
     }
 
     private void center(GuiGraphics g, String t, int yy, int col) {
-        String c = Ui.cut(font, t, 96);
+        String c = Ui.cut(font, t, 200);
         g.drawString(font, c, x + CX - font.width(c) / 2, yy, col, true);
     }
 
@@ -233,18 +233,18 @@ public class EnhanceScreen extends ScaledScreen {
         List<Component> tip = null;
         // 왼쪽: 종류
         for (int i = 0; i < KINDS.length; i++) {
-            int ry = y + 30 + i * 15;
-            boolean on = mx >= x + 72 && mx < x + 120 && my >= ry - 2 && my < ry + 12;
-            if (i == tab || on) Ui.row(g, x + 72, ry - 2, x + 120, ry + 11, i == tab);
-            g.drawString(font, KINDS[i], x + 76, ry, i == tab ? Ui.VAL : Ui.GRAY, i == tab);
+            int ry = y + 36 + i * 20;
+            boolean on = mx >= x + 85 && mx < x + 148 && my >= ry - 4 && my < ry + 13;
+            if (i == tab || on) Ui.row(g, x + 85, ry - 4, x + 148, ry + 13, i == tab);
+            g.drawString(font, KINDS[i], x + 91, ry, i == tab ? Ui.VAL : Ui.GRAY, i == tab);
         }
-        Ui.vsep(g, x + 122, y + 28, y + 172);
-        Ui.vsep(g, x + 223, y + 28, y + 172);
+        Ui.vsep(g, x + 152, y + 28, y + 282);
+        Ui.vsep(g, x + 372, y + 28, y + 282);
         // 오른쪽: 입은 장비
-        g.drawString(font, "입은 장비", x + 255 - font.width("입은 장비") / 2, y + 29, Ui.TXT, true);
+        g.drawString(font, "입은 장비", x + 418 - font.width("입은 장비") / 2, y + 34, Ui.TXT, true);
         for (int c = 0; c < 3; c++)
             for (int r = 0; r < 5; r++) {
-                int lc = GRID[c][r], i = idxOf(lc), cx = x + 228 + c * 18, cy = y + 41 + r * 19;
+                int lc = GRID[c][r], i = idxOf(lc), cx = x + 384 + c * 26, cy = y + 50 + r * 26;
                 ItemStack it = i >= 0 ? gear.get(i) : ItemStack.EMPTY;
                 cell(g, cx, cy, it, i >= 0 && i == sel);
                 if (i >= 0 && mx >= cx && mx < cx + 18 && my >= cy && my < cy + 18 && !bag) tip = new ArrayList<>(Screen.getTooltipFromItem(Minecraft.getInstance(), it));
@@ -254,7 +254,7 @@ public class EnhanceScreen extends ScaledScreen {
             ItemStack s = cur();
             GearDefs.GearDef d = Gear.def(s);
             if (tab == 2) renderFrag(g);
-            else if (d == null) { center(g, "강화할 장비를", y + 80, Ui.GRAY); center(g, "오른쪽에서 고르세요", y + 92, Ui.GRAY); }
+            else if (d == null) { center(g, "강화할 장비를", y + 130, Ui.GRAY); center(g, "오른쪽에서 고르세요", y + 144, Ui.GRAY); }
             else if (tab == 0) renderStar(g, s, d);
             else if (tab == 1) tip = renderScroll(g, s, d, mx, my, tip);
             else if (tab == 3) renderPot(g, s, d);
@@ -267,13 +267,13 @@ public class EnhanceScreen extends ScaledScreen {
 
     private List<Component> renderBag(GuiGraphics g, int mx, int my) {
         g.pose().pushPose(); g.pose().translate(0, 0, 300);
-        int bx = x + 76, by = y + 40, bw = 146, bh = 110;
+        int bx = x + 160, by = y + 46, bw = 206, bh = 160;
         Ui.window(g, bx, by, bw, bh);
         g.drawString(font, "가방 속 장비", bx + 10, by + 8, Ui.VAL, true);
         List<Integer> l = bagIdx();
         List<Component> tip = null;
-        for (int k = 0; k < l.size() && k < 28; k++) {
-            int i = l.get(k), cx = bx + 9 + (k % 7) * 18, cy = by + 21 + (k / 7) * 19;
+        for (int k = 0; k < l.size() && k < 48; k++) {
+            int i = l.get(k), cx = bx + 11 + (k % 8) * 23, cy = by + 24 + (k / 8) * 22;
             cell(g, cx, cy, gear.get(i), i == sel);
             if (mx >= cx && mx < cx + 18 && my >= cy && my < cy + 18) {
                 tip = new ArrayList<>(Screen.getTooltipFromItem(Minecraft.getInstance(), gear.get(i)));
@@ -287,13 +287,13 @@ public class EnhanceScreen extends ScaledScreen {
 
     private void renderFrag(GuiGraphics g) {
         var it = net.minecraftforge.registries.ForgeRegistries.ITEMS.getValue(new net.minecraft.resources.ResourceLocation("rpgcore", "scroll_fragment"));
-        Ui.slot(g, x + CX - 9, y + 34);
-        if (it != null) g.renderItem(new ItemStack(it), x + CX - 8, y + 35);
-        center(g, "주문서 조각 합성", y + 58, Ui.VAL);
-        center(g, "조각 " + Enhance.fragments + "개 → 주문서 1장", y + 74, Ui.TXT);
-        center(g, "등급: 내 레벨 기준", y + 86, Ui.GRAY);
-        center(g, "가진 조각 " + frags + " / " + Enhance.fragments, y + 106, frags >= Enhance.fragments ? Ui.GREEN : Ui.RED);
-        Ui.bar(g, x + CX - 40, y + 120, 80, 4, frags / (float) Math.max(1, Enhance.fragments), 0xFF7CE07C);
+        Ui.slot(g, x + CX - 9, y + 60);
+        if (it != null) g.renderItem(new ItemStack(it), x + CX - 8, y + 61);
+        center(g, "주문서 조각 합성", y + 84, Ui.VAL);
+        center(g, "조각 " + Enhance.fragments + "개 → 주문서 1장", y + 100, Ui.TXT);
+        center(g, "등급: 내 레벨 기준", y + 112, Ui.GRAY);
+        center(g, "가진 조각 " + frags + " / " + Enhance.fragments, y + 132, frags >= Enhance.fragments ? Ui.GREEN : Ui.RED);
+        Ui.bar(g, x + CX - 40, y + 146, 80, 4, frags / (float) Math.max(1, Enhance.fragments), 0xFF7CE07C);
     }
 
     /** 가운데 위: 고른 장비 칸 + 이름 */
@@ -307,8 +307,8 @@ public class EnhanceScreen extends ScaledScreen {
 
     private void renderStar(GuiGraphics g, ItemStack s, GearDefs.GearDef d) {
         int st = Enhance.star(s), max = Enhance.maxStar(d);
-        if (max > 0) stars(g, Math.min(st, max), max, y + 30);
-        int yy = head(g, s, y + 40);
+        if (max > 0) stars(g, Math.min(st, max), max, y + 56);
+        int yy = head(g, s, y + 66);
         if (max == 0) { center(g, "스타포스 강화 불가", yy, Ui.RED); return; }
         if (Enhance.broken(s)) {
             center(g, "파괴된 장비", yy, Ui.RED);
@@ -328,16 +328,16 @@ public class EnhanceScreen extends ScaledScreen {
         if (br > 0) g.fill(bx + (int) (84 * ok / 100), yy + 13, bx + (int) (84 * ok / 100) + Math.max(1, (int) (84 * br / 100)), yy + 17, 0xFFDC3232);
         center(g, "성공 " + fmt(ok) + "%" + (Enhance.destroyRate(st) > 0 ? " · 파괴 " + fmt(br) + "%" : ""), yy + 21, Ui.TXT);
         long c = Enhance.cost(d, st, guard);
-        center(g, String.format("%,d G", c), y + 138, ClientData.gold >= c ? Ui.VAL : Ui.RED);
+        center(g, String.format("%,d G", c), y + 164, ClientData.gold >= c ? Ui.VAL : Ui.RED);
     }
 
     private List<Component> renderScroll(GuiGraphics g, ItemStack s, GearDefs.GearDef d, int mx, int my, List<Component> tip) {
-        int yy = head(g, s, y + 28);
+        int yy = head(g, s, y + 54);
         int um = Enhance.upgMax(d);
         if (um == 0) { center(g, "주문서 사용 불가", yy, Ui.RED); return tip; }
         center(g, "업그레이드 " + Enhance.upgLeft(s) + "/" + um + " · 실패 " + Enhance.upgFail(s), yy, Ui.TXT);
-        Ui.hsep(g, x + 126, x + 220, yy + 12);
-        int px = x + 127, py = yy + 16;
+        Ui.hsep(g, x + 170, x + 360, yy + 12);
+        int px = x + 217, py = yy + 16;
         for (int i = 0; i < scrolls.size() && i < 10; i++) {
             int cx = px + (i % 5) * 19, cy = py + (i / 5) * 19;
             ItemStack sc = scrolls.get(i);
@@ -353,35 +353,36 @@ public class EnhanceScreen extends ScaledScreen {
         if (scrolls.isEmpty()) center(g, "주문서가 없어요", py + 6, Ui.GRAY);
         if (selScroll >= 0 && selScroll < scrolls.size()) {
             String why = Enhance.scrollBlock(s, scrolls.get(selScroll));
-            center(g, scrolls.get(selScroll).getHoverName().getString(), y + 132, why == null ? Ui.GREEN : Ui.RED);
-            if (why != null) center(g, why, y + 143, Ui.RED);
+            center(g, scrolls.get(selScroll).getHoverName().getString(), y + 158, why == null ? Ui.GREEN : Ui.RED);
+            if (why != null) center(g, why, y + 169, Ui.RED);
         }
         return tip;
     }
 
     /** 위: 작은 칸 + 이름 + 부제 (잠재·불꽃) */
     private void small(GuiGraphics g, ItemStack s, String sub, int col) {
-        Ui.slot(g, x + 126, y + 28);
-        g.renderItem(s, x + 127, y + 29);
-        g.drawString(font, Ui.cut(font, s.getHoverName().getString(), 74), x + 147, y + 29, Ui.VAL, true);
-        g.drawString(font, Ui.cut(font, sub, 74), x + 147, y + 39, col, false);
+        Ui.slot(g, x + 216, y + 54);
+        g.renderItem(s, x + 217, y + 55);
+        g.drawString(font, Ui.cut(font, s.getHoverName().getString(), 120), x + 237, y + 55, Ui.VAL, true);
+        g.drawString(font, Ui.cut(font, sub, 120), x + 237, y + 65, col, false);
     }
 
     private void box(GuiGraphics g, int bx, String title, int col, List<Component> lines, boolean on) {
-        g.fill(bx, y + 52, bx + 47, y + 112, Ui.IN1);
+        int bw = 100, t0 = y + 78, t1 = y + 150;
+        g.fill(bx, t0, bx + bw, t1, Ui.IN1);
         int e = on ? Ui.G4 : Ui.SEP;
-        g.fill(bx, y + 52, bx + 47, y + 53, e); g.fill(bx, y + 111, bx + 47, y + 112, e); g.fill(bx, y + 52, bx + 1, y + 112, e); g.fill(bx + 46, y + 52, bx + 47, y + 112, e);
-        String t = Ui.cut(font, title, 44);
-        g.drawString(font, t, bx + 24 - font.width(t) / 2, y + 55, col, true);
-        int yy = y + 67;
-        for (Component c : lines) { g.drawString(font, Ui.cut(font, c.getString(), 43), bx + 3, yy, Ui.TXT, false); yy += 10; }
+        g.fill(bx, t0, bx + bw, t0 + 1, e); g.fill(bx, t1 - 1, bx + bw, t1, e); g.fill(bx, t0, bx + 1, t1, e); g.fill(bx + bw - 1, t0, bx + bw, t1, e);
+        String t = Ui.cut(font, title, bw - 4);
+        g.drawString(font, t, bx + bw / 2 - font.width(t) / 2, t0 + 4, col, true);
+        int yy = t0 + 17;
+        for (Component c : lines) { g.drawString(font, Ui.cut(font, c.getString(), bw - 6), bx + 4, yy, Ui.TXT, false); yy += 11; }
     }
 
     private void renderPot(GuiGraphics g, ItemStack s, GearDefs.GearDef d) {
         if (!rpg.core.equip.Potential.can(d)) { small(g, s, "잠재능력 불가", Ui.RED); return; }
         if (!rpg.core.equip.Potential.has(s)) {
             small(g, s, "잠재능력 없음", Ui.GRAY);
-            center(g, "부여 주문서로", y + 80, Ui.GRAY); center(g, "처음 부여해요", y + 92, Ui.GRAY);
+            center(g, "부여 주문서로", y + 106, Ui.GRAY); center(g, "처음 부여해요", y + 118, Ui.GRAY);
             return;
         }
         var pt = rpg.core.equip.Potential.pot(s);
@@ -392,16 +393,16 @@ public class EnhanceScreen extends ScaledScreen {
         if (pend) {
             var nw = pt.getCompound("new");
             int ng = Math.max(0, Math.min(3, nw.getInt("g")));
-            box(g, x + 125, "이전", gc, rpg.core.equip.Potential.lines(pt), false);
-            box(g, x + 174, (ng > gr ? "▲" : "") + rpg.core.equip.Potential.GRADE[ng], 0xFF000000 | rpg.core.equip.Potential.COLOR[ng], rpg.core.equip.Potential.lines(nw), true);
-            powLine(g, s, "rpgPowPot", y + 118);
-            if (confirmKeep && ng > gr) { center(g, "오른 등급이 사라져요", y + 130, 0xFFFF8040); center(g, "정말 이전 유지?", y + 141, 0xFFFF8040); }
+            box(g, x + 158, "이전", gc, rpg.core.equip.Potential.lines(pt), false);
+            box(g, x + 266, (ng > gr ? "▲" : "") + rpg.core.equip.Potential.GRADE[ng], 0xFF000000 | rpg.core.equip.Potential.COLOR[ng], rpg.core.equip.Potential.lines(nw), true);
+            powLine(g, s, "rpgPowPot", y + 144);
+            if (confirmKeep && ng > gr) { center(g, "오른 등급이 사라져요", y + 156, 0xFFFF8040); center(g, "정말 이전 유지?", y + 167, 0xFFFF8040); }
         } else {
-            int yy = y + 56;
-            for (var c : rpg.core.equip.Potential.lines(pt)) { g.drawString(font, Ui.cut(font, c.getString(), 94), x + 127, yy, Ui.TXT, false); yy += 11; }
-            if (gr < 3) center(g, "등급 상승 " + fmt(rpg.core.equip.Potential.upChance[gr]) + "% · 천장 " + rpg.core.equip.Potential.ceil(s)[gr] + "/" + rpg.core.equip.Potential.ceiling[gr], y + 124, Ui.GRAY);
+            int yy = y + 82;
+            for (var c : rpg.core.equip.Potential.lines(pt)) { g.drawString(font, Ui.cut(font, c.getString(), 190), x + 170, yy, Ui.TXT, false); yy += 11; }
+            if (gr < 3) center(g, "등급 상승 " + fmt(rpg.core.equip.Potential.upChance[gr]) + "% · 천장 " + rpg.core.equip.Potential.ceil(s)[gr] + "/" + rpg.core.equip.Potential.ceiling[gr], y + 150, Ui.GRAY);
             long c = rpg.core.equip.Potential.cost(d, gr);
-            center(g, "골드 " + shortG(c) + " 또는 큐브 1개", y + 138, Ui.VAL);
+            center(g, "골드 " + shortG(c) + " 또는 큐브 1개", y + 164, Ui.VAL);
         }
     }
 
@@ -412,14 +413,14 @@ public class EnhanceScreen extends ScaledScreen {
         small(g, s, pend ? "검은 불꽃: 골라요" : "추가 옵션", pend ? Ui.RED : Ui.BLUE);
         if (pend) {
             var nw = rpg.core.equip.Flame.pendingTag(s);
-            box(g, x + 125, "이전", Ui.GRAY, flameList(Gear.opts(s), rpg.core.equip.Flame.tiers(s)), false);
-            box(g, x + 174, "새", Ui.VAL, flameList(nw.getCompound("o"), nw.getCompound("t")), true);
-            powLine(g, s, "rpgPowFlame", y + 118);
+            box(g, x + 158, "이전", Ui.GRAY, flameList(Gear.opts(s), rpg.core.equip.Flame.tiers(s)), false);
+            box(g, x + 266, "새", Ui.VAL, flameList(nw.getCompound("o"), nw.getCompound("t")), true);
+            powLine(g, s, "rpgPowFlame", y + 144);
         } else {
-            int yy = y + 56;
-            for (Component c : flameList(Gear.opts(s), rpg.core.equip.Flame.tiers(s))) { g.drawString(font, Ui.cut(font, c.getString(), 94), x + 127, yy, Ui.BLUE, false); yy += 11; }
+            int yy = y + 82;
+            for (Component c : flameList(Gear.opts(s), rpg.core.equip.Flame.tiers(s))) { g.drawString(font, Ui.cut(font, c.getString(), 190), x + 170, yy, Ui.BLUE, false); yy += 11; }
             long c = rpg.core.equip.Flame.cost(d);
-            center(g, "불꽃 1개 + " + shortG(c), y + 140, ClientData.gold >= c ? Ui.VAL : Ui.RED);
+            center(g, "불꽃 1개 + " + shortG(c), y + 166, ClientData.gold >= c ? Ui.VAL : Ui.RED);
         }
     }
 
@@ -447,29 +448,29 @@ public class EnhanceScreen extends ScaledScreen {
     @Override
     public boolean mouseClicked(double mx, double my, int button) {
         if (bag) {
-            int bx = x + 76, by = y + 40;
+            int bx = x + 160, by = y + 46;
             List<Integer> l = bagIdx();
-            for (int k = 0; k < l.size() && k < 28; k++) {
-                int cx = bx + 9 + (k % 7) * 18, cy = by + 21 + (k / 7) * 19;
+            for (int k = 0; k < l.size() && k < 48; k++) {
+                int cx = bx + 11 + (k % 8) * 23, cy = by + 24 + (k / 8) * 22;
                 if (mx >= cx && mx < cx + 18 && my >= cy && my < cy + 18) { sel = l.get(k); selScroll = -1; bag = false; rebuildWidgets(); return true; }
             }
-            if (mx >= bx && mx < bx + 146 && my >= by && my < by + 110) return true;
+            if (mx >= bx && mx < bx + 206 && my >= by && my < by + 160) return true;
             if (super.mouseClicked(mx, my, button)) return true;
             bag = false; rebuildWidgets();
             return true;
         }
         if (super.mouseClicked(mx, my, button)) return true;
         for (int i = 0; i < KINDS.length; i++) {
-            int ry = y + 30 + i * 15;
-            if (mx >= x + 72 && mx < x + 120 && my >= ry - 2 && my < ry + 12) { tab = i; lastTab = i; selScroll = -1; rebuildWidgets(); return true; }
+            int ry = y + 36 + i * 20;
+            if (mx >= x + 85 && mx < x + 148 && my >= ry - 4 && my < ry + 13) { tab = i; lastTab = i; selScroll = -1; rebuildWidgets(); return true; }
         }
         for (int c = 0; c < 3; c++)
             for (int r = 0; r < 5; r++) {
-                int cx = x + 228 + c * 18, cy = y + 41 + r * 19, i = idxOf(GRID[c][r]);
+                int cx = x + 384 + c * 26, cy = y + 50 + r * 26, i = idxOf(GRID[c][r]);
                 if (i >= 0 && mx >= cx && mx < cx + 18 && my >= cy && my < cy + 18) { sel = i; selScroll = -1; rebuildWidgets(); return true; }
             }
         if (tab == 1) {
-            int px = x + 127, py = y + 28 + 34 + 16;
+            int px = x + 217, py = y + 54 + 34 + 16;
             for (int i = 0; i < scrolls.size() && i < 10; i++) {
                 int cx = px + (i % 5) * 19, cy = py + (i / 5) * 19;
                 if (mx >= cx && mx < cx + 18 && my >= cy && my < cy + 18) { selScroll = i; rebuildWidgets(); return true; }

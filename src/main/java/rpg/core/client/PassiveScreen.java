@@ -51,10 +51,9 @@ public class PassiveScreen extends ScaledScreen {
         nodes.clear();
         int tree = Defs.treeOf(ClientData.job);
         for (Defs.Node n : Defs.NODES.values()) if (n.job() == tree) nodes.add(n);
-        pw = width - 2 * Ui.MARGIN;
-        ph = height - 2 * Ui.MARGIN;
-        px = Ui.MARGIN; py = Ui.MARGIN;
-        ax = px + 70; ay = py + HEAD; aw = pw - 70 - 12; ah = ph - HEAD - 13 - 22;   // 아래 22 = 버튼 줄 (트리와 안 겹치게)
+        pw = CharWin.W; ph = CharWin.H;   // 다른 탭과 같은 창 크기·자리 (탭 바 안 움직이게)
+        px = Ui.cx(width, pw); py = Ui.cy(height, ph);
+        ax = px + 79; ay = py + HEAD; aw = pw - 79 - 14; ah = ph - HEAD - 13 - 22;   // 아래 22 = 버튼 줄 (트리와 안 겹치게)
         CharWin.addTabs(this::addRenderableWidget, px, py, CharWin.PASSIVE);
         int minX = 0, maxX = 0, minY = 0, maxY = 0;
         for (Defs.Node n : nodes) { minX = Math.min(minX, n.x()); maxX = Math.max(maxX, n.x()); minY = Math.min(minY, n.y()); maxY = Math.max(maxY, n.y()); }

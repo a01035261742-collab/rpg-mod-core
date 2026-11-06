@@ -38,9 +38,12 @@ public class EquipMenu extends AbstractContainerMenu {
     /** 가방 칸 시작 (장비 탭: 캐릭터 창 오른쪽에 붙은 가방 창 안) */
     public static final int BAG_X = 316, BAG_Y = 46;
     public static boolean bagOpen;
+    /** 장비 탭: 칸을 화면이 직접 그리고 누름 (큰 칸) → 바닐라 칸 처리 끔 (클라만) */
+    public static boolean manual;
 
     private static class BagSlot extends Slot {
         BagSlot(net.minecraft.world.Container c, int i, int x, int y) { super(c, i, x, y); }
+        @Override public boolean isActive() { return !manual; }
     }
     /** 바닐라 인벤토리 2×2 제작 */
     public final net.minecraft.world.inventory.CraftingContainer craft = new net.minecraft.world.inventory.TransientCraftingContainer(this, 2, 2);
@@ -60,7 +63,7 @@ public class EquipMenu extends AbstractContainerMenu {
                 public boolean mayPlace(ItemStack s) {
                     return super.mayPlace(s) && Gear.canEquip(player, s);
                 }
-                @Override public boolean isActive() { return !bagOpen; }
+                @Override public boolean isActive() { return !bagOpen && !manual; }
             });
         }
         // 갑옷 4칸 (바닐라 위치)
@@ -69,7 +72,7 @@ public class EquipMenu extends AbstractContainerMenu {
             final ResourceLocation icon = ARMOR_ICONS[i];
             addSlot(new Slot(inv, 39 - i, 77, 31 + i * 22) {
                 @Override public int getMaxStackSize() { return 1; }
-                @Override public boolean isActive() { return !bagOpen; }
+                @Override public boolean isActive() { return !bagOpen && !manual; }
                 @Override public boolean mayPlace(ItemStack s) {
                     return s.canEquip(es, player) && (Gear.def(s) == null || Gear.canEquip(player, s));
                 }
@@ -92,7 +95,7 @@ public class EquipMenu extends AbstractContainerMenu {
         addSlot(new Slot(inv, 0, 147, 97) {
             @Override public int getMaxStackSize() { return 1; }
             @Override public boolean mayPlace(ItemStack s) { return "weapon".equals(Gear.slotOf(s)) && Gear.canEquip(player, s); }
-            @Override public boolean isActive() { return !bagOpen; }
+            @Override public boolean isActive() { return !bagOpen && !manual; }
         });
         for (int c = 1; c < 9; c++) addSlot(new BagSlot(inv, c, BAG_X + (c - 1) * 18, BAG_Y + 54));
         // 2×2 제작 (바닐라 위치)

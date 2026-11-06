@@ -16,71 +16,108 @@ import rpg.core.net.Net;
 public class BagScreen extends ScaledContainerScreen<EquipMenu> {
     /** 다음에 열리는 EquipMenu 화면을 가방으로 (인벤토리 키) */
     public static boolean wantBag;
-    private static final int WW = 300, WH = 144;
+    private static final int WW = 430, WH = 176, BS = 24, WEAPON = EquipMenu.INV_END - 9;
     private int wx, wy;
+    private boolean handled;
+    private record Cell(int idx, int x, int y) {}
+    private final java.util.List<Cell> cells = new java.util.ArrayList<>();
+
+    @Override public int baseW() { return WW; }
+    @Override public int baseH() { return WH; }
 
     public BagScreen(EquipMenu menu, Inventory inv, Component title) {
         super(menu, inv, title);
         imageWidth = WW;
         imageHeight = WH;
         EquipMenu.bagOpen = true;
+        EquipMenu.manual = true;
     }
 
     @Override
     protected void init() {
         super.init();
-        wx = (width - WW) / 2;
-        wy = (height - WH) / 2;
-        leftPos = wx + 13 - EquipMenu.BAG_X;   // 가방 칸이 창 안 (13, 39) 에 오게
-        topPos = wy + 39 - EquipMenu.BAG_Y;
+        wx = Ui.cx(width, WW);
+        wy = Ui.cy(height, WH);
+        leftPos = wx; topPos = wy;
         EquipMenu.bagOpen = true;
+        EquipMenu.manual = true;
         ClientPotions.load();
         addRenderableWidget(Ui.button(Component.literal("정렬"), b -> Net.CH.sendToServer(new Net.QuickAct(1, "")))
-                .bounds(wx + 12, wy + 118, 44, 15).build());
+                .bounds(wx + 12, wy + 148, 50, 16).build());
         addRenderableWidget(Ui.button(Component.literal("장비 ▶"), b -> CharWin.open(CharWin.EQUIP))
-                .bounds(wx + 60, wy + 118, 52, 15).accent(true).build());
+                .bounds(wx + 68, wy + 148, 60, 16).accent(true).build());
+        cells.clear();
+        for (int i = 0; i < 27; i++) cells.add(new Cell(16 + i, wx + 12 + (i % 9) * BS, wy + 40 + (i / 9) * BS));
+        for (int i = 0; i < 8; i++) cells.add(new Cell(WEAPON + 1 + i, wx + 12 + i * BS, wy + 40 + 3 * BS));
     }
 
     @Override
     public void removed() {
         super.removed();
         EquipMenu.bagOpen = false;
+        EquipMenu.manual = false;
     }
 
-    private int px(int k) { return wx + 184; }
-    private int py(int k) { return wy + 38 + k * 18; }
+    private int px(int k) { return wx + 240; }
+    private int py(int k) { return wy + 40 + k * BS; }
+
+    private double lmx, lmy;
+    private Cell hoverCell() { return at(lmx, lmy); }
+
+    @Override
+    public void mouseMoved(double mx, double my) { super.mouseMoved(mx, my); lmx = mx; lmy = my; }
+
+    private Cell at(double mx, double my) {
+        for (Cell c : cells) if (mx >= c.x && mx < c.x + BS && my >= c.y && my < c.y + BS) return c;
+        return null;
+    }
+
+    private void big(GuiGraphics g, ItemStack s, int x, int y) {
+        if (s.isEmpty()) return;
+        g.pose().pushPose();
+        g.pose().translate(x, y, 0);
+        g.pose().scale(1.5f, 1.5f, 1);
+        g.renderItem(s, 0, 0);
+        g.renderItemDecorations(font, s, 0, 0);
+        g.pose().popPose();
+    }
 
     @Override
     protected void renderBg(GuiGraphics g, float pt, int mx, int my) {
         Ui.window(g, wx, wy, WW, WH);
         Ui.plaque(g, font, wx + WW / 2, wy + 1, "가방");
-        Ui.goldBox(g, font, wx + WW - 12, wy + 4, String.format("%,d G", ClientData.gold), true);
+        Ui.goldBox(g, font, wx + WW - 14, wy + 4, String.format("%,d G", ClientData.gold), true);
         int used = 0;
-        for (var s : menu.slots) if (s.isActive() && s.x > -1000 && s.hasItem()) used++;
+        Cell hov = at(mx, my);
+        for (Cell c : cells) {
+            ItemStack s = menu.slots.get(c.idx).getItem();
+            if (!s.isEmpty()) used++;
+            Ui.slot(g, c.x, c.y, BS);
+            big(g, s, c.x, c.y);
+            if (c == hov) g.fill(c.x + 2, c.y + 2, c.x + BS - 2, c.y + BS - 2, 0x40FFFFFF);
+        }
         g.drawString(font, "가방", wx + 12, wy + 27, Ui.VAL, true);
         String n = used + " / 35";
-        g.drawString(font, n, wx + 175 - font.width(n), wy + 27, Ui.GRAY, false);
-        for (var s : menu.slots) if (s.isActive() && s.x > -1000) Ui.slot(g, leftPos + s.x - 1, topPos + s.y - 1);
-        g.drawString(font, "물약", wx + 182, wy + 27, Ui.VAL, true);
-        Ui.vsep(g, wx + 207, wy + 26, wy + 132);
-        buffPanel(g, -1, -1);
+        g.drawString(font, n, wx + 228 - font.width(n), wy + 27, Ui.GRAY, false);
+        g.drawString(font, "물약", wx + 240, wy + 27, Ui.VAL, true);
         for (int k = 0; k < 4; k++) {
             int x = px(k), y = py(k);
-            Ui.slot(g, x, y);
+            Ui.slot(g, x, y, BS);
             var it = ClientPotions.item(k);
             if (it != null) {
-                ItemStack st = new ItemStack(it);
-                g.renderItem(st, x + 1, y + 1);
+                big(g, new ItemStack(it), x, y);
                 int c = ClientPotions.count(k);
                 String cs = String.valueOf(c);
-                g.pose().pushPose(); g.pose().translate(0, 0, 200);
-                g.drawString(font, cs, x + 18 - font.width(cs), y + 10, c > 0 ? 0xFFFFFFFF : Ui.RED, true);
+                g.pose().pushPose(); g.pose().translate(0, 0, 300);
+                g.drawString(font, cs, x + BS - 1 - font.width(cs), y + BS - 9, c > 0 ? 0xFFFFFFFF : Ui.RED, true);
                 g.pose().popPose();
             }
-            g.pose().pushPose(); g.pose().translate(0, 0, 200);
-            g.drawString(font, String.valueOf(k + 1), x + 1, y + 1, Ui.VAL, true);
+            g.pose().pushPose(); g.pose().translate(0, 0, 300);
+            g.drawString(font, String.valueOf(k + 1), x + 2, y + 2, Ui.VAL, true);
             g.pose().popPose();
         }
+        Ui.vsep(g, wx + 272, wy + 26, wy + WH - 16);
+        buffPanel(g, -1, -1);
     }
 
     @Override
@@ -92,7 +129,7 @@ public class BagScreen extends ScaledContainerScreen<EquipMenu> {
         super.render(g, mx, my, pt);
         for (int k = 0; k < 4; k++) {
             int x = px(k), y = py(k);
-            if (mx >= x && mx < x + 18 && my >= y && my < y + 18) {
+            if (mx >= x && mx < x + BS && my >= y && my < y + BS) {
                 var it = ClientPotions.item(k);
                 g.renderComponentTooltip(font, it == null
                         ? List.of(Component.literal("§6물약 칸 " + (k + 1)), Component.literal("§7가방의 물약을 끌어다 놓기"))
@@ -100,6 +137,9 @@ public class BagScreen extends ScaledContainerScreen<EquipMenu> {
             }
         }
         buffPanel(g, mx, my);
+        Cell hc = at(mx, my);
+        if (hc != null && menu.getCarried().isEmpty() && !menu.slots.get(hc.idx).getItem().isEmpty())
+            g.renderComponentTooltip(font, net.minecraft.client.gui.screens.Screen.getTooltipFromItem(minecraft, menu.slots.get(hc.idx).getItem()), mx, my);
         renderTooltip(g, mx, my);
     }
 
@@ -142,7 +182,7 @@ public class BagScreen extends ScaledContainerScreen<EquipMenu> {
 
     /** mx < 0 = 그리기만, 아니면 툴팁만 */
     private void buffPanel(GuiGraphics g, int mx, int my) {
-        int x0 = wx + 212, x1 = wx + WW - 12, y = wy + 27;
+        int x0 = wx + 280, x1 = wx + WW - 14, y = wy + 27;
         var list = rows();
         if (mx < 0) {
             g.drawString(font, "버프", x0, y, Ui.VAL, true);
@@ -150,7 +190,7 @@ public class BagScreen extends ScaledContainerScreen<EquipMenu> {
             g.drawString(font, c, x1 - font.width(c), y, Ui.GRAY, false);
             if (list.isEmpty()) g.drawString(font, "없음", x0 + 2, y + 14, Ui.GRAY, false);
         }
-        int max = 6;
+        int max = 7;
         for (int i = 0; i < Math.min(max, list.size()); i++) {
             Row r = list.get(i);
             int ry = y + 12 + i * 16;
@@ -169,21 +209,41 @@ public class BagScreen extends ScaledContainerScreen<EquipMenu> {
     public boolean mouseClicked(double mx, double my, int button) {
         for (int k = 0; k < 4; k++) {
             int x = px(k), y = py(k);
-            if (mx >= x && mx < x + 18 && my >= y && my < y + 18) {
+            if (mx >= x && mx < x + BS && my >= y && my < y + BS) {
                 ItemStack c = menu.getCarried();
                 if (button == 1) ClientPotions.set(k, ItemStack.EMPTY);
                 else if (ClientPotions.fits(c)) ClientPotions.set(k, c);
                 return true;
             }
         }
+        Cell cl = at(mx, my);
+        if (cl != null && (button == 0 || button == 1)) {
+            slotClicked(menu.slots.get(cl.idx), cl.idx, button, hasShiftDown() ? net.minecraft.world.inventory.ClickType.QUICK_MOVE : net.minecraft.world.inventory.ClickType.PICKUP);
+            handled = true;
+            return true;
+        }
         return super.mouseClicked(mx, my, button);
     }
 
     @Override
+    public boolean mouseDragged(double mx, double my, int button, double dx, double dy) {
+        if (handled) return true;
+        return super.mouseDragged(mx, my, button, dx, dy);
+    }
+
+    @Override
     public boolean mouseReleased(double mx, double my, int button) {
+        if (handled) {   // 끌어서 물약 칸에 놓기는 아래에서
+            handled = false;
+            for (int k = 0; k < 4; k++) {
+                int x = px(k), y = py(k);
+                if (mx >= x && mx < x + BS && my >= y && my < y + BS && ClientPotions.fits(menu.getCarried())) { ClientPotions.set(k, menu.getCarried()); return true; }
+            }
+            return true;
+        }
         for (int k = 0; k < 4; k++) {   // 끌어서 놓기
             int x = px(k), y = py(k);
-            if (mx >= x && mx < x + 18 && my >= y && my < y + 18 && ClientPotions.fits(menu.getCarried())) { ClientPotions.set(k, menu.getCarried()); return true; }
+            if (mx >= x && mx < x + BS && my >= y && my < y + BS && ClientPotions.fits(menu.getCarried())) { ClientPotions.set(k, menu.getCarried()); return true; }
         }
         return super.mouseReleased(mx, my, button);
     }
@@ -198,8 +258,8 @@ public class BagScreen extends ScaledContainerScreen<EquipMenu> {
         if (minecraft.options.keyInventory.matches(key, scan)) { onClose(); return true; }
         // 물약에 마우스 올리고 1~4 = 그 물약 칸에 넣기
         for (int k = 0; k < 4; k++)
-            if (minecraft.options.keyHotbarSlots[k].matches(key, scan) && hoveredSlot != null && ClientPotions.fits(hoveredSlot.getItem())) {
-                ClientPotions.set(k, hoveredSlot.getItem());
+            if (minecraft.options.keyHotbarSlots[k].matches(key, scan) && hoverCell() != null && ClientPotions.fits(menu.slots.get(hoverCell().idx).getItem())) {
+                ClientPotions.set(k, menu.slots.get(hoverCell().idx).getItem());
                 return true;
             }
         return super.keyPressed(key, scan, mods);

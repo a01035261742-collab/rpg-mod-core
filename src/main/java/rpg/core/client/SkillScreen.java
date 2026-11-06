@@ -11,7 +11,7 @@ import rpg.core.skill.Defs;
 
 /** 스킬 탭 (L): 1차 · 2차 · 패시브 + 스킬 줄 (시안 ui_d2) */
 public class SkillScreen extends ScaledScreen {
-    private static final int ROW = 26, TOP = 48, ROWS = 5;
+    private static final int ROW = 36, TOP = 52, ROWS = 6;
     private static int tab = 0;
     private int x, y, rows, scroll;
     private final int W = CharWin.W;
@@ -46,14 +46,14 @@ public class SkillScreen extends ScaledScreen {
         for (int i = 0; i < 2; i++) {
             final int k = i;
             addRenderableWidget(Ui.button(Component.literal(tn[i]), b -> { tab = k; scroll = 0; init(); })
-                    .bounds(x + 75 + i * 44, y + 29, 40, 14).accent(i == tab).build());
+                    .bounds(x + 86 + i * 50, y + 30, 46, 16).accent(i == tab).build());
         }
         for (int r = 0; r < rows && r + scroll < list.size(); r++) {
             Defs.SkillDef sd = list.get(r + scroll);
             String id = sd.id();
             int lv = ClientData.skills.getOrDefault(id, 0);
             addRenderableWidget(Ui.button(Component.literal("+"), b -> Net.CH.sendToServer(new Net.Learn(0, id)))
-                    .bounds(x + W - 36, y + TOP + r * ROW + 5, 16, 14).accent(ClientData.skillPoints > 0 && lv < sd.maxLevel()).build())
+                    .bounds(x + W - 42, y + TOP + r * ROW + 8, 18, 16).accent(ClientData.skillPoints > 0 && lv < sd.maxLevel()).build())
                     .active = ClientData.skillPoints > 0 && lv < sd.maxLevel();
         }
     }
@@ -63,30 +63,34 @@ public class SkillScreen extends ScaledScreen {
         renderBackground(g);
         CharWin.draw(g, font, x, y);
         String sp = "SP " + ClientData.skillPoints;
-        g.drawString(font, sp, x + W - 20 - font.width(sp), y + 32, ClientData.skillPoints > 0 ? Ui.GREEN : Ui.GRAY, true);
-        if (list.isEmpty()) g.drawString(font, tab == 1 ? "2차 전직 후 열려요" : "배울 수 있는 스킬이 없어요", x + 80, y + 60, Ui.GRAY, false);
+        g.drawString(font, sp, x + W - 20 - font.width(sp), y + 34, ClientData.skillPoints > 0 ? Ui.GREEN : Ui.GRAY, true);
+        if (list.isEmpty()) g.drawString(font, tab == 1 ? "2차 전직 후 열려요" : "배울 수 있는 스킬이 없어요", x + 90, y + 70, Ui.GRAY, false);
         if (list.size() > rows) {
-            String sc = (scroll + 1) + "-" + Math.min(list.size(), scroll + rows) + "/" + list.size();
-            g.drawString(font, sc, x + W - 20 - font.width(sc) - font.width(sp) - 8, y + 32, Ui.GRAY, false);
+            String sc = (scroll + 1) + "-" + Math.min(list.size(), scroll + rows) + "/" + list.size() + " (휠)";
+            g.drawString(font, sc, x + W - 30 - font.width(sp) - font.width(sc), y + 34, Ui.GRAY, false);
         }
         String hover = null;
         for (int r = 0; r < rows && r + scroll < list.size(); r++) {
             Defs.SkillDef s = list.get(r + scroll);
             int ry = y + TOP + r * ROW;
             int lv = ClientData.skills.getOrDefault(s.id(), 0);
-            boolean on = mx >= x + 74 && mx < x + W - 40 && my >= ry && my < ry + ROW - 2;
-            Ui.row(g, x + 74, ry, x + W - 17, ry + ROW - 2, on);
-            Ui.slot(g, x + 77, ry + 3);
-            SkillIcons.draw(g, s.id(), x + 78, ry + 4);
-            if (lv == 0) g.fill(x + 78, ry + 4, x + 94, ry + 20, 0x90000000);
-            g.drawString(font, Ui.cut(font, s.name() + (s.passive() ? " §7(패시브)" : ""), 130), x + 99, ry + 3, lv > 0 ? Ui.TXT : Ui.GRAY, true);
-            g.drawString(font, lv > 0 ? "Lv " + lv + "/" + s.maxLevel() : "안 배움", x + 99, ry + 13, lv > 0 ? Ui.VAL : Ui.GRAY, false);
-            if (lv >= s.maxLevel()) g.drawString(font, "MAX", x + W - 60, ry + 13, Ui.VAL, false);
+            boolean on = mx >= x + 85 && mx < x + W - 46 && my >= ry && my < ry + ROW - 3;
+            Ui.row(g, x + 85, ry, x + W - 20, ry + ROW - 3, on);
+            Ui.slot(g, x + 89, ry + 4, 25);
+            g.pose().pushPose(); g.pose().translate(x + 93, ry + 8, 0); g.pose().scale(17 / 16f, 17 / 16f, 1);
+            SkillIcons.draw(g, s.id(), 0, 0);
+            g.pose().popPose();
+            if (lv == 0) g.fill(x + 91, ry + 6, x + 112, ry + 27, 0x90000000);
+            g.drawString(font, Ui.cut(font, s.name() + (s.passive() ? " §7(패시브)" : ""), 90), x + 120, ry + 5, lv > 0 ? Ui.TXT : Ui.GRAY, true);
+            g.drawString(font, lv > 0 ? "Lv " + lv + "/" + s.maxLevel() + (lv >= s.maxLevel() ? "  MAX" : "") : "안 배움", x + 120, ry + 18, lv > 0 ? Ui.VAL : Ui.GRAY, false);
+            g.drawString(font, Ui.cut(font, s.describe(Math.max(1, lv)), 150), x + 216, ry + 5, Ui.GRAY, false);
+            String sub = s.passive() ? "항상 켜짐" : "MP " + Defs.fmt(s.mp(Math.max(1, lv))) + " · 쿨 " + Defs.fmt(s.cooldown(Math.max(1, lv))) + "초";
+            g.drawString(font, sub, x + 216, ry + 18, s.passive() ? Ui.GRAY : Ui.BLUE, false);
             String key = keyOf(s.id());
-            if (key != null) {
-                int kx = x + W - 58;
-                Ui.slot(g, kx - 2, ry + 3);
-                g.drawString(font, key, kx + 7 - font.width(key) / 2, ry + 8, Ui.VAL, true);
+            if (!s.passive()) {
+                int kx = x + W - 70;
+                Ui.slot(g, kx, ry + 7);
+                if (key != null) g.drawString(font, key, kx + 9 - font.width(key) / 2, ry + 12, Ui.VAL, true);
             }
             if (on) hover = s.id();
         }
@@ -143,7 +147,7 @@ public class SkillScreen extends ScaledScreen {
             if (!ClientEvents.SKILL_KEYS[k].matches(key, scan)) continue;
             for (int r = 0; r < rows && r + scroll < list.size(); r++) {
                 int ry = y + TOP + r * ROW;
-                if (mx >= x + 74 && mx < x + W - 40 && my >= ry && my < ry + ROW - 2) {
+                if (mx >= x + 85 && mx < x + W - 46 && my >= ry && my < ry + ROW - 3) {
                     Defs.SkillDef sd = list.get(r + scroll);
                     String id = sd.id();
                     if (!sd.passive() && ClientData.skills.getOrDefault(id, 0) > 0) Net.CH.sendToServer(new Net.SetSlot(k, id));

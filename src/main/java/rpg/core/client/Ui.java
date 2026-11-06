@@ -30,8 +30,8 @@ public final class Ui {
             CTL = tex("corner_tl"), CTR = tex("corner_tr"), CBL = tex("corner_bl"), CBR = tex("corner_br");
 
     /** 화면 안에 들어오는 가운데 위치 (작은 화면에서도 위·왼쪽이 잘리지 않게) */
-    public static int cx(int screenW, int w) { return Math.max(MARGIN, (screenW - w) / 2); }
-    public static int cy(int screenH, int h) { return Math.max(MARGIN, (screenH - h) / 2); }
+    public static int cx(int screenW, int w) { return WinPos.x(screenW, w); }
+    public static int cy(int screenH, int h) { return WinPos.y(screenH, h); }
 
     /** 9조각 그리기: 텍스처(ts×ts, 테두리 b) → 화면 (x,y,w,h). half = 2배 텍스처를 반 크기로 */
     public static void nine(GuiGraphics g, ResourceLocation t, int x, int y, int w, int h, int ts, int b, boolean half) {
@@ -50,6 +50,7 @@ public final class Ui {
 
     /** 창 바탕: 붉은 그라데이션 + 마름모 무늬 + 금 테두리 + 모서리 메달 */
     public static void window(GuiGraphics g, int x, int y, int w, int h) {
+        WinPos.RECTS.add(new int[]{x, y, w, h});
         g.fillGradient(x + 3, y + 3, x + w - 3, y + h - 3, BG1, BG2);
         com.mojang.blaze3d.systems.RenderSystem.enableBlend();
         for (int ty = y + 4; ty < y + h - 4; ty += 12)

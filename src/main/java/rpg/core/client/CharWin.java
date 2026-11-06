@@ -17,7 +17,7 @@ public final class CharWin {
 
     public static final String[] TABS = {"장비", "스탯", "스킬", "패시브", "퀘스트", "파티", "강화", "일일"};
     public static final int EQUIP = 0, STAT = 1, SKILL = 2, PASSIVE = 3, QUEST = 4, PARTY = 5, ENHANCE = 6, DAILY = 7;
-    public static final int W = 300, H = 190, CX0 = 69, CY0 = 24;
+    public static final int W = 480, H = 300, CX0 = 77, CY0 = 24;
 
     /** 내용 판 안쪽 시작·끝 */
     public static int left(int x) { return x + CX0 + 6; }
@@ -40,7 +40,7 @@ public final class CharWin {
         for (int i = 0; i < TABS.length; i++) {
             final int k = i;
             add.accept(Ui.button(Component.literal(TABS[i]), b -> { if (k != sel) open(k); })
-                    .bounds(x + 11, y + 24 + i * 19, 52, 16).accent(i == sel).build());
+                    .bounds(x + 11, y + 28 + i * 22, 60, 18).accent(i == sel).build());
         }
     }
 

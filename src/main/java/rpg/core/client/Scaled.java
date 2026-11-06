@@ -15,10 +15,8 @@ public interface Scaled {
     default int baseH() { return CharWin.H; }
 
     static double calc(int guiW, int guiH, int bw, int bh) {
-        double g = Minecraft.getInstance().getWindow().getGuiScale();
-        double s = Math.round(g * 1.5) / g;
-        s = Math.min(s, Math.min((guiW - 8) / (double) bw, (guiH - 8) / (double) bh));
-        return Math.max(1.0, s);
+        // 1배 (글자 선명). 화면이 창보다 작을 때만 줄임
+        return Math.min(1.0, Math.min((guiW - 8) / (double) bw, (guiH - 8) / (double) bh));
     }
 
     /** 지금 그리는 창의 배율 (가위질 영역 계산용) */

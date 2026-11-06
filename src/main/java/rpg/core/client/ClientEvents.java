@@ -177,6 +177,7 @@ public final class ClientEvents {
             int w = win.getGuiScaledWidth(), h = win.getGuiScaledHeight();
             double s = Scaled.calc(w, h, sc.baseW(), sc.baseH());
             sc.setUiScale(s);
+            WinPos.cur = WinPos.keyOf(e.getScreen());
             e.getScreen().width = (int) Math.floor(w / s);
             e.getScreen().height = (int) Math.floor(h / s);
         }
@@ -188,6 +189,8 @@ public final class ClientEvents {
             double s = sc.uiScale();
             var g = e.getGuiGraphics();
             Scaled.CUR[0] = s;
+            WinPos.cur = WinPos.keyOf(e.getScreen());
+            WinPos.RECTS.clear();
             g.pose().pushPose();
             g.pose().scale((float) s, (float) s, 1f);
             e.getScreen().renderWithTooltip(g, (int) (e.getMouseX() / s), (int) (e.getMouseY() / s), e.getPartialTick());
@@ -197,17 +200,33 @@ public final class ClientEvents {
 
         @SubscribeEvent
         public static void scaledClick(net.minecraftforge.client.event.ScreenEvent.MouseButtonPressed.Pre e) {
-            if (e.getScreen() instanceof Scaled sc) { double s = sc.uiScale(); e.setCanceled(true); e.getScreen().mouseClicked(e.getMouseX() / s, e.getMouseY() / s, e.getButton()); }
+            if (e.getScreen() instanceof Scaled sc) {
+                double s = sc.uiScale(), mx = e.getMouseX() / s, my = e.getMouseY() / s;
+                e.setCanceled(true);
+                // 제목줄 끌기 (버튼 위가 아니고, 손에 든 아이템 없을 때)
+                boolean holding = e.getScreen() instanceof net.minecraft.client.gui.screens.inventory.AbstractContainerScreen<?> cs && !cs.getMenu().getCarried().isEmpty();
+                if (e.getButton() == 0 && !holding && e.getScreen().getChildAt(mx, my).isEmpty() && WinPos.press(mx, my)) { relayout(e.getScreen()); return; }
+                e.getScreen().mouseClicked(mx, my, e.getButton());
+            }
+        }
+
+        /** 창 위치 바뀜 → 다시 배치 (글자 칸 내용 등은 화면이 알아서 유지) */
+        private static void relayout(net.minecraft.client.gui.screens.Screen sc) {
+            var win = Minecraft.getInstance().getWindow();
+            sc.resize(Minecraft.getInstance(), win.getGuiScaledWidth(), win.getGuiScaledHeight());
         }
 
         @SubscribeEvent
         public static void scaledRelease(net.minecraftforge.client.event.ScreenEvent.MouseButtonReleased.Pre e) {
-            if (e.getScreen() instanceof Scaled sc) { double s = sc.uiScale(); e.setCanceled(true); e.getScreen().mouseReleased(e.getMouseX() / s, e.getMouseY() / s, e.getButton()); }
+            if (e.getScreen() instanceof Scaled sc) { double s = sc.uiScale(); e.setCanceled(true);
+                if (WinPos.release()) return;
+                e.getScreen().mouseReleased(e.getMouseX() / s, e.getMouseY() / s, e.getButton()); }
         }
 
         @SubscribeEvent
         public static void scaledDrag(net.minecraftforge.client.event.ScreenEvent.MouseDragged.Pre e) {
             if (e.getScreen() instanceof Scaled sc) { double s = sc.uiScale(); e.setCanceled(true);
+                if (WinPos.dragging) { if (WinPos.drag(e.getMouseX() / s, e.getMouseY() / s)) relayout(e.getScreen()); return; }
                 e.getScreen().mouseDragged(e.getMouseX() / s, e.getMouseY() / s, e.getMouseButton(), e.getDragX() / s, e.getDragY() / s); }
         }
 

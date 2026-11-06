@@ -17,7 +17,7 @@ import rpg.core.quest.Quests;
 
 /** 퀘스트 창 (J): 왼쪽 목록 (진행 중 / 받을 수 있음 / 완료 탭), 오른쪽 상세 */
 public class QuestScreen extends ScaledScreen {
-    private static final int W = CharWin.W, H = CharWin.H, LW = 96, ROW = 14, LX = 74, LY = 46, LB = 172, DB = 152;
+    private static final int W = CharWin.W, H = CharWin.H, LW = 125, ROW = 16, LX = 85, LY = 52, LB = 282, DB = 256;
     private static final String[] TABS = {"진행", "받기", "완료"};
     private int x, y, tab, scroll;
     private String sel;
@@ -55,7 +55,7 @@ public class QuestScreen extends ScaledScreen {
         for (int i = 0; i < 3; i++) {
             int t = i;
             addRenderableWidget(Ui.button(Component.literal(TABS[i]), b -> { tab = t; scroll = 0; sel = null; rebuildWidgets(); })
-                    .bounds(x + LX + 1 + i * 32, y + 28, 30, 14).accent(i == tab).build());
+                    .bounds(x + LX + 1 + i * 42, y + 30, 38, 16).accent(i == tab).build());
         }
         abandon = addRenderableWidget(Ui.button(Component.literal("포기"), b -> {
             if (sel == null) return;
@@ -65,11 +65,11 @@ public class QuestScreen extends ScaledScreen {
                 sel = null;
                 confirmUntil = 0;
             } else confirmUntil = now + 3000;
-        }).bounds(x + W - 58, y + 156, 40, 15).build());
+        }).bounds(x + W - 76, y + 262, 56, 16).build());
         pin = addRenderableWidget(Ui.button(Component.literal("고정"), b -> {
             if (sel == null) return;
             if (!ClientQuests.togglePin(sel)) pinFullUntil = System.currentTimeMillis() + 2000;
-        }).bounds(x + W - 112, y + 156, 50, 15).build());
+        }).bounds(x + W - 144, y + 262, 64, 16).build());
     }
 
     @Override
@@ -77,7 +77,7 @@ public class QuestScreen extends ScaledScreen {
         renderBackground(g);
         CharWin.draw(g, font, x, y);
         String cnt = ClientQuests.DONE.size() + "/" + Quests.QUESTS.size();
-        g.drawString(font, cnt, x + W - 20 - font.width(cnt), y + 31, Ui.GRAY, false);
+        g.drawString(font, cnt, x + W - 20 - font.width(cnt), y + 34, Ui.GRAY, false);
 
         List<Quests.Quest> l = list();
         if (sel != null && l.stream().noneMatch(q -> q.id().equals(sel))) sel = null;
@@ -93,7 +93,7 @@ public class QuestScreen extends ScaledScreen {
             if (q.id().equals(sel) || hover) Ui.row(g, x + LX, ry, x + LX + LW, ry + ROW - 1, q.id().equals(sel));
             String mark = tab == 0 ? (ClientQuests.complete(q) ? "§a✔ " : ClientQuests.pinned(q.id()) ? "§e◆ " : "§7· ") : tab == 1 ? "§e! " : "§8✔ ";
             String nm = mark + "§f" + q.name();
-            g.drawString(font, Ui.cut(font, nm, LW - 6), x + LX + 4, ry + 3, 0xFFFFFFFF, false);
+            g.drawString(font, Ui.cut(font, nm, LW - 6), x + LX + 4, ry + 4, 0xFFFFFFFF, false);
         }
         if (l.isEmpty()) g.drawString(font, "없음", x + LX + 4, ly + 2, Ui.GRAY, false);
 
@@ -105,7 +105,7 @@ public class QuestScreen extends ScaledScreen {
         Quests.Quest q = sel == null ? null : Quests.QUESTS.get(sel);
         HOVER.clear();
         if (q != null) {   // 상세: 창 안에서만 보이게 자름
-            Scaled.scissor(g, x + LX + LW + 8, y + 28, x + W - 14, y + DB);
+            Scaled.scissor(g, x + LX + LW + 8, y + 28, x + W - 16, y + DB);
             detail(g, q);
             g.disableScissor();
         }
@@ -115,7 +115,7 @@ public class QuestScreen extends ScaledScreen {
     }
 
     private void detail(GuiGraphics g, Quests.Quest q) {
-        int dx = x + LX + LW + 10, dy = y + 30, dw = W - LX - LW - 28;
+        int dx = x + LX + LW + 14, dy = y + 34, dw = W - LX - LW - 34;
         g.drawString(font, Ui.cut(font, q.name(), dw), dx, dy, Ui.VAL, true);
         dy += 11;
         g.drawString(font, "Lv " + q.minLevel(), dx, dy, Ui.GRAY, false);
