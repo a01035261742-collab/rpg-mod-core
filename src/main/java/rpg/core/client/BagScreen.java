@@ -132,6 +132,18 @@ public class BagScreen extends AbstractContainerScreen<EquipMenu> {
     @Override
     public boolean keyPressed(int key, int scan, int mods) {
         if (minecraft.options.keyInventory.matches(key, scan)) { onClose(); return true; }
+        // 물약에 마우스 올리고 1~4 = 그 물약 칸에 넣기
+        for (int k = 0; k < 4; k++)
+            if (minecraft.options.keyHotbarSlots[k].matches(key, scan) && hoveredSlot != null && ClientPotions.fits(hoveredSlot.getItem())) {
+                ClientPotions.set(k, hoveredSlot.getItem());
+                return true;
+            }
         return super.keyPressed(key, scan, mods);
+    }
+
+    /** RPG 월드: 숫자키로 핫바(무기 칸)와 바꾸기 막음 (1~4 = 물약) */
+    @Override
+    protected boolean checkHotbarKeyPressed(int key, int scan) {
+        return !ClientRpg.inRpg() && super.checkHotbarKeyPressed(key, scan);
     }
 }

@@ -112,4 +112,10 @@ public class EquipScreen extends AbstractContainerScreen<EquipMenu> {
     protected boolean hasClickedOutside(double mx, double my, int l, int t, int button) {
         return mx < l || my < t || mx >= l + imageWidth || my >= t + imageHeight;
     }
+
+    /** RPG 월드: 숫자키로 핫바(무기 칸)와 바꾸기 막음 (1~4 = 물약) */
+    @Override
+    protected boolean checkHotbarKeyPressed(int key, int scan) {
+        return !ClientRpg.inRpg() && super.checkHotbarKeyPressed(key, scan);
+    }
 }
