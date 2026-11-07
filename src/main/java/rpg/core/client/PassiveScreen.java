@@ -352,30 +352,33 @@ public class PassiveScreen extends ScaledScreen {
         g.fill(x + 1, y + 1, x + w - 1, y + h - 1, fill);
     }
 
-    /** 마우스가 왼쪽 아래 설명 칸 위 (그 뒤 칸은 고를 수 없음) */
+    /** 마우스가 왼쪽 아래 설명 줄 위 (그 뒤 칸은 고를 수 없음) */
     private boolean overLegend(int mx, int my) {
-        return mx >= ax + 6 && mx <= ax + 156 && my >= ay + ah - 80 && my <= ay + ah - 6;
+        return mx >= ax + 6 && mx <= ax + 6 + LEG_W && my >= ay + ah - 20 && my <= ay + ah - 6;
     }
 
+    private static final int LEG_W = 168;
+
     private void legend(GuiGraphics g) {
-        g.pose().pushPose(); g.pose().translate(0, 0, 400);   // 칸 아이콘·랭크 글자보다 위에 (칸은 뒤로 가려짐)
+        g.pose().pushPose(); g.pose().translate(0, 0, 400);   // 칸 아이콘·랭크 글자보다 위에
         legendBody(g);
         g.flush();
         g.pose().popPose();
     }
 
+    /** 시안 C: 아이콘 한 줄 (스탯 · 보석 · 핵심 · 잠김) */
     private void legendBody(GuiGraphics g) {
-        int lx = ax + 6, ly = ay + ah - 80, w = 150;
-        box(g, lx, ly, w, 74, 0xFF16060A, 0xFF2A0E14);
-        int cx = lx + 12, cy = ly + 12;
-        ring(g, cx, cy, 6, 2, 0xFF4A2028); arc(g, cx, cy, 6, 2, 0.6, GOLD);
-        g.drawString(font, "스탯 칸 (고리 = 랭크)", lx + 24, cy - 4, 0xFFF0E6C8, false);
-        cy += 16; hexagon(g, cx, cy, 6, 0xFF10202A, CYAN);
-        g.drawString(font, "보석 · 특수 효과", lx + 24, cy - 4, CYAN, false);
-        cy += 16; ring(g, cx, cy, 7, 1, PURP); disc(g, cx, cy, 4, PURP);
-        g.drawString(font, "핵심 · 강한 특수 효과", lx + 24, cy - 4, PURP, false);
-        cy += 16; lock(g, cx, cy, 0xFF64646E);
-        g.drawString(font, "다른 2차 갈래 (잠김)", lx + 24, cy - 4, 0xFFA89890, false);
+        int lx = ax + 6, ly = ay + ah - 20;
+        box(g, lx, ly, LEG_W, 14, 0xFF16060A, 0xFF2A0E14);
+        int cy = ly + 7, cx = lx + 9;
+        ring(g, cx, cy, 4, 1, 0xFF4A2028); arc(g, cx, cy, 4, 1, 0.6, GOLD);
+        g.drawString(font, "스탯", cx + 7, cy - 4, 0xFFF0E6C8, false);
+        cx += 40; hexagon(g, cx, cy, 4, 0xFF10202A, CYAN);
+        g.drawString(font, "보석", cx + 7, cy - 4, CYAN, false);
+        cx += 40; ring(g, cx, cy, 5, 1, PURP); disc(g, cx, cy, 2, PURP);
+        g.drawString(font, "핵심", cx + 7, cy - 4, PURP, false);
+        cx += 40; lock(g, cx, cy, 0xFF64646E);
+        g.drawString(font, "잠김", cx + 7, cy - 4, 0xFFA89890, false);
     }
 
     // ───────── 툴팁 ─────────
