@@ -63,6 +63,10 @@ public class EquipScreen extends ScaledContainerScreen<EquipMenu> {
         int bx = bagX() + 12, by = cy + 44;
         for (int i = 0; i < 27; i++) cells.add(new Cell(16 + i, bx + (i % 9) * BS, by + (i / 9) * BS, BS));
         for (int i = 0; i < 8; i++) cells.add(new Cell(WEAPON + 1 + i, bx + i * BS, by + 3 * BS, BS));
+        // 2×2 조합 (가방 오른쪽 아래) → 결과
+        int gx = bagX() + BW - 12 - BS - 22 - 2 * BS, gy = cy + CharWin.H - 18 - 2 * BS;
+        for (int i = 0; i < 4; i++) cells.add(new Cell(EquipMenu.RESULT + 1 + i, gx + (i % 2) * BS, gy + (i / 2) * BS, BS));
+        cells.add(new Cell(EquipMenu.RESULT, bagX() + BW - 12 - BS, gy + BS / 2, BS));
     }
 
     private int bagX() { return cx + CharWin.W + 4; }
@@ -106,6 +110,9 @@ public class EquipScreen extends ScaledContainerScreen<EquipMenu> {
         Ui.window(g, bx, y, BW, CharWin.H);
         Ui.plaque(g, font, bx + BW / 2, y + 1, "가방");
         g.drawString(font, "Shift+클릭: 입기", bx + 12, y + 30, Ui.GRAY, false);
+        int gx = bx + BW - 12 - BS - 22 - 2 * BS, gy = y + CharWin.H - 18 - 2 * BS;
+        g.drawString(font, "조합", gx, gy - 11, Ui.GRAY, false);
+        g.drawString(font, "▶", gx + 2 * BS + 7, gy + BS - 4, Ui.G4, false);
         // 칸
         Cell hov = at(mx, my);
         for (Cell c : cells) {
