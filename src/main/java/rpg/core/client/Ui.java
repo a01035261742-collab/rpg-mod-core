@@ -93,6 +93,26 @@ public final class Ui {
     /** 아이템 칸 (18×18, 아이템은 x+1,y+1) */
     public static void slot(GuiGraphics g, int x, int y) { com.mojang.blaze3d.systems.RenderSystem.enableBlend(); g.blit(SLOT, x, y, 18, 18, 0, 0, 36, 36, 36, 36); }
 
+    /** 쿨타임 쓸기 (시안 B): 12시부터 시계 방향으로 밝아짐. f = 남은 비율 (1 = 전부 어두움) */
+    public static void sweep(GuiGraphics g, int x, int y, int w, int h, double f, int color) {
+        if (f <= 0) return;
+        if (f >= 1) { g.fill(x, y, x + w, y + h, color); return; }
+        double cx = x + w / 2.0, cy = y + h / 2.0, done = 1 - f;
+        for (int py = y; py < y + h; py++) {
+            int run = -1;
+            for (int px = x; px <= x + w; px++) {
+                boolean dark = false;
+                if (px < x + w) {
+                    double a = Math.atan2(px + 0.5 - cx, -(py + 0.5 - cy));
+                    if (a < 0) a += Math.PI * 2;
+                    dark = a / (Math.PI * 2) >= done;
+                }
+                if (dark && run < 0) run = px;
+                else if (!dark && run >= 0) { g.fill(run, py, px, py + 1, color); run = -1; }
+            }
+        }
+    }
+
     /** 아이템 칸 (크기 지정) */
     public static void slot(GuiGraphics g, int x, int y, int size) { com.mojang.blaze3d.systems.RenderSystem.enableBlend(); g.blit(SLOT, x, y, size, size, 0, 0, 36, 36, 36, 36); }
 

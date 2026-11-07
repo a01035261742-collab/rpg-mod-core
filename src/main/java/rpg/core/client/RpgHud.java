@@ -186,9 +186,8 @@ public final class RpgHud {
                 SkillIcons.draw(g, id, x + 3, y + 3);
                 int left = ClientData.left(ClientData.cdLeft[i]);
                 int len = ClientData.cdLen[i];
-                if (left > 0 && len > 0) {   // 쿨타임: 위에서부터 어둡게
-                    int fh = (int) Math.ceil((SLOT - 4) * (double) left / len);
-                    g.fill(x + 2, y + 2, x + SLOT - 2, y + 2 + fh, 0xB0000000);
+                if (left > 0 && len > 0) {   // 쿨타임: 시계 방향 쓸기
+                    Ui.sweep(g, x + 3, y + 3, 16, 16, (double) left / len, 0xB0000000);
                     String sec = String.valueOf((left + 19) / 20);
                     g.drawString(font, sec, x + SLOT / 2 - font.width(sec) / 2, y + 7, 0xFFFFFFFF, true);
                 }
@@ -217,6 +216,15 @@ public final class RpgHud {
 
     /** 버프 칸 (아래 상자 위 가운데): 좋은 것 = 가운데 왼쪽으로, 재사용 대기·나쁜 것 = 가운데 오른쪽으로.
      *  남은 시간은 칸 아래쪽 안 (어두운 띠). mx,my 가 칸 위면 툴팁. 맨 위 y 를 돌려줌 */
+    /** 버프 이름 → 처음 본 남은 시간 (쓸기 비율용, 다시 걸리면 늘어남) */
+    private static final java.util.Map<String, Integer> BUFF_MAX = new java.util.HashMap<>();
+    /** 마크 효과 → 우리 아이콘 */
+    private static String effIcon(net.minecraft.world.effect.MobEffect e) {
+        if (e == net.minecraft.world.effect.MobEffects.POISON) return "독";
+        if (e == net.minecraft.world.effect.MobEffects.MOVEMENT_SLOWDOWN) return "둔화";
+        return null;
+    }
+
     public static int buffBar(GuiGraphics g, Font font, int w, int mx, int my) {
         java.util.List<ClientData.Buff> good = new java.util.ArrayList<>(), bad = new java.util.ArrayList<>();
         for (ClientData.Buff b : ClientData.BUFFS)
@@ -247,13 +255,20 @@ public final class RpgHud {
                     g.fill(x, y, x + BOX, y + 1, e); g.fill(x, y + BOX - 1, x + BOX, y + BOX, e);
                     g.fill(x, y, x + 1, y + BOX, e); g.fill(x + BOX - 1, y, x + BOX, y + BOX, e);
                 }
-                String nm = b.name().replace(" ", "");
-                String two = nm.length() > 2 ? nm.substring(0, 2) : nm;
-                g.pose().pushPose();
-                g.pose().translate(x + BOX / 2f, y + 3, 0);
-                g.pose().scale(0.75f, 0.75f, 1);
-                g.drawCenteredString(font, two, 0, 0, c);
-                g.pose().popPose();
+                if (!SkillIcons.drawBuff(g, b.name(), x + 1, y + 1)) {
+                    String nm = b.name().replace(" ", "");
+                    String two = nm.length() > 2 ? nm.substring(0, 2) : nm;
+                    g.pose().pushPose();
+                    g.pose().translate(x + BOX / 2f, y + 3, 0);
+                    g.pose().scale(0.75f, 0.75f, 1);
+                    g.drawCenteredString(font, two, 0, 0, c);
+                    g.pose().popPose();
+                }
+                if (!inf) {   // 남은 시간 쓸기 (처음 본 길이 기준)
+                    int mx0 = Math.max(BUFF_MAX.getOrDefault(b.name(), 0), left);
+                    BUFF_MAX.put(b.name(), mx0);
+                    Ui.sweep(g, x + 1, y + 1, 16, 16, 1 - (double) left / mx0, 0x90000000);
+                }
                 String ex = b.extra();
                 String under = ex.startsWith("×") ? ex : !ex.isEmpty() ? ex : inf ? "" : left >= 1200 ? (left / 1200) + "m" : String.valueOf((left + 19) / 20);
                 if (!under.isEmpty()) {
@@ -278,8 +293,11 @@ public final class RpgHud {
             int e2 = 0xFFDC3232;
             g.fill(x, y, x + BOX, y + 1, e2); g.fill(x, y + BOX - 1, x + BOX, y + BOX, e2);
             g.fill(x, y, x + 1, y + BOX, e2); g.fill(x + BOX - 1, y, x + BOX, y + BOX, e2);
-            var spr = Minecraft.getInstance().getMobEffectTextures().get(e.getEffect());
-            g.blit(x + 1, y + 1, 0, BOX - 2, BOX - 2, spr);
+            String ei = effIcon(e.getEffect());
+            if (ei == null || !SkillIcons.drawBuff(g, ei, x + 1, y + 1)) {
+                var spr = Minecraft.getInstance().getMobEffectTextures().get(e.getEffect());
+                g.blit(x + 1, y + 1, 0, BOX - 2, BOX - 2, spr);
+            }
             int d = e.getDuration();
             String t = e.isInfiniteDuration() ? "" : d >= 1200 ? (d / 1200) + "m" : String.valueOf((d + 19) / 20);
             if (!t.isEmpty()) {
