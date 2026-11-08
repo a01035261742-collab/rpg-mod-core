@@ -17,8 +17,9 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import rpg.core.RpgCore;
 
-/** 보스 체력바 (시안 L210): 위 가운데, 1.5배 현판 이름 + 바로 밑 금테 바 420×14, 깎인 자리 흰색으로 남았다 줄어듦.
- *  2페이즈 = 서버가 보라색으로 바꿈 → 바·테두리 보라. 레이드 남은 시간(눈금 없는 바)은 마크 기본 그대로 */
+/** 보스 체력바 (시안 full_v4): 맨 위, 장식 바 1.5배 (보스마다 장식 색), 위에 이름(왼쪽)·퍼센트(오른쪽) 1.5배.
+ *  나올 때 1초 펼쳐지는 애니메이션 → 이름·퍼센트 0.2초 나타남. 깎인 자리 흰색으로 남았다 줄어듦.
+ *  2페이즈 = 서버가 보라색으로 바꿈 → 채움 보라. 레이드 남은 시간(눈금 없는 바)은 마크 기본 그대로 */
 @Mod.EventBusSubscriber(modid = RpgCore.MODID, value = Dist.CLIENT)
 public final class BossBars {
     private BossBars() {}
@@ -29,9 +30,21 @@ public final class BossBars {
     public static final Set<String> ACTIVE = new HashSet<>();
     private static long activeAt;
 
-    public static final int HALF = 210, BH = 14;
-    private static final net.minecraft.resources.ResourceLocation PL = RpgCore.id("textures/gui/ui/plaque_l.png"),
-            PM = RpgCore.id("textures/gui/ui/plaque_m.png"), PR = RpgCore.id("textures/gui/ui/plaque_r.png");
+    /** 바 그림 (팩 bossbar3, 12프레임 세로, 384×32), 프레임 11 의 채움 칸은 비워둠 → 코드로 채움 */
+    private static final int FW = 384, FH = 32, FRAMES = 12;
+    private static final int[][] FILL = {{14, 31, 352}, {15, 30, 353}, {16, 29, 354}, {17, 30, 353}, {18, 31, 352}};
+    private static final int FL = 29, FR = 355, FTOP = 14;
+    private static final Map<UUID, Long> START = new HashMap<>();
+    /** 보스 이름 → 색 (없으면 보라) */
+    private record Look(net.minecraft.resources.ResourceLocation tex, int text) {}
+    private static final Look GREEN = new Look(RpgCore.id("textures/gui/bossbar/green.png"), 0xFF96EB78),
+            ORANGE = new Look(RpgCore.id("textures/gui/bossbar/orange.png"), 0xFFFFB95A),
+            PURPLE = new Look(RpgCore.id("textures/gui/bossbar/purple.png"), 0xFFE1A0F0);
+    private static Look look(String name) {
+        if (name.contains("숲")) return GREEN;
+        if (name.contains("버섯")) return ORANGE;
+        return PURPLE;
+    }
 
     @SubscribeEvent
     public static void bar(CustomizeGuiOverlayEvent.BossEventProgress e) {
@@ -41,53 +54,65 @@ public final class BossBars {
         GuiGraphics g = e.getGuiGraphics();
         Font f = Minecraft.getInstance().font;
         int w = e.getWindow().getGuiScaledWidth();
-        int top = e.getY() - 10;
-        e.setIncrement(50);
-        String raw = be.getName().getString(), name = raw, lv = null, sub = null;
+        String raw = be.getName().getString(), name = raw, lv = null;
         Matcher m = NAME.matcher(raw);
-        if (m.matches()) { name = m.group(1); lv = m.group(2); sub = m.group(3); }
+        if (m.matches()) { name = m.group(1); lv = m.group(2); }
         long now = System.currentTimeMillis();
         if (now - activeAt > 1000) { ACTIVE.clear(); activeAt = now; }
         ACTIVE.add(name);
         boolean purple = be.getColor() == BossEvent.BossBarColor.PURPLE;
-        // 이름 현판 1.5배
-        String title = lv != null ? "Lv." + lv + "  " + name : name;
-        // 현판 (높이 26, 세 조각 정수 위치에 딱 붙여서 → 틈 없음), 글자 1.5배는 안쪽 남색 칸 가운데
-        int ph = 26, ew = 14, mw = Math.round(f.width(title) * 1.5f) + 21, px0 = w / 2 - mw / 2 - ew;
-        com.mojang.blaze3d.systems.RenderSystem.enableBlend();
-        g.blit(PL, px0, top, ew, ph, 0, 0, 18, 28, 18, 28);
-        g.blit(PM, px0 + ew, top, mw, ph, 0, 0, 4, 28, 4, 28);
-        g.blit(PR, px0 + ew + mw, top, ew, ph, 0, 0, 18, 28, 18, 28);
-        g.pose().pushPose();
-        g.pose().translate(w / 2f, top + ph * 15.5f / 28f - 5.5f, 0);
-        g.pose().scale(1.5f, 1.5f, 1);
-        g.drawString(f, title, -f.width(title) / 2, 0, Ui.VAL, true);
-        g.pose().popPose();
-        // 바 (현판 바로 밑, 안 겹침)
-        int half = Math.min(HALF, w / 2 - 20);
-        int x0 = w / 2 - half, x1 = w / 2 + half, by = top + ph + 3;
-        int edge = purple ? 0xFFBE78FF : Ui.G4;
-        g.fill(x0 - 3, by - 3, x1 + 3, by + BH + 3, Ui.OUT);
-        g.fill(x0 - 2, by - 2, x1 + 2, by + BH + 2, purple ? 0xFF6A3A9A : Ui.G2);
-        g.fill(x0 - 2, by - 2, x1 + 2, by - 1, edge);
-        g.fill(x0 - 1, by - 1, x1 + 1, by + BH + 1, Ui.IN1);
+        Look lk = look(name);
+        float k = Math.min(1.5f, (w - 24) / 372f);   // 바 1.5배 (좁은 화면은 맞춤)
+        int barH = Math.round(31 * k);
+        float ox = w / 2f - 192 * k, oy = e.getY() + 4 - 1 * k;   // 그림 맨 위(1칸 투명) 를 y+4 에, 글자는 장식 사이
+        e.setIncrement(barH + 8);
+        // 등장 애니메이션 1초 (12프레임), 다 펼쳐지면 이름·퍼센트 0.2초 동안 나타남
+        long st = START.computeIfAbsent(be.getId(), u -> now);
+        if (START.size() > 32) { START.clear(); TRAIL.clear(); START.put(be.getId(), st); }
+        long age = now - st;
+        int frame = (int) Math.min(FRAMES - 1, age * FRAMES / 1000);
         float r = Math.max(0, Math.min(1, be.getProgress()));
-        double[] t = TRAIL.computeIfAbsent(be.getId(), k -> new double[]{r, now});
-        if (r > t[0]) t[0] = r;   // 회복·새 페이즈
+        double[] t = TRAIL.computeIfAbsent(be.getId(), u -> new double[]{r, now});
+        if (r > t[0]) t[0] = r;
         double dt = Math.max(0, Math.min(0.1, (now - t[1]) / 1000.0));   // (시각은 double — float 은 ms 가 뭉개짐)
         t[1] = now;
-        t[0] = Math.max(r, t[0] - dt * 0.35);   // 흰 자리가 천천히 줄어듦
-        int w0 = x1 - x0, xr = x0 + Math.round(w0 * r), xt = x0 + (int) Math.round(w0 * t[0]);
-        int c = purple ? 0xFF9650DC : 0xFFC82828, hi = purple ? 0xFFC896FF : 0xFFFF6E6E, lo = purple ? 0xFF642E9A : 0xFF8C1C1C;
-        g.fill(x0, by, x1, by + BH, 0xFF280E12);
-        if (xt > xr) g.fill(xr, by, xt, by + BH, 0xFFFAF0D7);
-        if (xr > x0) {
-            g.fill(x0, by, xr, by + BH, c);
-            g.fill(x0, by, xr, by + 1, hi);
-            g.fill(x0, by + BH - 1, xr, by + BH, lo);
+        t[0] = Math.max(r, t[0] - dt * 0.35);
+        com.mojang.blaze3d.systems.RenderSystem.enableBlend();
+        g.pose().pushPose();
+        g.pose().translate(ox, oy, 0);
+        g.pose().scale(k, k, 1);
+        g.blit(lk.tex(), 0, 0, 0, frame * FH, FW, FH, FW, FH * FRAMES);
+        if (frame == FRAMES - 1) {
+            int span = FR - FL, xr = FL + Math.round(span * r), xt = FL + (int) Math.round(span * t[0]);
+            for (int[] row : FILL) {
+                int y = row[0], a = row[1], b = row[2] + 1;
+                int c = y == 14 ? (purple ? 0xFFC896FF : 0xFFFF8030) : y == 18 ? (purple ? 0xFF46205E : 0xFF47151F) : (purple ? 0xFF9650DC : 0xFFAC3232);
+                int e1 = Math.max(a, Math.min(b, xr)), e2 = Math.max(a, Math.min(b, xt));
+                if (e1 > a) g.fill(a, y, e1, y + 1, c);
+                if (e2 > e1) g.fill(e1, y, e2, y + 1, 0xFFFAF0D7);
+                if (b > e2) g.fill(e2, y, b, y + 1, 0xFF280E12);
+            }
         }
-        for (int i = 1; i < 10; i++) { int xx = x0 + w0 * i / 10; g.fill(xx, by + BH * 3 / 5, xx + 1, by + BH, 0xFF000000); }
-        String pct = Math.round(r * 100) + "%";
-        g.drawString(f, pct, w / 2 - f.width(pct) / 2, by + (BH - 8) / 2, 0xFFFFFFFF, true);
+        g.pose().popPose();
+        // 이름(왼쪽) · 퍼센트(오른쪽), 1.5배 + 검은 테
+        int ta = (int) Math.max(0, Math.min(255, (age - 1000) * 255 / 200));
+        if (ta > 8) {
+            String title = lv != null ? "Lv." + lv + "  " + name : name;
+            String pct = Math.round(r * 100) + "%";
+            float ty = oy + FTOP * k - 19;
+            outlined(g, f, title, ox + FL * k + 18, ty, (ta << 24) | (lk.text() & 0xFFFFFF), ta);
+            outlined(g, f, pct, ox + FR * k - 18 - f.width(pct) * 1.5f, ty, (ta << 24) | 0xFFF0C8, ta);
+        }
+    }
+
+    private static void outlined(GuiGraphics g, Font f, String s, float x, float y, int col, int a) {
+        g.pose().pushPose();
+        g.pose().translate(x, y, 0);
+        g.pose().scale(1.5f, 1.5f, 1);
+        int dark = (a << 24) | 0x140C10;
+        for (int dx = -1; dx <= 1; dx++) for (int dy = -1; dy <= 1; dy++)
+            if (dx != 0 || dy != 0) g.drawString(f, s, dx, dy, dark, false);
+        g.drawString(f, s, 0, 0, col, false);
+        g.pose().popPose();
     }
 }

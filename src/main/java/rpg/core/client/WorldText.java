@@ -34,7 +34,8 @@ public final class WorldText {
     private static final int LIFE = 32;
     private static final java.util.Map<Integer, long[]> STACK = new java.util.HashMap<>();   // 몹 → [마지막 시각, 줄 수]
     private static final net.minecraft.resources.ResourceLocation DIGITS = RpgCore.id("textures/gui/dmg_digits.png"),
-            CRIT = RpgCore.id("textures/gui/dmg_crit.png");
+            CRIT = RpgCore.id("textures/gui/dmg_crit.png"),
+            PL = RpgCore.id("textures/gui/ui/plaque_l.png"), PM = RpgCore.id("textures/gui/ui/plaque_m.png"), PR = RpgCore.id("textures/gui/ui/plaque_r.png");
     private static final String CHARS = "0123456789,";
 
     private static int adv(char ch) { return ch == ',' ? 5 : 7; }
@@ -57,7 +58,7 @@ public final class WorldText {
         if (mc.level == null) return;
         Entity e = mc.level.getEntity(id);
         if (e == null) return;
-        Vec3 p = e.position().add(0, e.getBbHeight() + 0.6, 0);
+        Vec3 p = e.position().add(0, e.getBbHeight() + 1.05, 0);   // 이름 현판 위에서 시작
         String t = String.format("%,d", (long) amount);
         if (dot) {   // 독·출혈·화상: 작은 색 숫자, 쌓지 않고 옆에서 살짝
             POPS.add(new Pop(id, p.add((Math.random() - 0.5) * 0.6, -0.2, (Math.random() - 0.5) * 0.6), t, dotCol, false, 0.7f, 0));
@@ -168,7 +169,6 @@ public final class WorldText {
         long nowMs = System.currentTimeMillis();
         Entity look = mc.crosshairPickEntity;
         if (look != null) LOOK.put(look.getId(), nowMs);
-        var tb = buf.getBuffer(net.minecraft.client.renderer.RenderType.textBackground());
         for (var en : ClientMobs.MAP.entrySet()) {
             int id = en.getKey();
             Entity ent = mc.level.getEntity(id);
@@ -195,7 +195,18 @@ public final class WorldText {
             ps.scale(-0.025f, -0.025f, 0.025f);
             Matrix4f m = ps.last().pose();
             float nw = font.width(name);
-            font.drawInBatch(name, -nw / 2f, -11, a | (elite ? 0xFFAA28 : 0xFFE282), false, m, buf, Font.DisplayMode.NORMAL, 0x60000000 & (a | 0xFFFFFF), 0xF000F0);
+            // 이름 현판 (시안 C: 높이 17, 양끝 11, 글자는 안쪽 남색 칸 가운데)
+            float ph = 17, cw = 11, mw = nw + 10, py = -ph - 2;
+            ps.pushPose();
+            ps.translate(0, 0, 0.01f);
+            Matrix4f pm = ps.last().pose();
+            int pc = a | 0xFFFFFF;
+            tex(buf.getBuffer(net.minecraft.client.renderer.RenderType.text(PL)), pm, -mw / 2 - cw, py, -mw / 2, py + ph, 0, 0, 1, 1, pc);
+            tex(buf.getBuffer(net.minecraft.client.renderer.RenderType.text(PM)), pm, -mw / 2, py, mw / 2, py + ph, 0, 0, 1, 1, pc);
+            tex(buf.getBuffer(net.minecraft.client.renderer.RenderType.text(PR)), pm, mw / 2, py, mw / 2 + cw, py + ph, 0, 0, 1, 1, pc);
+            ps.popPose();
+            font.drawInBatch(name, -nw / 2f, py + 5, a | (elite ? 0xFFAA28 : 0xFFE282), false, m, buf, Font.DisplayMode.NORMAL, 0, 0xF000F0);
+            var tb = buf.getBuffer(net.minecraft.client.renderer.RenderType.textBackground());
             float hw = elite ? 28 : 22, h = elite ? 5 : 4;
             float xr = -hw + 2 * hw * r, xt = (float) (-hw + 2 * hw * tr[0]);
             // 겹치지 않게 칸 나눠 그림 (테두리 → 채움 · 흰 자리 · 빈 칸)
@@ -272,7 +283,7 @@ public final class WorldText {
             ps.pushPose();
             ps.translate(p.x - c.x, p.y - c.y, p.z - c.z);
             ps.mulPose(cam.rotation());
-            float s = 0.025f * pop.scale * pop0;
+            float s = 0.025f * 1.4f * pop.scale * pop0;   // 1.4배
             ps.scale(-s, -s, s);
             // 줄: 아래부터 위로 (줄 높이 10px, 크기 다른 것도 같은 간격)
             ps.translate(0, -pop.row * 10f / (pop.scale * pop0), 0);
@@ -300,8 +311,8 @@ public final class WorldText {
             ps.scale(-k[3], -k[3], k[3]);
             ps.translate(0, -k[5], 0);
             Matrix4f m = ps.last().pose();
-            float x0 = k[4] - 1.6f, y0 = -4.5f - 2.8f + 1.2f;   // 숫자 오른쪽 끝 위 (시안: 글자 0.4배)
-            tex(cv, m, x0, y0, x0 + 22 * 0.4f, y0 + 7 * 0.4f, 0, 0, 1, 1, ((int) k[6] << 24) | 0xFFFFFF);
+            float x0 = k[4] - 1.6f, y0 = -4.5f - 7 * 0.65f + 1.2f;   // 숫자 오른쪽 끝 위 (CRIT 0.65배)
+            tex(cv, m, x0, y0, x0 + 22 * 0.65f, y0 + 7 * 0.65f, 0, 0, 1, 1, ((int) k[6] << 24) | 0xFFFFFF);
             ps.popPose();
         }
         buf.endBatch();
