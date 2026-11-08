@@ -100,6 +100,17 @@ public final class WorldText {
         if (t.title().isEmpty()) TITLES.remove(t.player()); else TITLES.put(t.player(), t);
     }
 
+    private static final java.util.Map<Integer, Long> LOOK = new java.util.HashMap<>();
+    private static final java.util.Map<Integer, float[]> MOB_TRAIL = new java.util.HashMap<>();
+
+    private static void quad(com.mojang.blaze3d.vertex.VertexConsumer v, Matrix4f m, float x0, float y0, float x1, float y1, int argb) {
+        int a = argb >>> 24, r = argb >> 16 & 255, g = argb >> 8 & 255, b = argb & 255;
+        v.vertex(m, x0, y0, 0).color(r, g, b, a).uv2(0xF000F0).endVertex();
+        v.vertex(m, x0, y1, 0).color(r, g, b, a).uv2(0xF000F0).endVertex();
+        v.vertex(m, x1, y1, 0).color(r, g, b, a).uv2(0xF000F0).endVertex();
+        v.vertex(m, x1, y0, 0).color(r, g, b, a).uv2(0xF000F0).endVertex();
+    }
+
     @SubscribeEvent
     public static void render(RenderLevelStageEvent e) {
         if (e.getStage() != RenderLevelStageEvent.Stage.AFTER_PARTICLES) return;
@@ -128,31 +139,52 @@ public final class WorldText {
             ps.popPose();
         }
 
-        // 몹 머리 위: "Lv.5 좀비" + 체력바 (20칸 이내, 바라보는 쪽)
+        // 몹 머리 위 (시안 A): "Lv.5 좀비" + 테두리 바. 맞은 몹·바라보는 몹만 5초, 보스바 뜬 보스는 안 그림
+        long nowMs = System.currentTimeMillis();
+        Entity look = mc.crosshairPickEntity;
+        if (look != null) LOOK.put(look.getId(), nowMs);
+        var tb = buf.getBuffer(net.minecraft.client.renderer.RenderType.textBackground());
         for (var en : ClientMobs.MAP.entrySet()) {
-            Entity ent = mc.level.getEntity(en.getKey());
+            int id = en.getKey();
+            Entity ent = mc.level.getEntity(id);
             if (!(ent instanceof LivingEntity le) || !le.isAlive()) continue;
-            if (ent.distanceToSqr(c) > 20 * 20) continue;
+            if (ent.distanceToSqr(c) > 24 * 24) continue;
+            long seen = Math.max(ClientMobs.HIT.getOrDefault(id, 0L), LOOK.getOrDefault(id, 0L));
+            if (nowMs - seen > 5000) continue;
             ClientMobs.Info info = en.getValue();
+            if (BossBars.ACTIVE.contains(info.name())) continue;
+            float fade = Math.min(1f, (5000 - (nowMs - seen)) / 500f);   // 마지막 0.5초 흐려짐
+            int a = Math.max(8, (int) (255 * fade)) << 24;
             Vec3 p = ent.getPosition(pt).add(0, ent.getBbHeight() + 0.45, 0);
+            boolean elite = info.name().startsWith("★");
             String name = "Lv." + info.level() + " " + info.name();
-            double r = info.maxHp() <= 0 ? 0 : Math.max(0, Math.min(1, info.hp() / info.maxHp()));
-            int seg = 20, full = (int) Math.ceil(r * seg);
-            String bar = "|".repeat(full);
-            String rest = "|".repeat(seg - full);
+            float r = info.maxHp() <= 0 ? 0 : (float) Math.max(0, Math.min(1, info.hp() / info.maxHp()));
+            float[] tr = MOB_TRAIL.computeIfAbsent(id, k -> new float[]{r, nowMs});
+            if (r > tr[0]) tr[0] = r;
+            float dt = Math.min(0.1f, (nowMs - (long) tr[1]) / 1000f);
+            tr[1] = nowMs;
+            tr[0] = Math.max(r, tr[0] - dt * 0.5f);
             ps.pushPose();
             ps.translate(p.x - c.x, p.y - c.y, p.z - c.z);
             ps.mulPose(cam.rotation());
             ps.scale(-0.025f, -0.025f, 0.025f);
             Matrix4f m = ps.last().pose();
             float nw = font.width(name);
-            boolean elite = info.name().startsWith("★");
-            font.drawInBatch(name, -nw / 2f, -10, elite ? 0xFFFFA000 : 0xFFFFE070, false, m, buf, Font.DisplayMode.NORMAL, 0x60000000, 0xF000F0);
-            float bw = font.width(bar + rest);
-            font.drawInBatch(bar, -bw / 2f, 0, 0xFFE03030, false, m, buf, Font.DisplayMode.NORMAL, 0x60000000, 0xF000F0);
-            font.drawInBatch(rest, -bw / 2f + font.width(bar), 0, 0xFF503030, false, m, buf, Font.DisplayMode.NORMAL, 0, 0xF000F0);
+            font.drawInBatch(name, -nw / 2f, -11, a | (elite ? 0xFFAA28 : 0xFFE282), false, m, buf, Font.DisplayMode.NORMAL, 0x60000000 & (a | 0xFFFFFF), 0xF000F0);
+            float hw = elite ? 28 : 22, h = elite ? 5 : 4;
+            float xr = -hw + 2 * hw * r, xt = -hw + 2 * hw * tr[0];
+            // 겹치지 않게 칸 나눠 그림 (테두리 → 채움 · 흰 자리 · 빈 칸)
+            int edge = elite ? 0xECC25A : 0x0A0608;
+            quad(tb, m, -hw - 1, -1, hw + 1, 0, a | edge);
+            quad(tb, m, -hw - 1, h, hw + 1, h + 1, a | (elite ? 0xC8902E : 0x0A0608));
+            quad(tb, m, -hw - 1, 0, -hw, h, a | edge);
+            quad(tb, m, hw, 0, hw + 1, h, a | edge);
+            if (xr > -hw) { quad(tb, m, -hw, 0, xr, 1, a | 0xFA6E64); quad(tb, m, -hw, 1, xr, h, a | 0xD22D2D); }
+            if (xt > xr) quad(tb, m, xr, 0, xt, h, a | 0xFAF0D7);
+            if (hw > xt) quad(tb, m, xt, 0, hw, h, a | 0x321014);
             ps.popPose();
         }
+        if (mc.level.getGameTime() % 200 == 0) { MOB_TRAIL.keySet().removeIf(k -> !ClientMobs.MAP.containsKey(k)); LOOK.keySet().removeIf(k -> !ClientMobs.MAP.containsKey(k)); ClientMobs.HIT.keySet().removeIf(k -> !ClientMobs.MAP.containsKey(k)); }
 
         // 퀘스트 NPC 머리 위: ! (받기) · ? (완료) · 회색 ? (진행 중)
         if (!rpg.core.quest.Quests.NPCS.isEmpty()) {
