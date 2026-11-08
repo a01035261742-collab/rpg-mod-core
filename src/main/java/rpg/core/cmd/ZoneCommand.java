@@ -167,6 +167,10 @@ public final class ZoneCommand {
                     rpg.core.compat.EpicFightCompat.speedStatus = r;
                     return ok(c, "회전 모션 속도: " + r + " (싱글에서 바로 적용, 마음에 들면 알려주세요)");
                 })))
+                .then(Commands.literal("strike").then(Commands.argument("ticks", IntegerArgumentType.integer(0, 30)).executes(c -> {
+                    rpg.core.skill.JobSkills.STRIKE_DELAY = IntegerArgumentType.getInteger(c, "ticks");
+                    return ok(c, "강타 타격 타이밍: 모션 시작 " + rpg.core.skill.JobSkills.STRIKE_DELAY + "틱 뒤 (20틱 = 1초)");
+                })))
                 .then(Commands.literal("spin").then(Commands.argument("gap", IntegerArgumentType.integer(1, 20))
                         .then(Commands.argument("first", IntegerArgumentType.integer(0, 20)).executes(c -> {
                             rpg.core.skill.WarriorSkills.SPIN_GAP = IntegerArgumentType.getInteger(c, "gap");

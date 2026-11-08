@@ -184,7 +184,7 @@ public final class BranchSkills {
             l.sendParticles(ParticleTypes.EXPLOSION, p.getX(), p.getY() + 0.2, p.getZ(), 4, 1, 0.1, 1, 0);
             l.sendParticles(ParticleTypes.CLOUD, p.getX(), p.getY() + 0.1, p.getZ(), 20, 1.4, 0.05, 1.4, 0.05);
             l.playSound(null, p.blockPosition(), SoundEvents.GENERIC_EXPLODE, SoundSource.PLAYERS, 0.6f, 1.3f);
-            if (!rpg.core.compat.EpicFightCompat.playSkill(p, "leap_slam", "GREATSWORD_AIR_SLASH|GREATSWORD_AUTO1"))
+            if (!rpg.core.compat.EpicFightCompat.playSkill(p, "leap_slam", WarriorSkills.ANIM_DASH))
                 p.swing(net.minecraft.world.InteractionHand.MAIN_HAND, true);
             return true;
         });

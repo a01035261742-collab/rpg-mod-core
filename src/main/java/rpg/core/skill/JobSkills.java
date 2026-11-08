@@ -85,32 +85,41 @@ public final class JobSkills {
         return true;
     }
 
+    /** 강타 타격 타이밍 (틱, 길로틴 모션 기준) — /rpg anim strike 로 조절 */
+    public static int STRIKE_DELAY = 10;
+
     // ───────── 전사: 강타 차지 ─────────
     /** 떼는 순간 (차지 비율 0~1) */
     public static void releaseCharge(ServerPlayer p, PlayerData d, Defs.SkillDef s, int lv, long held) {
         double minT = 6, maxT = 30;   // 0.3초 ~ 1.5초
         double ratio = Math.max(0, Math.min(1, (held - minT) / (maxT - minT)));
         double pct = s.value(lv) * (1 + 0.5 * ratio);   // 최소 value%, 가득 차면 1.5배
-        ServerLevel l = p.serverLevel();
-        Vec3 look = flatAim(p);
-        double range = 4.5;
-        int hits = 0;
-        for (Mob m : l.getEntitiesOfClass(Mob.class, p.getBoundingBox().inflate(range + 3))) {
-            if (!m.isAlive() || !Combat.isRpgMob(m)) continue;
-            Vec3 to = m.position().subtract(p.position());
-            Vec3 flat = new Vec3(to.x, 0, to.z);
-            if (flat.length() - m.getBbWidth() / 2 > range || (flat.length() > m.getBbWidth() / 2 + 0.5 && flat.normalize().dot(look) < 0.3)) continue;   // 몸통 가장자리 기준, 앞 약 145°
-            CombatEvents.skillHit(p, m, pct);
-            m.knockback(0.4 + ratio * 0.6, -look.x, -look.z);
-            hits++;
-        }
-        Vec3 c = p.position().add(look.scale(1.8));
-        l.sendParticles(ParticleTypes.SWEEP_ATTACK, c.x, p.getY() + 1, c.z, 3 + (int) (ratio * 4), 0.8, 0.2, 0.8, 0);
-        if (ratio >= 1) l.sendParticles(ParticleTypes.EXPLOSION, c.x, p.getY() + 0.5, c.z, 1, 0, 0, 0, 0);
-        l.playSound(null, p.blockPosition(), ratio >= 1 ? SoundEvents.PLAYER_ATTACK_CRIT : SoundEvents.PLAYER_ATTACK_SWEEP,
-                SoundSource.PLAYERS, 1.0f, 0.8f + (float) ratio * 0.3f);
-        if (!rpg.core.compat.EpicFightCompat.playSkill(p, "power_strike", "GREATSWORD_AUTO1"))   // 대검 내려찍기
-            p.swing(net.minecraft.world.InteractionHand.MAIN_HAND, true);
+        // 모션 먼저 (길로틴: 뛰어올라 내려치기) → 내려치는 순간에 타격
+        boolean played = rpg.core.compat.EpicFightCompat.playSkill(p, "power_strike", "THE_GUILLOTINE|GREATSWORD_AUTO1");
+        if (!played) p.swing(net.minecraft.world.InteractionHand.MAIN_HAND, true);
+        boolean guillotine = played && "THE_GUILLOTINE".equals(rpg.core.compat.EpicFightCompat.LAST.get("played"));
+        later(p, guillotine ? STRIKE_DELAY : 2, () -> {
+            if (!p.isAlive()) return;
+            ServerLevel l = p.serverLevel();
+            Vec3 look = flatAim(p);
+            double range = 4.5;
+            int hits = 0;
+            for (Mob m : l.getEntitiesOfClass(Mob.class, p.getBoundingBox().inflate(range + 3))) {
+                if (!m.isAlive() || !Combat.isRpgMob(m)) continue;
+                Vec3 to = m.position().subtract(p.position());
+                Vec3 flat = new Vec3(to.x, 0, to.z);
+                if (flat.length() - m.getBbWidth() / 2 > range || (flat.length() > m.getBbWidth() / 2 + 0.5 && flat.normalize().dot(look) < 0.3)) continue;   // 몸통 가장자리 기준, 앞 약 145°
+                CombatEvents.skillHit(p, m, pct);
+                m.knockback(0.4 + ratio * 0.6, -look.x, -look.z);
+                hits++;
+            }
+            Vec3 c = p.position().add(look.scale(1.8));
+            l.sendParticles(ParticleTypes.SWEEP_ATTACK, c.x, p.getY() + 1, c.z, 3 + (int) (ratio * 4), 0.8, 0.2, 0.8, 0);
+            if (ratio >= 1) l.sendParticles(ParticleTypes.EXPLOSION, c.x, p.getY() + 0.5, c.z, 1, 0, 0, 0, 0);
+            l.playSound(null, p.blockPosition(), ratio >= 1 ? SoundEvents.PLAYER_ATTACK_CRIT : SoundEvents.PLAYER_ATTACK_SWEEP,
+                    SoundSource.PLAYERS, 1.0f, 0.8f + (float) ratio * 0.3f);
+
+        });
     }
 
     /** 차지 중 표시 */
