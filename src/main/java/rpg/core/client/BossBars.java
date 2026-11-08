@@ -30,6 +30,8 @@ public final class BossBars {
     private static long activeAt;
 
     public static final int HALF = 210, BH = 14;
+    private static final net.minecraft.resources.ResourceLocation PL = RpgCore.id("textures/gui/ui/plaque_l.png"),
+            PM = RpgCore.id("textures/gui/ui/plaque_m.png"), PR = RpgCore.id("textures/gui/ui/plaque_r.png");
 
     @SubscribeEvent
     public static void bar(CustomizeGuiOverlayEvent.BossEventProgress e) {
@@ -40,7 +42,7 @@ public final class BossBars {
         Font f = Minecraft.getInstance().font;
         int w = e.getWindow().getGuiScaledWidth();
         int top = e.getY() - 10;
-        e.setIncrement(44);
+        e.setIncrement(50);
         String raw = be.getName().getString(), name = raw, lv = null, sub = null;
         Matcher m = NAME.matcher(raw);
         if (m.matches()) { name = m.group(1); lv = m.group(2); sub = m.group(3); }
@@ -50,14 +52,20 @@ public final class BossBars {
         boolean purple = be.getColor() == BossEvent.BossBarColor.PURPLE;
         // 이름 현판 1.5배
         String title = lv != null ? "Lv." + lv + "  " + name : name;
+        // 현판 (높이 26, 세 조각 정수 위치에 딱 붙여서 → 틈 없음), 글자 1.5배는 안쪽 남색 칸 가운데
+        int ph = 26, ew = 14, mw = Math.round(f.width(title) * 1.5f) + 21, px0 = w / 2 - mw / 2 - ew;
+        com.mojang.blaze3d.systems.RenderSystem.enableBlend();
+        g.blit(PL, px0, top, ew, ph, 0, 0, 18, 28, 18, 28);
+        g.blit(PM, px0 + ew, top, mw, ph, 0, 0, 4, 28, 4, 28);
+        g.blit(PR, px0 + ew + mw, top, ew, ph, 0, 0, 18, 28, 18, 28);
         g.pose().pushPose();
-        g.pose().translate(w / 2f, top, 0);
+        g.pose().translate(w / 2f, top + ph * 15.5f / 28f - 5.5f, 0);
         g.pose().scale(1.5f, 1.5f, 1);
-        Ui.plaque(g, f, 0, 0, "  " + title + "  ");   // 글자가 현판 테두리에 안 닿게 여백
+        g.drawString(f, title, -f.width(title) / 2, 0, Ui.VAL, true);
         g.pose().popPose();
         // 바 (현판 바로 밑, 안 겹침)
         int half = Math.min(HALF, w / 2 - 20);
-        int x0 = w / 2 - half, x1 = w / 2 + half, by = top + 21 + 3;
+        int x0 = w / 2 - half, x1 = w / 2 + half, by = top + ph + 3;
         int edge = purple ? 0xFFBE78FF : Ui.G4;
         g.fill(x0 - 3, by - 3, x1 + 3, by + BH + 3, Ui.OUT);
         g.fill(x0 - 2, by - 2, x1 + 2, by + BH + 2, purple ? 0xFF6A3A9A : Ui.G2);
@@ -81,6 +89,5 @@ public final class BossBars {
         for (int i = 1; i < 10; i++) { int xx = x0 + w0 * i / 10; g.fill(xx, by + BH * 3 / 5, xx + 1, by + BH, 0xFF000000); }
         String pct = Math.round(r * 100) + "%";
         g.drawString(f, pct, w / 2 - f.width(pct) / 2, by + (BH - 8) / 2, 0xFFFFFFFF, true);
-        if (sub != null) g.drawString(f, sub, x1 - f.width(sub), by + BH + 5, Ui.GRAY, true);
     }
 }
