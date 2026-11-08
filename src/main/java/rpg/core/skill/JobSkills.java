@@ -86,7 +86,7 @@ public final class JobSkills {
     }
 
     /** 강타 타격 타이밍 (틱, 길로틴 모션 기준) — /rpg anim strike 로 조절 */
-    public static int STRIKE_DELAY = 10;
+    public static int STRIKE_DELAY = 16;
 
     // ───────── 전사: 강타 차지 ─────────
     /** 떼는 순간 (차지 비율 0~1) */
