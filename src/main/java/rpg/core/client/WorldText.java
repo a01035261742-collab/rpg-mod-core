@@ -24,13 +24,31 @@ import rpg.core.RpgCore;
 public final class WorldText {
     private WorldText() {}
 
+    /** 데미지 숫자 (시안 dmg3-③): 흰 픽셀 숫자 + 검은 테, 크리 = 금색 1.25배 + 오른쪽 위 CRIT, 같은 몹 연타는 위로 쌓임 */
     private static final class Pop {
-        final Vec3 pos; final String text; final int color; final float scale; final double dx; int age;
-        Pop(Vec3 pos, String text, int color, float scale, double dx) { this.pos = pos; this.text = text; this.color = color; this.scale = scale; this.dx = dx; }
+        final int id; final Vec3 pos; final String text; final int tint; final boolean crit; final float scale; final int row; int age;
+        Pop(int id, Vec3 pos, String text, int tint, boolean crit, float scale, int row) { this.id = id; this.pos = pos; this.text = text; this.tint = tint; this.crit = crit; this.scale = scale; this.row = row; }
     }
 
     private static final List<Pop> POPS = new ArrayList<>();
-    private static final int LIFE = 24;
+    private static final int LIFE = 32;
+    private static final java.util.Map<Integer, long[]> STACK = new java.util.HashMap<>();   // 몹 → [마지막 시각, 줄 수]
+    private static final net.minecraft.resources.ResourceLocation DIGITS = RpgCore.id("textures/gui/dmg_digits.png"),
+            CRIT = RpgCore.id("textures/gui/dmg_crit.png");
+    private static final String CHARS = "0123456789,";
+
+    private static int adv(char ch) { return ch == ',' ? 5 : 7; }
+
+    private static float numWidth(String t) { float w = 2; for (int i = 0; i < t.length(); i++) w += adv(t.charAt(i)); return w; }
+
+    private static void tex(com.mojang.blaze3d.vertex.VertexConsumer v, Matrix4f m, float x0, float y0, float x1, float y1,
+                            float u0, float v0, float u1, float v1, int argb) {
+        int a = argb >>> 24, r = argb >> 16 & 255, g = argb >> 8 & 255, b = argb & 255;
+        v.vertex(m, x0, y0, 0).color(r, g, b, a).uv(u0, v0).uv2(0xF000F0).endVertex();
+        v.vertex(m, x0, y1, 0).color(r, g, b, a).uv(u0, v1).uv2(0xF000F0).endVertex();
+        v.vertex(m, x1, y1, 0).color(r, g, b, a).uv(u1, v1).uv2(0xF000F0).endVertex();
+        v.vertex(m, x1, y0, 0).color(r, g, b, a).uv(u1, v0).uv2(0xF000F0).endVertex();
+    }
 
     public static void addDamage(int id, double amount, int type) {
         boolean crit = type == 1, dot = type >= 2;
@@ -39,11 +57,18 @@ public final class WorldText {
         if (mc.level == null) return;
         Entity e = mc.level.getEntity(id);
         if (e == null) return;
-        Vec3 p = e.position().add(0, e.getBbHeight() + 0.5, 0);
-        double dx = (Math.random() - 0.5) * 0.8;
+        Vec3 p = e.position().add(0, e.getBbHeight() + 0.6, 0);
         String t = String.format("%,d", (long) amount);
-        POPS.add(new Pop(p, crit ? "✦" + t : t, crit ? 0xFFFFA020 : dot ? dotCol : 0xFFFFFFFF, crit ? 1.5f : dot ? 0.7f : 1.0f, dx));
-        if (POPS.size() > 60) POPS.remove(0);
+        if (dot) {   // 독·출혈·화상: 작은 색 숫자, 쌓지 않고 옆에서 살짝
+            POPS.add(new Pop(id, p.add((Math.random() - 0.5) * 0.6, -0.2, (Math.random() - 0.5) * 0.6), t, dotCol, false, 0.7f, 0));
+        } else {
+            long now = System.currentTimeMillis();
+            long[] st = STACK.computeIfAbsent(id, k -> new long[]{0, 0});
+            int row = now - st[0] < 700 ? (int) st[1] : 0;
+            st[0] = now; st[1] = row + 1;
+            POPS.add(new Pop(id, p, t, 0xFFFFFFFF, crit, crit ? 1.25f : 1f, row));
+        }
+        if (POPS.size() > 80) POPS.remove(0);
     }
 
     @SubscribeEvent
@@ -53,7 +78,7 @@ public final class WorldText {
         // 오래된 몹 정보 정리
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null) { ClientMobs.MAP.clear(); return; }
-        if (mc.level.getGameTime() % 100 == 0) ClientMobs.MAP.keySet().removeIf(id -> mc.level.getEntity(id) == null);
+        if (mc.level.getGameTime() % 100 == 0) { ClientMobs.MAP.keySet().removeIf(id -> mc.level.getEntity(id) == null); STACK.keySet().removeIf(id -> mc.level.getEntity(id) == null); }
     }
 
     // ── 엘리트는 1.5배 크게 보이기 (맞는 범위도 1.5배: eliteSizeClient · 서버 CombatEvents.eliteSize) ──
@@ -233,21 +258,50 @@ public final class WorldText {
             ps.popPose();
         }
 
-        // 데미지 숫자
+        // 데미지 숫자 (텍스처 숫자, 벽 너머도 보임)
+        var dv = buf.getBuffer(net.minecraft.client.renderer.RenderType.textSeeThrough(DIGITS));
+        java.util.List<float[]> crits = new java.util.ArrayList<>();
         for (Pop pop : POPS) {
             float t = (pop.age + pt) / LIFE;
-            int alpha = (int) (255 * Math.max(0, 1 - t * t));
+            float fadeT = Math.max(0, (t - 0.7f) / 0.3f);
+            int alpha = (int) (255 * (1 - fadeT));
             if (alpha < 10) continue;
-            Vec3 p = pop.pos.add(pop.dx * t, t * 1.2, 0);
+            // 처음 0.1 동안 살짝 커졌다 제자리 · 천천히 떠오름
+            float pop0 = t < 0.1f ? 1.3f - t * 3f : 1f;
+            Vec3 p = pop.pos.add(0, t * 0.35, 0);
             ps.pushPose();
             ps.translate(p.x - c.x, p.y - c.y, p.z - c.z);
             ps.mulPose(cam.rotation());
-            float s = 0.03f * pop.scale * (t < 0.15f ? 1.4f - t * 2.6f : 1f);
+            float s = 0.025f * pop.scale * pop0;
             ps.scale(-s, -s, s);
+            // 줄: 아래부터 위로 (줄 높이 10px, 크기 다른 것도 같은 간격)
+            ps.translate(0, -pop.row * 10f / (pop.scale * pop0), 0);
             Matrix4f m = ps.last().pose();
-            float w = font.width(pop.text);
-            int col = (alpha << 24) | (pop.color & 0xFFFFFF);
-            font.drawInBatch(pop.text, -w / 2f, 0, col, true, m, buf, Font.DisplayMode.SEE_THROUGH, 0, 0xF000F0);
+            float w = numWidth(pop.text), x = -w / 2f + 1;
+            int col = (alpha << 24) | (pop.tint & 0xFFFFFF);
+            float vRow = pop.crit ? 0.5f : 0f;
+            for (int i = 0; i < pop.text.length(); i++) {
+                char ch = pop.text.charAt(i);
+                int k = CHARS.indexOf(ch);
+                if (k < 0) continue;
+                float u0 = k * 8 / 88f, u1 = (k * 8 + 8) / 88f;
+                tex(dv, m, x - 1, -4.5f, x + 7, 4.5f, u0, vRow, u1, vRow + 0.5f, col);
+                x += adv(ch);
+            }
+            if (pop.crit) crits.add(new float[]{(float) (p.x - c.x), (float) (p.y - c.y), (float) (p.z - c.z), s, w / 2f, pop.row * 10f / (pop.scale * pop0), alpha});
+            ps.popPose();
+        }
+        // CRIT 글자 (숫자 오른쪽 위, 작게)
+        var cv = buf.getBuffer(net.minecraft.client.renderer.RenderType.textSeeThrough(CRIT));
+        for (float[] k : crits) {
+            ps.pushPose();
+            ps.translate(k[0], k[1], k[2]);
+            ps.mulPose(cam.rotation());
+            ps.scale(-k[3], -k[3], k[3]);
+            ps.translate(0, -k[5], 0);
+            Matrix4f m = ps.last().pose();
+            float x0 = k[4] - 1.6f, y0 = -4.5f - 2.8f + 1.2f;   // 숫자 오른쪽 끝 위 (시안: 글자 0.4배)
+            tex(cv, m, x0, y0, x0 + 22 * 0.4f, y0 + 7 * 0.4f, 0, 0, 1, 1, ((int) k[6] << 24) | 0xFFFFFF);
             ps.popPose();
         }
         buf.endBatch();
