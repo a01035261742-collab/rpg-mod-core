@@ -17,7 +17,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import rpg.core.RpgCore;
 
-/** 보스 체력바 (시안 full_v4): 맨 위, 장식 바 1.5배 (보스마다 장식 색), 위에 이름(왼쪽)·퍼센트(오른쪽) 1.5배.
+/** 보스 체력바 (시안 m1): 맨 위, 장식 바 1.25배 (보스마다 장식 색), 위에 이름(왼쪽)·퍼센트(오른쪽) 2배.
  *  나올 때 1초 펼쳐지는 애니메이션 → 이름·퍼센트 0.2초 나타남. 깎인 자리 흰색으로 남았다 줄어듦.
  *  2페이즈 = 서버가 보라색으로 바꿈 → 채움 보라. 레이드 남은 시간(눈금 없는 바)은 마크 기본 그대로 */
 @Mod.EventBusSubscriber(modid = RpgCore.MODID, value = Dist.CLIENT)
@@ -62,9 +62,9 @@ public final class BossBars {
         ACTIVE.add(name);
         boolean purple = be.getColor() == BossEvent.BossBarColor.PURPLE;
         Look lk = look(name);
-        float k = Math.min(1.5f, (w - 24) / 372f);   // 바 1.5배 (좁은 화면은 맞춤)
+        float k = Math.min(1.25f, (w - 24) / 372f);   // 바 1.25배 (좁은 화면은 맞춤)
         int barH = Math.round(31 * k);
-        float ox = w / 2f - 192 * k, oy = e.getY() + 4 - 1 * k;   // 그림 맨 위(1칸 투명) 를 y+4 에, 글자는 장식 사이
+        float ox = Math.round(w / 2f - 192 * k), oy = Math.round(e.getY() + 4 - 1 * k);   // 그림 맨 위(1칸 투명) 를 y+4 에, 글자는 장식 사이
         e.setIncrement(barH + 8);
         // 등장 애니메이션 1초 (12프레임), 다 펼쳐지면 이름·퍼센트 0.2초 동안 나타남
         long st = START.computeIfAbsent(be.getId(), u -> now);
@@ -102,19 +102,20 @@ public final class BossBars {
         if (ta > 8) {
             String title = lv != null ? "Lv." + lv + "  " + name : name;
             String pct = Math.round(r * 100) + "%";
-            float ty = oy + FTOP * k - 19;
-            outlined(g, f, title, ox + FL * k + 18, ty, (ta << 24) | (lk.text() & 0xFFFFFF), ta);
-            outlined(g, f, pct, ox + FR * k - 18 - f.width(pct) * 1.5f, ty, (ta << 24) | 0xFFF0C8, ta);
+            float ty = Math.round(oy + FTOP * k - 21);
+            outlined(g, f, title, Math.round(ox + FL * k + 12 * k), ty, (ta << 24) | (lk.text() & 0xFFFFFF), ta);
+            outlined(g, f, pct, Math.round(ox + FR * k - 12 * k) - f.width(pct) * 2, ty, (ta << 24) | 0xFFF0C8, ta);
         }
     }
 
     private static void outlined(GuiGraphics g, Font f, String s, float x, float y, int col, int a) {
         g.pose().pushPose();
         g.pose().translate(x, y, 0);
-        g.pose().scale(1.5f, 1.5f, 1);
+        g.pose().scale(2f, 2f, 1);   // 2배 (한글 글꼴은 정수 배율이어야 안 깨짐)
         int dark = (a << 24) | 0x140C10;
-        for (int dx = -1; dx <= 1; dx++) for (int dy = -1; dy <= 1; dy++)
-            if (dx != 0 || dy != 0) g.drawString(f, s, dx, dy, dark, false);
+        for (int dx = -1; dx <= 1; dx++) for (int dy = -1; dy <= 1; dy++) if (dx != 0 || dy != 0) {   // 테두리 1칸 (= 0.5 글자칸)
+            g.pose().pushPose(); g.pose().translate(dx * 0.5f, dy * 0.5f, 0); g.drawString(f, s, 0, 0, dark, false); g.pose().popPose();
+        }
         g.drawString(f, s, 0, 0, col, false);
         g.pose().popPose();
     }
