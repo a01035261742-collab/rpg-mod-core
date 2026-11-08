@@ -101,7 +101,7 @@ public final class WorldText {
     }
 
     private static final java.util.Map<Integer, Long> LOOK = new java.util.HashMap<>();
-    private static final java.util.Map<Integer, float[]> MOB_TRAIL = new java.util.HashMap<>();
+    private static final java.util.Map<Integer, double[]> MOB_TRAIL = new java.util.HashMap<>();
 
     private static void quad(com.mojang.blaze3d.vertex.VertexConsumer v, Matrix4f m, float x0, float y0, float x1, float y1, int argb) {
         int a = argb >>> 24, r = argb >> 16 & 255, g = argb >> 8 & 255, b = argb & 255;
@@ -159,11 +159,11 @@ public final class WorldText {
             boolean elite = info.name().startsWith("★");
             String name = "Lv." + info.level() + " " + info.name();
             float r = info.maxHp() <= 0 ? 0 : (float) Math.max(0, Math.min(1, info.hp() / info.maxHp()));
-            float[] tr = MOB_TRAIL.computeIfAbsent(id, k -> new float[]{r, nowMs});
+            double[] tr = MOB_TRAIL.computeIfAbsent(id, k -> new double[]{r, nowMs});
             if (r > tr[0]) tr[0] = r;
-            float dt = Math.min(0.1f, (nowMs - (long) tr[1]) / 1000f);
+            double dt = Math.max(0, Math.min(0.1, (nowMs - tr[1]) / 1000.0));
             tr[1] = nowMs;
-            tr[0] = Math.max(r, tr[0] - dt * 0.5f);
+            tr[0] = Math.max(r, tr[0] - dt * 0.5);
             ps.pushPose();
             ps.translate(p.x - c.x, p.y - c.y, p.z - c.z);
             ps.mulPose(cam.rotation());
@@ -172,7 +172,7 @@ public final class WorldText {
             float nw = font.width(name);
             font.drawInBatch(name, -nw / 2f, -11, a | (elite ? 0xFFAA28 : 0xFFE282), false, m, buf, Font.DisplayMode.NORMAL, 0x60000000 & (a | 0xFFFFFF), 0xF000F0);
             float hw = elite ? 28 : 22, h = elite ? 5 : 4;
-            float xr = -hw + 2 * hw * r, xt = -hw + 2 * hw * tr[0];
+            float xr = -hw + 2 * hw * r, xt = (float) (-hw + 2 * hw * tr[0]);
             // 겹치지 않게 칸 나눠 그림 (테두리 → 채움 · 흰 자리 · 빈 칸)
             int edge = elite ? 0xECC25A : 0x0A0608;
             quad(tb, m, -hw - 1, -1, hw + 1, 0, a | edge);

@@ -24,7 +24,7 @@ public final class BossBars {
     private BossBars() {}
 
     private static final Pattern NAME = Pattern.compile("(.*?) Lv\\.(\\d+)(?: · (.*))?");
-    private static final Map<UUID, float[]> TRAIL = new HashMap<>();   // [흰 자리, 마지막 시각]
+    private static final Map<UUID, double[]> TRAIL = new HashMap<>();   // [흰 자리, 마지막 시각]
     /** 지금 보스바가 떠 있는 보스 이름 (머리 위 바 안 그리기) */
     public static final Set<String> ACTIVE = new HashSet<>();
     private static long activeAt;
@@ -72,12 +72,12 @@ public final class BossBars {
         g.fill(x0 - 2, by - 2, x1 + 2, by - 1, edge);
         g.fill(x0 - 1, by - 1, x1 + 1, by + BH + 1, Ui.IN1);
         float r = Math.max(0, Math.min(1, be.getProgress()));
-        float[] t = TRAIL.computeIfAbsent(be.getId(), k -> new float[]{r, now});
+        double[] t = TRAIL.computeIfAbsent(be.getId(), k -> new double[]{r, now});
         if (r > t[0]) t[0] = r;   // 회복·새 페이즈
-        float dt = Math.min(0.1f, (now - (long) t[1]) / 1000f);
+        double dt = Math.max(0, Math.min(0.1, (now - t[1]) / 1000.0));   // (시각은 double — float 은 ms 가 뭉개짐)
         t[1] = now;
-        t[0] = Math.max(r, t[0] - dt * 0.35f);   // 흰 자리가 천천히 줄어듦
-        int w0 = x1 - x0, xr = x0 + Math.round(w0 * r), xt = x0 + Math.round(w0 * t[0]);
+        t[0] = Math.max(r, t[0] - dt * 0.35);   // 흰 자리가 천천히 줄어듦
+        int w0 = x1 - x0, xr = x0 + Math.round(w0 * r), xt = x0 + (int) Math.round(w0 * t[0]);
         int c = purple ? 0xFF9650DC : 0xFFC82828, hi = purple ? 0xFFC896FF : 0xFFFF6E6E, lo = purple ? 0xFF642E9A : 0xFF8C1C1C;
         g.fill(x0, by, x1, by + BH, 0xFF280E12);
         if (xt > xr) g.fill(xr, by, xt, by + BH, 0xFFFAF0D7);
