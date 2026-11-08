@@ -72,11 +72,14 @@ public final class BossBars {
         long age = now - st;
         int frame = (int) Math.min(FRAMES - 1, age * FRAMES / 1000);
         float r = Math.max(0, Math.min(1, be.getProgress()));
-        double[] t = TRAIL.computeIfAbsent(be.getId(), u -> new double[]{r, now});
+        // [흰 자리, 마지막 그린 시각, 마지막 깎인 시각, 지난 체력] — 깎이면 0.6초 그대로 있다가 줄어듦
+        double[] t = TRAIL.computeIfAbsent(be.getId(), u -> new double[]{r, now, 0, r});
         if (r > t[0]) t[0] = r;
+        if (r < t[3] - 1e-4) t[2] = now;
+        t[3] = r;
         double dt = Math.max(0, Math.min(0.1, (now - t[1]) / 1000.0));   // (시각은 double — float 은 ms 가 뭉개짐)
         t[1] = now;
-        t[0] = Math.max(r, t[0] - dt * 0.35);
+        if (now - t[2] > 600) t[0] = Math.max(r, t[0] - dt * 0.5);
         com.mojang.blaze3d.systems.RenderSystem.enableBlend();
         g.pose().pushPose();
         g.pose().translate(ox, oy, 0);
