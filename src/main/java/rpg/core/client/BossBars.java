@@ -17,7 +17,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import rpg.core.RpgCore;
 
-/** 보스 체력바 (시안 m1): 맨 위, 장식 바 1.25배 (보스마다 장식 색), 위에 이름(왼쪽)·퍼센트(오른쪽) 2배.
+/** 보스 체력바 (시안 m1): 맨 위, 장식 바 1.25배 (보스마다 장식 색), 위 가운데 이름 · 바 위 오른쪽 퍼센트 (2배).
  *  나올 때 1초 펼쳐지는 애니메이션 → 이름·퍼센트 0.2초 나타남. 깎인 자리 흰색으로 남았다 줄어듦.
  *  2페이즈 = 서버가 보라색으로 바꿈 → 채움 보라. 레이드 남은 시간(눈금 없는 바)은 마크 기본 그대로 */
 @Mod.EventBusSubscriber(modid = RpgCore.MODID, value = Dist.CLIENT)
@@ -64,8 +64,8 @@ public final class BossBars {
         Look lk = look(name);
         float k = Math.min(1.25f, (w - 24) / 372f);   // 바 1.25배 (좁은 화면은 맞춤)
         int barH = Math.round(31 * k);
-        float ox = Math.round(w / 2f - 192 * k), oy = Math.round(e.getY() + 4 - 1 * k);   // 그림 맨 위(1칸 투명) 를 y+4 에, 글자는 장식 사이
-        e.setIncrement(barH + 8);
+        float ox = Math.round(w / 2f - 192 * k), oy = Math.round(e.getY() + 2 + 17 - 4 * k);   // 이름(2배, 17) 밑이 장식 뿔(5칸) 바로 위   // 그림 맨 위(1칸 투명) 를 y+4 에, 글자는 장식 사이
+        e.setIncrement(barH + 22);
         // 등장 애니메이션 1초 (12프레임), 다 펼쳐지면 이름·퍼센트 0.2초 동안 나타남
         long st = START.computeIfAbsent(be.getId(), u -> now);
         if (START.size() > 32) { START.clear(); TRAIL.clear(); START.put(be.getId(), st); }
@@ -103,7 +103,7 @@ public final class BossBars {
             String title = lv != null ? "Lv." + lv + "  " + name : name;
             String pct = Math.round(r * 100) + "%";
             float ty = Math.round(oy + FTOP * k - 21);
-            outlined(g, f, title, Math.round(ox + FL * k + 12 * k), ty, (ta << 24) | (lk.text() & 0xFFFFFF), ta);
+            outlined(g, f, title, Math.round(w / 2f - f.width(title)), e.getY() + 2, (ta << 24) | (lk.text() & 0xFFFFFF), ta);
             outlined(g, f, pct, Math.round(ox + FR * k - 12 * k) - f.width(pct) * 2, ty, (ta << 24) | 0xFFF0C8, ta);
         }
     }
