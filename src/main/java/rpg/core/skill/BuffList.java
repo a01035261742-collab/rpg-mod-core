@@ -32,6 +32,8 @@ public final class BuffList {
             if (now >= end || id.equals("stealth") && d.buffV("stealth", now) == 0 && d.buffEnd.containsKey("escape_speed")) return;
             int left = (int) (end - now);
             String tn = TREE.get(id);
+            String item = rpg.core.item.BuffItem.NAMES.get(id);
+            if (item != null) { skill.add(new Entry(item, left, 0, "")); return; }   // 버프 아이템
             if (PARTY.contains(id)) {
                 var def = Defs.SKILLS.get(id);
                 party.add(new Entry(tn != null ? tn : def != null ? def.name() : id, left, 1, ""));

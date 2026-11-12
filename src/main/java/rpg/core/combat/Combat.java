@@ -37,7 +37,7 @@ public final class Combat {
         GearDefs.GearDef w = Gear.def(s);
         boolean has = w != null && Gear.canEquip(p, s);
         double base = has ? 0 : Balance.fistAttack;
-        return base + d.eq(key);
+        return base + d.eq(key) + d.buffV(d.job == 3 ? "item_matk" : "item_atk", d.clock);   // 힘·마력의 물약
     }
 
     /** 직업별 주·부 스탯 (초보자·전사: 힘/민첩, 궁수: 민첩/힘, 마법사: 지력/운, 도적: 운/민첩) */
@@ -97,7 +97,7 @@ public final class Combat {
     }
 
     public static double defense(PlayerData d) {
-        return (d.total(PlayerData.VIT) * Balance.defPerVit + d.bonus("def") + d.eq("def") + d.buffV("iron_body", d.clock))
+        return (d.total(PlayerData.VIT) * Balance.defPerVit + d.bonus("def") + d.eq("def") + d.buffV("iron_body", d.clock) + d.buffV("item_def", d.clock))
                 * (1 + (d.eq("defPct") + d.bonus("defPct") + rpg.core.skill.PassiveEffects.extraDef(d)) / 100.0);
     }
 

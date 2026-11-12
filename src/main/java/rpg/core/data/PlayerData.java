@@ -130,7 +130,7 @@ public class PlayerData {
     public double total(int i) {
         String k = STAT_KEYS[i];
         double perLv = eq(k + "PerLv") * Math.floor(level / 9.0);   // 잠재능력: 캐릭터 9레벨당 스탯
-        double flat = perLv + eq(k + "Flat") + bonus(k + "Flat");
+        double flat = perLv + eq(k + "Flat") + bonus(k + "Flat") + (i == STA ? 0 : buffV("item_stat", clock));   // 행운 쿠키
         return (stats[i] + eq(k) + bonus(k)) * (1 + (eq("allPct") + eq(k + "Pct") + bonus(k + "Pct")) / 100.0) + flat;   // bonus(k) = 패시브 트리 힘 +3 등
     }
 
@@ -177,7 +177,7 @@ public class PlayerData {
         if (ap != 0) bonus.merge("atkPct", ap, Double::sum);
         double vitHp = Balance.hpPerVit * total(VIT) * (1 + bonus("vitHpPct") / 100.0);   // 단단한 피부
         double hpLv = Balance.hpPerLevelByJob != null ? Balance.hpPerLevelByJob[Math.max(0, Math.min(4, job))] : Balance.hpPerLevel;
-        double mh = (Balance.hpBase + hpLv * level + vitHp + eq("hp")) * (1 + bonus("hpPct") / 100.0)
+        double mh = (Balance.hpBase + hpLv * level + vitHp + eq("hp") + buffV("item_hp", clock)) * (1 + bonus("hpPct") / 100.0)
                 * (1 + bonus("giantHp") / 100.0)    // 거신: 최대 HP ×1.3
                 * (oathVal > 0 ? 1.05 : 1)           // 수호자의 맹세: +5%
                 * (1 + holyVal / 100.0);             // 신성 영역

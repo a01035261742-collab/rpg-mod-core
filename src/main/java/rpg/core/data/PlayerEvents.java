@@ -179,6 +179,11 @@ public final class PlayerEvents {
                 changed |= hp0 != d.hp || mp0 != d.mp;
             }
         }
+        // 사과: 5초마다 HP 고정 회복
+        if (sp.tickCount % 100 == 0 && sp.isAlive() && d.hp > 0 && !d.isDown() && d.buffV("item_regen", d.clock) > 0 && d.hp < d.maxHp) {
+            d.hp = Math.min(d.maxHp, d.hp + d.buffV("item_regen", d.clock));
+            changed = true;
+        }
         // 바닐라 체력 = RPG 체력 비율
         if (sp.isAlive() && d.hp > 0) {
             float want = (float) Math.max(0.5, d.hp / d.maxHp * sp.getMaxHealth());

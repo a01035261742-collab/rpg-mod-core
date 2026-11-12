@@ -36,6 +36,18 @@ public final class ModItems {
     public static final RegistryObject<Item> MANA_ELIXIR = potion("mana_elixir", Rarity.COMMON);
     public static final RegistryObject<Item> ELIXIR = potion("elixir", Rarity.UNCOMMON);
     public static final RegistryObject<Item> POWER_ELIXIR = potion("power_elixir", Rarity.RARE);
+    // 0.68: 중형·대형 물약 (HP 빨·주·흰, MP 파랑·보라)
+    public static final RegistryObject<Item> RED_POTION_M = potion("red_potion_m", Rarity.COMMON);
+    public static final RegistryObject<Item> ORANGE_POTION_M = potion("orange_potion_m", Rarity.COMMON);
+    public static final RegistryObject<Item> WHITE_POTION_M = potion("white_potion_m", Rarity.COMMON);
+    public static final RegistryObject<Item> RED_POTION_L = potion("red_potion_l", Rarity.UNCOMMON);
+    public static final RegistryObject<Item> ORANGE_POTION_L = potion("orange_potion_l", Rarity.UNCOMMON);
+    public static final RegistryObject<Item> WHITE_POTION_L = potion("white_potion_l", Rarity.UNCOMMON);
+    public static final RegistryObject<Item> PURPLE_POTION_M = potion("purple_potion_m", Rarity.COMMON);
+    public static final RegistryObject<Item> BLUE_POTION_L = potion("blue_potion_l", Rarity.UNCOMMON);
+    public static final RegistryObject<Item> PURPLE_POTION_L = potion("purple_potion_l", Rarity.UNCOMMON);
+    // 버프 아이템 (10분, 고정 수치)
+    static { for (String b : BuffItem.DEFS.keySet()) ITEMS.register(b, () -> new BuffItem(new Item.Properties(), b)); }
 
     private static RegistryObject<Item> potion(String id, Rarity rarity) {
         return ITEMS.register(id, () -> new Potion(new Item.Properties().rarity(rarity), id));

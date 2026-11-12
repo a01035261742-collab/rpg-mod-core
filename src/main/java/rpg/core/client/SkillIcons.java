@@ -22,6 +22,8 @@ public final class SkillIcons {
     /** 버프 이름 → 아이콘 파일 (스킬이 아닌 것) */
     private static final Map<String, String> BUFF = Map.ofEntries(
             Map.entry("보호막", "shield"),
+            Map.entry("힘의 물약", "item_atk"), Map.entry("마력의 물약", "item_matk"), Map.entry("수호의 물약", "item_def"),
+            Map.entry("행운 쿠키", "item_stat"), Map.entry("생명의 사탕", "item_hp"), Map.entry("사과", "item_regen"),
             Map.entry("콤보", "combo"),
             Map.entry("학살자", "slayer"),
             Map.entry("전투 흥분", "battle_thrill"),

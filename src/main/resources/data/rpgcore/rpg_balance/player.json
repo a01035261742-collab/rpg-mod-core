@@ -99,6 +99,24 @@
   "white_potion": {
    "hp": 300
   },
+  "red_potion_m": {
+   "hp": 500
+  },
+  "orange_potion_m": {
+   "hp": 800
+  },
+  "white_potion_m": {
+   "hp": 1200
+  },
+  "red_potion_l": {
+   "hp": 1800
+  },
+  "orange_potion_l": {
+   "hp": 2400
+  },
+  "white_potion_l": {
+   "hp": 3000
+  },
   "blue_potion": {
    "mp": 40
   },
@@ -107,6 +125,15 @@
   },
   "mana_elixir": {
    "mp": 200
+  },
+  "purple_potion_m": {
+   "mp": 350
+  },
+  "blue_potion_l": {
+   "mp": 550
+  },
+  "purple_potion_l": {
+   "mp": 800
   },
   "elixir": {
    "hpPct": 50,
