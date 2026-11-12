@@ -184,11 +184,14 @@ public final class WorldText {
             boolean elite = info.name().startsWith("★");
             String name = "Lv." + info.level() + " " + info.name();
             float r = info.maxHp() <= 0 ? 0 : (float) Math.max(0, Math.min(1, info.hp() / info.maxHp()));
-            double[] tr = MOB_TRAIL.computeIfAbsent(id, k -> new double[]{r, nowMs});
+            // [흰 자리, 마지막 그린 시각, 마지막 깎인 시각, 지난 체력] — 깎이면 0.6초 그대로 있다가 줄어듦 (보스바와 같음)
+            double[] tr = MOB_TRAIL.computeIfAbsent(id, k -> new double[]{r, nowMs, 0, r});
             if (r > tr[0]) tr[0] = r;
+            if (r < tr[3] - 1e-4) tr[2] = nowMs;
+            tr[3] = r;
             double dt = Math.max(0, Math.min(0.1, (nowMs - tr[1]) / 1000.0));
             tr[1] = nowMs;
-            tr[0] = Math.max(r, tr[0] - dt * 0.5);
+            if (nowMs - tr[2] > 600) tr[0] = Math.max(r, tr[0] - dt * 0.5);
             ps.pushPose();
             ps.translate(p.x - c.x, p.y - c.y, p.z - c.z);
             ps.mulPose(cam.rotation());
