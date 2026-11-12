@@ -1,5 +1,5 @@
 {
- "_설명": "shops = 상점별 사기 목록 [아이템, 가격]. 상점 장비는 일반 장비 = 추가 옵션 없음 (제작·드롭 장비는 4줄). gear = 첫 마을(Lv1·10), gear2 = 두 번째 마을(Lv20·30·40). 장신구는 상점에서 안 팖(세공사 제작). sell = NPC에게 팔 때 가격 (없는 아이템은 못 팖). 숫자는 임시값 (0.68) 시작 마을: general = 잡화(귀환·이동·100% 주문서), general2 = 물약(소형 빨·주·파 + 버프 아이템). 두 번째 마을: general_b = 잡화(+ 초기화 주문서), potion_b = 물약(+ 소형 하얀·중형 빨간·보라·중형 파란). 중형 주·흰, 대형, 중형 보라, 대형 파·보라는 다음 마을부터. 엘릭서·파워 엘릭서는 안 팖(드롭·제작·퀘스트). 장비 가격 = 사냥 4레벨분 골드 기준 (Lv10 ×0.6, Lv20 ×0.47, Lv30 ×0.42, Lv40 ×0.4) 장비 판매가도 같은 배율로 낮춤. 장비 판매가도 같은 배율로 낮춤. 주문서: id scroll#종류#등급 (등급 0=100% 1=60% 2=30% 3=10%, scroll#white=순백). 상점은 100% 주문서만 (2,000 G). 주문서 판매가 키는 등급만: scroll#g0~g3, scroll#white (0.43.0: 상점가 ×2, 상점에서 파는 물건은 상점가 절반에 팔림 — 물약·귀환 주문서는 1/10. 몹 재료 ×10, 몹 전용 장비 = 레벨×1000, 보스 장신구 = 레벨×2000)",
+ "_설명": "shops = 상점별 사기 목록 [아이템, 가격]. 상점 장비는 일반 장비 = 추가 옵션 없음 (제작·드롭 장비는 4줄). gear = 첫 마을(Lv1·10), gear2 = 두 번째 마을(Lv20·30·40). 장신구는 상점에서 안 팖(세공사 제작). sell = NPC에게 팔 때 가격 (없는 아이템은 못 팖). 숫자는 임시값 (0.68) 시작 마을: general = 잡화(귀환·이동·100% 주문서), general2 = 물약(HP·MP 1~4단계 + 버프 아이템). 두 번째 마을: general_b = 잡화(+ 초기화 주문서), potion_b = 물약(HP·MP 3~6단계 + 버프). 마을마다 2단계씩 올림 (다음 마을 5~8). 엘릭서·파워 엘릭서는 안 팖(드롭·제작·퀘스트). 장비 가격 = 사냥 4레벨분 골드 기준 (Lv10 ×0.6, Lv20 ×0.47, Lv30 ×0.42, Lv40 ×0.4) 장비 판매가도 같은 배율로 낮춤. 장비 판매가도 같은 배율로 낮춤. 주문서: id scroll#종류#등급 (등급 0=100% 1=60% 2=30% 3=10%, scroll#white=순백). 상점은 100% 주문서만 (2,000 G). 주문서 판매가 키는 등급만: scroll#g0~g3, scroll#white (0.43.0: 상점가 ×2, 상점에서 파는 물건은 상점가 절반에 팔림 — 물약·귀환 주문서는 1/10. 몹 재료 ×10, 몹 전용 장비 = 레벨×1000, 보스 장신구 = 레벨×2000)",
  "shops": {
   "general": {
    "name": "잡화 상인",
@@ -224,32 +224,80 @@
      240
     ],
     [
+     "white_potion",
+     600
+    ],
+    [
+     "red_potion_m",
+     1100
+    ],
+    [
      "blue_potion",
      120
     ],
     [
+     "deep_blue_potion",
+     330
+    ],
+    [
+     "mana_elixir",
+     660
+    ],
+    [
+     "purple_potion_m",
+     1200
+    ],
+    [
      "power_potion",
-     1500
+     6000
     ],
     [
      "magic_potion",
-     1500
+     6000
     ],
     [
      "guard_potion",
-     1500
+     6000
     ],
     [
      "luck_cookie",
-     2500
+     10000
     ],
     [
      "life_candy",
-     2000
+     8000
     ],
     [
      "red_apple",
-     600
+     3000
+    ],
+    [
+     "speed_potion",
+     5000
+    ],
+    [
+     "jump_potion",
+     3000
+    ],
+    [
+     "str_candy",
+     8000
+    ],
+    [
+     "dex_candy",
+     8000
+    ],
+    [
+     "int_candy",
+     8000
+    ],
+    [
+     "luk_candy",
+     8000
+    ],
+    [
+     "vit_candy",
+     8000
     ]
    ]
   },
@@ -306,14 +354,6 @@
    "name": "물약 상인",
    "items": [
     [
-     "red_potion",
-     90
-    ],
-    [
-     "orange_potion",
-     240
-    ],
-    [
      "white_potion",
      600
     ],
@@ -322,40 +362,80 @@
      1100
     ],
     [
-     "blue_potion",
-     120
+     "orange_potion_m",
+     1700
     ],
     [
-     "deep_blue_potion",
-     330
+     "white_potion_m",
+     2500
     ],
     [
      "mana_elixir",
      660
     ],
     [
+     "purple_potion_m",
+     1200
+    ],
+    [
+     "blue_potion_l",
+     1900
+    ],
+    [
+     "purple_potion_l",
+     2800
+    ],
+    [
      "power_potion",
-     1500
+     6000
     ],
     [
      "magic_potion",
-     1500
+     6000
     ],
     [
      "guard_potion",
-     1500
+     6000
     ],
     [
      "luck_cookie",
-     2500
+     10000
     ],
     [
      "life_candy",
-     2000
+     8000
     ],
     [
      "red_apple",
-     600
+     3000
+    ],
+    [
+     "speed_potion",
+     5000
+    ],
+    [
+     "jump_potion",
+     3000
+    ],
+    [
+     "str_candy",
+     8000
+    ],
+    [
+     "dex_candy",
+     8000
+    ],
+    [
+     "int_candy",
+     8000
+    ],
+    [
+     "luk_candy",
+     8000
+    ],
+    [
+     "vit_candy",
+     8000
     ]
    ]
   }
@@ -527,11 +607,20 @@
   "purple_potion_m": 120,
   "blue_potion_l": 190,
   "purple_potion_l": 280,
-  "power_potion": 150,
-  "magic_potion": 150,
-  "guard_potion": 150,
-  "luck_cookie": 250,
-  "life_candy": 200,
-  "red_apple": 60
+  "power_potion": 600,
+  "magic_potion": 600,
+  "guard_potion": 600,
+  "luck_cookie": 1000,
+  "life_candy": 800,
+  "red_apple": 300,
+  "speed_potion": 500,
+  "jump_potion": 300,
+  "str_candy": 800,
+  "dex_candy": 800,
+  "int_candy": 800,
+  "luk_candy": 800,
+  "vit_candy": 800,
+  "luck_wine": 300,
+  "gold_potion": 300
  }
 }

@@ -25,13 +25,30 @@ public class BuffItem extends Item {
     public record Def(String buff, String name, String desc, double val, boolean food) {}
 
     /** 아이템 id → 버프 */
-    public static final Map<String, Def> DEFS = Map.of(
-            "power_potion", new Def("item_atk", "힘의 물약", "공격력 +10", 10, false),
-            "magic_potion", new Def("item_matk", "마력의 물약", "마력 +10", 10, false),
-            "guard_potion", new Def("item_def", "수호의 물약", "방어력 +30", 30, false),
-            "luck_cookie", new Def("item_stat", "행운 쿠키", "모든 스탯 +3", 3, true),
-            "life_candy", new Def("item_hp", "생명의 사탕", "최대 HP +200", 200, true),
-            "red_apple", new Def("item_regen", "사과", "5초마다 HP +20", 20, true));
+    public static final Map<String, Def> DEFS = new java.util.LinkedHashMap<>();
+    /** 상점·드롭으로 나오는 것 (제작 전용 = 행운의 와인·황금 물약은 빠짐) */
+    public static final java.util.List<String> SHOP = new java.util.ArrayList<>();
+    private static void def(String id, String buff, String name, String desc, double val, boolean food, boolean shop) {
+        DEFS.put(id, new Def(buff, name, desc, val, food));
+        if (shop) SHOP.add(id);
+    }
+    static {
+        def("power_potion", "item_atk", "힘의 물약", "공격력 +10", 10, false, true);
+        def("magic_potion", "item_matk", "마력의 물약", "마력 +10", 10, false, true);
+        def("guard_potion", "item_def", "수호의 물약", "방어력 +30", 30, false, true);
+        def("luck_cookie", "item_stat", "행운 쿠키", "모든 스탯 +3", 3, true, true);
+        def("life_candy", "item_hp", "생명의 사탕", "최대 HP +200", 200, true, true);
+        def("red_apple", "item_regen", "사과", "5초마다 HP +20", 20, true, true);
+        def("speed_potion", "item_speed", "신속의 물약", "이동속도 +10", 10, false, true);
+        def("jump_potion", "item_jump", "도약의 물약", "점프력 +10", 10, false, true);
+        def("str_candy", "item_str", "힘 사탕", "STR +5", 5, true, true);
+        def("dex_candy", "item_dex", "민첩 사탕", "DEX +5", 5, true, true);
+        def("int_candy", "item_int", "지력 사탕", "INT +5", 5, true, true);
+        def("luk_candy", "item_luk", "행운 사탕", "LUK +5", 5, true, true);
+        def("vit_candy", "item_vit", "체력 사탕", "VIT +5", 5, true, true);
+        def("luck_wine", "item_drop", "행운의 와인", "드롭률 +20%", 20, false, false);   // 연금술사 제작 전용
+        def("gold_potion", "item_gold", "황금 물약", "골드 획득 +20%", 20, false, false);
+    }
     /** 버프 id → HUD 이름 */
     public static final Map<String, String> NAMES = new java.util.HashMap<>();
     static { DEFS.values().forEach(d -> NAMES.put(d.buff(), d.name())); }

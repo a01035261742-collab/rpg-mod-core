@@ -193,6 +193,16 @@ public final class PlayerEvents {
         if (changed || sp.tickCount % 10 == 0 && rpg.core.skill.Skills.anyCooldown(sp, d)) RpgData.sync(sp);
     }
 
+    /** 도약의 물약: 점프 높이 (위 속도 +%) */
+    @SubscribeEvent
+    public static void jump(net.minecraftforge.event.entity.living.LivingEvent.LivingJumpEvent e) {
+        if (!(e.getEntity() instanceof Player p) || !p.level().isClientSide) return;   // 움직임은 클라가 정함
+        double v = rpg.core.client.ClientJump.pct(p);
+        if (v <= 0) return;
+        var m = p.getDeltaMovement();
+        p.setDeltaMovement(m.x, m.y * (1 + v / 100.0), m.z);
+    }
+
     /** 바닐라 회복(음식·재생 효과)은 막고 RPG 회복만 */
     @SubscribeEvent
     public static void heal(LivingHealEvent e) {

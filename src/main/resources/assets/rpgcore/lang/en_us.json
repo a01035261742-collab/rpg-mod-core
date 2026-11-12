@@ -292,5 +292,14 @@
  "item.rpgcore.guard_potion": "Potion of Guard",
  "item.rpgcore.luck_cookie": "Lucky Cookie",
  "item.rpgcore.life_candy": "Candy of Life",
- "item.rpgcore.red_apple": "Apple"
+ "item.rpgcore.red_apple": "Apple",
+ "item.rpgcore.speed_potion": "Potion of Swiftness",
+ "item.rpgcore.jump_potion": "Potion of Leaping",
+ "item.rpgcore.str_candy": "STR Candy",
+ "item.rpgcore.dex_candy": "DEX Candy",
+ "item.rpgcore.int_candy": "INT Candy",
+ "item.rpgcore.luk_candy": "LUK Candy",
+ "item.rpgcore.vit_candy": "VIT Candy",
+ "item.rpgcore.luck_wine": "Wine of Fortune",
+ "item.rpgcore.gold_potion": "Golden Potion"
 }

@@ -12,14 +12,44 @@
     "mp": "blue_potion"
    },
    {
-    "minLevel": 20,
+    "minLevel": 15,
     "hp": "orange_potion",
     "mp": "deep_blue_potion"
    },
    {
-    "minLevel": 35,
+    "minLevel": 25,
     "hp": "white_potion",
     "mp": "mana_elixir"
+   },
+   {
+    "minLevel": 35,
+    "hp": "red_potion_m",
+    "mp": "purple_potion_m"
+   },
+   {
+    "minLevel": 50,
+    "hp": "orange_potion_m",
+    "mp": "blue_potion_l"
+   },
+   {
+    "minLevel": 70,
+    "hp": "white_potion_m",
+    "mp": "purple_potion_l"
+   },
+   {
+    "minLevel": 90,
+    "hp": "red_potion_l",
+    "mp": "purple_potion_l"
+   },
+   {
+    "minLevel": 120,
+    "hp": "orange_potion_l",
+    "mp": "purple_potion_l"
+   },
+   {
+    "minLevel": 150,
+    "hp": "white_potion_l",
+    "mp": "purple_potion_l"
    }
   ]
  },
@@ -334,5 +364,7 @@
   "_설명": "환생의 불꽃: powerful = 모든 몹 강력한 %, eliteEternal = 엘리트 영원한 %",
   "powerful": 1,
   "eliteEternal": 2
- }
+ },
+ "buffItem": 1.0,
+ "_buffItem": "버프 아이템 드롭 % (상점 버프 중 무작위, 제작 전용 행운의 와인·황금 물약은 안 나옴)"
 }

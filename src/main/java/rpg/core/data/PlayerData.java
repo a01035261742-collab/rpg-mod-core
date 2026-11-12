@@ -130,7 +130,7 @@ public class PlayerData {
     public double total(int i) {
         String k = STAT_KEYS[i];
         double perLv = eq(k + "PerLv") * Math.floor(level / 9.0);   // 잠재능력: 캐릭터 9레벨당 스탯
-        double flat = perLv + eq(k + "Flat") + bonus(k + "Flat") + (i == STA ? 0 : buffV("item_stat", clock));   // 행운 쿠키
+        double flat = perLv + eq(k + "Flat") + bonus(k + "Flat") + (i == STA ? 0 : buffV("item_stat", clock) + buffV("item_" + k, clock));   // 행운 쿠키 · 스탯 사탕
         return (stats[i] + eq(k) + bonus(k)) * (1 + (eq("allPct") + eq(k + "Pct") + bonus(k + "Pct")) / 100.0) + flat;   // bonus(k) = 패시브 트리 힘 +3 등
     }
 
@@ -216,8 +216,8 @@ public class PlayerData {
     public double crit() { return Balance.critBase + Balance.critPerDex * total(DEX) + bonus("critChance") + buffV("focus", clock) + rpg.core.skill.PassiveEffects.extraCrit(this); }
     public double critDamage() { return Balance.critDamage + (bonus("critDmg") + rpg.core.skill.PassiveEffects.extraCritDmg(this)) / 100.0; }
     public double healBonus() { return bonus("healPct"); }   // 회복량 증가 (패시브·전사의 회복력). 지력은 이제 힐 스공으로 반영
-    public double dropBonus() { return Balance.dropPerLuk * total(LUK) + bonus("dropPct") + buffV("plunder", clock); }
-    public double goldBonus() { return Balance.goldPerLuk * total(LUK) + bonus("goldPct") + buffV("plunder", clock); }
+    public double dropBonus() { return Balance.dropPerLuk * total(LUK) + bonus("dropPct") + buffV("plunder", clock) + buffV("item_drop", clock); }
+    public double goldBonus() { return Balance.goldPerLuk * total(LUK) + bonus("goldPct") + buffV("plunder", clock) + buffV("item_gold", clock); }
     /** Epic Fight 최대 스태미나에 더해지는 양 (스태미나 스탯 + 패시브) */
     public double staminaBonus() { return Balance.staminaPerPoint * total(STA) + bonus("stamina"); }
 

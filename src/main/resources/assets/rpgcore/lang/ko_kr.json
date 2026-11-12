@@ -292,5 +292,14 @@
  "item.rpgcore.guard_potion": "수호의 물약",
  "item.rpgcore.luck_cookie": "행운 쿠키",
  "item.rpgcore.life_candy": "생명의 사탕",
- "item.rpgcore.red_apple": "사과"
+ "item.rpgcore.red_apple": "사과",
+ "item.rpgcore.speed_potion": "신속의 물약",
+ "item.rpgcore.jump_potion": "도약의 물약",
+ "item.rpgcore.str_candy": "힘 사탕",
+ "item.rpgcore.dex_candy": "민첩 사탕",
+ "item.rpgcore.int_candy": "지력 사탕",
+ "item.rpgcore.luk_candy": "행운 사탕",
+ "item.rpgcore.vit_candy": "체력 사탕",
+ "item.rpgcore.luck_wine": "행운의 와인",
+ "item.rpgcore.gold_potion": "황금 물약"
 }

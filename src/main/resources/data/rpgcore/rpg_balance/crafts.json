@@ -2380,6 +2380,48 @@
   },
   {
    "station": "alchemist",
+   "tab": "물약",
+   "result": "luck_wine",
+   "count": 1,
+   "gold": 2000,
+   "mats": [
+    [
+     "glow_spore",
+     3
+    ],
+    [
+     "fairy_dust",
+     1
+    ],
+    [
+     "minecraft:glass_bottle",
+     1
+    ]
+   ]
+  },
+  {
+   "station": "alchemist",
+   "tab": "물약",
+   "result": "gold_potion",
+   "count": 1,
+   "gold": 2000,
+   "mats": [
+    [
+     "golden_hoof",
+     2
+    ],
+    [
+     "royal_jelly",
+     1
+    ],
+    [
+     "minecraft:glass_bottle",
+     1
+    ]
+   ]
+  },
+  {
+   "station": "alchemist",
    "tab": "주문서",
    "result": "scroll#watk#2",
    "count": 1,

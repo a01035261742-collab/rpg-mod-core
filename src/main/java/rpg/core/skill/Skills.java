@@ -248,7 +248,7 @@ public final class Skills {
                 if (wantA != 0) as.addTransientModifier(new AttributeModifier(ATK_SPEED_ID, "rpg haste", wantA, AttributeModifier.Operation.MULTIPLY_TOTAL));
             }
         }
-        double pct = d.bonus("speedPct") + (now < d.sprintEnd ? d.sprintPct : 0) + d.buffV("haste", now)
+        double pct = d.bonus("speedPct") + (now < d.sprintEnd ? d.sprintPct : 0) + d.buffV("haste", now) + d.buffV("item_speed", now)
                 + d.buffV("evasion_instinct", now) + d.buffV("battle_thrill", now) + d.buffV("hunt_speed", now) + d.buffV("hunt_instinct", now) + d.buffV("chase", now) + d.buffV("wind_veil", now) + d.buffV("escape_speed", now)
                 - (now < d.aimUntil ? 50 : 0)
                 - (d.chargeSkill != null ? 50 : 0);

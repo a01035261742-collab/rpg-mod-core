@@ -34,7 +34,7 @@ public final class Drops {
 
     public static double ownerSeconds = 30;
     public static double goldChance = 100;
-    public static double potionChance = 8, potionRed = 70;
+    public static double potionChance = 8, potionRed = 70, buffItemChance = 1;
     /** 몹 레벨별 물약 등급 (minLevel 이상 중 가장 높은 것): HP 물약 id · MP 물약 id */
     public record PotionTier(int minLevel, String hp, String mp) {}
     public static final List<PotionTier> POTION_TIERS = new ArrayList<>();
@@ -59,6 +59,7 @@ public final class Drops {
             returnChance = d(o, "returnScroll", 0.5);
             potentialChance = d(o, "potentialScroll", 0.2);
             goldChance = d(o, "goldChance", 100);
+            buffItemChance = d(o, "buffItem", 1);
             if (o.has("flame")) { JsonObject f = o.getAsJsonObject("flame"); flameChance = d(f, "powerful", 0.5); eliteEternalChance = d(f, "eliteEternal", 2); }
             if (o.has("potion")) {
                 JsonObject p = o.getAsJsonObject("potion"); potionChance = d(p, "chance", 8); potionRed = d(p, "redRatio", 70);
@@ -134,6 +135,11 @@ public final class Drops {
         if (m.elite && eliteEternalChance > 0 && hit(r, eliteEternalChance * mul)) out.add(new ItemStack(ModItems.ETERNAL_FLAME.get()));
         double pc = md != null && md.potion() >= 0 ? md.potion() : potionChance;
         if (hit(r, pc * mul)) out.add(new ItemStack(potionFor(m.level, r.nextDouble() * 100 < potionRed)));
+        if (buffItemChance > 0 && hit(r, buffItemChance * mul)) {   // 버프 아이템 (상점 것 중 무작위)
+            var ids = rpg.core.item.BuffItem.SHOP;
+            var it = net.minecraftforge.registries.ForgeRegistries.ITEMS.getValue(new net.minecraft.resources.ResourceLocation(RpgCore.MODID, ids.get(r.nextInt(ids.size()))));
+            if (it != null && it != net.minecraft.world.item.Items.AIR) out.add(new ItemStack(it));
+        }
 
         double gc = (md != null && md.gear() >= 0 ? md.gear() : gearChance) * (m.elite ? rpg.core.balance.Balance.eliteGear : 1);
         if (gc > 0 && hit(r, gc * mul)) {
