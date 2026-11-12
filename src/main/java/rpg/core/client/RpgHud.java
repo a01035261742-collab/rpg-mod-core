@@ -73,7 +73,7 @@ public final class RpgHud {
         }
     }
 
-    // ───────── 아래 가운데 상자 (시안 ui_sym_A3): HP·MP + 물약2 | 스킬6 | 물약2 + EXP ─────────
+    // ───────── 아래 가운데 상자 (시안 V2, 예전 ui_sym_A3): HP·MP + 물약2 | 스킬6 | 물약2 + EXP ─────────
     static final int SLOT = 22, SG = 2, DIV = 8;
     static int boxX0, boxX1, boxY0, boxY1;
 
@@ -82,14 +82,14 @@ public final class RpgHud {
 
     static void layout(int w, int h) {
         int rw = rowW();
-        boxX0 = w / 2 - rw / 2 - 6; boxX1 = boxX0 + rw + 12;
-        boxY1 = h - 3; boxY0 = boxY1 - 56;
+        boxX0 = w / 2 - rw / 2 - 8; boxX1 = boxX0 + rw + 16;
+        boxY1 = h - 3; boxY0 = boxY1 - 58;
     }
 
     /** 스킬 6칸 시작 {x0, y0} */
     static int[] skillPos(Font font, int w, int h) {
         layout(w, h);
-        return new int[]{boxX0 + 6 + 2 * (SLOT + SG) + DIV - SG, boxY1 - 32};
+        return new int[]{boxX0 + 8 + 2 * (SLOT + SG) + DIV - SG, boxY1 - 32};
     }
 
     public static void render(ForgeGui gui, GuiGraphics g, float partialTick, int w, int h) {
@@ -104,23 +104,38 @@ public final class RpgHud {
         levelUpBanner(g, font, w);
         if (mc.player.isCreative()) { skillRowOnly(g, font, w, h); return; }
 
-        Ui.hudBox(g, boxX0, boxY0, boxX1, boxY1);
-        int bx = boxX0 + 6, bw = boxX1 - boxX0 - 12;
-        // HP (보호막은 옅은 파랑으로 이어 붙임) · MP
-        int hy = boxY0 + 5;
+        // 상자 (시안 V2): 깎은 모서리 + 이중 금테 + 위 가운데 보석
+        Ui.hudBoxCut(g, boxX0, boxY0, boxX1, boxY1);
+        int bx = boxX0 + 8, bw = boxX1 - boxX0 - 16, cx = (boxX0 + boxX1) / 2;
+        // HP (시안 A: 금테 + 양끝 마름모, 보호막은 옅은 파랑으로 이어 붙임) · MP 얇게
+        int hy = boxY0 + 8;
         double max = Math.max(1, ClientData.maxHp);
         float hr = (float) Math.max(0, Math.min(1, ClientData.hp / max));
-        Ui.bar(g, bx, hy, bw, 9, hr, 0xFFC82832);
+        int hx0 = bx + 4, hx1 = bx + bw - 4, hw = hx1 - hx0;
+        g.fill(bx + 3, hy - 1, bx + bw - 3, hy + 10, Ui.G3);
+        g.fill(hx0, hy, hx1, hy + 9, 0xFF14060A);
+        int hf = Math.round(hw * hr);
+        if (hf > 0) {
+            g.fill(hx0, hy, hx0 + hf, hy + 9, 0xFFC82832);
+            g.fill(hx0, hy, hx0 + hf, hy + 2, 0xFFF06E6E);
+            g.fill(hx0, hy + 7, hx0 + hf, hy + 9, 0xFF8C1622);
+        }
         if (ClientData.shield > 0) {
-            int s0 = bx + Math.round(bw * hr), s1 = Math.min(bx + bw, s0 + (int) Math.round(bw * ClientData.shield / max));
+            int s0 = hx0 + hf, s1 = Math.min(hx1, s0 + (int) Math.round(hw * ClientData.shield / max));
             if (s1 > s0) g.fill(s0, hy, s1, hy + 9, 0xFF96AAC8);
         }
-        g.fill(bx, hy, bx + Math.round(bw * hr), hy + 1, 0x60FFFFFF);
+        Ui.diamond(g, bx + 3, hy + 4, 4, Ui.G4);
+        Ui.diamond(g, bx + bw - 4, hy + 4, 4, Ui.G4);
         String hs = (long) Math.ceil(ClientData.hp) + (ClientData.shield > 0 ? "+" + (long) Math.ceil(ClientData.shield) : "") + " / " + (long) Math.ceil(ClientData.maxHp);
-        g.drawString(font, hs, bx + bw / 2 - font.width(hs) / 2, hy + 1, 0xFFFFFFFF, true);
+        g.drawString(font, hs, cx - font.width(hs) / 2, hy + 1, 0xFFFFFFFF, true);
         float mr = (float) (ClientData.maxMp <= 0 ? 0 : Math.max(0, Math.min(1, ClientData.mp / ClientData.maxMp)));
-        Ui.bar(g, bx, hy + 11, bw, 3, mr, 0xFF3270DC);
-        Ui.hsep(g, bx, bx + bw, hy + 17);
+        g.fill(bx + 8, hy + 11, bx + bw - 8, hy + 15, Ui.G2);
+        g.fill(bx + 9, hy + 12, bx + bw - 9, hy + 14, 0xFF080A18);
+        int mf = Math.round((bw - 18) * mr);
+        if (mf > 0) { g.fill(bx + 9, hy + 12, bx + 9 + mf, hy + 14, 0xFF3270DC); g.fill(bx + 9, hy + 12, bx + 9 + mf, hy + 13, 0xFF82B4FF); }
+        // 칸 줄 바닥 (어둡게) + 가운데 작은 보석
+        g.fill(bx - 2, boxY1 - 34, bx + bw + 2, boxY1 - 8, 0xFF0E0408);
+        Ui.diamond(g, cx, boxY1 - 34, 3, Ui.G3);
         // 칸 줄: 물약 1 2 | Q E R F Z X | 물약 3 4
         int ry = boxY1 - 32;
         int x = potions(g, font, bx, ry, 0, 2);
@@ -133,7 +148,7 @@ public final class RpgHud {
         // EXP
         double ratio = ClientData.need <= 0 || ClientData.need == Long.MAX_VALUE ? 1.0 : (double) ClientData.exp / ClientData.need;
         ratio = Math.max(0, Math.min(1, ratio));
-        Ui.bar(g, bx, boxY1 - 7, bw, 2, (float) ratio, 0xFFF0C83C);
+        Ui.bar(g, bx, boxY1 - 6, bw, 2, (float) ratio, 0xFFF0C83C);
         // 레벨 · EXP % · 남은 스탯 (상자 왼쪽 바깥)
         String lv = "Lv." + ClientData.level;
         g.drawString(font, lv, boxX0 - 4 - font.width(lv), boxY0 + 5, Ui.VAL, true);
@@ -234,7 +249,7 @@ public final class RpgHud {
         if (pl != null) for (var e : pl.getActiveEffects())
             if (e.getEffect().getCategory() == net.minecraft.world.effect.MobEffectCategory.HARMFUL && e.showIcon()) harm.add(e);
         if (good.isEmpty() && bad.isEmpty() && harm.isEmpty()) return boxY0;
-        int base = boxY0 - 4 - BOX, top = base;
+        int base = boxY0 - 8 - BOX, top = base;   // 상자 위 보석 피함
         ClientData.Buff hover = null;
         int hx = 0, hy = 0;
         for (int side = 0; side < 2; side++) {

@@ -116,6 +116,34 @@ public final class Ui {
     /** 아이템 칸 (크기 지정) */
     public static void slot(GuiGraphics g, int x, int y, int size) { com.mojang.blaze3d.systems.RenderSystem.enableBlend(); g.blit(SLOT, x, y, size, size, 0, 0, 36, 36, 36, 36); }
 
+    /** 마름모 (가운데 cx,cy, 반지름 n) */
+    public static void diamond(GuiGraphics g, int cx, int cy, int n, int color) {
+        for (int k = 0; k < n; k++) {
+            g.fill(cx - n + 1 + k, cy - k, cx + n - k, cy - k + 1, color);
+            if (k > 0) g.fill(cx - n + 1 + k, cy + k, cx + n - k, cy + k + 1, color);
+        }
+    }
+
+    /** HUD 상자 (시안 V2): 위 두 귀 깎음(5) + 바깥 금테 G3 · 안쪽 금테 G2 + 위 가운데 보석 */
+    public static void hudBoxCut(GuiGraphics g, int x0, int y0, int x1, int y1) {
+        int c = 5, bg = 0xE11A080C;
+        for (int i = 0; i < c; i++) g.fill(x0 + c - i, y0 + i, x1 - c + i, y0 + i + 1, bg);
+        g.fill(x0, y0 + c, x1, y1, bg);
+        // 바깥 테
+        g.fill(x0 + c, y0, x1 - c, y0 + 1, G3);
+        for (int i = 1; i < c; i++) { g.fill(x0 + c - i, y0 + i, x0 + c - i + 1, y0 + i + 1, G3); g.fill(x1 - c + i - 1, y0 + i, x1 - c + i, y0 + i + 1, G3); }
+        g.fill(x0, y0 + c, x0 + 1, y1, G3); g.fill(x1 - 1, y0 + c, x1, y1, G3); g.fill(x0, y1 - 1, x1, y1, G3);
+        // 안쪽 테
+        int a = x0 + 2, b = x1 - 2, t = y0 + 2, d = c - 1;
+        g.fill(a + d, t, b - d, t + 1, G2);
+        for (int i = 1; i < d; i++) { g.fill(a + d - i, t + i, a + d - i + 1, t + i + 1, G2); g.fill(b - d + i - 1, t + i, b - d + i, t + i + 1, G2); }
+        g.fill(a, t + d, a + 1, y1 - 2, G2); g.fill(b - 1, t + d, b, y1 - 2, G2); g.fill(a, y1 - 3, b, y1 - 2, G2);
+        // 위 가운데 보석
+        int cx = (x0 + x1) / 2;
+        diamond(g, cx, y0, 5, G4);
+        diamond(g, cx, y0, 3, 0xFF781E32);
+    }
+
     /** HUD 상자: 반투명 와인 + 금 테두리 + 네 귀 금점 */
     public static void hudBox(GuiGraphics g, int x0, int y0, int x1, int y1) {
         g.fill(x0, y0, x1, y1, 0xDC1E080C);
