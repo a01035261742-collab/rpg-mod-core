@@ -352,6 +352,12 @@ public final class CombatEvents {
                 d.mp -= toMp * 2;
                 dmg -= toMp;
             }
+            double meso = d.buffV("meso_guard", now);                              // 메소 가드: 일부를 골드로 (피해 1당 3 G, 최대 HP % 공격은 못 막음)
+            if (meso > 0 && src != null && mx == null && d.gold > 0) {
+                double absorb = Math.min(d.gold / 3.0, dmg * Math.min(90, meso) / 100.0);
+                d.gold -= Math.round(absorb * 3);
+                dmg -= absorb;
+            }
             // 잠재능력 피격 옵션
             var rnd = java.util.concurrent.ThreadLocalRandom.current();
             if (d.eq("ignorePct") > 0 && rnd.nextDouble() * 100 < rpg.core.equip.Potential.ignoreChance)

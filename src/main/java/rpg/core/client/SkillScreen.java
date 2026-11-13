@@ -100,7 +100,8 @@ public class SkillScreen extends ScaledScreen {
             int lv = ClientData.skills.getOrDefault(s.id(), 0);
             String key = keyOf(s.id());
             List<Component> tip = new ArrayList<>();
-            tip.add(Component.literal("§6" + s.name() + (lv > 0 ? "  Lv " + lv + "/" + s.maxLevel() : "")));
+            String tag = s.passive() ? "" : Defs.ATTACK.contains(s.id()) ? "  §c[공격]" : "  §9[보조]";   // 딜 스킬인지 편의 스킬인지
+            tip.add(Component.literal("§6" + s.name() + tag + (lv > 0 ? "§6  Lv " + lv + "/" + s.maxLevel() : "")));
             tip.add(Component.literal("현재: " + (lv > 0 ? s.describe(lv) : "안 배움")));
             if (lv < s.maxLevel()) tip.add(Component.literal("§7다음: " + s.describe(lv + 1)));
             if (s.passive()) {

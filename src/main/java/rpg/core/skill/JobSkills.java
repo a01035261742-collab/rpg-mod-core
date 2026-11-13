@@ -56,6 +56,12 @@ public final class JobSkills {
                 MageSkills.anim(p, "magic_guard");
                 yield true;
             }
+            case "meso_guard" -> {   // 도적 2차 공용: value2초 동안 받는 피해 일부를 골드로
+                d.buffEnd.put("meso_guard", now + Math.round(s.value2(lv) * 20));
+                d.buffVal.put("meso_guard", s.value(lv));
+                WarriorSkills.burst(p, ParticleTypes.WAX_ON, SoundEvents.ARMOR_EQUIP_GOLD, 1.2f);
+                yield true;
+            }
             case "magic_claw" -> MageSkills.magicClaw(p, s, lv);
             case "haste" -> haste(p, s, lv, now);
             case "double_stab" -> ThiefSkills.doubleStab(p, s, lv);

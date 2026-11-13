@@ -16,6 +16,9 @@ public final class Defs {
     private Defs() {}
 
     /** type: "instant"(누르면 바로) / "charge"(누르고 있다가 떼면). job: 0 = 모든 직업 */
+    /** 공격 스킬 id (json 에 hits 가 있는 것) */
+    public static final java.util.Set<String> ATTACK = new java.util.HashSet<>();
+
     public record SkillDef(String id, String name, int tier, int maxLevel, double mp, double cooldown, double duration,
                            double value, double valuePerLevel, String desc, String type, int job,
                            double value2, double value2PerLevel, double mpPerLevel,
@@ -100,6 +103,7 @@ public final class Defs {
         passivesJson = passivesText == null ? "{}" : passivesText;
         SKILLS.clear();
         V3.clear();
+        ATTACK.clear();
         NODES.clear();
         try {
             JsonObject s = JsonParser.parseString(skillsJson).getAsJsonObject();
@@ -113,6 +117,7 @@ public final class Defs {
                         (int) num(o, "branch", 0), str(o, "stat", ""), str(o, "stat2", ""), num(o, "cooldownPerLevel", 0),
                         num(o, "hits", 1), num(o, "hitsPerLevel", 0), num(o, "step", 0), num(o, "step2", 0)));
                 if (o.has("value3")) V3.put(e.getKey(), new double[]{num(o, "value3", 0), num(o, "value3PerLevel", 0)});
+                if (o.has("hits")) ATTACK.add(e.getKey());   // 피해를 주는 스킬 = 공격, 나머지 = 보조
             }
         } catch (Exception ex) {
             rpg.core.RpgCore.LOG.error("[rpgcore] skills.json 읽기 실패", ex);

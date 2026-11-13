@@ -69,6 +69,17 @@ public final class PlayerEvents {
             sp.getPersistentData().put(net.minecraft.world.entity.player.Player.PERSISTED_NBT_TAG, keep);
         }
         // 도적 개편 (한 번만): 도적은 스킬 포인트 + 패시브 포인트 전부 돌려받음
+        // 스킬 최대 레벨이 줄었으면 (편의 스킬 20 → 10) 넘친 포인트 돌려줌
+        int back = 0;
+        for (var e : d.skills.entrySet()) {
+            var sd = rpg.core.skill.Defs.SKILLS.get(e.getKey());
+            if (sd != null && e.getValue() > sd.maxLevel()) { back += e.getValue() - sd.maxLevel(); e.setValue(sd.maxLevel()); }
+        }
+        if (back > 0) {
+            d.skillPoints += back;
+            d.recalc();
+            sp.sendSystemMessage(net.minecraft.network.chat.Component.literal("[스킬] 최대 레벨이 줄어든 스킬의 포인트 " + back + "점을 돌려받았어요").withStyle(net.minecraft.ChatFormatting.GOLD));
+        }
         if (keep.getInt("rpgThiefReset") < 1) {
             if (d.job == 4) {
                 d.refundSkills();
