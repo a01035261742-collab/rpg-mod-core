@@ -302,7 +302,7 @@ public final class JobSkills {
     /** 헤이스트 점프력 */
     public static void onJump(ServerPlayer p) {
         PlayerData d = rpg.core.data.RpgData.get(p);
-        double j = d.buffV2("haste", p.level().getGameTime());
+        double j = d.buffV2("haste", p.level().getGameTime()) + d.eq("jumpPct");   // 헤이스트 + 신발 점프력 주문서
         if (j <= 0) return;
         Vec3 v = p.getDeltaMovement();
         p.setDeltaMovement(v.x, v.y * (1 + j / 100.0), v.z);

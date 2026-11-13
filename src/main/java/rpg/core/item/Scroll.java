@@ -18,7 +18,14 @@ import rpg.core.equip.Enhance;
  * 사용: 메뉴(M) → 강화 → 주문서
  */
 public class Scroll extends Item {
-    public static final String[] KINDS = {"watk", "wmatk", "str", "dex", "int", "luk", "vit"};
+    public static final String[] KINDS = {"watk", "wmatk", "str", "dex", "int", "luk", "vit", "jump", "speed", "gatk"};
+    /** 신발 점프력 % · 신발 이동속도 % · 장갑 공격력 (등급별 100·60·30·10%) */
+    public static final java.util.Map<String, int[]> SPECIAL = java.util.Map.of(
+            "jump", new int[]{1, 2, 3, 5}, "speed", new int[]{1, 2, 3, 5}, "gatk", new int[]{1, 2, 3, 4});
+    /** 장비에 붙는 키 */
+    public static String statKey(String k) {
+        return switch (k) { case "jump" -> "jumpPct"; case "speed" -> "speedPct"; case "gatk" -> "atk"; default -> k; };
+    }
     /** 등급별 아이콘 색 (100 · 60 · 30 · 10%), 순백 = 흰색 */
     public static final int[] COLORS = {0x8FC8FF, 0xFF9A30, 0x7CE07C, 0xFFE040};   // 100% 파랑 · 60% 주황 · 30% 초록 · 10% 노랑
 
@@ -48,6 +55,7 @@ public class Scroll extends Item {
 
     public static int color(ItemStack s) {
         if (kind(s).equals("white")) return 0xFFFFFF;
+        if (kind(s).equals("chaos")) return 0xB040FF;
         return COLORS[Math.max(0, Math.min(COLORS.length - 1, grade(s)))];
     }
 
@@ -61,6 +69,10 @@ public class Scroll extends Item {
             case "luk" -> "운";
             case "vit" -> "체력";
             case "white" -> "순백의";
+            case "chaos" -> "혼돈의";
+            case "jump" -> "신발 점프력";
+            case "speed" -> "신발 이동속도";
+            case "gatk" -> "장갑 공격력";
             default -> "?";
         };
     }
@@ -68,6 +80,7 @@ public class Scroll extends Item {
     public static int rate(ItemStack s) {
         String k = kind(s);
         if (k.equals("white")) return (int) Enhance.whiteRate;
+        if (k.equals("chaos")) return (int) Enhance.chaosRate;
         int g = grade(s);
         int[][] t = isWeapon(k) ? Enhance.weaponScroll : Enhance.statScroll;
         return t[Math.max(0, Math.min(t.length - 1, g))][0];
@@ -78,6 +91,7 @@ public class Scroll extends Item {
         String k = kind(s);
         if (k.isEmpty()) return super.getName(s);
         if (k.equals("white")) return Component.literal("순백의 주문서");
+        if (k.equals("chaos")) return Component.literal("혼돈의 주문서 " + rate(s) + "%");
         return Component.literal(kindName(k) + " 주문서 " + rate(s) + "%");
     }
 
@@ -94,6 +108,16 @@ public class Scroll extends Item {
         if (k.equals("white")) {
             tip.add(Component.literal("성공률 " + rate(s) + "%").withStyle(ChatFormatting.GRAY));
             tip.add(Component.literal("실패로 날아간 업그레이드 횟수 1회 복구").withStyle(ChatFormatting.WHITE));
+        } else if (k.equals("chaos")) {
+            tip.add(Component.literal("성공률 " + rate(s) + "%").withStyle(ChatFormatting.GRAY));
+            tip.add(Component.literal("장비에 있는 능력치가 각각 -3 ~ +5 (HP는 ×10) 무작위로 바뀜").withStyle(ChatFormatting.LIGHT_PURPLE));
+            tip.add(Component.literal("무기·방어구·장신구에 사용 · 업그레이드 횟수 1 소모").withStyle(ChatFormatting.DARK_GRAY));
+        } else if (SPECIAL.containsKey(k)) {
+            int v = SPECIAL.get(k)[Math.max(0, Math.min(3, grade(s)))];
+            tip.add(Component.literal("성공률 " + rate(s) + "%").withStyle(ChatFormatting.GRAY));
+            tip.add(Component.literal(k.equals("gatk") ? "공격력 +" + v : (k.equals("jump") ? "점프력 +" : "이동속도 +") + v + "%").withStyle(ChatFormatting.WHITE));
+            tip.add(Component.literal(k.equals("gatk") ? "장갑에만 사용" : "신발에만 사용").withStyle(ChatFormatting.DARK_GRAY));
+            tip.add(Component.literal("성공·실패 모두 업그레이드 횟수 1 소모").withStyle(ChatFormatting.DARK_GRAY));
         } else {
             int g = grade(s);
             tip.add(Component.literal("성공률 " + rate(s) + "%").withStyle(ChatFormatting.GRAY));

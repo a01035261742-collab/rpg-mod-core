@@ -241,6 +241,7 @@ public final class ModItems {
                 out.accept(BLACK_FLAME.get());
                 for (String k : Scroll.KINDS) for (int g = 0; g < 4; g++) out.accept(Scroll.make(k, g));
                 out.accept(Scroll.make("white", 0));
+                out.accept(Scroll.make("chaos", 0));
                 for (var po : new RegistryObject[]{RED_POTION, ORANGE_POTION, WHITE_POTION, BLUE_POTION, DEEP_BLUE_POTION, MANA_ELIXIR, ELIXIR, POWER_ELIXIR})
                     out.accept((Item) po.get());
                 for (var m : MATERIALS) out.accept(m.get());

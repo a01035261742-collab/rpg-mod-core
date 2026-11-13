@@ -50,6 +50,9 @@ public final class Enhance {
     public static int[] gradeMinLevel = {1, 1, 20, 30};
     public static int whiteMinLevel = 30;
     public static double whiteChance = 3;
+    /** 혼돈의 주문서: 성공률 · 드롭 확률(%) · 나오는 레벨 */
+    public static double chaosRate = 60, chaosChance = 2;
+    public static int chaosMinLevel = 20;
     public static int fragments = 10;
     /** 무기 주문서 합성은 조각 더 많이 */
     public static int fragWeapon = 20;
@@ -88,6 +91,7 @@ public final class Enhance {
             whiteRate = d(o, "whiteRate", whiteRate);
             whiteMinLevel = (int) d(o, "whiteMinLevel", whiteMinLevel);
             whiteChance = d(o, "whiteChance", whiteChance);
+            chaosRate = d(o, "chaosRate", chaosRate); chaosChance = d(o, "chaosChance", chaosChance); chaosMinLevel = (int) d(o, "chaosMinLevel", chaosMinLevel);
             fragments = (int) d(o, "fragments", fragments);
             fragWeapon = (int) d(o, "fragWeapon", fragWeapon);
         } catch (Exception ex) {
@@ -299,6 +303,9 @@ public final class Enhance {
         if (kind.equals("white")) return upgFail(gear) > 0 ? null : "실패한 업그레이드 횟수가 없어요";
         if (upgLeft(gear) <= 0) return "업그레이드 가능 횟수가 없어요";
         boolean weapon = cat(d.slot()).equals("weapon");
+        if (kind.equals("chaos")) return null;
+        if (kind.equals("jump") || kind.equals("speed")) return d.slot().equals("shoes") ? null : "신발에만 쓸 수 있어요";
+        if (kind.equals("gatk")) return d.slot().equals("gloves") ? null : "장갑에만 쓸 수 있어요";
         if (kind.equals("watk") || kind.equals("wmatk")) {
             if (!weapon) return "무기에만 쓸 수 있어요";
             if (!weaponKey(d).equals(kind.equals("wmatk") ? "matk" : "atk")) return kind.equals("wmatk") ? "마력 무기(지팡이)에만 쓸 수 있어요" : "공격력 무기에만 쓸 수 있어요";
@@ -330,6 +337,26 @@ public final class Enhance {
                 msg(p, "순백의 주문서 실패", ChatFormatting.GRAY);
                 sound(p, SoundEvents.FIRE_EXTINGUISH, 1.0f);
             }
+        } else if (kind.equals("chaos")) {
+            t.putInt("rpgUpg", left - 1);
+            if (r.nextDouble() * 100 < chaosRate) {
+                CompoundTag add = t.getCompound("rpgScr");
+                StringBuilder sb = new StringBuilder();
+                for (String k : new String[]{"atk", "matk", "str", "dex", "int", "luk", "vit", "def", "hp"}) {
+                    if (d.stats().getOrDefault(k, 0.0) == 0) continue;   // 장비에 있는 능력치만
+                    int dv = r.nextInt(-3, 6) * (k.equals("hp") ? 10 : 1);
+                    if (dv == 0) continue;
+                    add.putInt(k, add.getInt(k) + dv);
+                    sb.append(sb.length() > 0 ? " · " : "").append(k).append(dv > 0 ? " +" : " ").append(dv);
+                }
+                t.put("rpgScr", add);
+                msg(p, "혼돈의 주문서 성공! " + sb, ChatFormatting.LIGHT_PURPLE);
+                sound(p, SoundEvents.PLAYER_LEVELUP, 1.2f);
+            } else {
+                t.putInt("rpgUpgFail", upgFail(s) + 1);
+                msg(p, "혼돈의 주문서 실패 (업그레이드 횟수만 줄었어요)", ChatFormatting.GRAY);
+                sound(p, SoundEvents.FIRE_EXTINGUISH, 1.0f);
+            }
         } else {
             t.putInt("rpgUpg", left - 1);
             int[] g = Scroll.isWeapon(kind) ? weaponScroll[Math.min(grade, weaponScroll.length - 1)] : statScroll[Math.min(grade, statScroll.length - 1)];
@@ -339,6 +366,9 @@ public final class Enhance {
                     add.putInt(weaponKey(d), add.getInt(weaponKey(d)) + g[1]);
                     String ms = mainStat(d.job());
                     add.putInt(ms, add.getInt(ms) + g[2]);
+                } else if (Scroll.SPECIAL.containsKey(kind)) {   // 신발 점프력·이동속도 · 장갑 공격력
+                    String key = Scroll.statKey(kind);
+                    add.putInt(key, add.getInt(key) + Scroll.SPECIAL.get(kind)[Math.min(grade, 3)]);
                 } else {
                     add.putInt(kind, add.getInt(kind) + g[1]);
                 }
@@ -399,6 +429,7 @@ public final class Enhance {
     /** kind: -1 아무거나 · 0 무기 주문서만 · 1 스탯 주문서만 */
     public static ItemStack randomScroll(int level, ThreadLocalRandom r, int only) {
         if (only < 0 && level >= whiteMinLevel && r.nextDouble() * 100 < whiteChance) return Scroll.make("white", 0);
+        if (only < 0 && level >= chaosMinLevel && r.nextDouble() * 100 < chaosChance) return Scroll.make("chaos", 0);
         int[] w = only >= 0 ? synthWeight : gradeWeight;   // 합성 = 합성 비중
         int total = 0;
         boolean gate = only < 0;   // 드롭만 레벨 조건 · 합성은 고정
