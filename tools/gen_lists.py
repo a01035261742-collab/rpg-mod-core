@@ -144,12 +144,21 @@ ec = open(f'{J}/client/entity/EntityClient.java').read()
 geo = set(re.findall(r'RpgGeoRenderer\(ctx, "(\w+)"', ec))
 ground_of = {}
 for gk, g in mobs['_grounds'].items():
-    for mk in g['mobs']: ground_of[mk] = f'{gk}. {g["name"]} (Lv{g["min"]}~{g["max"]})'
+    for mk in g['mobs']: ground_of[mk] = f'{gk}. {g["name"]} (Lv{g["min"]}~{g["max"]})' + (f' · **고정 Lv{mobs[mk]["fixedLevel"]}**' if 'fixedLevel' in mobs[mk] else '')
 PT = {'slam': '내려찍기(내 주변 원)', 'leap': '점프(대상 자리 원)', 'dash': '돌진(직선)', 'shot': '사격(직선)', 'zone': '장판(대상 자리 원)', 'cone': '앞 부채꼴'}
 el = mobs['_elite']; st = mobs.get('_stun', {})
 mo = [f'# 몹 목록 (모드 {ver})', '', '저장소 데이터에서 자동으로 만든 목록 (`tools/gen_lists.py`). 빌드할 때마다 다시 만듦. 수치는 임시값.', '',
       f'- 엘리트 {el["chance"]:g}%: HP ×{el["hp"]:g} · 공격 ×{el["atk"]:g} · 경험치·골드 ×{el["reward"]:g} · 전용 장비 ×{el["gear"]:g} · 재료 두 번 굴림 · 경직 방어 +{st.get("eliteArmor", 0):g}',
       f'- 경직: 충격 − 경직 방어 ≥ {st.get("shortMin", 0):g} 짧은 경직 {st.get("shortTicks", 0)}틱 · ≥ {st.get("longMin", 0):g} 긴 경직 {st.get("longTicks", 0)}틱 + 밀림 · {st.get("chainWindow", 0)}틱 안 {st.get("chain", 0)}번 넘으면 {st.get("immuneTicks", 0)}틱 면역', '',
+      '## 사냥터 고정 레벨 (몹 종류마다 이 레벨로만 나옴)', '', '| 사냥터 | 몹 | 고정 Lv | HP | 공격 | 경험치 |', '|---|---|---|---|---|---|']
+def _at(k, l):
+    L = mobs[k]['levels']; ks = sorted(int(x) for x in L); lv = max([x for x in ks if x <= l] or [ks[0]]); return L[str(lv)]
+for gk, g in mobs['_grounds'].items():
+    for mk in g['mobs']:
+        if 'fixedLevel' in mobs[mk]:
+            fl = mobs[mk]['fixedLevel']; d = _at(mk, fl)
+            mo.append(f'| {gk}. {g["name"]} | {mobs[mk].get("name", mk)} | {fl} | {d["hp"]:,} | {d["atk"]:g} | {d["exp"]:,} |')
+mo += ['', '## 전체',
       '| 몹 | key | 몸 | 사냥터 | 레벨 범위 | HP | 공격 | 경험치 | 골드 | 근접 공격 (EF 방식) | 패턴 | 경직 방어 | 재료 드롭 | 전용 장비 |',
       '|---|---|---|---|---|---|---|---|---|---|---|---|---|---|']
 ROWS_M = []
