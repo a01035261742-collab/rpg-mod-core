@@ -140,7 +140,7 @@ public final class Skills {
         d.lastAttack = now;   // 명상: 공격하면 초기화
         if (d.bonus("quickShot") > 0 && !s.passive()) d.quickShotReady = true;   // 속사: 다음 평타 강화
         // 빠른 영창: 쿨타임 감소
-        int cd = (int) Math.round(s.cooldown(lv) * 20 * Math.max(0.6, 1 - d.bonus("cdPct") / 100.0));   // 쿨타임 감소 최대 40%
+        int cd = (int) Math.round(s.cooldown(lv) * 20 * (s.cooldown(lv) <= 1.0 ? 1 : Math.max(0.6, 1 - d.bonus("cdPct") / 100.0)));   // 쿨타임 감소 최대 40% (쿨 1초 이하 연타는 안 받음)
         if ("combo_slash".equals(s.id()) && d.comboStep == 0)   // 연속 베기 3타 끝: 3초
             cd = (int) Math.round(3 * 20 * Math.max(0.6, 1 - d.bonus("cdPct") / 100.0));
         d.cdEnd.put(s.id(), now + cd);

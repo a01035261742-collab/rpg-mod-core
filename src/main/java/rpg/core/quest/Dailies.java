@@ -209,7 +209,7 @@ public final class Dailies {
                 boolean ok = switch (k) {
                     case "kill" -> targets(q, m.key);
                     case "elite" -> m.elite && targets(q, m.key);
-                    case "boss" -> boss;
+                    case "boss" -> boss && m.level >= rpg.core.data.RpgData.get(p).level - 10;   // 내 레벨 -10 이상 보스만
                     default -> false;
                 };
                 if (!ok) continue;

@@ -275,7 +275,10 @@ final class BossX {
         }
     }
 
-    /** 오브젝트(알·실 기둥) 체력 배수: 1명 ×1, 1명 늘 때마다 +0.7 */
+    /** 혼자면 알 하나 덜 (알 낳기 3→2, 알 흡수 2→1) */
+    private static int solo(Mob mob, int n) { return Math.max(1, mob.getPersistentData().getInt("rpgRaidPeople")) <= 1 ? Math.max(1, n - 1) : n; }
+
+    /** 오브젝트(알) 체력 배수: 1명 ×1, 1명 늘 때마다 +0.7 */
     static double objMul(int people) { return 1 + 0.7 * Math.max(0, people - 1); }
 
     // ───────── 천장 숨기 ─────────
@@ -311,7 +314,7 @@ final class BossX {
             c.setSilent(true);
             c.getPersistentData().putBoolean("rpgPillar", true);
             MobData cm = Combat.mob(c);
-            if (cm != null) { cm.maxHp *= objMul(people); cm.hp = cm.maxHp; Mobs.sync(c); }
+            if (cm != null) Mobs.sync(c);   // 기둥 체력은 인원과 상관없이 고정
             x.hidePillars.add(c.getUUID());
         }
         x.shadow = new Boss.Pattern("shadow", "그림자 낙하", "shadow", p.x("shadowR", 5), 0, 0, 0, 0, p.x("shadowDelay", 1.8), 0, 0, 1, 1,
@@ -391,13 +394,13 @@ final class BossX {
         st.stage = 1;
         switch (p.type()) {
             case "eggs" -> {
-                eggsAt(mob, m, st, l, (int) p.x("count", 3), x.hatch, now + Math.round(p.x("hatch", 20) * 20), true);
+                eggsAt(mob, m, st, l, solo(mob, (int) p.x("count", 3)), x.hatch, now + Math.round(p.x("hatch", 20) * 20), true);
                 say(l, st, "◆ " + p.name() + " — " + (int) p.x("hatch", 20) + "초 안에 알을 깨세요!", ChatFormatting.GOLD);
                 l.playSound(null, mob.blockPosition(), SoundEvents.SPIDER_AMBIENT, SoundSource.HOSTILE, 2f, 0.4f);
                 st.stageEnd = now + 30;
             }
             case "absorb" -> {
-                eggsAt(mob, m, st, l, (int) p.x("count", 2), x.absorb, now + Math.round(p.x("absorbSec", 8) * 20), true);
+                eggsAt(mob, m, st, l, solo(mob, (int) p.x("count", 2)), x.absorb, now + Math.round(p.x("absorbSec", 8) * 20), true);
                 say(l, st, "◆ " + p.name() + " — " + (int) p.x("absorbSec", 8) + "초 뒤 여왕이 알을 흡수해요! 깨세요", ChatFormatting.DARK_GREEN);
                 l.playSound(null, mob.blockPosition(), SoundEvents.SPIDER_AMBIENT, SoundSource.HOSTILE, 2f, 0.4f);
                 st.stageEnd = now + 30;

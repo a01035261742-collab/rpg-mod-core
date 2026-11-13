@@ -116,19 +116,19 @@
    "items": [
     [
      "warrior_sword_20",
-     3160
+     4500
     ],
     [
      "archer_bow_20",
-     3160
+     4500
     ],
     [
      "mage_staff_20",
-     3160
+     4500
     ],
     [
      "thief_dagger_20",
-     3160
+     4500
     ],
     [
      "hat_20",
@@ -587,8 +587,8 @@
   "forest_lord_belt": 40000,
   "guardian_pendant": 70000,
   "guardian_cape": 70000,
-  "forest_lord_treasure": 20000,
-  "guardian_treasure": 40000,
+  "forest_lord_treasure": 10000,
+  "guardian_treasure": 20000,
   "spider_queen_earring": 90000,
   "spider_queen_gloves": 90000,
   "spider_queen_ring": 90000,
@@ -596,7 +596,7 @@
   "archer_bow_queen": 100000,
   "mage_staff_queen": 100000,
   "thief_dagger_queen": 100000,
-  "spider_queen_treasure": 80000,
+  "spider_queen_treasure": 45000,
   "town_scroll": 200,
   "red_potion_m": 110,
   "orange_potion_m": 170,

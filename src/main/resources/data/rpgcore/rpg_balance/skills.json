@@ -430,9 +430,9 @@
   "mpPerLevel": 0,
   "cooldown": 0,
   "duration": 0,
-  "value": 30,
-  "valuePerLevel": 1.5789,
-  "desc": "{v2}초 동안 받는 피해의 {v}%를 MP로 대신 받음",
+  "value": 20,
+  "valuePerLevel": 1.0526,
+  "desc": "{v2}초 동안 받는 피해의 {v}%를 MP로 대신 받음 (피해 1당 MP 2, 최대 HP % 공격은 못 막음)",
   "value2": 60,
   "value2PerLevel": 6.3158,
   "step": 5,
@@ -520,8 +520,8 @@
   "valuePerLevel": 0.5263,
   "desc": "8칸 안 파티원 회복: 최대 HP의 {v}% + 스공의 {v2}% (회복량 증가 적용)",
   "step": 1,
-  "value2": 50,
-  "value2PerLevel": 2.6316,
+  "value2": 10,
+  "value2PerLevel": 0.5263,
   "step2": 5
  },
  "bless": {
@@ -707,7 +707,7 @@
   "valuePerLevel": 3.1579,
   "value2": 20,
   "value2PerLevel": 0.7895,
-  "desc": "{d}초 동안 반경 3칸 독안개, 1초마다 스공의 {v}% + 이동속도 -{v2}%",
+  "desc": "{d}초 동안 반경 3칸 독안개 (끝나고 독이 3초 더 남음, 모두 9번), 1초마다 스공의 {v}% + 이동속도 -{v2}%",
   "hits": 6,
   "step": 5,
   "step2": 5

@@ -216,8 +216,10 @@ public class PlayerData {
     public double crit() { return Balance.critBase + Balance.critPerDex * total(DEX) + bonus("critChance") + buffV("focus", clock) + rpg.core.skill.PassiveEffects.extraCrit(this); }
     public double critDamage() { return Balance.critDamage + (bonus("critDmg") + rpg.core.skill.PassiveEffects.extraCritDmg(this)) / 100.0; }
     public double healBonus() { return bonus("healPct"); }   // 회복량 증가 (패시브·전사의 회복력). 지력은 이제 힐 스공으로 반영
-    public double dropBonus() { return Balance.dropPerLuk * total(LUK) + bonus("dropPct") + buffV("plunder", clock) + buffV("item_drop", clock); }
-    public double goldBonus() { return Balance.goldPerLuk * total(LUK) + bonus("goldPct") + buffV("plunder", clock) + buffV("item_gold", clock); }
+    public double dropBonus() { return Math.min(100, dropRaw()); }   // 드롭% 상한 100
+    private double dropRaw() { return Balance.dropPerLuk * total(LUK) + bonus("dropPct") + buffV("plunder", clock) + buffV("item_drop", clock); }
+    public double goldBonus() { return Math.min(200, goldRaw()); }   // 골드% 상한 200
+    private double goldRaw() { return Balance.goldPerLuk * total(LUK) + bonus("goldPct") + buffV("plunder", clock) + buffV("item_gold", clock); }
     /** Epic Fight 최대 스태미나에 더해지는 양 (스태미나 스탯 + 패시브) */
     public double staminaBonus() { return Balance.staminaPerPoint * total(STA) + bonus("stamina"); }
 

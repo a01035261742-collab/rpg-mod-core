@@ -265,9 +265,9 @@ public final class Boss {
         }
         st.emptySince = -1;
 
-        // 필드 보스: 싸우는 사람이 늘면 1명당 체력 +70% (최대 4명, 레이드는 입장 때 따로)
-        if (mob.getPersistentData().getString("rpgRaid").isEmpty() && fighters.size() > st.seen && st.seen < 4) {
-            int n = Math.min(4, fighters.size());
+        // 필드 보스: 싸우는 사람이 늘면 1명당 체력 +70% (최대 6명 = 파티 최대, 레이드는 입장 때 따로)
+        if (mob.getPersistentData().getString("rpgRaid").isEmpty() && fighters.size() > st.seen && st.seen < 6) {
+            int n = Math.min(6, fighters.size());
             double base = m.maxHp / (1 + 0.7 * (st.seen - 1)), add = base * 0.7 * (n - st.seen);
             m.maxHp += add; m.hp += add; st.seen = n;
             Mobs.sync(mob);
@@ -707,7 +707,8 @@ public final class Boss {
         if (p.type().equals("counter") && st.stage == 1) {   // 카운터: 창 안에 충분히 맞으면 성공
             int people = 0;
             for (ServerPlayer x : arena(l, st, 0)) if (valid(x)) people++;
-            double need = m.maxHp * (p.x("needPer", 0) > 0 ? p.x("needPer", 1) * Math.max(1, people) : p.x("need", 1)) / 100.0;   // 인원 비례
+            double base = m.maxHp / (1 + 0.7 * Math.max(0, st.seen - 1));   // 인원 배수 전 체력 → 1인 몫은 1명 기준으로 고정
+            double need = (p.x("needPer", 0) > 0 ? base * p.x("needPer", 1) * Math.max(1, people) : m.maxHp * p.x("need", 1)) / 100.0;
             if (st.counterDmg >= need) {
                 long stun = Math.round(p.x("stun", 5) * 20);
                 m.stunUntil = now + stun;
@@ -1151,6 +1152,10 @@ public final class Boss {
         if (st != null) {
             ServerLevel l = (ServerLevel) mob.level();
             long now = l.getGameTime();
+            if (mob.getPersistentData().getString("rpgRaid").isEmpty() && st.center != null && flat(p.position(), st.center) > st.radius) {   // 필드 보스: 경기장 밖에서 때리면 무시
+                p.displayClientMessage(Component.literal("경기장 안에서만 피해를 줄 수 있어요").withStyle(ChatFormatting.GRAY), true);
+                return 0;
+            }
             if (now < st.transUntil) return 0;   // 페이즈 전환 연출 중 무적
             if (st.x.hidePos != null) return 0;   // 천장 숨기 중 무적
             if (!st.pillars.isEmpty() && pillarsAlive(l, st)) dmg = Math.max(1, Math.round(dmg * (1 - def.g("pillarReduce", 80) / 100.0)));   // 기둥
@@ -1207,6 +1212,11 @@ public final class Boss {
                 p.sendSystemMessage(Component.literal("[레이드] 오늘은 이미 보상을 받았어요 (클리어만 기록, 오전 6시 초기화)").withStyle(ChatFormatting.GRAY));
                 return true;
             });
+            part.keySet().removeIf(p -> {   // 딜 2% 미만 (가만히 있던 사람) 은 보상 없음
+                if (st == null || st.dmg.getOrDefault(p.getUUID(), 0.0) >= m.maxHp * 0.02) return false;
+                p.sendSystemMessage(Component.literal("[레이드] 피해가 2% 미만이라 보상이 없어요").withStyle(ChatFormatting.GRAY));
+                return true;
+            });
             if (l.getServer() != null) rpg.core.world.Raids.bossDied(l.getServer(), mob.getUUID());
         }
         double total = 0;
@@ -1217,9 +1227,10 @@ public final class Boss {
             PlayerData d = RpgData.get(p);
             bestDrop = Math.max(bestDrop, d.dropBonus());
             double share = e.getValue() / Math.max(1, total);
-            int people = Math.max(1, mob.getPersistentData().getInt("rpgRaidPeople"));   // 레이드: 체력이 인원수 배라 경험치·골드도 인원수 배 (평균 1인분)
-            double rewardShare = share * people;
-            boolean over = d.level >= m.level + OVER_LEVEL;   // 보스보다 15레벨 이상: 골드 절반 · 보물 없음
+            // 레이드: 받는 사람마다 1인분 (기여도 안 봄). 필드 보스: 체력 인원 배수만큼 보상도 늘려서 나눔
+            double fieldMul = st == null ? 1 : 1 + 0.7 * Math.max(0, st.seen - 1);
+            double rewardShare = !raid.isEmpty() ? 1.0 : share * fieldMul;
+            boolean over = d.level >= m.level + OVER_LEVEL;   // 보스보다 OVER_LEVEL(8)레벨 이상: 골드 절반 · 보물 없음
             long exp = Math.max(1, Math.round(m.exp * rewardShare * CombatEvents.expLevelMul(m.level, d.level)));
             long gold = Math.max(1, Math.round(m.gold * rewardShare * (1 + d.goldBonus() / 100.0) * (over ? 0.5 : 1)));
             d.gold += gold;

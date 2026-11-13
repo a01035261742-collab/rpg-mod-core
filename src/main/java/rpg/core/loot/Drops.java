@@ -123,15 +123,26 @@ public final class Drops {
         double lowMul = below > 0 ? Math.max(0.1, 1 - below * 0.1) : 1.0;
         double combo = below > 0 ? 0 : d.comboGoldPct(killer.level().getGameTime());
         long gold = Math.round(m.gold * lowMul * (1.0 + d.goldBonus() / 100.0) * (1.0 + combo / 100.0) * (0.85 + r.nextDouble() * 0.3));
-        if (gold > 0 && r.nextDouble() * 100 < goldChance) out.add(GoldPouch.of(gold));
+        if (gold > 0 && r.nextDouble() * 100 < goldChance) {
+            out.add(GoldPouch.of(gold));
+            long share = Math.round(gold * 0.2);   // 근처 파티원: 그 골드의 20% 를 덤으로 (막타 몫은 그대로)
+            if (share > 0) for (ServerPlayer mem : rpg.core.party.Parties.nearby(killer)) {
+                if (mem == killer) continue;
+                PlayerData md2 = rpg.core.data.RpgData.get(mem);
+                md2.gold += share;
+                rpg.core.net.Net.reward(mem, 0, share);
+                rpg.core.data.RpgData.sync(mem);
+            }
+        }
 
         MobDrops md = MOBS.get(m.key);
         int rolls = m.elite ? 2 : 1;   // 엘리트는 재료 두 번 굴림
         for (int k = 0; k < rolls; k++) if (md != null) for (Entry e : md.items()) if (hit(r, e.chance() * mul)) add(out, e.item());
 
         if (returnChance > 0 && hit(r, returnChance * mul)) out.add(new ItemStack(ModItems.RETURN_SCROLL.get()));
-        if (potentialChance > 0 && hit(r, potentialChance * mul)) out.add(new ItemStack(ModItems.POTENTIAL_SCROLL.get()));
-        if (flameChance > 0 && hit(r, flameChance * mul)) out.add(new ItemStack(ModItems.POWERFUL_FLAME.get()));
+        // 잠재 주문서·불꽃: 골드처럼 나보다 5레벨 넘게 낮은 몹이면 레벨당 -10% (최소 10%)
+        if (potentialChance > 0 && hit(r, potentialChance * mul * lowMul)) out.add(new ItemStack(ModItems.POTENTIAL_SCROLL.get()));
+        if (flameChance > 0 && hit(r, flameChance * mul * lowMul)) out.add(new ItemStack(ModItems.POWERFUL_FLAME.get()));
         if (m.elite && eliteEternalChance > 0 && hit(r, eliteEternalChance * mul)) out.add(new ItemStack(ModItems.ETERNAL_FLAME.get()));
         double pc = md != null && md.potion() >= 0 ? md.potion() : potionChance;
         if (hit(r, pc * mul)) out.add(new ItemStack(potionFor(m.level, r.nextDouble() * 100 < potionRed)));

@@ -195,17 +195,27 @@ public final class CombatEvents {
     private static final Map<String, Dot> DOTS = new java.util.HashMap<>();
 
     /** 이 몹에 걸린 지속 피해 (초당, 없으면 0) */
-    public static double dotDmg(Mob m, String kind) {
-        Dot b = DOTS.get(m.getId() + ":" + kind);
-        return b == null || m.level().getGameTime() > b.end() ? 0 : b.dmg();
+    public static double dotDmg(Mob m, String kind) {   // 주인 여럿이면 합
+        String pre = m.getId() + ":" + kind + ":";
+        long now = m.level().getGameTime();
+        double sum = 0;
+        for (var e : DOTS.entrySet()) if (e.getKey().startsWith(pre) && now <= e.getValue().end()) sum += e.getValue().dmg();
+        return sum;
     }
 
-    /** 지속 피해 걸기 (같은 종류는 새로 덮어씀). kind: bleed 출혈 / burn 화상 / poison 독 */
+    /** 지속 피해 걸기: 주인마다 따로 (다른 사람 것을 안 덮음). 내 같은 종류는 센 쪽 유지 + 시간은 긴 쪽. kind: bleed 출혈 / burn 화상 / poison 독 */
     public static void dot(ServerPlayer owner, Mob m, String kind, double perSecond, int ticks) {
         if (perSecond <= 0 || ticks <= 0) return;
         PlayerData od = RpgData.get(owner);   // 트리: 지속 피해 +% · 출혈/독 전문가
         perSecond *= 1 + (od.bonus("dotPct") + od.bonus(kind + "Pct")) / 100.0;
-        DOTS.put(m.getId() + ":" + kind, new Dot(owner, m.getId(), kind, perSecond, owner.level().getGameTime() + ticks));
+        String key = m.getId() + ":" + kind + ":" + owner.getUUID();
+        long end = owner.level().getGameTime() + ticks;
+        Dot old = DOTS.get(key);
+        if (old != null && owner.level().getGameTime() <= old.end() && old.dmg() > perSecond) {   // 약한 게 새로 오면 센 것 유지, 시간만 늘림
+            DOTS.put(key, new Dot(owner, m.getId(), kind, old.dmg(), Math.max(old.end(), end)));
+            return;
+        }
+        DOTS.put(key, new Dot(owner, m.getId(), kind, perSecond, end));
     }
 
     @SubscribeEvent
@@ -336,10 +346,10 @@ public final class CombatEvents {
             dmg *= 1 - Math.min(90, d.buffV("iron_wall", now)) / 100.0;           // 철벽: 받는 피해 감소
             dmg *= 1 + d.buffV2("berserk", now) / 100.0;                           // 광폭화: 받는 피해 증가
             dmg *= rpg.core.skill.PassiveEffects.takenMul(d);                     // 트리: 광란
-            double guard = d.buffV("magic_guard", now);                            // 매직 가드: 일부를 MP로
-            if (guard > 0 && src != null) {
-                double toMp = Math.min(d.mp, dmg * Math.min(90, guard) / 100.0);
-                d.mp -= toMp;
+            double guard = d.buffV("magic_guard", now);                            // 매직 가드: 일부를 MP로 (피해 1당 MP 2, 최대 HP % 패턴은 못 막음)
+            if (guard > 0 && src != null && mx == null) {
+                double toMp = Math.min(d.mp / 2.0, dmg * Math.min(90, guard) / 100.0);
+                d.mp -= toMp * 2;
                 dmg -= toMp;
             }
             // 잠재능력 피격 옵션

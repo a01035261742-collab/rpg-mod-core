@@ -473,12 +473,12 @@
   },
   {
    "id": "wd5",
-   "name": "자연 회복",
+   "name": "회복력",
    "x": 1,
    "y": 5,
    "maxRank": 3,
-   "stat": "hpRegenPct",
-   "perRank": 10,
+   "stat": "healPct",
+   "perRank": 5,
    "requires": [
     "wd3"
    ],
@@ -928,14 +928,14 @@
    "y": -1,
    "maxRank": 1,
    "stat": "thorns",
-   "perRank": 50,
+   "perRank": 100,
    "requires": [
     "w_def8"
    ],
    "job": 1,
    "kind": "g",
    "special": true,
-   "desc": "근접으로 맞으면 내 방어의 50%만큼 되돌려줌"
+   "desc": "근접으로 맞으면 내 방어의 100%만큼 되돌려줌"
   },
   {
    "id": "w_hp0",
@@ -995,12 +995,12 @@
   },
   {
    "id": "w_hp4",
-   "name": "자연 회복",
+   "name": "회복력",
    "x": 4,
    "y": 5,
    "maxRank": 2,
-   "stat": "hpRegenPct",
-   "perRank": 10,
+   "stat": "healPct",
+   "perRank": 5,
    "requires": [
     "w_hp3"
    ],
@@ -1113,7 +1113,7 @@
    "kind": "n",
    "branch": 2,
    "special": true,
-   "desc": "HP가 낮을수록 공격 속도 증가 (최대 +15%)"
+   "desc": "HP가 낮을수록 평타 속도 증가 (최대 +15%, 스킬은 그대로)"
   },
   {
    "id": "wb2",
@@ -1164,7 +1164,7 @@
    "kind": "k",
    "branch": 2,
    "special": true,
-   "desc": "공격 속도 +15%, 받는 피해 +10%"
+   "desc": "평타 속도 +15% (스킬은 그대로), 받는 피해 +10%"
   },
   {
    "id": "wg0",
@@ -1684,12 +1684,12 @@
   },
   {
    "id": "a_hp1",
-   "name": "자연 회복",
+   "name": "회복력",
    "x": -3,
    "y": 2,
    "maxRank": 3,
-   "stat": "hpRegenPct",
-   "perRank": 10,
+   "stat": "healPct",
+   "perRank": 5,
    "requires": [
     "a_hp0"
    ],
@@ -1726,12 +1726,12 @@
   },
   {
    "id": "a_hp4",
-   "name": "자연 회복",
+   "name": "회복력",
    "x": -4,
    "y": 5,
    "maxRank": 2,
-   "stat": "hpRegenPct",
-   "perRank": 10,
+   "stat": "healPct",
+   "perRank": 5,
    "requires": [
     "a_hp3"
    ],
@@ -2275,7 +2275,7 @@
    "y": -1,
    "maxRank": 3,
    "stat": "int",
-   "perRank": 3,
+   "perRank": 4,
    "requires": [
     "m0"
    ],
@@ -2289,7 +2289,7 @@
    "y": 0,
    "maxRank": 3,
    "stat": "int",
-   "perRank": 3,
+   "perRank": 4,
    "requires": [
     "m0"
    ],
@@ -2303,7 +2303,7 @@
    "y": 0,
    "maxRank": 3,
    "stat": "int",
-   "perRank": 3,
+   "perRank": 4,
    "requires": [
     "m0"
    ],
@@ -2317,7 +2317,7 @@
    "y": 1,
    "maxRank": 3,
    "stat": "int",
-   "perRank": 3,
+   "perRank": 4,
    "requires": [
     "m0"
    ],
@@ -2345,7 +2345,7 @@
    "y": -3,
    "maxRank": 3,
    "stat": "int",
-   "perRank": 3,
+   "perRank": 4,
    "requires": [
     "mu0"
    ],
@@ -2390,7 +2390,7 @@
    "y": -5,
    "maxRank": 3,
    "stat": "int",
-   "perRank": 3,
+   "perRank": 4,
    "requires": [
     "mu3"
    ],
@@ -2425,7 +2425,7 @@
    ],
    "job": 3,
    "kind": "k",
-   "desc": "최대 MP 200당 데미지 +1% (최대 +25%)"
+   "desc": "최대 MP 50당 데미지 +1% (최대 +25%)"
   },
   {
    "id": "md0",
@@ -2551,7 +2551,7 @@
    "y": -2,
    "maxRank": 3,
    "stat": "int",
-   "perRank": 3,
+   "perRank": 4,
    "requires": [
     "m_crit0"
    ],
@@ -2637,7 +2637,7 @@
    "y": -3,
    "maxRank": 2,
    "stat": "int",
-   "perRank": 3,
+   "perRank": 4,
    "requires": [
     "m_crit2"
    ],
@@ -2878,7 +2878,7 @@
    "y": -5,
    "maxRank": 2,
    "stat": "int",
-   "perRank": 3,
+   "perRank": 4,
    "requires": [
     "m_boss3"
    ],
@@ -3694,12 +3694,12 @@
   },
   {
    "id": "t_hp1",
-   "name": "자연 회복",
+   "name": "회복력",
    "x": -3,
    "y": 2,
    "maxRank": 3,
-   "stat": "hpRegenPct",
-   "perRank": 10,
+   "stat": "healPct",
+   "perRank": 5,
    "requires": [
     "t_hp0"
    ],
@@ -3736,12 +3736,12 @@
   },
   {
    "id": "t_hp4",
-   "name": "자연 회복",
+   "name": "회복력",
    "x": -4,
    "y": 5,
    "maxRank": 2,
-   "stat": "hpRegenPct",
-   "perRank": 10,
+   "stat": "healPct",
+   "perRank": 5,
    "requires": [
     "t_hp3"
    ],
@@ -3769,13 +3769,13 @@
    "y": 6,
    "maxRank": 1,
    "stat": "lifesteal",
-   "perRank": 1,
+   "perRank": 3,
    "requires": [
     "t_hp5"
    ],
    "job": 4,
    "kind": "g",
-   "desc": "크리가 터지면 준 피해의 1%만큼 HP 회복 (1초에 최대 HP 2%까지)"
+   "desc": "크리가 터지면 준 피해의 3%만큼 HP 회복 (1초에 최대 HP 2%까지)"
   },
   {
    "id": "t_hp7",

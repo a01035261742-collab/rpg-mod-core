@@ -376,11 +376,11 @@
    "gold": 350,
    "mats": [
     [
-     "bee_sting",
+     "boar_bristle",
      8
     ],
     [
-     "boar_bristle",
+     "bee_sting",
      5
     ],
     [
@@ -397,11 +397,11 @@
    "gold": 450,
    "mats": [
     [
-     "bee_sting",
+     "boar_bristle",
      12
     ],
     [
-     "boar_bristle",
+     "bee_sting",
      8
     ],
     [
@@ -418,11 +418,11 @@
    "gold": 420,
    "mats": [
     [
-     "bee_sting",
+     "boar_bristle",
      10
     ],
     [
-     "boar_bristle",
+     "bee_sting",
      6
     ],
     [
@@ -439,11 +439,11 @@
    "gold": 320,
    "mats": [
     [
-     "bee_sting",
+     "boar_bristle",
      6
     ],
     [
-     "boar_bristle",
+     "bee_sting",
      4
     ],
     [
@@ -712,11 +712,11 @@
    "gold": 350,
    "mats": [
     [
-     "dog_fur",
+     "bear_pelt",
      8
     ],
     [
-     "bear_pelt",
+     "dog_fur",
      5
     ],
     [
@@ -733,11 +733,11 @@
    "gold": 450,
    "mats": [
     [
-     "dog_fur",
+     "bear_pelt",
      12
     ],
     [
-     "bear_pelt",
+     "dog_fur",
      8
     ],
     [
@@ -754,11 +754,11 @@
    "gold": 420,
    "mats": [
     [
-     "dog_fur",
+     "bear_pelt",
      10
     ],
     [
-     "bear_pelt",
+     "dog_fur",
      6
     ],
     [
@@ -775,11 +775,11 @@
    "gold": 320,
    "mats": [
     [
-     "dog_fur",
+     "bear_pelt",
      6
     ],
     [
-     "bear_pelt",
+     "dog_fur",
      4
     ],
     [
@@ -1742,7 +1742,7 @@
      4
     ],
     [
-     "dog_fang",
+     "rat_tooth",
      1
     ]
    ]
@@ -1831,7 +1831,7 @@
      4
     ],
     [
-     "royal_jelly",
+     "slime_core",
      1
     ]
    ]
@@ -1844,11 +1844,11 @@
    "gold": 380,
    "mats": [
     [
-     "dog_fur",
+     "bear_pelt",
      6
     ],
     [
-     "royal_jelly",
+     "bear_paw",
      1
     ],
     [
@@ -1865,7 +1865,7 @@
    "gold": 380,
    "mats": [
     [
-     "bee_sting",
+     "boar_bristle",
      6
     ],
     [
@@ -1911,7 +1911,7 @@
      6
     ],
     [
-     "dog_fang",
+     "bear_paw",
      1
     ],
     [
@@ -1928,11 +1928,11 @@
    "gold": 380,
    "mats": [
     [
-     "dog_fur",
+     "boar_bristle",
      6
     ],
     [
-     "royal_jelly",
+     "boar_tusk",
      1
     ],
     [
@@ -1949,7 +1949,7 @@
    "gold": 380,
    "mats": [
     [
-     "bee_sting",
+     "bear_pelt",
      6
     ],
     [
@@ -2620,7 +2620,7 @@
    "tab": "재료",
    "result": "bear_paw",
    "count": 1,
-   "gold": 380,
+   "gold": 570,
    "mats": [
     [
      "bear_pelt",
@@ -2633,7 +2633,7 @@
    "tab": "재료",
    "result": "beast_core",
    "count": 1,
-   "gold": 580,
+   "gold": 870,
    "mats": [
     [
      "beast_shell",
@@ -2646,7 +2646,7 @@
    "tab": "재료",
    "result": "boar_tusk",
    "count": 1,
-   "gold": 380,
+   "gold": 570,
    "mats": [
     [
      "boar_bristle",
@@ -2659,7 +2659,7 @@
    "tab": "재료",
    "result": "cow_horn",
    "count": 1,
-   "gold": 230,
+   "gold": 340,
    "mats": [
     [
      "cow_hide",
@@ -2672,7 +2672,7 @@
    "tab": "재료",
    "result": "dark_eye",
    "count": 1,
-   "gold": 580,
+   "gold": 870,
    "mats": [
     [
      "dark_silk",
@@ -2685,7 +2685,7 @@
    "tab": "재료",
    "result": "dog_fang",
    "count": 1,
-   "gold": 330,
+   "gold": 500,
    "mats": [
     [
      "dog_fur",
@@ -2698,7 +2698,7 @@
    "tab": "재료",
    "result": "fairy_dust",
    "count": 1,
-   "gold": 480,
+   "gold": 720,
    "mats": [
     [
      "fairy_wing",
@@ -2711,7 +2711,7 @@
    "tab": "재료",
    "result": "glow_spore",
    "count": 1,
-   "gold": 430,
+   "gold": 640,
    "mats": [
     [
      "tiny_cap",
@@ -2724,7 +2724,7 @@
    "tab": "재료",
    "result": "golden_hoof",
    "count": 1,
-   "gold": 230,
+   "gold": 340,
    "mats": [
     [
      "pig_hide",
@@ -2737,7 +2737,7 @@
    "tab": "재료",
    "result": "odd_potion",
    "count": 1,
-   "gold": 530,
+   "gold": 800,
    "mats": [
     [
      "witch_herb",
@@ -2750,7 +2750,7 @@
    "tab": "재료",
    "result": "rat_tooth",
    "count": 1,
-   "gold": 280,
+   "gold": 420,
    "mats": [
     [
      "rat_tail",
@@ -2763,7 +2763,7 @@
    "tab": "재료",
    "result": "royal_jelly",
    "count": 1,
-   "gold": 330,
+   "gold": 500,
    "mats": [
     [
      "bee_sting",
@@ -2776,7 +2776,7 @@
    "tab": "재료",
    "result": "slime_core",
    "count": 1,
-   "gold": 280,
+   "gold": 420,
    "mats": [
     [
      "slime_goo",
@@ -2789,7 +2789,7 @@
    "tab": "재료",
    "result": "soldier_badge",
    "count": 1,
-   "gold": 480,
+   "gold": 720,
    "mats": [
     [
      "toxic_cap",
@@ -2802,7 +2802,7 @@
    "tab": "재료",
    "result": "spirit_cap",
    "count": 1,
-   "gold": 430,
+   "gold": 640,
    "mats": [
     [
      "spore_dust",
@@ -2815,7 +2815,7 @@
    "tab": "재료",
    "result": "spore_gland",
    "count": 1,
-   "gold": 530,
+   "gold": 800,
    "mats": [
     [
      "spore_silk",
