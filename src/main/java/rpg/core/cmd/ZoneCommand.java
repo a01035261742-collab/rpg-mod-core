@@ -106,19 +106,11 @@ public final class ZoneCommand {
     private static final SuggestionProvider<CommandSourceStack> ZONE_NAMES =
             (c, b) -> SharedSuggestionProvider.suggest(ZoneData.get(c.getSource().getLevel()).zones.keySet(), b);
 
-    /** 빛 다시 계산: 주변 청크 빛을 '틀림'으로 표시 → 저장 후 다시 불러올 때 처음부터 다시 계산 (월드에딧으로 덮은 곳 햇빛 새는 것) */
+    /** 빛 다시 계산 (월드에딧으로 덮은 곳 햇빛 새는 것): 주변 청크 빛을 비우고 처음부터 다시 퍼뜨림 */
     private static int relight(CommandContext<CommandSourceStack> c, int r) throws CommandSyntaxException {
         ServerPlayer p = c.getSource().getPlayerOrException();
-        ServerLevel l = p.serverLevel();
-        var cp = p.chunkPosition(); int n = 0;
-        for (int dx = -r; dx <= r; dx++)
-            for (int dz = -r; dz <= r; dz++) {
-                var ch = l.getChunk(cp.x + dx, cp.z + dz);
-                ch.setLightCorrect(false);
-                ch.setUnsaved(true);
-                n++;
-            }
-        return ok(c, "주변 " + n + "청크 (반경 " + r + "청크 = " + (r * 16) + "칸) 빛 다시 계산 표시 — 저장하고 나갔다가 다시 들어오면 적용돼요 (서버면 재시작)");
+        int n = rpg.core.world.Relight.run(p.serverLevel(), p.chunkPosition(), r);
+        return ok(c, "주변 " + n + "청크 (반경 " + r + "청크 = " + (r * 16) + "칸) 빛 다시 계산 중 — 3초쯤 뒤 화면에 반영돼요 (안 바뀌면 나갔다 들어오기)");
     }
 
     public static void addTo(LiteralArgumentBuilder<CommandSourceStack> root) {
