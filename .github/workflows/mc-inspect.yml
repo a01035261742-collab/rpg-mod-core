@@ -1,0 +1,26 @@
+name: mc-inspect
+on: workflow_dispatch
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with: { distribution: temurin, java-version: '17' }
+      - run: |
+          chmod +x gradlew
+          ./gradlew compileJava -q || true
+          find ~/.gradle -name "*.jar" | grep -i -E "recomp|mapped_official|forge-1.20.1.*(client|joined)" | head -20 > jars.txt
+          cat jars.txt
+          J=$(grep -i recomp jars.txt | head -1); [ -z "$J" ] && J=$(head -1 jars.txt)
+          echo "JAR=$J"
+          mkdir out
+          for c in net.minecraft.server.level.ThreadedLevelLightEngine net.minecraft.world.level.lighting.LevelLightEngine net.minecraft.world.level.lighting.LightEngine net.minecraft.world.level.lighting.SkyLightEngine net.minecraft.world.level.lighting.ChunkSkyLightSources net.minecraft.world.level.chunk.ChunkAccess net.minecraft.world.level.chunk.LevelChunk net.minecraft.world.level.lighting.LayerLightSectionStorage net.minecraft.world.level.lighting.SkyLightSectionStorage; do
+            javap -p -cp "$J" $c > out/$c.txt 2>&1 || true
+          done
+          javap -p -c -cp "$J" net.minecraft.world.level.chunk.storage.ChunkSerializer > out/ChunkSerializer_c.txt 2>&1 || true
+          javap -p -c -cp "$J" net.minecraft.server.level.ThreadedLevelLightEngine > out/TLLE_c.txt 2>&1 || true
+          javap -p -c -cp "$J" net.minecraft.world.level.lighting.SkyLightEngine > out/Sky_c.txt 2>&1 || true
+          javap -p -c -cp "$J" net.minecraft.world.level.lighting.LightEngine > out/LE_c.txt 2>&1 || true
+      - uses: actions/upload-artifact@v4
+        with: { name: mc-inspect, path: out }
