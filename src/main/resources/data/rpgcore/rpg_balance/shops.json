@@ -39,6 +39,22 @@
     [
      "scroll#vit#0",
      4000
+    ],
+    [
+     "scroll#jump#0",
+     4000
+    ],
+    [
+     "scroll#speed#0",
+     4000
+    ],
+    [
+     "scroll#gatk#0",
+     4000
+    ],
+    [
+     "scroll#gmatk#0",
+     4000
     ]
    ]
   },
@@ -346,6 +362,22 @@
     ],
     [
      "scroll#vit#0",
+     4000
+    ],
+    [
+     "scroll#jump#0",
+     4000
+    ],
+    [
+     "scroll#speed#0",
+     4000
+    ],
+    [
+     "scroll#gatk#0",
+     4000
+    ],
+    [
+     "scroll#gmatk#0",
      4000
     ]
    ]
