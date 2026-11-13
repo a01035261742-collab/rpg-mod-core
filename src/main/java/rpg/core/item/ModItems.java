@@ -124,14 +124,15 @@ public final class ModItems {
             {"tiny_cap", "c"}, {"glow_spore", "r"}, {"toxic_cap", "c"}, {"soldier_badge", "r"}, {"fairy_wing", "c"}, {"fairy_dust", "r"},
             {"spore_silk", "c"}, {"spore_gland", "r"}, {"witch_herb", "c"}, {"odd_potion", "r"}, {"dark_silk", "c"}, {"dark_eye", "r"},
             {"beast_shell", "c"}, {"beast_core", "r"}};
-    public static final RegistryObject<Item> SCROLL_FRAGMENT;
+    public static final RegistryObject<Item> SCROLL_FRAGMENT, STAR_FRAGMENT;
     static {
         for (String[] m : MAT) {
             boolean rare = m[1].equals("r");
             MATERIALS.add(ITEMS.register(m[0], () -> new Material(new Item.Properties().rarity(rare ? Rarity.UNCOMMON : Rarity.COMMON),
                     rare ? "희귀 몹 재료 · 제작/판매" : "몹 재료 · 제작/판매", true)));
         }
-        MATERIALS.add(ITEMS.register("star_fragment", () -> new Material(new Item.Properties().rarity(Rarity.RARE), "강화 재료 (지금은 쓰는 곳 없음)", false)));
+        STAR_FRAGMENT = ITEMS.register("star_fragment", () -> new Material(new Item.Properties().rarity(Rarity.RARE), "장비 계승 재료 (스타포스 옮기기 · 강화 창 [계승])", false));
+        MATERIALS.add(STAR_FRAGMENT);
         MATERIALS.add(ITEMS.register("forest_lord_claw", () -> new Material(new Item.Properties().rarity(Rarity.EPIC), "보스 \"숲의 주인\" 확정 드롭 · 판매용 (나중에 제작 재료)", false)));
         MATERIALS.add(ITEMS.register("forest_lord_treasure", () -> new Treasure(new Item.Properties().rarity(Rarity.EPIC), "보스 \"숲의 주인\" 보물 · 상점에 팔면 20,000 G")));
         MATERIALS.add(ITEMS.register("guardian_treasure", () -> new Treasure(new Item.Properties().rarity(Rarity.EPIC), "보스 \"거대버섯 수호자\" 보물 · 상점에 팔면 40,000 G")));

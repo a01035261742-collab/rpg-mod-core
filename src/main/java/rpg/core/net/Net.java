@@ -402,7 +402,8 @@ public final class Net {
                 rpg.core.equip.Enhance.count(p, rpg.core.item.ModItems.POTENTIAL_SCROLL.get()),
                 rpg.core.equip.Enhance.count(p, rpg.core.item.ModItems.EPIC_POTENTIAL_SCROLL.get()), ce[0], ce[1], ce[2],
                 rpg.core.equip.Enhance.count(p, rpg.core.item.ModItems.POWERFUL_FLAME.get()), rpg.core.equip.Enhance.count(p, rpg.core.item.ModItems.ETERNAL_FLAME.get()),
-                rpg.core.equip.Enhance.count(p, rpg.core.item.ModItems.BLACK_FLAME.get()), (int) Math.min(Integer.MAX_VALUE, rpg.core.equip.Power.of(p)));
+                rpg.core.equip.Enhance.count(p, rpg.core.item.ModItems.BLACK_FLAME.get()), (int) Math.min(Integer.MAX_VALUE, rpg.core.equip.Power.of(p)),
+                rpg.core.equip.Enhance.count(p, rpg.core.item.ModItems.STAR_FRAGMENT.get()), rpg.core.equip.Enhance.count(p, rpg.core.item.ModItems.SCROLL_FRAGMENT.get()));
         CH.send(PacketDistributor.PLAYER.with(() -> p), new OpenEnhance(open, locs, gear, slots, scrolls, frags, extra));
     }
 
@@ -449,6 +450,7 @@ public final class Net {
                     case 10 -> rpg.core.equip.Flame.use(p, rpg.core.equip.Enhance.at(p, loc), arg == 1 ? "eternal" : arg == 2 ? "black" : "powerful");
                     case 11 -> rpg.core.equip.Flame.choose(p, rpg.core.equip.Enhance.at(p, loc), arg == 1);
                     case 12 -> rpg.core.equip.Potential.unlock(p, rpg.core.equip.Enhance.at(p, loc));
+                    case 13 -> rpg.core.equip.Inherit.run(p, loc, arg >> 4, arg & 15);   // 계승: 옛 위치, (새 위치 << 4 | 고른 것)
                     default -> {}
                 }
                 rpg.core.equip.PlayerEquip.get(p).dirty = true;   // 능력치 다시 계산
