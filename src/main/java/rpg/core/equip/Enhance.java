@@ -305,7 +305,7 @@ public final class Enhance {
         boolean weapon = cat(d.slot()).equals("weapon");
         if (kind.equals("chaos")) return null;
         if (kind.equals("jump") || kind.equals("speed")) return d.slot().equals("shoes") ? null : "신발에만 쓸 수 있어요";
-        if (kind.equals("gatk")) return d.slot().equals("gloves") ? null : "장갑에만 쓸 수 있어요";
+        if (kind.equals("gatk") || kind.equals("gmatk")) return d.slot().equals("gloves") ? null : "장갑에만 쓸 수 있어요";
         if (kind.equals("watk") || kind.equals("wmatk")) {
             if (!weapon) return "무기에만 쓸 수 있어요";
             if (!weaponKey(d).equals(kind.equals("wmatk") ? "matk" : "atk")) return kind.equals("wmatk") ? "마력 무기(지팡이)에만 쓸 수 있어요" : "공격력 무기에만 쓸 수 있어요";
@@ -344,7 +344,7 @@ public final class Enhance {
                 StringBuilder sb = new StringBuilder();
                 for (String k : new String[]{"atk", "matk", "str", "dex", "int", "luk", "vit", "def", "hp"}) {
                     if (d.stats().getOrDefault(k, 0.0) == 0) continue;   // 장비에 있는 능력치만
-                    int dv = r.nextInt(-3, 6) * (k.equals("hp") ? 10 : 1);
+                    int dv = r.nextInt(-6, 7) * (k.equals("hp") ? 10 : 1);   // -6 ~ +6
                     if (dv == 0) continue;
                     add.putInt(k, add.getInt(k) + dv);
                     sb.append(sb.length() > 0 ? " · " : "").append(k).append(dv > 0 ? " +" : " ").append(dv);
