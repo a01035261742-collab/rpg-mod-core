@@ -22,5 +22,19 @@ jobs:
           javap -p -c -cp "$J" net.minecraft.server.level.ThreadedLevelLightEngine > out/TLLE_c.txt 2>&1 || true
           javap -p -c -cp "$J" net.minecraft.world.level.lighting.SkyLightEngine > out/Sky_c.txt 2>&1 || true
           javap -p -c -cp "$J" net.minecraft.world.level.lighting.LightEngine > out/LE_c.txt 2>&1 || true
-      - uses: actions/upload-artifact@v4
-        with: { name: mc-inspect, path: out }
+      - run: |
+          cd out
+          {
+          echo "== CSLS"; grep -E "(public|protected|private).*\(" net.minecraft.world.level.lighting.ChunkSkyLightSources.txt
+          echo "== ChunkAccess"; grep -iE "light|sky" net.minecraft.world.level.chunk.ChunkAccess.txt
+          echo "== LevelChunk"; grep -iE "light|sky" net.minecraft.world.level.chunk.LevelChunk.txt
+          echo "== LLE"; grep -E "\(" net.minecraft.world.level.lighting.LevelLightEngine.txt
+          echo "== TLLE"; grep -E "\(" net.minecraft.server.level.ThreadedLevelLightEngine.txt
+          echo "== LE"; grep -E "\(" net.minecraft.world.level.lighting.LightEngine.txt
+          echo "== SKY"; grep -E "\(" net.minecraft.world.level.lighting.SkyLightEngine.txt
+          echo "== LLSS"; grep -E "\(" net.minecraft.world.level.lighting.LayerLightSectionStorage.txt
+          } > sum.txt
+          grep -n "isLightOn" ChunkSerializer_c.txt | head > ser.txt
+          L=$(grep -n "isLightOn" ChunkSerializer_c.txt | head -1 | cut -d: -f1); sed -n "$((L-5)),$((L+60))p" ChunkSerializer_c.txt >> ser.txt
+          split -b 50000 sum.txt part_
+          for f in part_* ser.txt; do msg=$(sed ':a;N;$!ba;s/%/%25/g;s/\r//g;s/\n/%0A/g' $f | head -c 60000); echo "::notice title=$f::$msg"; done
