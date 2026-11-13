@@ -23,7 +23,9 @@ jobs:
           javap -p -c -cp "$J" net.minecraft.world.level.lighting.SkyLightEngine > out/Sky_c.txt 2>&1 || true
           javap -p -c -cp "$J" net.minecraft.world.level.lighting.LightEngine > out/LE_c.txt 2>&1 || true
       - run: |
+          set +e
           cd out
+          head -3 *.txt
           {
           echo "== CSLS"; grep -E "(public|protected|private).*\(" net.minecraft.world.level.lighting.ChunkSkyLightSources.txt
           echo "== ChunkAccess"; grep -iE "light|sky" net.minecraft.world.level.chunk.ChunkAccess.txt
