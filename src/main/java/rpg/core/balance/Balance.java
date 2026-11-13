@@ -59,6 +59,8 @@ public final class Balance {
     public static double[] basicAttackPct = {100, 70, 70, 70, 70};
     /** 몹 방어율 % (mobs.json defRate). 없으면 일반 레벨/5 (최대 10), 엘리트 20, 보스 30 */
     public static final java.util.Map<String, Double> MOB_DEF = new java.util.HashMap<>();
+    /** 사냥터 몹 고정 레벨 (mobs.json fixedLevel). 있으면 사냥터 레벨 범위 대신 이 레벨로 나옴 */
+    public static final java.util.Map<String, Integer> FIXED_LEVEL = new java.util.HashMap<>();
     /** 직업별 기본 숙련도 (0~1). 전사 0.4 (마스터리 스킬로 올림), 나머지는 개편 전까지 0.8 */
     public static double[] masteryByJob = {0.8, 0.4, 0.4, 0.4, 0.4};
     public static double mastery = 0.8, critDamage = 1.5, fistAttack = 5, defPerVit = 1.0, defBase = 50, defPerMobLevel = 10;
@@ -259,6 +261,7 @@ public final class Balance {
                             d(o, "range", 0.8), d(o, "width", 1), d(o, "angle", 0), d(o, "knock", 0), d(o, "lunge", 0.35)));
                 }
                 if (m.has("defRate")) MOB_DEF.put(e.getKey(), m.get("defRate").getAsDouble());
+                if (m.has("fixedLevel")) FIXED_LEVEL.put(e.getKey(), m.get("fixedLevel").getAsInt()); else FIXED_LEVEL.remove(e.getKey());
                 MOBS.put(e.getKey(), new MobDef(e.getKey(), ent, name, levels, look, skills, attacks, d(m, "stunArmor", 0)));
                 if (m.has("boss")) rpg.core.combat.Boss.define(e.getKey(), m.getAsJsonObject("boss"));   // 보스 패턴·보상
             }

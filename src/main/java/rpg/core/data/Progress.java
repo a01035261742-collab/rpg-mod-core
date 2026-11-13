@@ -23,7 +23,7 @@ public final class Progress {
             d.level++;
             d.statPoints += Balance.statPointsPerLevel;
             d.skillPoints += Balance.skillPointsPerLevel;
-            d.passivePoints += Balance.passivePointsPerLevel;
+            if (d.level >= 10) d.passivePoints += Balance.passivePointsPerLevel;   // 패시브 포인트는 Lv10 부터
             ups++;
         }
         if (d.level >= Balance.maxLevel) d.exp = 0;
@@ -44,7 +44,7 @@ public final class Progress {
         for (int i = 0; i < PlayerData.N; i++) d.stats[i] = PlayerData.start(i);
         d.statPoints = (d.level - 1) * Balance.statPointsPerLevel;
         d.skillPoints = (d.level - 1) * Balance.skillPointsPerLevel;
-        d.passivePoints = (d.level - 1) * Balance.passivePointsPerLevel;
+        d.passivePoints = Math.max(0, d.level - 9) * Balance.passivePointsPerLevel;
         d.skills.clear(); d.passives.clear(); java.util.Arrays.fill(d.slots, null);
         d.recalc();
         d.hp = d.maxHp; d.mp = d.maxMp;

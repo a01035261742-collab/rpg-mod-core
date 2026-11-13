@@ -36,6 +36,11 @@ public final class Skills {
         if (s == null || !available(d, s)) return;
         int lv = d.skills.getOrDefault(id, 0);
         if (lv >= s.maxLevel() || d.skillPoints <= 0) return;
+        if (s.tier() == 1 && lv >= 3 * (d.level - 9)) {   // 1차 스킬: 레벨 상한 3 × (레벨 - 9) (전직 직후 몰아찍기 막음)
+            p.displayClientMessage(net.minecraft.network.chat.Component.literal("1차 스킬은 지금 Lv." + Math.max(0, 3 * (d.level - 9)) + " 까지 (레벨업마다 +3)")
+                    .withStyle(net.minecraft.ChatFormatting.GRAY), true);
+            return;
+        }
         d.skillPoints--;
         d.skills.put(id, lv + 1);
         if (s.passive()) d.recalc();

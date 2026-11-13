@@ -73,7 +73,7 @@ public final class PlayerEvents {
             if (d.job == 4) {
                 d.refundSkills();
                 d.passives.clear();
-                d.passivePoints = Math.max(0, (d.level - 1) * rpg.core.balance.Balance.passivePointsPerLevel);
+                d.passivePoints = Math.max(0, (d.level - 9) * rpg.core.balance.Balance.passivePointsPerLevel);
                 sp.sendSystemMessage(net.minecraft.network.chat.Component.literal("[도적 개편] 스킬·패시브 포인트를 전부 돌려받았어요. 스킬 창(L)·패시브 창(N)에서 다시 찍어주세요")
                         .withStyle(net.minecraft.ChatFormatting.GOLD));
             }
@@ -85,7 +85,7 @@ public final class PlayerEvents {
             if (d.job == 3) {
                 d.refundSkills();
                 d.passives.clear();
-                d.passivePoints = Math.max(0, (d.level - 1) * rpg.core.balance.Balance.passivePointsPerLevel);
+                d.passivePoints = Math.max(0, (d.level - 9) * rpg.core.balance.Balance.passivePointsPerLevel);
                 sp.sendSystemMessage(net.minecraft.network.chat.Component.literal("[마법사 개편] 스킬·패시브 포인트를 전부 돌려받았어요. 스킬 창(L)·패시브 창(N)에서 다시 찍어주세요")
                         .withStyle(net.minecraft.ChatFormatting.GOLD));
             }
@@ -97,7 +97,7 @@ public final class PlayerEvents {
             if (d.job == 2) {
                 d.refundSkills();
                 d.passives.clear();
-                d.passivePoints = Math.max(0, (d.level - 1) * rpg.core.balance.Balance.passivePointsPerLevel);
+                d.passivePoints = Math.max(0, (d.level - 9) * rpg.core.balance.Balance.passivePointsPerLevel);
                 sp.sendSystemMessage(net.minecraft.network.chat.Component.literal("[궁수 개편] 스킬·패시브 포인트를 전부 돌려받았어요. 스킬 창(L)·패시브 창(N)에서 다시 찍어주세요")
                         .withStyle(net.minecraft.ChatFormatting.GOLD));
             }
@@ -107,7 +107,7 @@ public final class PlayerEvents {
         // 패시브 트리 개편 (한 번만): 패시브 초기화 + 레벨당 포인트 다시 계산 (레벨업당 2)
         if (keep.getInt("rpgTreeV1") < 1) {
             d.passives.clear();
-            d.passivePoints = Math.max(0, (d.level - 1) * rpg.core.balance.Balance.passivePointsPerLevel);
+            d.passivePoints = Math.max(0, (d.level - 9) * rpg.core.balance.Balance.passivePointsPerLevel);
             if (d.level > 1) sp.sendSystemMessage(net.minecraft.network.chat.Component.literal("[패시브 개편] 패시브가 초기화되고 포인트를 다시 받았어요 (레벨업당 2). 패시브 창(N)에서 찍어주세요")
                     .withStyle(net.minecraft.ChatFormatting.GOLD));
             keep.putInt("rpgTreeV1", 1);

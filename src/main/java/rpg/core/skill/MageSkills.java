@@ -58,20 +58,26 @@ public final class MageSkills {
         }
         double pct = s.value(lv);
         anim(p, "magic_claw");
+        Mob second = t;   // 2타째: 3칸 안에 다른 몹이 있으면 그 몹 (작은 광역)
+        for (Mob o : p.serverLevel().getEntitiesOfClass(Mob.class, t.getBoundingBox().inflate(3)))
+            if (o != t && o.isAlive() && rpg.core.combat.Combat.isRpgMob(o) && o.distanceTo(t) <= 3) { second = o; break; }
+        final Mob t2 = second;
         for (int i = 0; i < 2; i++) {
             final int k = i;
+            final Mob tg = i == 0 ? t : t2;
             Runnable hit = () -> {
-                if (!t.isAlive()) return;
-                CombatEvents.skillHit(p, t, pct);
+                Mob t3 = tg.isAlive() ? tg : t;
+                if (!t3.isAlive()) return;
+                CombatEvents.skillHit(p, t3, pct);
                 ServerLevel l = p.serverLevel();
-                Vec3 c = t.position().add(0, t.getBbHeight() * 0.6, 0);
+                Vec3 c = t3.position().add(0, t3.getBbHeight() * 0.6, 0);
                 double side = k == 0 ? 1 : -1;
                 for (int line = -1; line <= 1; line++)   // 대각선 발톱 3줄
                     for (int j = -3; j <= 3; j++) {
                         double a = j * 0.15;
                         l.sendParticles(CLAW, c.x + a * side + line * 0.18, c.y - a, c.z + line * 0.1, 1, 0, 0, 0, 0);
                     }
-                l.playSound(null, t.blockPosition(), SoundEvents.PLAYER_ATTACK_SWEEP, SoundSource.PLAYERS, 0.6f, 1.6f + k * 0.2f);
+                l.playSound(null, t3.blockPosition(), SoundEvents.PLAYER_ATTACK_SWEEP, SoundSource.PLAYERS, 0.6f, 1.6f + k * 0.2f);
             };
             if (i == 0) hit.run(); else JobSkills.later(p, 3, hit);
         }

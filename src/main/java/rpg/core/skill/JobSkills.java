@@ -102,13 +102,13 @@ public final class JobSkills {
             if (!p.isAlive()) return;
             ServerLevel l = p.serverLevel();
             Vec3 look = flatAim(p);
-            double range = 4.5;
+            double range = 5.5;   // 앞 180° 5.5칸
             int hits = 0;
             for (Mob m : l.getEntitiesOfClass(Mob.class, p.getBoundingBox().inflate(range + 3))) {
                 if (!m.isAlive() || !Combat.isRpgMob(m)) continue;
                 Vec3 to = m.position().subtract(p.position());
                 Vec3 flat = new Vec3(to.x, 0, to.z);
-                if (flat.length() - m.getBbWidth() / 2 > range || (flat.length() > m.getBbWidth() / 2 + 0.5 && flat.normalize().dot(look) < 0.3)) continue;   // 몸통 가장자리 기준, 앞 약 145°
+                if (flat.length() - m.getBbWidth() / 2 > range || (flat.length() > m.getBbWidth() / 2 + 0.5 && flat.normalize().dot(look) < 0)) continue;   // 몸통 가장자리 기준, 앞 180°
                 CombatEvents.skillHit(p, m, pct);
                 m.knockback(0.4 + ratio * 0.6, -look.x, -look.z);
                 hits++;
@@ -161,11 +161,11 @@ public final class JobSkills {
 
     private static boolean doubleShot(ServerPlayer p, Defs.SkillDef s, int lv) {
         double pct = s.value(lv);
-        arrow(p, pct, 0);
+        arrow(p, pct, 0).setPierceLevel((byte) 1);   // 관통 2마리
         p.serverLevel().playSound(null, p.blockPosition(), SoundEvents.ARROW_SHOOT, SoundSource.PLAYERS, 1.0f, 1.3f);
         ArcherSkills.anim(p, "double_shot", ArcherSkills.SHOT);
         later(p, 5, () -> {   // 0.25초 뒤 두 번째 화살 (그때 바라보는 방향)
-            arrow(p, pct, 0);
+            arrow(p, pct, 0).setPierceLevel((byte) 1);
             ArcherSkills.anim(p, "double_shot", ArcherSkills.SHOT);
             p.serverLevel().playSound(null, p.blockPosition(), SoundEvents.ARROW_SHOOT, SoundSource.PLAYERS, 1.0f, 1.5f);
         });

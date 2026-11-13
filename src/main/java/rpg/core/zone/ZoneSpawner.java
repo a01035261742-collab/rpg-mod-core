@@ -42,7 +42,8 @@ public final class ZoneSpawner {
                 if (pos == null) continue;
                 String[] ms = z.mobs();
                 String key = ms[level.random.nextInt(ms.length)];
-                int lv = z.level + (z.levelMax > z.level ? level.random.nextInt(z.levelMax - z.level + 1) : 0);
+                Integer fixed = rpg.core.balance.Balance.FIXED_LEVEL.get(key);   // 몹 종류마다 고정 레벨
+                int lv = fixed != null ? fixed : z.level + (z.levelMax > z.level ? level.random.nextInt(z.levelMax - z.level + 1) : 0);
                 Mobs.spawn(level, key, lv, pos, z.name);
             }
             // 구역에서 멀리 벗어난 몹은 정리 (다시 리젠됨)
