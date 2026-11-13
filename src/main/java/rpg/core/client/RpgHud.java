@@ -227,7 +227,7 @@ public final class RpgHud {
     // ───────── 오른쪽 위: 버프 칸 + 골드 ─────────
     private static int topY = 58;
     static final int BOX = 18, BGAP = 4, PER_ROW = 8;
-    private static final int[] KIND_COL = {0xFF5AC8FF, 0xFF6EDC6E, 0xFFFFC83C, 0xFF8C8C8C};   // 스킬 · 파티 · 트리 · 재사용 대기
+    private static final int[] KIND_COL = {0xFF5AC8FF, 0xFF6EDC6E, 0xFFFFC83C, 0xFF8C8C8C, 0xFFDC3232};   // 스킬 · 파티 · 트리 · 재사용 대기 · 상태이상
 
     /** 버프 칸 (아래 상자 위 가운데): 좋은 것 = 가운데 왼쪽으로, 재사용 대기·나쁜 것 = 가운데 오른쪽으로.
      *  남은 시간은 칸 아래쪽 안 (어두운 띠). mx,my 가 칸 위면 툴팁. 맨 위 y 를 돌려줌 */
@@ -243,7 +243,7 @@ public final class RpgHud {
     public static int buffBar(GuiGraphics g, Font font, int w, int mx, int my) {
         java.util.List<ClientData.Buff> good = new java.util.ArrayList<>(), bad = new java.util.ArrayList<>();
         for (ClientData.Buff b : ClientData.BUFFS)
-            if (b.left() >= 900_000_000 || ClientData.left(b.left()) > 0) (b.kind() == 3 ? bad : good).add(b);
+            if (b.left() >= 900_000_000 || ClientData.left(b.left()) > 0) (b.kind() >= 3 ? bad : good).add(b);
         java.util.List<net.minecraft.world.effect.MobEffectInstance> harm = new java.util.ArrayList<>();
         var pl = Minecraft.getInstance().player;
         if (pl != null) for (var e : pl.getActiveEffects())
@@ -262,8 +262,8 @@ public final class RpgHud {
                 top = Math.min(top, y);
                 boolean inf = b.left() >= 900_000_000;
                 int left = inf ? Integer.MAX_VALUE : ClientData.left(b.left());
-                int c = KIND_COL[Math.max(0, Math.min(3, b.kind()))];
-                boolean blink = !inf && b.kind() != 3 && left < 60 && (System.currentTimeMillis() / 250) % 2 == 0;
+                int c = KIND_COL[Math.max(0, Math.min(4, b.kind()))];
+                boolean blink = !inf && b.kind() < 3 && left < 60 && (System.currentTimeMillis() / 250) % 2 == 0;
                 Ui.slot(g, x, y, BOX);
                 if (!blink) {
                     int e = side == 1 ? 0xFFDC3232 : c;
@@ -324,10 +324,10 @@ public final class RpgHud {
         }
         if (hover != null) {
             java.util.List<net.minecraft.network.chat.Component> tip = new java.util.ArrayList<>();
-            String[] kinds = {"스킬", "파티원 버프", "패시브 트리", "재사용 대기"};
-            final int hc = KIND_COL[Math.max(0, Math.min(3, hover.kind()))] & 0xFFFFFF;
+            String[] kinds = {"스킬", "파티원 버프", "패시브 트리", "재사용 대기", "상태이상"};
+            final int hc = KIND_COL[Math.max(0, Math.min(4, hover.kind()))] & 0xFFFFFF;
             tip.add(net.minecraft.network.chat.Component.literal(hover.name()).withStyle(st -> st.withColor(hc)));
-            tip.add(net.minecraft.network.chat.Component.literal("§7" + kinds[Math.max(0, Math.min(3, hover.kind()))] + (hover.extra().isEmpty() ? "" : "  §f" + hover.extra())));
+            tip.add(net.minecraft.network.chat.Component.literal("§7" + kinds[Math.max(0, Math.min(4, hover.kind()))] + (hover.extra().isEmpty() ? "" : "  §f" + hover.extra())));
             if (hover.left() < 900_000_000) tip.add(net.minecraft.network.chat.Component.literal("§7남은 시간 " + (ClientData.left(hover.left()) + 19) / 20 + "초"));
             g.renderComponentTooltip(font, tip, hx, hy);
         }

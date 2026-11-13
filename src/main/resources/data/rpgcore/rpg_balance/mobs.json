@@ -1654,7 +1654,8 @@
      "type": "slam",
      "r": 8,
      "delay": 2.4,
-     "pct": 220
+     "pct": 220,
+     "pStun": 1
     },
     {
      "id": "charge",
@@ -1877,7 +1878,8 @@
      "pct": 220,
      "repeat2": 2,
      "far": 1,
-     "ranged": 1
+     "ranged": 1,
+     "pStun": 1.5
     },
     {
      "id": "spore_shot",
@@ -1916,7 +1918,8 @@
      "pct": 0,
      "phase": 2,
      "far": 1,
-     "ranged": 1
+     "ranged": 1,
+     "pSilence": 3
     }
    ],
    "reward": {
@@ -2094,7 +2097,9 @@
      "delay": 1.4,
      "pct": 180,
      "push": 3,
-     "only": 1
+     "only": 1,
+     "pBleed": 5,
+     "bleedPct": 1
     },
     {
      "id": "web",
@@ -2263,7 +2268,9 @@
      "finalDelay": 4.5,
      "safeR": 7,
      "finalPct": 300,
-     "only": 2
+     "only": 2,
+     "pBleed": 5,
+     "bleedPct": 1
     },
     {
      "id": "leap2",

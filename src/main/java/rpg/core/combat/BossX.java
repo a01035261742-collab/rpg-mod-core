@@ -64,6 +64,7 @@ final class BossX {
     static void poison(ServerPlayer p, double sec, long now) {
         if (sec <= 0) return;
         POISON.merge(p.getUUID(), now + Math.round(sec * 20), Math::max);
+        Status.apply(p, "poison", sec, 0);   // 버프 칸 표시
     }
 
     // ───────── 매 틱 (패턴과 상관없이) ─────────
@@ -71,6 +72,7 @@ final class BossX {
         X x = st.x;
         x.mob = mob.getUUID();
         x.level = m.level;
+        for (ServerPlayer p : Boss.arena(l, st, 8)) Status.tick(p, mob, now);   // 기절 고정 · 출혈
         // 독: 1초마다 최대 HP %
         if (now % 20 == 0 && !POISON.isEmpty()) {
             for (ServerPlayer p : Boss.arena(l, st, 8)) {
@@ -179,7 +181,7 @@ final class BossX {
             if (!Boss.valid(p)) continue;
             for (Web w : x.webs) {
                 if (Boss.flat(p.position(), w.c()) > w.r() || Math.abs(p.getY() - w.c().y) > 3) continue;
-                p.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.MOVEMENT_SLOWDOWN, 12, (int) def.g("webSlow", 2), false, false, true));
+                Status.apply(p, "slow", 0.6, 15 * (def.g("webSlow", 2) + 1));   // 구속 III 와 같은 45%
                 break;
             }
         }
@@ -703,6 +705,6 @@ final class BossX {
         x.hidePillars.clear();
         if (!x.zones.isEmpty() || !x.webs.isEmpty()) Net.telegraph(l, st.center, new Vec3(1, 0, 0), 99, 0, 0, 1);
         x.hatch.clear(); x.absorb.clear(); x.adds.clear(); x.cocoons.clear(); x.zones.clear(); x.shots.clear(); x.lines.clear(); x.webs.clear();
-        for (ServerPlayer p : Boss.arena(l, st, 24)) POISON.remove(p.getUUID());   // 독도 끝
+        for (ServerPlayer p : Boss.arena(l, st, 24)) { POISON.remove(p.getUUID()); Status.clear(rpg.core.data.RpgData.get(p)); rpg.core.data.RpgData.sync(p); }   // 독·상태이상도 끝
     }
 }

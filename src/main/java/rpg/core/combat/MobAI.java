@@ -460,7 +460,7 @@ public final class MobAI {
         if ("slow".equals(effect)) {   // 무게중심: 둔화 시간 줄어듦
             double resist = Math.min(100, rpg.core.data.RpgData.get(p).bonus("kbResist"));
             int ticks = (int) Math.round(60 * (1 - resist / 100.0));
-            if (ticks > 0) p.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, ticks, 1));
+            if (ticks > 0) Status.apply(p, "slow", ticks / 20.0, 30);
         }
     }
 }

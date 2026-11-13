@@ -1,1 +1,1 @@
-{"parent":"minecraft:block/cube_bottom_top","textures":{"top":"minecraft:block/lodestone_top","bottom":"minecraft:block/lodestone_top","side":"minecraft:block/lodestone_side"}}
+{"parent":"minecraft:block/cube_bottom_top","textures":{"top":"rpgcore:block/waystone_top","bottom":"rpgcore:block/waystone_top","side":"rpgcore:block/waystone_side"}}

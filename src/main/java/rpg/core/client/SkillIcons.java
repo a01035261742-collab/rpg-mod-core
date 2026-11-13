@@ -52,7 +52,8 @@ public final class SkillIcons {
             Map.entry("독", "poison"),
             Map.entry("출혈", "bleed"),
             Map.entry("기절", "stun"),
-            Map.entry("둔화", "slow"));
+            Map.entry("둔화", "slow"),
+            Map.entry("침묵", "silence"));
     private static final Map<String, ResourceLocation> BUFF_TEX = new HashMap<>();
 
     /** 버프 칸 아이콘 (이름 앞부분으로 찾음: "콤보 · 골드 +5%" → 콤보). 없으면 false */

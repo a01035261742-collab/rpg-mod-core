@@ -1099,6 +1099,7 @@ public final class Boss {
         if (pt.x("maxPct", 0) > 0) CombatEvents.maxHpHit(mob, p, pt.x("maxPct", 0));   // 최대 HP 비율
         else CombatEvents.mobSkillHit(mob, p, pt.pct());
         if (pt.x("poison", 0) > 0) BossX.poison(p, pt.x("poison", 0), l.getGameTime());   // 독 (초)
+        Status.fromPattern(p, pt);   // 기절 · 침묵 · 출혈
         PlayerData d = RpgData.get(p);
         if (!p.isAlive() || d.isDown() || d.hp <= 0) {
             for (ServerPlayer x : arena(l, st, 16))

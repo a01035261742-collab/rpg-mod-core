@@ -1,1 +1,1 @@
-{"parent":"minecraft:block/cube_all","textures":{"all":"rpgcore:block/raid_gate"}}
+{"parent":"minecraft:block/cube_bottom_top","textures":{"top":"rpgcore:block/raid_gate_top","bottom":"rpgcore:block/raid_gate_top","side":"rpgcore:block/raid_gate_side"}}

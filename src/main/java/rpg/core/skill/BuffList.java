@@ -23,7 +23,7 @@ public final class BuffList {
             Map.entry("evasion_instinct", "회피 본능"), Map.entry("blessed_hand", "축복받은 손"));
 
     public static List<Entry> build(PlayerData d, long now) {
-        List<Entry> skill = new ArrayList<>(), party = new ArrayList<>(), tree = new ArrayList<>(), cd = new ArrayList<>();
+        List<Entry> skill = new ArrayList<>(), party = new ArrayList<>(), tree = new ArrayList<>(), cd = new ArrayList<>(), bad = new ArrayList<>();
         if (now < d.sprintEnd) skill.add(new Entry("질주", (int) (d.sprintEnd - now), 0, ""));
         if (now < d.shieldEnd && d.shield > 0) skill.add(new Entry("보호막", d.shieldEnd == Long.MAX_VALUE ? INF : (int) (d.shieldEnd - now), 0, ""));
         if (now < d.killComboUntil && d.killCombo > 0)   // 칸: "콤보" · 오른쪽 아래 콤보 수 · 아래 남은 시간 (골드 % 는 툴팁 이름)
@@ -31,6 +31,8 @@ public final class BuffList {
         d.buffEnd.forEach((id, end) -> {
             if (now >= end || id.equals("stealth") && d.buffV("stealth", now) == 0 && d.buffEnd.containsKey("escape_speed")) return;
             int left = (int) (end - now);
+            String st = rpg.core.combat.Status.NAMES.get(id);
+            if (st != null) { bad.add(new Entry(st, left, 4, "")); return; }   // 상태이상
             String tn = TREE.get(id);
             String item = rpg.core.item.BuffItem.NAMES.get(id);
             if (item != null) { skill.add(new Entry(item, left, 0, "")); return; }   // 버프 아이템
@@ -65,7 +67,7 @@ public final class BuffList {
         if (d.bonus("windVeil") > 0 && now < d.windVeilReadyAt) cd.add(new Entry("바람의 장막", (int) (d.windVeilReadyAt - now), 3, ""));
         if (d.bonus("escape") > 0 && now < d.escapeReadyAt) cd.add(new Entry("도망자", (int) (d.escapeReadyAt - now), 3, ""));
         List<Entry> out = new ArrayList<>(skill);
-        out.addAll(party); out.addAll(tree); out.addAll(cd);
+        out.addAll(party); out.addAll(tree); out.addAll(cd); out.addAll(bad);
         return out;
     }
 

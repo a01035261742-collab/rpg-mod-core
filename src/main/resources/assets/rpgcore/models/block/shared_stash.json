@@ -1,1 +1,1 @@
-{"parent":"minecraft:block/cube_all","textures":{"all":"rpgcore:block/shared_stash"}}
+{"parent":"minecraft:block/cube_bottom_top","textures":{"top":"rpgcore:block/shared_stash_top","bottom":"rpgcore:block/shared_stash_top","side":"rpgcore:block/shared_stash_side"}}

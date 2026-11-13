@@ -110,6 +110,7 @@ public final class Skills {
         int lv = d.skills.getOrDefault(id, 0);
         if (s == null || lv <= 0 || s.passive() || !available(d, s)) return;
         long now = p.level().getGameTime();
+        if (rpg.core.combat.Status.blockSkill(p, d, now)) return;   // 기절 · 침묵
         if ("shadow_clone".equals(id) && ThiefSkills.detonate(p)) return;   // 분신술 다시 누르기: 바로 폭발
         if (now < d.cdEnd.getOrDefault(id, 0L)) return;
         if (d.mp < mpCost(d, s, lv, now)) {
@@ -197,7 +198,7 @@ public final class Skills {
         PlayerData d = RpgData.get(p);
         if (d.isDown()) return;
         long now = p.level().getGameTime();
-        if (now < d.dodgeEnd) return;
+        if (now < d.dodgeEnd || rpg.core.combat.Status.stunned(d, now)) return;   // 기절: 구르기 X
         Vec3 dir = new Vec3(dx, 0, dz);
         if (dir.lengthSqr() < 0.01) dir = Vec3.directionFromRotation(0, p.getYRot());
         dir = dir.normalize().scale(Balance.dodgePower);
@@ -255,12 +256,12 @@ public final class Skills {
         }
         double pct = d.bonus("speedPct") + (now < d.sprintEnd ? d.sprintPct : 0) + d.buffV("haste", now) + d.buffV("item_speed", now)
                 + d.buffV("evasion_instinct", now) + d.buffV("battle_thrill", now) + d.buffV("hunt_speed", now) + d.buffV("hunt_instinct", now) + d.buffV("chase", now) + d.buffV("wind_veil", now) + d.buffV("escape_speed", now)
-                - (now < d.aimUntil ? 50 : 0)
+                - (now < d.aimUntil ? 50 : 0) - rpg.core.combat.Status.slowPct(d, now)
                 - (d.chargeSkill != null ? 50 : 0);
         AttributeInstance inst = p.getAttribute(Attributes.MOVEMENT_SPEED);
         if (inst == null) return;
         AttributeModifier cur = inst.getModifier(SPEED_ID);
-        double want = rpg.core.world.RpgWorld.in(p) ? pct / 100.0 : 0;   // 야생: RPG 이동속도 없음
+        double want = !rpg.core.world.RpgWorld.in(p) ? 0 : rpg.core.combat.Status.stunned(d, now) ? -1 : Math.max(-1, pct / 100.0);   // 야생: RPG 이동속도 없음
         if (cur != null && Math.abs(cur.getAmount() - want) < 1e-6) return;
         if (cur != null) inst.removeModifier(SPEED_ID);
         if (want != 0) inst.addTransientModifier(new AttributeModifier(SPEED_ID, "rpg speed", want, AttributeModifier.Operation.MULTIPLY_TOTAL));
