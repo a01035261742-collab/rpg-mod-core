@@ -165,6 +165,7 @@ public final class MobAI {
         }
         if (t == null && (def.look().chase() || def.look().passive())) t = nearest(mob, 16);
         if (t == null) return;
+        if (mob instanceof net.minecraft.world.entity.ambient.Bat bat) batFollow(bat, t);
         if (def.look().chase() && mob.tickCount % 10 == 0) mob.getNavigation().moveTo(t, 1.2);
         // 브레인 AI 몹(호글린 등)은 멀리서 멈추지 않고 1.2칸까지 붙게
         if (mob instanceof net.minecraft.world.entity.monster.hoglin.Hoglin && mob.tickCount % 10 == 0
@@ -461,6 +462,43 @@ public final class MobAI {
             double resist = Math.min(100, rpg.core.data.RpgData.get(p).bonus("kbResist"));
             int ticks = (int) Math.round(60 * (1 - resist / 100.0));
             if (ticks > 0) Status.apply(p, "slow", ticks / 20.0, 30);
+        } else if ("poison".equals(effect)) {   // 독 3초: 1초마다 몹 공격력 25%
+            long now = mob.level().getGameTime();
+            POISON.put(p.getUUID(), new Poison(mob, now + 60, now + 20));
+            Status.apply(p, "poison", 3, 0);
+        } else if ("stun".equals(effect)) {   // 기절 1초
+            Status.apply(p, "stun", 1, 0);
         }
+    }
+
+    // ───────── 일반 몹 독 (사냥터) ─────────
+    private record Poison(Mob src, long until, long next) {}
+    private static final java.util.Map<java.util.UUID, Poison> POISON = new java.util.concurrent.ConcurrentHashMap<>();
+
+    @SubscribeEvent
+    public static void poisonTick(net.minecraftforge.event.TickEvent.PlayerTickEvent e) {
+        if (e.phase != net.minecraftforge.event.TickEvent.Phase.END || !(e.player instanceof ServerPlayer p) || POISON.isEmpty()) return;
+        Poison po = POISON.get(p.getUUID());
+        if (po == null) return;
+        long now = p.level().getGameTime();
+        if (now > po.until() || !po.src().isAlive() || !p.isAlive() || rpg.core.data.RpgData.get(p).isDown()) { POISON.remove(p.getUUID()); return; }
+        if (now < po.next()) return;
+        POISON.put(p.getUUID(), new Poison(po.src(), po.until(), now + 20));
+        CombatEvents.mobSkillHit(po.src(), p, 25);
+        p.serverLevel().sendParticles(net.minecraft.core.particles.ParticleTypes.ITEM_SLIME, p.getX(), p.getY() + 1, p.getZ(), 4, 0.3, 0.4, 0.3, 0);
+    }
+
+    // ───────── 박쥐: 대상 위를 맴돌며 날아다님 (바닐라 박쥐는 대상이 없음) ─────────
+    private static Field BAT_POS;
+
+    private static void batFollow(net.minecraft.world.entity.ambient.Bat bat, Player t) {
+        try {
+            if (BAT_POS == null) {
+                for (Field f : net.minecraft.world.entity.ambient.Bat.class.getDeclaredFields())
+                    if (f.getType() == net.minecraft.core.BlockPos.class) { f.setAccessible(true); BAT_POS = f; break; }
+            }
+            if (BAT_POS != null) BAT_POS.set(bat, net.minecraft.core.BlockPos.containing(t.getX() + bat.getRandom().nextInt(5) - 2, t.getY() + 2, t.getZ() + bat.getRandom().nextInt(5) - 2));
+        } catch (Exception ignored) {}
+        if (bat.isResting()) bat.setResting(false);
     }
 }

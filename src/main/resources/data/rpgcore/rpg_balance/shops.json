@@ -470,6 +470,75 @@
      8000
     ]
    ]
+  },
+  "gear3": {
+   "name": "장비 상인",
+   "items": [
+    [
+     "warrior_sword_50",
+     15840
+    ],
+    [
+     "archer_bow_50",
+     15840
+    ],
+    [
+     "mage_staff_50",
+     15840
+    ],
+    [
+     "thief_dagger_50",
+     15840
+    ],
+    [
+     "hat_50",
+     8700
+    ],
+    [
+     "top_50",
+     11400
+    ],
+    [
+     "bottom_50",
+     10620
+    ],
+    [
+     "shoes_50",
+     7920
+    ],
+    [
+     "warrior_sword_60",
+     23760
+    ],
+    [
+     "archer_bow_60",
+     23760
+    ],
+    [
+     "mage_staff_60",
+     23760
+    ],
+    [
+     "thief_dagger_60",
+     23760
+    ],
+    [
+     "hat_60",
+     13050
+    ],
+    [
+     "top_60",
+     17100
+    ],
+    [
+     "bottom_60",
+     15930
+    ],
+    [
+     "shoes_60",
+     11880
+    ]
+   ]
   }
  },
  "sell": {
@@ -681,6 +750,20 @@
   "ring_50": 1190,
   "ring_60": 1660,
   "pendant_50": 1190,
-  "pendant_60": 1660
+  "pendant_60": 1660,
+  "cave_silk": 204,
+  "cave_fang": 2340,
+  "bat_wing": 216,
+  "echo_crystal": 2430,
+  "venom_sac": 234,
+  "venom_crystal": 2565,
+  "stone_spike": 246,
+  "spike_heart": 2655,
+  "ore_goo": 264,
+  "ore_core": 2790,
+  "miner_bone": 276,
+  "miner_badge": 2880,
+  "golem_shard": 300,
+  "void_core": 3060
  }
 }

@@ -1,5 +1,5 @@
 {
- "_설명": "NPC 제작 (작업대 레시피 없음). stations = 제작 NPC (/rpg npc craft <키>), tabs = 창 위 탭. recipes: station·tab·result·count(만들어지는 개수)·gold·mats [아이템, 개수] (minecraft: 없으면 rpgcore). 장비는 추가 옵션 4줄로 나옴. 방어구는 직업별(제작 전용), 공용 방어구는 상점 일반 장비. Lv40까지 광물은 철(방어구·무기)·구리(장신구), 단계마다 양만 늘림(×1·1.5·2·3). 숫자는 임시값 주문서 결과는 scroll#종류#등급 (등급 2=30% 3=10%), scroll#white=순백",
+ "_설명": "NPC 제작 (작업대 레시피 없음). stations = 제작 NPC (/rpg npc craft <키>), tabs = 창 위 탭. recipes: station·tab·result·count(만들어지는 개수)·gold·mats [아이템, 개수] (minecraft: 없으면 rpgcore). 장비는 추가 옵션 4줄로 나옴. 방어구는 직업별(제작 전용), 공용 방어구는 상점 일반 장비. Lv40까지 광물은 철(방어구·무기)·구리(장신구), 단계마다 양만 늘림(×1·1.5·2·3). 숫자는 임시값 주문서 결과는 scroll#종류#등급 (등급 2=30% 3=10%), scroll#white=순백 smith3·jeweler3 = 3지역 동굴 마을 전용 (Lv50·60 장비, 아래 마을 NPC 에는 안 나옴).",
  "stations": {
   "smith": {
    "name": "대장장이",
@@ -28,6 +28,28 @@
     "물약",
     "재료",
     "주문서"
+   ]
+  },
+  "smith3": {
+   "name": "대장장이",
+   "tabs": [
+    "무기",
+    "전사 방어구",
+    "궁수 방어구",
+    "마법사 방어구",
+    "도적 방어구"
+   ]
+  },
+  "jeweler3": {
+   "name": "세공사",
+   "tabs": [
+    "장갑",
+    "망토",
+    "벨트",
+    "귀걸이",
+    "반지",
+    "펜던트",
+    "재료"
    ]
   }
  },
@@ -2819,6 +2841,1189 @@
    "mats": [
     [
      "spore_silk",
+     9
+    ]
+   ]
+  },
+  {
+   "station": "smith3",
+   "tab": "무기",
+   "result": "warrior_sword_50",
+   "count": 1,
+   "gold": 3700,
+   "mats": [
+    [
+     "stone_spike",
+     10
+    ],
+    [
+     "spike_heart",
+     2
+    ],
+    [
+     "minecraft:iron_ingot",
+     19
+    ]
+   ]
+  },
+  {
+   "station": "smith3",
+   "tab": "무기",
+   "result": "archer_bow_50",
+   "count": 1,
+   "gold": 3700,
+   "mats": [
+    [
+     "cave_silk",
+     10
+    ],
+    [
+     "cave_fang",
+     2
+    ],
+    [
+     "minecraft:iron_ingot",
+     19
+    ]
+   ]
+  },
+  {
+   "station": "smith3",
+   "tab": "무기",
+   "result": "mage_staff_50",
+   "count": 1,
+   "gold": 3700,
+   "mats": [
+    [
+     "bat_wing",
+     10
+    ],
+    [
+     "echo_crystal",
+     2
+    ],
+    [
+     "minecraft:iron_ingot",
+     19
+    ]
+   ]
+  },
+  {
+   "station": "smith3",
+   "tab": "무기",
+   "result": "thief_dagger_50",
+   "count": 1,
+   "gold": 3700,
+   "mats": [
+    [
+     "venom_sac",
+     10
+    ],
+    [
+     "venom_crystal",
+     2
+    ],
+    [
+     "minecraft:iron_ingot",
+     19
+    ]
+   ]
+  },
+  {
+   "station": "smith3",
+   "tab": "전사 방어구",
+   "result": "warrior_hat_50",
+   "count": 1,
+   "gold": 1620,
+   "mats": [
+    [
+     "stone_spike",
+     8
+    ],
+    [
+     "cave_silk",
+     5
+    ],
+    [
+     "minecraft:iron_ingot",
+     8
+    ]
+   ]
+  },
+  {
+   "station": "smith3",
+   "tab": "전사 방어구",
+   "result": "warrior_top_50",
+   "count": 1,
+   "gold": 2130,
+   "mats": [
+    [
+     "stone_spike",
+     12
+    ],
+    [
+     "cave_silk",
+     8
+    ],
+    [
+     "minecraft:iron_ingot",
+     15
+    ]
+   ]
+  },
+  {
+   "station": "smith3",
+   "tab": "전사 방어구",
+   "result": "warrior_bottom_50",
+   "count": 1,
+   "gold": 1990,
+   "mats": [
+    [
+     "stone_spike",
+     10
+    ],
+    [
+     "cave_silk",
+     6
+    ],
+    [
+     "minecraft:iron_ingot",
+     11
+    ]
+   ]
+  },
+  {
+   "station": "smith3",
+   "tab": "전사 방어구",
+   "result": "warrior_shoes_50",
+   "count": 1,
+   "gold": 1480,
+   "mats": [
+    [
+     "stone_spike",
+     6
+    ],
+    [
+     "cave_silk",
+     4
+    ],
+    [
+     "minecraft:iron_ingot",
+     8
+    ]
+   ]
+  },
+  {
+   "station": "smith3",
+   "tab": "궁수 방어구",
+   "result": "archer_hat_50",
+   "count": 1,
+   "gold": 1620,
+   "mats": [
+    [
+     "bat_wing",
+     8
+    ],
+    [
+     "venom_sac",
+     5
+    ],
+    [
+     "minecraft:iron_ingot",
+     8
+    ]
+   ]
+  },
+  {
+   "station": "smith3",
+   "tab": "궁수 방어구",
+   "result": "archer_top_50",
+   "count": 1,
+   "gold": 2130,
+   "mats": [
+    [
+     "bat_wing",
+     12
+    ],
+    [
+     "venom_sac",
+     8
+    ],
+    [
+     "minecraft:iron_ingot",
+     15
+    ]
+   ]
+  },
+  {
+   "station": "smith3",
+   "tab": "궁수 방어구",
+   "result": "archer_bottom_50",
+   "count": 1,
+   "gold": 1990,
+   "mats": [
+    [
+     "bat_wing",
+     10
+    ],
+    [
+     "venom_sac",
+     6
+    ],
+    [
+     "minecraft:iron_ingot",
+     11
+    ]
+   ]
+  },
+  {
+   "station": "smith3",
+   "tab": "궁수 방어구",
+   "result": "archer_shoes_50",
+   "count": 1,
+   "gold": 1480,
+   "mats": [
+    [
+     "bat_wing",
+     6
+    ],
+    [
+     "venom_sac",
+     4
+    ],
+    [
+     "minecraft:iron_ingot",
+     8
+    ]
+   ]
+  },
+  {
+   "station": "smith3",
+   "tab": "마법사 방어구",
+   "result": "mage_hat_50",
+   "count": 1,
+   "gold": 1620,
+   "mats": [
+    [
+     "cave_silk",
+     8
+    ],
+    [
+     "bat_wing",
+     5
+    ],
+    [
+     "minecraft:iron_ingot",
+     8
+    ]
+   ]
+  },
+  {
+   "station": "smith3",
+   "tab": "마법사 방어구",
+   "result": "mage_top_50",
+   "count": 1,
+   "gold": 2130,
+   "mats": [
+    [
+     "cave_silk",
+     12
+    ],
+    [
+     "bat_wing",
+     8
+    ],
+    [
+     "minecraft:iron_ingot",
+     15
+    ]
+   ]
+  },
+  {
+   "station": "smith3",
+   "tab": "마법사 방어구",
+   "result": "mage_bottom_50",
+   "count": 1,
+   "gold": 1990,
+   "mats": [
+    [
+     "cave_silk",
+     10
+    ],
+    [
+     "bat_wing",
+     6
+    ],
+    [
+     "minecraft:iron_ingot",
+     11
+    ]
+   ]
+  },
+  {
+   "station": "smith3",
+   "tab": "마법사 방어구",
+   "result": "mage_shoes_50",
+   "count": 1,
+   "gold": 1480,
+   "mats": [
+    [
+     "cave_silk",
+     6
+    ],
+    [
+     "bat_wing",
+     4
+    ],
+    [
+     "minecraft:iron_ingot",
+     8
+    ]
+   ]
+  },
+  {
+   "station": "smith3",
+   "tab": "도적 방어구",
+   "result": "thief_hat_50",
+   "count": 1,
+   "gold": 1620,
+   "mats": [
+    [
+     "venom_sac",
+     8
+    ],
+    [
+     "stone_spike",
+     5
+    ],
+    [
+     "minecraft:iron_ingot",
+     8
+    ]
+   ]
+  },
+  {
+   "station": "smith3",
+   "tab": "도적 방어구",
+   "result": "thief_top_50",
+   "count": 1,
+   "gold": 2130,
+   "mats": [
+    [
+     "venom_sac",
+     12
+    ],
+    [
+     "stone_spike",
+     8
+    ],
+    [
+     "minecraft:iron_ingot",
+     15
+    ]
+   ]
+  },
+  {
+   "station": "smith3",
+   "tab": "도적 방어구",
+   "result": "thief_bottom_50",
+   "count": 1,
+   "gold": 1990,
+   "mats": [
+    [
+     "venom_sac",
+     10
+    ],
+    [
+     "stone_spike",
+     6
+    ],
+    [
+     "minecraft:iron_ingot",
+     11
+    ]
+   ]
+  },
+  {
+   "station": "smith3",
+   "tab": "도적 방어구",
+   "result": "thief_shoes_50",
+   "count": 1,
+   "gold": 1480,
+   "mats": [
+    [
+     "venom_sac",
+     6
+    ],
+    [
+     "stone_spike",
+     4
+    ],
+    [
+     "minecraft:iron_ingot",
+     8
+    ]
+   ]
+  },
+  {
+   "station": "jeweler3",
+   "tab": "장갑",
+   "result": "gloves_50",
+   "count": 1,
+   "gold": 1570,
+   "mats": [
+    [
+     "stone_spike",
+     6
+    ],
+    [
+     "venom_crystal",
+     1
+    ],
+    [
+     "minecraft:copper_ingot",
+     8
+    ]
+   ]
+  },
+  {
+   "station": "jeweler3",
+   "tab": "망토",
+   "result": "cape_50",
+   "count": 1,
+   "gold": 1570,
+   "mats": [
+    [
+     "bat_wing",
+     6
+    ],
+    [
+     "echo_crystal",
+     1
+    ],
+    [
+     "minecraft:copper_ingot",
+     8
+    ]
+   ]
+  },
+  {
+   "station": "jeweler3",
+   "tab": "벨트",
+   "result": "belt_50",
+   "count": 1,
+   "gold": 1570,
+   "mats": [
+    [
+     "cave_silk",
+     6
+    ],
+    [
+     "spike_heart",
+     1
+    ],
+    [
+     "minecraft:copper_ingot",
+     8
+    ]
+   ]
+  },
+  {
+   "station": "jeweler3",
+   "tab": "귀걸이",
+   "result": "earring_50",
+   "count": 1,
+   "gold": 1570,
+   "mats": [
+    [
+     "venom_sac",
+     6
+    ],
+    [
+     "cave_fang",
+     1
+    ],
+    [
+     "minecraft:copper_ingot",
+     8
+    ]
+   ]
+  },
+  {
+   "station": "jeweler3",
+   "tab": "반지",
+   "result": "ring_50",
+   "count": 1,
+   "gold": 1570,
+   "mats": [
+    [
+     "cave_silk",
+     6
+    ],
+    [
+     "venom_crystal",
+     1
+    ],
+    [
+     "minecraft:copper_ingot",
+     8
+    ]
+   ]
+  },
+  {
+   "station": "jeweler3",
+   "tab": "펜던트",
+   "result": "pendant_50",
+   "count": 1,
+   "gold": 1570,
+   "mats": [
+    [
+     "bat_wing",
+     6
+    ],
+    [
+     "spike_heart",
+     1
+    ],
+    [
+     "minecraft:copper_ingot",
+     8
+    ]
+   ]
+  },
+  {
+   "station": "smith3",
+   "tab": "무기",
+   "result": "warrior_sword_60",
+   "count": 1,
+   "gold": 5150,
+   "mats": [
+    [
+     "golem_shard",
+     10
+    ],
+    [
+     "void_core",
+     2
+    ],
+    [
+     "minecraft:iron_ingot",
+     22
+    ]
+   ]
+  },
+  {
+   "station": "smith3",
+   "tab": "무기",
+   "result": "archer_bow_60",
+   "count": 1,
+   "gold": 5150,
+   "mats": [
+    [
+     "miner_bone",
+     10
+    ],
+    [
+     "miner_badge",
+     2
+    ],
+    [
+     "minecraft:iron_ingot",
+     22
+    ]
+   ]
+  },
+  {
+   "station": "smith3",
+   "tab": "무기",
+   "result": "mage_staff_60",
+   "count": 1,
+   "gold": 5150,
+   "mats": [
+    [
+     "ore_goo",
+     10
+    ],
+    [
+     "ore_core",
+     2
+    ],
+    [
+     "minecraft:iron_ingot",
+     22
+    ]
+   ]
+  },
+  {
+   "station": "smith3",
+   "tab": "무기",
+   "result": "thief_dagger_60",
+   "count": 1,
+   "gold": 5150,
+   "mats": [
+    [
+     "golem_shard",
+     10
+    ],
+    [
+     "ore_core",
+     2
+    ],
+    [
+     "minecraft:iron_ingot",
+     22
+    ]
+   ]
+  },
+  {
+   "station": "smith3",
+   "tab": "전사 방어구",
+   "result": "warrior_hat_60",
+   "count": 1,
+   "gold": 2260,
+   "mats": [
+    [
+     "golem_shard",
+     8
+    ],
+    [
+     "miner_bone",
+     5
+    ],
+    [
+     "minecraft:iron_ingot",
+     9
+    ]
+   ]
+  },
+  {
+   "station": "smith3",
+   "tab": "전사 방어구",
+   "result": "warrior_top_60",
+   "count": 1,
+   "gold": 2960,
+   "mats": [
+    [
+     "golem_shard",
+     12
+    ],
+    [
+     "miner_bone",
+     8
+    ],
+    [
+     "minecraft:iron_ingot",
+     18
+    ]
+   ]
+  },
+  {
+   "station": "smith3",
+   "tab": "전사 방어구",
+   "result": "warrior_bottom_60",
+   "count": 1,
+   "gold": 2770,
+   "mats": [
+    [
+     "golem_shard",
+     10
+    ],
+    [
+     "miner_bone",
+     6
+    ],
+    [
+     "minecraft:iron_ingot",
+     14
+    ]
+   ]
+  },
+  {
+   "station": "smith3",
+   "tab": "전사 방어구",
+   "result": "warrior_shoes_60",
+   "count": 1,
+   "gold": 2070,
+   "mats": [
+    [
+     "golem_shard",
+     6
+    ],
+    [
+     "miner_bone",
+     4
+    ],
+    [
+     "minecraft:iron_ingot",
+     9
+    ]
+   ]
+  },
+  {
+   "station": "smith3",
+   "tab": "궁수 방어구",
+   "result": "archer_hat_60",
+   "count": 1,
+   "gold": 2260,
+   "mats": [
+    [
+     "ore_goo",
+     8
+    ],
+    [
+     "golem_shard",
+     5
+    ],
+    [
+     "minecraft:iron_ingot",
+     9
+    ]
+   ]
+  },
+  {
+   "station": "smith3",
+   "tab": "궁수 방어구",
+   "result": "archer_top_60",
+   "count": 1,
+   "gold": 2960,
+   "mats": [
+    [
+     "ore_goo",
+     12
+    ],
+    [
+     "golem_shard",
+     8
+    ],
+    [
+     "minecraft:iron_ingot",
+     18
+    ]
+   ]
+  },
+  {
+   "station": "smith3",
+   "tab": "궁수 방어구",
+   "result": "archer_bottom_60",
+   "count": 1,
+   "gold": 2770,
+   "mats": [
+    [
+     "ore_goo",
+     10
+    ],
+    [
+     "golem_shard",
+     6
+    ],
+    [
+     "minecraft:iron_ingot",
+     14
+    ]
+   ]
+  },
+  {
+   "station": "smith3",
+   "tab": "궁수 방어구",
+   "result": "archer_shoes_60",
+   "count": 1,
+   "gold": 2070,
+   "mats": [
+    [
+     "ore_goo",
+     6
+    ],
+    [
+     "golem_shard",
+     4
+    ],
+    [
+     "minecraft:iron_ingot",
+     9
+    ]
+   ]
+  },
+  {
+   "station": "smith3",
+   "tab": "마법사 방어구",
+   "result": "mage_hat_60",
+   "count": 1,
+   "gold": 2260,
+   "mats": [
+    [
+     "miner_bone",
+     8
+    ],
+    [
+     "ore_goo",
+     5
+    ],
+    [
+     "minecraft:iron_ingot",
+     9
+    ]
+   ]
+  },
+  {
+   "station": "smith3",
+   "tab": "마법사 방어구",
+   "result": "mage_top_60",
+   "count": 1,
+   "gold": 2960,
+   "mats": [
+    [
+     "miner_bone",
+     12
+    ],
+    [
+     "ore_goo",
+     8
+    ],
+    [
+     "minecraft:iron_ingot",
+     18
+    ]
+   ]
+  },
+  {
+   "station": "smith3",
+   "tab": "마법사 방어구",
+   "result": "mage_bottom_60",
+   "count": 1,
+   "gold": 2770,
+   "mats": [
+    [
+     "miner_bone",
+     10
+    ],
+    [
+     "ore_goo",
+     6
+    ],
+    [
+     "minecraft:iron_ingot",
+     14
+    ]
+   ]
+  },
+  {
+   "station": "smith3",
+   "tab": "마법사 방어구",
+   "result": "mage_shoes_60",
+   "count": 1,
+   "gold": 2070,
+   "mats": [
+    [
+     "miner_bone",
+     6
+    ],
+    [
+     "ore_goo",
+     4
+    ],
+    [
+     "minecraft:iron_ingot",
+     9
+    ]
+   ]
+  },
+  {
+   "station": "smith3",
+   "tab": "도적 방어구",
+   "result": "thief_hat_60",
+   "count": 1,
+   "gold": 2260,
+   "mats": [
+    [
+     "ore_goo",
+     8
+    ],
+    [
+     "miner_bone",
+     5
+    ],
+    [
+     "minecraft:iron_ingot",
+     9
+    ]
+   ]
+  },
+  {
+   "station": "smith3",
+   "tab": "도적 방어구",
+   "result": "thief_top_60",
+   "count": 1,
+   "gold": 2960,
+   "mats": [
+    [
+     "ore_goo",
+     12
+    ],
+    [
+     "miner_bone",
+     8
+    ],
+    [
+     "minecraft:iron_ingot",
+     18
+    ]
+   ]
+  },
+  {
+   "station": "smith3",
+   "tab": "도적 방어구",
+   "result": "thief_bottom_60",
+   "count": 1,
+   "gold": 2770,
+   "mats": [
+    [
+     "ore_goo",
+     10
+    ],
+    [
+     "miner_bone",
+     6
+    ],
+    [
+     "minecraft:iron_ingot",
+     14
+    ]
+   ]
+  },
+  {
+   "station": "smith3",
+   "tab": "도적 방어구",
+   "result": "thief_shoes_60",
+   "count": 1,
+   "gold": 2070,
+   "mats": [
+    [
+     "ore_goo",
+     6
+    ],
+    [
+     "miner_bone",
+     4
+    ],
+    [
+     "minecraft:iron_ingot",
+     9
+    ]
+   ]
+  },
+  {
+   "station": "jeweler3",
+   "tab": "장갑",
+   "result": "gloves_60",
+   "count": 1,
+   "gold": 2180,
+   "mats": [
+    [
+     "golem_shard",
+     6
+    ],
+    [
+     "void_core",
+     1
+    ],
+    [
+     "minecraft:copper_ingot",
+     9
+    ]
+   ]
+  },
+  {
+   "station": "jeweler3",
+   "tab": "망토",
+   "result": "cape_60",
+   "count": 1,
+   "gold": 2180,
+   "mats": [
+    [
+     "miner_bone",
+     6
+    ],
+    [
+     "miner_badge",
+     1
+    ],
+    [
+     "minecraft:copper_ingot",
+     9
+    ]
+   ]
+  },
+  {
+   "station": "jeweler3",
+   "tab": "벨트",
+   "result": "belt_60",
+   "count": 1,
+   "gold": 2180,
+   "mats": [
+    [
+     "ore_goo",
+     6
+    ],
+    [
+     "ore_core",
+     1
+    ],
+    [
+     "minecraft:copper_ingot",
+     9
+    ]
+   ]
+  },
+  {
+   "station": "jeweler3",
+   "tab": "귀걸이",
+   "result": "earring_60",
+   "count": 1,
+   "gold": 2180,
+   "mats": [
+    [
+     "golem_shard",
+     6
+    ],
+    [
+     "miner_badge",
+     1
+    ],
+    [
+     "minecraft:copper_ingot",
+     9
+    ]
+   ]
+  },
+  {
+   "station": "jeweler3",
+   "tab": "반지",
+   "result": "ring_60",
+   "count": 1,
+   "gold": 2180,
+   "mats": [
+    [
+     "ore_goo",
+     6
+    ],
+    [
+     "void_core",
+     1
+    ],
+    [
+     "minecraft:copper_ingot",
+     9
+    ]
+   ]
+  },
+  {
+   "station": "jeweler3",
+   "tab": "펜던트",
+   "result": "pendant_60",
+   "count": 1,
+   "gold": 2180,
+   "mats": [
+    [
+     "miner_bone",
+     6
+    ],
+    [
+     "ore_core",
+     1
+    ],
+    [
+     "minecraft:copper_ingot",
+     9
+    ]
+   ]
+  },
+  {
+   "station": "jeweler3",
+   "tab": "재료",
+   "result": "cave_fang",
+   "count": 1,
+   "gold": 940,
+   "mats": [
+    [
+     "cave_silk",
+     9
+    ]
+   ]
+  },
+  {
+   "station": "jeweler3",
+   "tab": "재료",
+   "result": "echo_crystal",
+   "count": 1,
+   "gold": 970,
+   "mats": [
+    [
+     "bat_wing",
+     9
+    ]
+   ]
+  },
+  {
+   "station": "jeweler3",
+   "tab": "재료",
+   "result": "venom_crystal",
+   "count": 1,
+   "gold": 1030,
+   "mats": [
+    [
+     "venom_sac",
+     9
+    ]
+   ]
+  },
+  {
+   "station": "jeweler3",
+   "tab": "재료",
+   "result": "spike_heart",
+   "count": 1,
+   "gold": 1060,
+   "mats": [
+    [
+     "stone_spike",
+     9
+    ]
+   ]
+  },
+  {
+   "station": "jeweler3",
+   "tab": "재료",
+   "result": "ore_core",
+   "count": 1,
+   "gold": 1120,
+   "mats": [
+    [
+     "ore_goo",
+     9
+    ]
+   ]
+  },
+  {
+   "station": "jeweler3",
+   "tab": "재료",
+   "result": "miner_badge",
+   "count": 1,
+   "gold": 1150,
+   "mats": [
+    [
+     "miner_bone",
+     9
+    ]
+   ]
+  },
+  {
+   "station": "jeweler3",
+   "tab": "재료",
+   "result": "void_core",
+   "count": 1,
+   "gold": 1220,
+   "mats": [
+    [
+     "golem_shard",
      9
     ]
    ]

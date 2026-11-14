@@ -36,6 +36,22 @@
   "owen": {
    "name": "숲지기 오웬",
    "greet": "여기서부터는 위험한 곳이야. 준비는 됐어?"
+  },
+  "brock": {
+   "name": "광부 반장 브록",
+   "greet": "광산을 되찾을 때까진 쉴 생각 없다."
+  },
+  "sid": {
+   "name": "거미 사냥꾼 시드",
+   "greet": "거미 동굴에 들어갈 거면 말해."
+  },
+  "mira": {
+   "name": "광석 감정사 미라",
+   "greet": "좋은 광석이 있으면 보여 줘요. 감정해 드릴게요."
+  },
+  "darik": {
+   "name": "광산 경비 다릭",
+   "greet": "여기서부터 광산이다. 준비 안 됐으면 돌아가."
   }
  },
  "points": {
@@ -62,6 +78,24 @@
   },
   "beast_nest": {
    "name": "짐승 둥지"
+  },
+  "old_camp": {
+   "name": "버려진 야영지"
+  },
+  "egg_room": {
+   "name": "거미알 방"
+  },
+  "amethyst_den": {
+   "name": "자수정 굴"
+  },
+  "crane": {
+   "name": "크레인 아래"
+  },
+  "collapsed": {
+   "name": "무너진 갱도"
+  },
+  "deep_adit": {
+   "name": "깊은 갱도 입구"
   }
  },
  "quests": {
@@ -3199,6 +3233,1513 @@
      [
       "mana_elixir",
       7
+     ]
+    ]
+   }
+  },
+  "q69_letter": {
+   "name": "동굴 너머의 마을",
+   "npc": "owen",
+   "level": 41,
+   "turnIn": "sid",
+   "give": [
+    [
+     "quest_letter",
+     1
+    ]
+   ],
+   "summary": "시드에게 오웬의 편지 전하기",
+   "offer": [
+    "어둠 경계에서 도망친 거미들, 원래는 동굴에 살던 놈들이야.",
+    "그 동굴 안쪽에 광부 마을이 갇혀 있대. 거기 사냥꾼 시드한테 이 편지 좀 전해 줘."
+   ],
+   "progress": [
+    "거미 동굴을 지나면 동굴 마을이 나와. 시드는 마을 입구 쪽에 있어."
+   ],
+   "done": [
+    "…오웬이 보냈다고? 바깥에 아직 사람이 있었구나.",
+    "반가워. 여기선 손이 하나라도 더 필요해."
+   ],
+   "goals": [
+    {
+     "type": "item",
+     "item": "quest_letter",
+     "count": 1,
+     "label": "봉인된 편지 전달"
+    }
+   ],
+   "reward": {
+    "exp": 4280,
+    "gold": 3940,
+    "items": [
+     [
+      "red_potion_m",
+      10
+     ],
+     [
+      "purple_potion_m",
+      5
+     ],
+     [
+      "return_scroll",
+      1
+     ]
+    ]
+   }
+  },
+  "q70_cspider": {
+   "name": "동굴 거미 소탕",
+   "npc": "sid",
+   "level": 41,
+   "summary": "동굴 거미 50마리 처치",
+   "offer": [
+    "동굴 거미가 길을 막고 있어. 보급이 끊긴 지 한참이야.",
+    "50마리만 줄여 줘. 그래야 길이 숨을 쉬지."
+   ],
+   "progress": [
+    "거미가 몸을 뒤로 빼면 거미줄이 날아와. 맞으면 느려져."
+   ],
+   "done": [
+    "길이 좀 트였어. 실력 괜찮네."
+   ],
+   "goals": [
+    {
+     "type": "kill",
+     "mob": "cave_spider",
+     "count": 50
+    }
+   ],
+   "reward": {
+    "exp": 7140,
+    "gold": 6560,
+    "items": [
+     [
+      "red_potion_m",
+      15
+     ],
+     [
+      "purple_potion_m",
+      7
+     ]
+    ]
+   }
+  },
+  "q71_csilk": {
+   "name": "질긴 거미줄",
+   "npc": "mira",
+   "level": 42,
+   "summary": "동굴 거미줄 20개 모아 오기",
+   "offer": [
+    "동굴 거미줄은 질겨서 광석 자루를 꿰매기 좋아요.",
+    "20개만 모아 줄래요? 자루가 다 터졌거든요."
+   ],
+   "progress": [
+    "거미줄은 동굴 거미가 떨어뜨려요."
+   ],
+   "done": [
+    "이 정도면 자루를 몇 개는 고치겠어요. 고마워요."
+   ],
+   "goals": [
+    {
+     "type": "item",
+     "item": "cave_silk",
+     "count": 20
+    }
+   ],
+   "reward": {
+    "exp": 6740,
+    "gold": 6050,
+    "items": [
+     [
+      "red_potion_m",
+      10
+     ],
+     [
+      "purple_potion_m",
+      5
+     ]
+    ]
+   }
+  },
+  "q72_bats": {
+   "name": "날개 소리",
+   "npc": "sid",
+   "level": 43,
+   "summary": "박쥐 50마리 처치",
+   "offer": [
+    "천장에서 박쥐가 떼로 내리꽂혀. 공허독 때문인지 몸집도 두 배야.",
+    "50마리 잡아 줘."
+   ],
+   "progress": [
+    "박쥐가 날개를 접으면 곧 달려들어. 옆으로 피해."
+   ],
+   "done": [
+    "조용해졌네. 이제 좀 잘 수 있겠다."
+   ],
+   "goals": [
+    {
+     "type": "kill",
+     "mob": "cave_bat",
+     "count": 50
+    }
+   ],
+   "after": "q70_cspider",
+   "reward": {
+    "exp": 7840,
+    "gold": 6880,
+    "items": [
+     [
+      "red_potion_m",
+      15
+     ],
+     [
+      "purple_potion_m",
+      7
+     ]
+    ]
+   }
+  },
+  "q73_camp": {
+   "name": "버려진 야영지",
+   "npc": "sid",
+   "level": 43,
+   "point": "old_camp",
+   "give": [
+    [
+     "quest_parcel",
+     1
+    ]
+   ],
+   "summary": "보급품 꾸러미 두고 오기 (버려진 야영지)",
+   "offer": [
+    "서쪽 막다른 굴에 우리 사냥꾼 야영지가 있었어. 거미한테 밀려서 버리고 왔지.",
+    "보급품 좀 두고 와 줘. 다시 쓸 거야."
+   ],
+   "progress": [
+    "야영지는 거미 동굴 서쪽 끝 막다른 굴이야."
+   ],
+   "done": [
+    "야영지 상자에 보급품을 넣었다."
+   ],
+   "goals": [
+    {
+     "type": "item",
+     "item": "quest_parcel",
+     "count": 1,
+     "label": "보급품 두고 오기"
+    }
+   ],
+   "reward": {
+    "exp": 4700,
+    "gold": 4130,
+    "items": [
+     [
+      "red_potion_m",
+      10
+     ],
+     [
+      "purple_potion_m",
+      5
+     ],
+     [
+      "return_scroll",
+      1
+     ]
+    ]
+   }
+  },
+  "q74_wing": {
+   "name": "박쥐 날개",
+   "npc": "mira",
+   "level": 44,
+   "summary": "박쥐 날개 20개 모아 오기",
+   "offer": [
+    "박쥐 날개 막은 빛을 잘 막아서 감정할 때 가림막으로 써요.",
+    "20장만 부탁해요."
+   ],
+   "progress": [
+    "박쥐는 천장 근처를 잘 봐요."
+   ],
+   "done": [
+    "딱 좋아요. 이제 광석 빛깔이 제대로 보이겠네요."
+   ],
+   "goals": [
+    {
+     "type": "item",
+     "item": "bat_wing",
+     "count": 20
+    }
+   ],
+   "reward": {
+    "exp": 7380,
+    "gold": 6340,
+    "items": [
+     [
+      "red_potion_m",
+      10
+     ],
+     [
+      "purple_potion_m",
+      5
+     ]
+    ]
+   }
+  },
+  "q75_echo": {
+   "name": "메아리 수정",
+   "npc": "mira",
+   "level": 44,
+   "summary": "메아리 수정 1개 모아 오기",
+   "offer": [
+    "박쥐가 가끔 메아리 수정을 삼키고 다녀요.",
+    "소리를 담는 수정인데… 하나만 구해 줄래요?"
+   ],
+   "progress": [
+    "정말 드물게 나와요. 박쥐를 꾸준히 잡아 봐요."
+   ],
+   "done": [
+    "와, 귀에 대면 동굴 깊은 곳 소리가 들려요. 고마워요, 이거 받아요."
+   ],
+   "goals": [
+    {
+     "type": "item",
+     "item": "echo_crystal",
+     "count": 1
+    }
+   ],
+   "reward": {
+    "exp": 12300,
+    "gold": 10560,
+    "items": [
+     [
+      "red_potion_m",
+      15
+     ],
+     [
+      "purple_potion_m",
+      7
+     ],
+     [
+      "scroll_fragment",
+      22
+     ]
+    ],
+    "choose": [
+     [
+      "scroll#str#1",
+      1
+     ],
+     [
+      "scroll#dex#1",
+      1
+     ],
+     [
+      "scroll#int#1",
+      1
+     ],
+     [
+      "scroll#luk#1",
+      1
+     ]
+    ]
+   }
+  },
+  "q76_alpha9": {
+   "name": "동굴 입구의 우두머리",
+   "npc": "sid",
+   "level": 45,
+   "summary": "엘리트 동굴 거미 1마리 처치",
+   "offer": [
+    "별 붙은 동굴 거미가 무리를 몰고 다녀.",
+    "그 녀석만 잡으면 입구 쪽은 한동안 조용할 거야."
+   ],
+   "progress": [
+    "엘리트는 체력이 다섯 배야. 혼자면 조심해."
+   ],
+   "done": [
+    "해냈네. 이제 밖이랑 길이 이어졌어.",
+    "근데 안쪽 깊은 굴에 더 독한 놈들이 있어. 그쪽도 부탁할게."
+   ],
+   "goals": [
+    {
+     "type": "kill",
+     "mob": "cave_spider",
+     "count": 1,
+     "elite": true,
+     "label": "엘리트 동굴 거미"
+    }
+   ],
+   "after": "q72_bats",
+   "reward": {
+    "exp": 12850,
+    "gold": 10800,
+    "items": [
+     [
+      "red_potion_m",
+      20
+     ],
+     [
+      "purple_potion_m",
+      10
+     ],
+     [
+      "scroll_fragment",
+      22
+     ]
+    ],
+    "choose": [
+     [
+      "earring_40",
+      1
+     ],
+     [
+      "ring_40",
+      1
+     ],
+     [
+      "pendant_40",
+      1
+     ],
+     [
+      "belt_40",
+      1
+     ]
+    ]
+   }
+  },
+  "q77_venom": {
+   "name": "독 거미 사냥",
+   "npc": "sid",
+   "level": 46,
+   "summary": "독 거미 50마리 처치",
+   "offer": [
+    "깊은 굴엔 독 거미가 살아. 원래도 독했는데 공허독이 섞이니까 더 심해졌어.",
+    "50마리 잡아 줘."
+   ],
+   "progress": [
+    "물리면 독이 3초 동안 올라. 물약 챙겨."
+   ],
+   "done": [
+    "독 냄새가 좀 빠졌네. 수고했어."
+   ],
+   "goals": [
+    {
+     "type": "kill",
+     "mob": "venom_spider",
+     "count": 50
+    }
+   ],
+   "after": "q76_alpha9",
+   "reward": {
+    "exp": 8940,
+    "gold": 7360,
+    "items": [
+     [
+      "red_potion_m",
+      15
+     ],
+     [
+      "purple_potion_m",
+      7
+     ]
+    ]
+   }
+  },
+  "q78_sac": {
+   "name": "해독제 재료",
+   "npc": "mira",
+   "level": 47,
+   "summary": "독주머니 20개 모아 오기",
+   "offer": [
+    "마을 사람들이 독에 자주 당해요. 독주머니로 해독제를 만들 수 있어요.",
+    "20개만 모아 줘요. 터뜨리지 말고요!"
+   ],
+   "progress": [
+    "독주머니는 독 거미가 떨어뜨려요."
+   ],
+   "done": [
+    "이걸로 마을 사람 모두 먹을 해독제가 나오겠어요."
+   ],
+   "goals": [
+    {
+     "type": "item",
+     "item": "venom_sac",
+     "count": 20
+    }
+   ],
+   "reward": {
+    "exp": 8390,
+    "gold": 6770,
+    "items": [
+     [
+      "red_potion_m",
+      10
+     ],
+     [
+      "purple_potion_m",
+      5
+     ]
+    ]
+   }
+  },
+  "q79_pick": {
+   "name": "실종 광부의 곡괭이",
+   "npc": "sid",
+   "level": 47,
+   "fetch": {
+    "point": "egg_room",
+    "item": "quest_miner_pick",
+    "text": "거미알 사이에서 낡은 곡괭이를 찾았다…"
+   },
+   "summary": "곡괭이 가져오기 (거미알 방)",
+   "offer": [
+    "광부 하나가 피난 오다 깊은 굴에서 사라졌어.",
+    "거미알 방 쪽에서 마지막으로 봤대. 뭐라도 찾아 줘."
+   ],
+   "progress": [
+    "거미알 방은 깊은 굴 끝 막다른 곳이야."
+   ],
+   "done": [
+    "…곡괭이만 남았구나. 브록한테 돌려줘야겠다. 고마워."
+   ],
+   "goals": [
+    {
+     "type": "item",
+     "item": "quest_miner_pick",
+     "count": 1,
+     "label": "곡괭이 가져오기 (거미알 방)"
+    }
+   ],
+   "reward": {
+    "exp": 7460,
+    "gold": 6020,
+    "items": [
+     [
+      "red_potion_m",
+      10
+     ],
+     [
+      "purple_potion_m",
+      5
+     ],
+     [
+      "return_scroll",
+      1
+     ]
+    ]
+   }
+  },
+  "q80_spike": {
+   "name": "가시 거미",
+   "npc": "sid",
+   "level": 48,
+   "summary": "가시 거미 50마리 처치",
+   "offer": [
+    "등에 돌가시가 돋은 거미가 나타났어. 공허독이 돌까지 먹어 들어간 거야.",
+    "50마리 잡아 줘."
+   ],
+   "progress": [
+    "앞으로 할퀴는 범위가 넓어. 정면에 서지 마."
+   ],
+   "done": [
+    "가시가 손에 박혔네… 그래도 수고했어."
+   ],
+   "goals": [
+    {
+     "type": "kill",
+     "mob": "spike_spider",
+     "count": 50
+    }
+   ],
+   "after": "q77_venom",
+   "reward": {
+    "exp": 9720,
+    "gold": 7680,
+    "items": [
+     [
+      "red_potion_m",
+      15
+     ],
+     [
+      "purple_potion_m",
+      7
+     ]
+    ]
+   }
+  },
+  "q81_amethyst": {
+   "name": "자수정 굴",
+   "npc": "mira",
+   "level": 48,
+   "fetch": {
+    "point": "amethyst_den",
+    "item": "quest_amethyst",
+    "text": "자수정 조각을 하나 떼어 냈다."
+   },
+   "summary": "자수정 조각 가져오기 (자수정 굴)",
+   "offer": [
+    "깊은 굴 남쪽에 자수정이 자라는 굴이 있어요.",
+    "조각 하나만 가져와 줘요. 공허독에 물들었는지 보고 싶어요."
+   ],
+   "progress": [
+    "자수정 굴은 깊은 굴 남쪽 막다른 곳이에요."
+   ],
+   "done": [
+    "…가장자리가 검게 변했어요. 돌까지 물들고 있어요."
+   ],
+   "goals": [
+    {
+     "type": "item",
+     "item": "quest_amethyst",
+     "count": 1,
+     "label": "자수정 조각 가져오기 (자수정 굴)"
+    }
+   ],
+   "reward": {
+    "exp": 7780,
+    "gold": 6140,
+    "items": [
+     [
+      "red_potion_m",
+      10
+     ],
+     [
+      "purple_potion_m",
+      5
+     ],
+     [
+      "return_scroll",
+      1
+     ]
+    ]
+   }
+  },
+  "q82_spikes": {
+   "name": "돌가시",
+   "npc": "mira",
+   "level": 49,
+   "summary": "돌가시 20개 모아 오기",
+   "offer": [
+    "가시 거미 돌가시가 진짜 돌인지 확인해야 해요.",
+    "20개 모아 줄래요?"
+   ],
+   "progress": [
+    "돌가시는 가시 거미가 떨어뜨려요."
+   ],
+   "done": [
+    "진짜 돌이에요. 살아 있는 몸에서 돌이 자라다니…"
+   ],
+   "goals": [
+    {
+     "type": "item",
+     "item": "stone_spike",
+     "count": 20
+    }
+   ],
+   "reward": {
+    "exp": 9110,
+    "gold": 7060,
+    "items": [
+     [
+      "red_potion_m",
+      10
+     ],
+     [
+      "purple_potion_m",
+      5
+     ]
+    ]
+   }
+  },
+  "q83_vcrystal": {
+   "name": "맹독 결정",
+   "npc": "sid",
+   "level": 49,
+   "summary": "맹독 결정 1개 모아 오기",
+   "offer": [
+    "독 거미 몸 안에서 가끔 굳은 독 결정이 나와.",
+    "하나만 구해 와. 화살촉에 쓸 거야."
+   ],
+   "progress": [
+    "아주 가끔 나와. 꾸준히 잡아."
+   ],
+   "done": [
+    "좋아, 이걸로 큰 놈도 잡을 수 있겠다. 이거 가져."
+   ],
+   "goals": [
+    {
+     "type": "item",
+     "item": "venom_crystal",
+     "count": 1
+    }
+   ],
+   "reward": {
+    "exp": 15180,
+    "gold": 11760,
+    "items": [
+     [
+      "red_potion_m",
+      15
+     ],
+     [
+      "purple_potion_m",
+      7
+     ],
+     [
+      "scroll_fragment",
+      24
+     ]
+    ],
+    "choose": [
+     [
+      "scroll#str#1",
+      1
+     ],
+     [
+      "scroll#dex#1",
+      1
+     ],
+     [
+      "scroll#int#1",
+      1
+     ],
+     [
+      "scroll#luk#1",
+      1
+     ]
+    ]
+   }
+  },
+  "q84_alpha10": {
+   "name": "깊은 굴의 우두머리",
+   "npc": "sid",
+   "level": 50,
+   "summary": "엘리트 가시 거미 1마리 처치",
+   "offer": [
+    "별 붙은 가시 거미가 깊은 굴을 지키고 있어.",
+    "그 녀석을 쓰러뜨리면 깊은 굴도 정리돼."
+   ],
+   "progress": [
+    "파티랑 가. 가시 할퀴기 조심."
+   ],
+   "done": [
+    "대단해. 거미들이 왜 이렇게 날뛰었는지 알 것 같아.",
+    "광산 쪽에서 뭔가가 깨어나서 다 위로 쫓겨 온 거야. 브록한테 가 봐."
+   ],
+   "goals": [
+    {
+     "type": "kill",
+     "mob": "spike_spider",
+     "count": 1,
+     "elite": true,
+     "label": "엘리트 가시 거미"
+    }
+   ],
+   "after": "q80_spike",
+   "reward": {
+    "exp": 15800,
+    "gold": 12000,
+    "items": [
+     [
+      "orange_potion_m",
+      20
+     ],
+     [
+      "blue_potion_l",
+      10
+     ],
+     [
+      "scroll_fragment",
+      25
+     ]
+    ],
+    "choose": [
+     [
+      "earring_50",
+      1
+     ],
+     [
+      "ring_50",
+      1
+     ],
+     [
+      "pendant_50",
+      1
+     ],
+     [
+      "belt_50",
+      1
+     ]
+    ]
+   }
+  },
+  "q85_gate": {
+   "name": "광산 입구 경비",
+   "npc": "brock",
+   "level": 51,
+   "turnIn": "darik",
+   "give": [
+    [
+     "quest_letter",
+     1
+    ]
+   ],
+   "summary": "다릭에게 브록의 쪽지 전하기",
+   "offer": [
+    "거미를 다 쓸어 줬다며? 그럼 광산도 부탁 좀 하자.",
+    "입구에 다릭이 서 있어. 이 쪽지 주면 들여보내 줄 거다."
+   ],
+   "progress": [
+    "광산 입구는 마을 북쪽 나무 문틀이야."
+   ],
+   "done": [
+    "반장님 쪽지군. …좋아, 들어가도 된다. 대신 살아서 나와."
+   ],
+   "goals": [
+    {
+     "type": "item",
+     "item": "quest_letter",
+     "count": 1,
+     "label": "봉인된 편지 전달"
+    }
+   ],
+   "reward": {
+    "exp": 6570,
+    "gold": 4900,
+    "items": [
+     [
+      "orange_potion_m",
+      10
+     ],
+     [
+      "blue_potion_l",
+      5
+     ],
+     [
+      "return_scroll",
+      1
+     ]
+    ]
+   }
+  },
+  "q86_slime": {
+   "name": "광석 슬라임",
+   "npc": "darik",
+   "level": 51,
+   "summary": "광석 슬라임 50마리 처치",
+   "offer": [
+    "채석장에 광석을 삼킨 슬라임이 들끓는다.",
+    "50마리. 잡으면 둘로 갈라지니 끝까지 처리해."
+   ],
+   "progress": [
+    "몸을 웅크리면 내려찍는다. 원 밖으로."
+   ],
+   "done": [
+    "수고했다. 입구 쪽이 깨끗해졌군."
+   ],
+   "goals": [
+    {
+     "type": "kill",
+     "mob": "ore_slime",
+     "count": 50
+    }
+   ],
+   "after": "q85_gate",
+   "reward": {
+    "exp": 10950,
+    "gold": 8160,
+    "items": [
+     [
+      "orange_potion_m",
+      15
+     ],
+     [
+      "blue_potion_l",
+      7
+     ]
+    ]
+   }
+  },
+  "q87_goo": {
+   "name": "광석 점액",
+   "npc": "mira",
+   "level": 52,
+   "summary": "광석 점액 20개 모아 오기",
+   "offer": [
+    "광석 슬라임 점액에 광석 가루가 녹아 있어요.",
+    "20개만 모아 줘요. 걸러 내면 광석이 나와요."
+   ],
+   "progress": [
+    "점액은 광석 슬라임이 떨어뜨려요."
+   ],
+   "done": [
+    "반짝이는 가루가 잔뜩이에요. 좋은 감정 거리네요."
+   ],
+   "goals": [
+    {
+     "type": "item",
+     "item": "ore_goo",
+     "count": 20
+    }
+   ],
+   "reward": {
+    "exp": 10240,
+    "gold": 7490,
+    "items": [
+     [
+      "orange_potion_m",
+      10
+     ],
+     [
+      "blue_potion_l",
+      5
+     ]
+    ]
+   }
+  },
+  "q88_skel": {
+   "name": "해골 광부",
+   "npc": "darik",
+   "level": 53,
+   "summary": "해골 광부 50마리 처치",
+   "offer": [
+    "폐광에 해골이 곡괭이를 들고 돌아다닌다.",
+    "…예전 동료들일지도 모르지. 50마리 쉬게 해 줘."
+   ],
+   "progress": [
+    "곡괭이를 크게 휘두르면 앞쪽 부채꼴이다."
+   ],
+   "done": [
+    "…고맙다. 이제 편히 쉬겠지."
+   ],
+   "goals": [
+    {
+     "type": "kill",
+     "mob": "skel_miner",
+     "count": 50
+    }
+   ],
+   "after": "q86_slime",
+   "reward": {
+    "exp": 11810,
+    "gold": 8480,
+    "items": [
+     [
+      "orange_potion_m",
+      15
+     ],
+     [
+      "blue_potion_l",
+      7
+     ]
+    ]
+   }
+  },
+  "q89_bone": {
+   "name": "동료들의 뼈",
+   "npc": "brock",
+   "level": 53,
+   "summary": "광부의 뼈 20개 모아 오기",
+   "offer": [
+    "해골 광부들, 다 내 밑에서 일하던 놈들이다.",
+    "뼈라도 모아 와라. 20개. 제대로 묻어 줘야지."
+   ],
+   "progress": [
+    "광부의 뼈는 해골 광부가 떨어뜨린다."
+   ],
+   "done": [
+    "…이걸로 됐다. 고맙다."
+   ],
+   "goals": [
+    {
+     "type": "item",
+     "item": "miner_bone",
+     "count": 20
+    }
+   ],
+   "reward": {
+    "exp": 10630,
+    "gold": 7630,
+    "items": [
+     [
+      "orange_potion_m",
+      10
+     ],
+     [
+      "blue_potion_l",
+      5
+     ]
+    ]
+   }
+  },
+  "q90_crane": {
+   "name": "크레인 아래",
+   "npc": "brock",
+   "level": 54,
+   "point": "crane",
+   "give": [
+    [
+     "quest_parcel",
+     1
+    ]
+   ],
+   "summary": "도르래 부품 두고 오기 (크레인 아래)",
+   "offer": [
+    "채석장 크레인이 멈춰 있다. 도르래만 바꾸면 다시 돌아가.",
+    "부품 좀 크레인 밑에 두고 와라."
+   ],
+   "progress": [
+    "크레인은 채석장 가장자리에 있다."
+   ],
+   "done": [
+    "크레인 밑에 도르래 부품을 두었다."
+   ],
+   "goals": [
+    {
+     "type": "item",
+     "item": "quest_parcel",
+     "count": 1,
+     "label": "도르래 부품 두고 오기"
+    }
+   ],
+   "reward": {
+    "exp": 7350,
+    "gold": 5180,
+    "items": [
+     [
+      "orange_potion_m",
+      10
+     ],
+     [
+      "blue_potion_l",
+      5
+     ],
+     [
+      "return_scroll",
+      1
+     ]
+    ]
+   }
+  },
+  "q91_journal": {
+   "name": "광부 일지",
+   "npc": "brock",
+   "level": 54,
+   "fetch": {
+    "point": "collapsed",
+    "item": "quest_miner_journal",
+    "text": "채굴 방 바닥에서 광부 일지를 찾았다."
+   },
+   "summary": "광부 일지 가져오기 (무너진 갱도)",
+   "offer": [
+    "그날 맨 처음 무너진 갱도에 일지가 남아 있을 거다.",
+    "가져와 봐라. 뭐가 있었는지 알아야겠다."
+   ],
+   "progress": [
+    "무너진 갱도는 채석장 두 번째 단 갱도 끝 채굴 방이다."
+   ],
+   "done": [
+    "\"돌에서 검은 김이 올라온다. 벽이 숨을 쉰다…\"",
+    "…공허독이 돌까지 먹었던 거로군."
+   ],
+   "goals": [
+    {
+     "type": "item",
+     "item": "quest_miner_journal",
+     "count": 1,
+     "label": "광부 일지 가져오기 (무너진 갱도)"
+    }
+   ],
+   "reward": {
+    "exp": 9800,
+    "gold": 6910,
+    "items": [
+     [
+      "orange_potion_m",
+      10
+     ],
+     [
+      "blue_potion_l",
+      5
+     ],
+     [
+      "return_scroll",
+      1
+     ]
+    ]
+   }
+  },
+  "q92_orecore": {
+   "name": "광석 핵",
+   "npc": "mira",
+   "level": 55,
+   "summary": "광석 핵 1개 모아 오기",
+   "offer": [
+    "광석 슬라임 몸속에 단단한 핵이 있다는 소문이 있어요.",
+    "하나만 구해 줘요. 감정해 보고 싶어요."
+   ],
+   "progress": [
+    "아주 드물게 나와요."
+   ],
+   "done": [
+    "핵 속에 검은 줄이 보여요… 공허독이에요. 고마워요, 이거 받아요."
+   ],
+   "goals": [
+    {
+     "type": "item",
+     "item": "ore_core",
+     "count": 1
+    }
+   ],
+   "reward": {
+    "exp": 19050,
+    "gold": 13200,
+    "items": [
+     [
+      "orange_potion_m",
+      15
+     ],
+     [
+      "blue_potion_l",
+      7
+     ],
+     [
+      "scroll_fragment",
+      27
+     ]
+    ],
+    "choose": [
+     [
+      "scroll#str#1",
+      1
+     ],
+     [
+      "scroll#dex#1",
+      1
+     ],
+     [
+      "scroll#int#1",
+      1
+     ],
+     [
+      "scroll#luk#1",
+      1
+     ]
+    ]
+   }
+  },
+  "q93_alpha11": {
+   "name": "채석장의 우두머리",
+   "npc": "darik",
+   "level": 55,
+   "summary": "엘리트 해골 광부 1마리 처치",
+   "offer": [
+    "별 붙은 해골 광부가 채석장을 지휘한다.",
+    "그 녀석만 쓰러뜨리면 채석장은 되찾은 거다."
+   ],
+   "progress": [
+    "파티를 꾸려 가라."
+   ],
+   "done": [
+    "채석장을 되찾았다. 반장님이 기뻐하시겠군.",
+    "남은 건 구덩이 바닥이다."
+   ],
+   "goals": [
+    {
+     "type": "kill",
+     "mob": "skel_miner",
+     "count": 1,
+     "elite": true,
+     "label": "엘리트 해골 광부"
+    }
+   ],
+   "after": "q88_skel",
+   "reward": {
+    "exp": 19050,
+    "gold": 13200,
+    "items": [
+     [
+      "orange_potion_m",
+      20
+     ],
+     [
+      "blue_potion_l",
+      10
+     ],
+     [
+      "scroll_fragment",
+      27
+     ]
+    ],
+    "choose": [
+     [
+      "earring_50",
+      1
+     ],
+     [
+      "ring_50",
+      1
+     ],
+     [
+      "pendant_50",
+      1
+     ],
+     [
+      "belt_50",
+      1
+     ]
+    ]
+   }
+  },
+  "q94_golem": {
+   "name": "깨어난 돌",
+   "npc": "brock",
+   "level": 56,
+   "summary": "광산 골렘 50마리 처치",
+   "offer": [
+    "구덩이 바닥 돌이 일어나서 걸어 다닌다. 그날 우릴 쫓아낸 놈들이다.",
+    "50마리 부숴라."
+   ],
+   "progress": [
+    "내려찍기에 맞으면 1초 기절이다. 원 밖으로 빠져."
+   ],
+   "done": [
+    "돌덩이들이 줄었군. 이제야 구덩이가 보인다."
+   ],
+   "goals": [
+    {
+     "type": "kill",
+     "mob": "mine_golem",
+     "count": 50
+    }
+   ],
+   "after": "q93_alpha11",
+   "reward": {
+    "exp": 13150,
+    "gold": 8960,
+    "items": [
+     [
+      "orange_potion_m",
+      15
+     ],
+     [
+      "blue_potion_l",
+      7
+     ]
+    ]
+   }
+  },
+  "q95_shard": {
+   "name": "골렘 돌조각",
+   "npc": "mira",
+   "level": 57,
+   "summary": "골렘 돌조각 20개 모아 오기",
+   "offer": [
+    "골렘 돌조각을 모아 줘요. 20개요.",
+    "어디서부터 물들었는지 알아야 막을 수 있어요."
+   ],
+   "progress": [
+    "돌조각은 광산 골렘이 떨어뜨려요."
+   ],
+   "done": [
+    "안쪽으로 갈수록 색이 짙어요. 아래에서 올라오고 있어요."
+   ],
+   "goals": [
+    {
+     "type": "item",
+     "item": "golem_shard",
+     "count": 20
+    }
+   ],
+   "reward": {
+    "exp": 12260,
+    "gold": 8210,
+    "items": [
+     [
+      "orange_potion_m",
+      10
+     ],
+     [
+      "blue_potion_l",
+      5
+     ]
+    ]
+   }
+  },
+  "q96_patrol": {
+   "name": "구덩이 정찰",
+   "npc": "darik",
+   "level": 57,
+   "summary": "광산 골렘 30마리 + 해골 광부 30마리 처치",
+   "offer": [
+    "반장님이 바닥까지 길을 내라신다.",
+    "골렘 30, 해골 30. 길을 열어."
+   ],
+   "progress": [
+    "둘이 같이 오면 골렘 먼저."
+   ],
+   "done": [
+    "길이 났다. 바닥 북쪽에 갱도 하나가 더 있더군."
+   ],
+   "goals": [
+    {
+     "type": "kill",
+     "mob": "mine_golem",
+     "count": 30
+    },
+    {
+     "type": "kill",
+     "mob": "skel_miner",
+     "count": 30
+    }
+   ],
+   "after": "q94_golem",
+   "reward": {
+    "exp": 13620,
+    "gold": 9120,
+    "items": [
+     [
+      "orange_potion_m",
+      15
+     ],
+     [
+      "blue_potion_l",
+      7
+     ]
+    ]
+   }
+  },
+  "q97_voidcore": {
+   "name": "공허석 핵",
+   "npc": "mira",
+   "level": 58,
+   "summary": "공허석 핵 1개 모아 오기",
+   "offer": [
+    "골렘 가슴에 검은 돌이 박혀 있대요. 그게 골렘을 움직이는 거래요.",
+    "하나만 구해 줘요."
+   ],
+   "progress": [
+    "아주 드물게 나와요."
+   ],
+   "done": [
+    "차가워요… 이게 공허독이 굳은 거예요. 고마워요, 이거 받아요."
+   ],
+   "goals": [
+    {
+     "type": "item",
+     "item": "void_core",
+     "count": 1
+    }
+   ],
+   "reward": {
+    "exp": 21140,
+    "gold": 13920,
+    "items": [
+     [
+      "orange_potion_m",
+      15
+     ],
+     [
+      "blue_potion_l",
+      7
+     ],
+     [
+      "scroll_fragment",
+      29
+     ]
+    ],
+    "choose": [
+     [
+      "scroll#str#1",
+      1
+     ],
+     [
+      "scroll#dex#1",
+      1
+     ],
+     [
+      "scroll#int#1",
+      1
+     ],
+     [
+      "scroll#luk#1",
+      1
+     ]
+    ]
+   }
+  },
+  "q98_nera": {
+   "name": "버섯 숲의 연금술사",
+   "npc": "mira",
+   "level": 58,
+   "turnIn": "nera",
+   "give": [
+    [
+     "quest_letter",
+     1
+    ]
+   ],
+   "summary": "네라에게 미라의 감정서 전하기",
+   "offer": [
+    "버섯 숲에 버섯 독을 없애는 약을 만든 연금술사가 있다면서요?",
+    "이 감정서를 전해 줘요. 공허독도 막을 수 있을지 몰라요."
+   ],
+   "progress": [
+    "네라 씨는 버섯 군락 마을에 있대요."
+   ],
+   "done": [
+    "돌이 골렘이 됐다고…? 버섯보다 훨씬 지독하네.",
+    "고마워. 방법을 찾아볼게."
+   ],
+   "goals": [
+    {
+     "type": "item",
+     "item": "quest_letter",
+     "count": 1,
+     "label": "감정서 전달"
+    }
+   ],
+   "reward": {
+    "exp": 8460,
+    "gold": 5570,
+    "items": [
+     [
+      "orange_potion_m",
+      10
+     ],
+     [
+      "blue_potion_l",
+      5
+     ],
+     [
+      "return_scroll",
+      1
+     ]
+    ]
+   }
+  },
+  "q99_alpha12": {
+   "name": "구덩이의 우두머리",
+   "npc": "brock",
+   "level": 59,
+   "summary": "엘리트 광산 골렘 1마리 처치",
+   "offer": [
+    "별 붙은 골렘이 바닥을 지키고 있다. 제일 먼저 깨어난 놈이다.",
+    "그 녀석을 부숴라."
+   ],
+   "progress": [
+    "파티 없이 가지 마라. 기절 조심."
+   ],
+   "done": [
+    "…해냈군. 이제 광산은 우리 거다."
+   ],
+   "goals": [
+    {
+     "type": "kill",
+     "mob": "mine_golem",
+     "count": 1,
+     "elite": true,
+     "label": "엘리트 광산 골렘"
+    }
+   ],
+   "after": "q96_patrol",
+   "reward": {
+    "exp": 21860,
+    "gold": 14160,
+    "items": [
+     [
+      "orange_potion_m",
+      20
+     ],
+     [
+      "blue_potion_l",
+      10
+     ],
+     [
+      "scroll_fragment",
+      29
+     ]
+    ],
+    "choose": [
+     [
+      "scroll#watk#1",
+      1
+     ],
+     [
+      "scroll#wmatk#1",
+      1
+     ]
+    ]
+   }
+  },
+  "q100_deeper": {
+   "name": "더 깊은 곳",
+   "npc": "brock",
+   "level": 60,
+   "point": "deep_adit",
+   "give": [
+    [
+     "quest_parcel",
+     1
+    ]
+   ],
+   "summary": "표식 두고 오기 (깊은 갱도 입구)",
+   "offer": [
+    "바닥 북쪽 갱도에서 검은 김이 올라온다. 공허독은 거기서 오는 거다.",
+    "이 표식을 입구에 박아 둬라. 다음에 갈 길이다."
+   ],
+   "progress": [
+    "깊은 갱도 입구는 구덩이 바닥 북쪽이다."
+   ],
+   "done": [
+    "깊은 갱도 입구에 표식을 박았다. 안쪽에서 뜨거운 바람이 불어온다…"
+   ],
+   "goals": [
+    {
+     "type": "item",
+     "item": "quest_parcel",
+     "count": 1,
+     "label": "표식 두고 오기"
+    }
+   ],
+   "after": "q99_alpha12",
+   "reward": {
+    "exp": 30130,
+    "gold": 19200,
+    "items": [
+     [
+      "orange_potion_m",
+      30
+     ],
+     [
+      "blue_potion_l",
+      15
+     ],
+     [
+      "scroll_fragment",
+      60
+     ],
+     [
+      "cube",
+      1
+     ]
+    ],
+    "choose": [
+     [
+      "earring_60",
+      1
+     ],
+     [
+      "ring_60",
+      1
+     ],
+     [
+      "pendant_60",
+      1
+     ],
+     [
+      "belt_60",
+      1
      ]
     ]
    }

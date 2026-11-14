@@ -484,6 +484,16 @@ public final class CombatEvents {
         }
     }
 
+    /** 죽으면 작은 몹으로 갈라짐 (mobs.json split · splitCount) */
+    private static void splitOnDeath(Mob mob, MobData m) {
+        var def = rpg.core.balance.Balance.MOBS.get(m.key);
+        if (def == null || def.look().split().isEmpty() || !(mob.level() instanceof net.minecraft.server.level.ServerLevel sl)) return;
+        for (int i = 0; i < def.look().splitCount(); i++) {
+            Mob c = Mobs.spawn(sl, def.look().split(), m.level, mob.blockPosition(), m.zone, false);
+            if (c != null) c.setDeltaMovement((sl.random.nextDouble() - 0.5) * 0.5, 0.35, (sl.random.nextDouble() - 0.5) * 0.5);
+        }
+    }
+
     /** 몹 처치 보상 */
     @SubscribeEvent
     public static void death(LivingDeathEvent e) {
@@ -495,6 +505,7 @@ public final class CombatEvents {
         rpg.core.skill.PassiveEffects.onKillMob(killer, d, mob);   // 트리: 도미노
         if (rpg.core.job.Trials.isTrialMob(mob)) return;   // 시련 몹: 보상 없음 (통과는 Trials)
         if (Boss.isBoss(m)) { Boss.onDeath(mob, m, killer); return; }
+        splitOnDeath(mob, m);
         if (mob.getPersistentData().getBoolean("rpgPillar")) return;   // 보스 기둥: 보상 없음   // 보스: 기여도 분배 · 드롭 세트
         // 연속 처치 콤보 (골드 주는 몹만, 보스방 밖에서만): 10초 안에 다음 처치
         long now = killer.level().getGameTime();
@@ -555,7 +566,9 @@ public final class CombatEvents {
         Entity en = e.getEntity();
         if (!(en instanceof Mob mob) || en.level() == null || en.level().isClientSide) return;
         MobData m = Combat.mob(mob);
-        if (m != null && m.elite) e.setNewSize(e.getNewSize().scale(Mobs.ELITE_SCALE), true);
+        if (m == null) return;
+        float s = (float) ((m.elite ? Mobs.ELITE_SCALE : 1) * rpg.core.balance.Balance.scaleOf(m.key));
+        if (s != 1) e.setNewSize(e.getNewSize().scale(s), true);
     }
 
     /** 저장된 엘리트를 다시 불러올 때(청크 로드·접속): 몸통 크기 다시 계산 + 예전 버전의 빛남 끄기 */
@@ -563,7 +576,7 @@ public final class CombatEvents {
     public static void eliteJoin(net.minecraftforge.event.entity.EntityJoinLevelEvent e) {
         if (e.getLevel().isClientSide || !(e.getEntity() instanceof Mob mob)) return;
         MobData m = Combat.mob(mob);
-        if (m == null || !m.elite) return;
+        if (m == null || !m.elite && rpg.core.balance.Balance.scaleOf(m.key) == 1) return;
         if (mob.hasGlowingTag()) mob.setGlowingTag(false);
         mob.refreshDimensions();
         mob.setPos(mob.getX(), mob.getY(), mob.getZ());

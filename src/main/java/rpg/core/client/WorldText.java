@@ -90,8 +90,8 @@ public final class WorldText {
     @SubscribeEvent(priority = net.minecraftforge.eventbus.api.EventPriority.HIGHEST)
     public static void elitePre(net.minecraftforge.client.event.RenderLivingEvent.Pre<?, ?> e) {
         LivingEntity le = e.getEntity();
-        if (!isElite(le) || !SCALED.add(le)) return;
-        float s = rpg.core.combat.Mobs.ELITE_SCALE;
+        float s = scaleOf(le);
+        if (s == 1 || !SCALED.add(le)) return;
         e.getPoseStack().pushPose();
         e.getPoseStack().scale(s, s, s);
     }
@@ -111,7 +111,15 @@ public final class WorldText {
     public static void eliteSizeClient(net.minecraftforge.event.entity.EntityEvent.Size e) {
         Entity en = e.getEntity();
         if (!(en instanceof net.minecraft.world.entity.Mob le) || en.level() == null || !en.level().isClientSide) return;
-        if (isElite(le)) e.setNewSize(e.getNewSize().scale(rpg.core.combat.Mobs.ELITE_SCALE), true);
+        float s = scaleOf(le);
+        if (s != 1) e.setNewSize(e.getNewSize().scale(s), true);
+    }
+
+    /** 보이는 크기 배수 = 엘리트 1.5 × 몹 크기(mobs.json scale) */
+    public static float scaleOf(LivingEntity le) {
+        ClientMobs.Info i = ClientMobs.MAP.get(le.getId());
+        if (i == null) return 1;
+        return (i.name().startsWith("★") ? rpg.core.combat.Mobs.ELITE_SCALE : 1) * i.scale();
     }
 
     public static boolean isElite(LivingEntity le) {

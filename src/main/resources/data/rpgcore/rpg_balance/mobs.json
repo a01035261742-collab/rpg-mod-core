@@ -1,5 +1,5 @@
 {
- "_설명": "몹 표. defRate = 방어율 % (방무로 깎임, 없으면 일반 레벨/5 최대 10 · 엘리트 20 · 보스 30). levels = 레벨별 수치(없으면 바로 아래 레벨). skills = 예고 후 공격 패턴 (type slam 내 주변 원 / leap 대상 자리로 점프 / dash 돌진 / shot 직선 사격 / zone 대상 자리 장판 / cone 앞 부채꼴, range 쓰는 거리, cd 쿨(초), delay 예고 시간(초), pct 공격력%, r 반경, len 길이, w 폭, angle 부채꼴 각도, hits 타수, effect slow 둔화, count 장판 개수(zone), hpBelow HP 이 % 아래에서만 씀). passive = 먼저 안 때림. attacks = 근접 공격 (EF 방식 판정, GeckoLib 몹만): anim 애니 이름, start~end 판정 틱, length 전체 틱, range 몸 끝에서 칸, angle 부채꼴 각도(없으면 직사각형), width 직사각형 폭, knock 넉백, lunge 타격 순간 앞으로 내딛기. 여러 개면 번갈아 씀 stunArmor = 경직 방어 (충격에서 뺌, 큰 몹일수록 높게). _stun = 경직 공통 (충격-방어가 shortMin 이상 짧은 경직 shortTicks, longMin 이상 긴 경직 longTicks+밀림, chainWindow 틱 안에 chain 번 넘게 경직되면 immuneTicks 면역, 엘리트는 eliteArmor 추가) fixedLevel = 사냥터에서 이 레벨로만 나옴 (사냥터 레벨 범위 무시).",
+ "_설명": "몹 표. defRate = 방어율 % (방무로 깎임, 없으면 일반 레벨/5 최대 10 · 엘리트 20 · 보스 30). levels = 레벨별 수치(없으면 바로 아래 레벨). skills = 예고 후 공격 패턴 (type slam 내 주변 원 / leap 대상 자리로 점프 / dash 돌진 / shot 직선 사격 / zone 대상 자리 장판 / cone 앞 부채꼴, range 쓰는 거리, cd 쿨(초), delay 예고 시간(초), pct 공격력%, r 반경, len 길이, w 폭, angle 부채꼴 각도, hits 타수, effect slow 둔화, count 장판 개수(zone), hpBelow HP 이 % 아래에서만 씀). passive = 먼저 안 때림. attacks = 근접 공격 (EF 방식 판정, GeckoLib 몹만): anim 애니 이름, start~end 판정 틱, length 전체 틱, range 몸 끝에서 칸, angle 부채꼴 각도(없으면 직사각형), width 직사각형 폭, knock 넉백, lunge 타격 순간 앞으로 내딛기. 여러 개면 번갈아 씀 stunArmor = 경직 방어 (충격에서 뺌, 큰 몹일수록 높게). _stun = 경직 공통 (충격-방어가 shortMin 이상 짧은 경직 shortTicks, longMin 이상 긴 경직 longTicks+밀림, chainWindow 틱 안에 chain 번 넘게 경직되면 immuneTicks 면역, 엘리트는 eliteArmor 추가) fixedLevel = 사냥터에서 이 레벨로만 나옴 (사냥터 레벨 범위 무시). scale = 크기 배수(보이는 것·몸통), size = 슬라임 크기, hand = 손에 든 아이템, split = 죽으면 나오는 몹(splitCount 마리, 보상은 각자). skills effect: slow 둔화 · poison 독 3초(1초마다 공격력 25%) · stun 기절 1초.",
  "_elite": {
   "chance": 5,
   "hp": 5,
@@ -97,6 +97,41 @@
    ],
    "min": 36,
    "max": 40
+  },
+  "9": {
+   "name": "거미 동굴",
+   "mobs": [
+    "cave_spider",
+    "cave_bat"
+   ],
+   "min": 41,
+   "max": 45
+  },
+  "10": {
+   "name": "깊은 거미 동굴",
+   "mobs": [
+    "venom_spider",
+    "spike_spider"
+   ],
+   "min": 46,
+   "max": 50
+  },
+  "11": {
+   "name": "채석장",
+   "mobs": [
+    "ore_slime",
+    "skel_miner"
+   ],
+   "min": 51,
+   "max": 55
+  },
+  "12": {
+   "name": "구덩이",
+   "mobs": [
+    "mine_golem"
+   ],
+   "min": 56,
+   "max": 60
   }
  },
  "pig": {
@@ -2472,5 +2507,685 @@
     "gold": 0
    }
   }
+ },
+ "cave_spider": {
+  "entity": "minecraft:cave_spider",
+  "name": "동굴 거미",
+  "area": "Lv41~45",
+  "skills": [
+   {
+    "type": "shot",
+    "range": 10,
+    "cd": 6,
+    "delay": 0.8,
+    "pct": 130,
+    "len": 10,
+    "w": 1.2,
+    "effect": "slow"
+   }
+  ],
+  "levels": {
+   "37": {
+    "hp": 10175,
+    "atk": 126.7,
+    "exp": 334,
+    "gold": 366
+   },
+   "38": {
+    "hp": 10785,
+    "atk": 130.2,
+    "exp": 346,
+    "gold": 378
+   },
+   "39": {
+    "hp": 11430,
+    "atk": 133.6,
+    "exp": 358,
+    "gold": 390
+   },
+   "40": {
+    "hp": 12115,
+    "atk": 137.1,
+    "exp": 371,
+    "gold": 402
+   },
+   "41": {
+    "hp": 12845,
+    "atk": 140.5,
+    "exp": 384,
+    "gold": 414
+   },
+   "42": {
+    "hp": 13615,
+    "atk": 144.0,
+    "exp": 397,
+    "gold": 426
+   },
+   "43": {
+    "hp": 14430,
+    "atk": 147.5,
+    "exp": 411,
+    "gold": 438
+   },
+   "44": {
+    "hp": 15300,
+    "atk": 150.9,
+    "exp": 425,
+    "gold": 450
+   },
+   "45": {
+    "hp": 16215,
+    "atk": 154.4,
+    "exp": 440,
+    "gold": 468
+   },
+   "46": {
+    "hp": 17190,
+    "atk": 157.8,
+    "exp": 456,
+    "gold": 480
+   },
+   "47": {
+    "hp": 18220,
+    "atk": 161.3,
+    "exp": 472,
+    "gold": 492
+   }
+  },
+  "fixedLevel": 42
+ },
+ "cave_bat": {
+  "entity": "minecraft:bat",
+  "name": "박쥐",
+  "area": "Lv41~45",
+  "skills": [
+   {
+    "type": "dash",
+    "range": 9,
+    "cd": 5,
+    "delay": 0.7,
+    "pct": 140,
+    "len": 8,
+    "w": 1.4
+   }
+  ],
+  "chase": true,
+  "scale": 2,
+  "levels": {
+   "39": {
+    "hp": 8575,
+    "atk": 119.7,
+    "exp": 285,
+    "gold": 312
+   },
+   "40": {
+    "hp": 9090,
+    "atk": 122.9,
+    "exp": 295,
+    "gold": 318
+   },
+   "41": {
+    "hp": 9635,
+    "atk": 126.2,
+    "exp": 305,
+    "gold": 330
+   },
+   "42": {
+    "hp": 10215,
+    "atk": 129.5,
+    "exp": 316,
+    "gold": 342
+   },
+   "43": {
+    "hp": 10825,
+    "atk": 132.7,
+    "exp": 327,
+    "gold": 348
+   },
+   "44": {
+    "hp": 11475,
+    "atk": 136.0,
+    "exp": 338,
+    "gold": 360
+   },
+   "45": {
+    "hp": 12165,
+    "atk": 139.3,
+    "exp": 350,
+    "gold": 372
+   },
+   "46": {
+    "hp": 12895,
+    "atk": 142.5,
+    "exp": 362,
+    "gold": 384
+   },
+   "47": {
+    "hp": 13665,
+    "atk": 145.8,
+    "exp": 375,
+    "gold": 396
+   },
+   "48": {
+    "hp": 14485,
+    "atk": 149.1,
+    "exp": 388,
+    "gold": 408
+   },
+   "49": {
+    "hp": 15355,
+    "atk": 152.3,
+    "exp": 401,
+    "gold": 420
+   }
+  },
+  "fixedLevel": 44
+ },
+ "venom_spider": {
+  "entity": "minecraft:spider",
+  "name": "독 거미",
+  "area": "Lv46~50",
+  "skills": [
+   {
+    "type": "cone",
+    "range": 4,
+    "cd": 6,
+    "delay": 0.8,
+    "pct": 150,
+    "r": 4,
+    "angle": 70,
+    "effect": "poison"
+   }
+  ],
+  "levels": {
+   "42": {
+    "hp": 13615,
+    "atk": 149.6,
+    "exp": 397,
+    "gold": 432
+   },
+   "43": {
+    "hp": 14430,
+    "atk": 153.7,
+    "exp": 410,
+    "gold": 444
+   },
+   "44": {
+    "hp": 15300,
+    "atk": 157.8,
+    "exp": 425,
+    "gold": 456
+   },
+   "45": {
+    "hp": 16215,
+    "atk": 161.8,
+    "exp": 440,
+    "gold": 468
+   },
+   "46": {
+    "hp": 17190,
+    "atk": 165.9,
+    "exp": 455,
+    "gold": 486
+   },
+   "47": {
+    "hp": 18220,
+    "atk": 170.0,
+    "exp": 471,
+    "gold": 498
+   },
+   "48": {
+    "hp": 19315,
+    "atk": 174.1,
+    "exp": 487,
+    "gold": 510
+   },
+   "49": {
+    "hp": 20470,
+    "atk": 178.2,
+    "exp": 505,
+    "gold": 528
+   },
+   "50": {
+    "hp": 21700,
+    "atk": 182.2,
+    "exp": 522,
+    "gold": 546
+   },
+   "51": {
+    "hp": 23000,
+    "atk": 186.3,
+    "exp": 540,
+    "gold": 558
+   },
+   "52": {
+    "hp": 24380,
+    "atk": 190.4,
+    "exp": 559,
+    "gold": 576
+   }
+  },
+  "fixedLevel": 47
+ },
+ "spike_spider": {
+  "entity": "minecraft:spider",
+  "name": "가시 거미",
+  "area": "Lv46~50",
+  "skills": [
+   {
+    "type": "cone",
+    "range": 5,
+    "cd": 7,
+    "delay": 0.9,
+    "pct": 170,
+    "r": 5,
+    "angle": 110
+   }
+  ],
+  "stunArmor": 0.4,
+  "levels": {
+   "44": {
+    "hp": 18355,
+    "atk": 155.8,
+    "exp": 492,
+    "gold": 528
+   },
+   "45": {
+    "hp": 19460,
+    "atk": 160.0,
+    "exp": 509,
+    "gold": 546
+   },
+   "46": {
+    "hp": 20625,
+    "atk": 164.3,
+    "exp": 527,
+    "gold": 558
+   },
+   "47": {
+    "hp": 21865,
+    "atk": 168.5,
+    "exp": 545,
+    "gold": 576
+   },
+   "48": {
+    "hp": 23175,
+    "atk": 172.8,
+    "exp": 564,
+    "gold": 594
+   },
+   "49": {
+    "hp": 24565,
+    "atk": 177.0,
+    "exp": 584,
+    "gold": 612
+   },
+   "50": {
+    "hp": 26040,
+    "atk": 181.2,
+    "exp": 604,
+    "gold": 630
+   },
+   "51": {
+    "hp": 27600,
+    "atk": 185.5,
+    "exp": 626,
+    "gold": 648
+   },
+   "52": {
+    "hp": 29255,
+    "atk": 189.7,
+    "exp": 647,
+    "gold": 666
+   },
+   "53": {
+    "hp": 31015,
+    "atk": 194.0,
+    "exp": 670,
+    "gold": 690
+   },
+   "54": {
+    "hp": 32875,
+    "atk": 198.2,
+    "exp": 694,
+    "gold": 708
+   }
+  },
+  "fixedLevel": 49
+ },
+ "ore_slime": {
+  "entity": "minecraft:slime",
+  "name": "광석 슬라임",
+  "area": "Lv51~55",
+  "skills": [
+   {
+    "type": "slam",
+    "range": 3.5,
+    "cd": 7,
+    "delay": 1.1,
+    "pct": 170,
+    "r": 3.5
+   }
+  ],
+  "stunArmor": 0.3,
+  "size": 3,
+  "split": "ore_slime_small",
+  "splitCount": 2,
+  "levels": {
+   "47": {
+    "hp": 23685,
+    "atk": 142.6,
+    "exp": 582,
+    "gold": 612
+   },
+   "48": {
+    "hp": 25105,
+    "atk": 146.4,
+    "exp": 602,
+    "gold": 630
+   },
+   "49": {
+    "hp": 26610,
+    "atk": 150.3,
+    "exp": 623,
+    "gold": 648
+   },
+   "50": {
+    "hp": 28210,
+    "atk": 154.2,
+    "exp": 645,
+    "gold": 666
+   },
+   "51": {
+    "hp": 29900,
+    "atk": 158.1,
+    "exp": 668,
+    "gold": 690
+   },
+   "52": {
+    "hp": 31695,
+    "atk": 162.0,
+    "exp": 691,
+    "gold": 708
+   },
+   "53": {
+    "hp": 33595,
+    "atk": 165.9,
+    "exp": 715,
+    "gold": 732
+   },
+   "54": {
+    "hp": 35615,
+    "atk": 169.8,
+    "exp": 740,
+    "gold": 750
+   },
+   "55": {
+    "hp": 37750,
+    "atk": 173.7,
+    "exp": 766,
+    "gold": 774
+   },
+   "56": {
+    "hp": 40015,
+    "atk": 177.6,
+    "exp": 793,
+    "gold": 798
+   },
+   "57": {
+    "hp": 42415,
+    "atk": 181.4,
+    "exp": 821,
+    "gold": 822
+   }
+  },
+  "fixedLevel": 52
+ },
+ "ore_slime_small": {
+  "entity": "minecraft:slime",
+  "name": "작은 광석 슬라임",
+  "area": "Lv51~55",
+  "size": 1,
+  "levels": {
+   "47": {
+    "hp": 3945,
+    "atk": 96.8,
+    "exp": 76,
+    "gold": 78
+   },
+   "48": {
+    "hp": 4180,
+    "atk": 99.4,
+    "exp": 78,
+    "gold": 84
+   },
+   "49": {
+    "hp": 4435,
+    "atk": 102.1,
+    "exp": 81,
+    "gold": 84
+   },
+   "50": {
+    "hp": 4700,
+    "atk": 104.7,
+    "exp": 84,
+    "gold": 84
+   },
+   "51": {
+    "hp": 4980,
+    "atk": 107.4,
+    "exp": 87,
+    "gold": 90
+   },
+   "52": {
+    "hp": 5280,
+    "atk": 110.0,
+    "exp": 90,
+    "gold": 90
+   },
+   "53": {
+    "hp": 5595,
+    "atk": 112.6,
+    "exp": 93,
+    "gold": 96
+   },
+   "54": {
+    "hp": 5935,
+    "atk": 115.3,
+    "exp": 96,
+    "gold": 96
+   },
+   "55": {
+    "hp": 6290,
+    "atk": 117.9,
+    "exp": 100,
+    "gold": 102
+   },
+   "56": {
+    "hp": 6665,
+    "atk": 120.6,
+    "exp": 103,
+    "gold": 102
+   },
+   "57": {
+    "hp": 7065,
+    "atk": 123.2,
+    "exp": 107,
+    "gold": 108
+   }
+  },
+  "fixedLevel": 52
+ },
+ "skel_miner": {
+  "entity": "minecraft:skeleton",
+  "name": "해골 광부",
+  "area": "Lv51~55",
+  "skills": [
+   {
+    "type": "cone",
+    "range": 4,
+    "cd": 6,
+    "delay": 0.9,
+    "pct": 170,
+    "r": 4,
+    "angle": 100
+   }
+  ],
+  "hand": "minecraft:iron_pickaxe",
+  "levels": {
+   "49": {
+    "hp": 23540,
+    "atk": 181.3,
+    "exp": 565,
+    "gold": 588
+   },
+   "50": {
+    "hp": 24955,
+    "atk": 186.2,
+    "exp": 585,
+    "gold": 606
+   },
+   "51": {
+    "hp": 26450,
+    "atk": 191.2,
+    "exp": 605,
+    "gold": 624
+   },
+   "52": {
+    "hp": 28040,
+    "atk": 196.1,
+    "exp": 626,
+    "gold": 642
+   },
+   "53": {
+    "hp": 29720,
+    "atk": 201.1,
+    "exp": 648,
+    "gold": 666
+   },
+   "54": {
+    "hp": 31505,
+    "atk": 206.0,
+    "exp": 671,
+    "gold": 684
+   },
+   "55": {
+    "hp": 33395,
+    "atk": 210.9,
+    "exp": 694,
+    "gold": 702
+   },
+   "56": {
+    "hp": 35400,
+    "atk": 215.9,
+    "exp": 719,
+    "gold": 726
+   },
+   "57": {
+    "hp": 37525,
+    "atk": 220.8,
+    "exp": 744,
+    "gold": 750
+   },
+   "58": {
+    "hp": 39775,
+    "atk": 225.8,
+    "exp": 770,
+    "gold": 768
+   },
+   "59": {
+    "hp": 42160,
+    "atk": 230.7,
+    "exp": 797,
+    "gold": 792
+   }
+  },
+  "fixedLevel": 54
+ },
+ "mine_golem": {
+  "entity": "minecraft:iron_golem",
+  "name": "광산 골렘",
+  "area": "Lv56~60",
+  "skills": [
+   {
+    "type": "slam",
+    "range": 4.5,
+    "cd": 8,
+    "delay": 1.3,
+    "pct": 200,
+    "r": 4.5,
+    "effect": "stun"
+   }
+  ],
+  "stunArmor": 0.5,
+  "levels": {
+   "53": {
+    "hp": 56860,
+    "atk": 221.8,
+    "exp": 1089,
+    "gold": 1110
+   },
+   "54": {
+    "hp": 60270,
+    "atk": 227.8,
+    "exp": 1127,
+    "gold": 1146
+   },
+   "55": {
+    "hp": 63885,
+    "atk": 233.9,
+    "exp": 1166,
+    "gold": 1182
+   },
+   "56": {
+    "hp": 67720,
+    "atk": 239.9,
+    "exp": 1207,
+    "gold": 1218
+   },
+   "57": {
+    "hp": 71785,
+    "atk": 246.0,
+    "exp": 1249,
+    "gold": 1254
+   },
+   "58": {
+    "hp": 76090,
+    "atk": 252.0,
+    "exp": 1293,
+    "gold": 1290
+   },
+   "59": {
+    "hp": 80655,
+    "atk": 258.0,
+    "exp": 1338,
+    "gold": 1326
+   },
+   "60": {
+    "hp": 85495,
+    "atk": 264.1,
+    "exp": 1385,
+    "gold": 1368
+   },
+   "61": {
+    "hp": 90625,
+    "atk": 270.1,
+    "exp": 1434,
+    "gold": 1410
+   },
+   "62": {
+    "hp": 96060,
+    "atk": 276.2,
+    "exp": 1484,
+    "gold": 1452
+   },
+   "63": {
+    "hp": 101825,
+    "atk": 282.2,
+    "exp": 1536,
+    "gold": 1494
+   }
+  },
+  "fixedLevel": 58
  }
 }

@@ -34,7 +34,7 @@ public final class Mobs {
         }
         mob.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, level.random.nextFloat() * 360f, 0);
         mob.finalizeSpawn(level, level.getCurrentDifficultyAt(pos), MobSpawnType.SPAWNER, null, null);
-        if (mob instanceof Slime slime) slime.setSize(2, true);
+        if (mob instanceof Slime slime) slime.setSize(def.look().size() > 0 ? def.look().size() : 2, true);
         if (mob instanceof net.minecraft.world.entity.monster.Zombie z) z.setBaby(false);   // 아기 좀비 없음
         if (mob instanceof net.minecraft.world.entity.AgeableMob am) am.setAge(def.look().baby() ? -24000 : 0);
         Entity ride = mob.getVehicle();                                                      // 치킨 조키 등 없음
@@ -67,6 +67,11 @@ public final class Mobs {
             var it = net.minecraftforge.registries.ForgeRegistries.ITEMS.getValue(new ResourceLocation(lk.head()));
             if (it != null) mob.setItemSlot(net.minecraft.world.entity.EquipmentSlot.HEAD, new net.minecraft.world.item.ItemStack(it));
         }
+        if (!lk.hand().isEmpty()) {
+            var it = net.minecraftforge.registries.ForgeRegistries.ITEMS.getValue(new ResourceLocation(lk.hand()));
+            if (it != null) mob.setItemSlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND, new net.minecraft.world.item.ItemStack(it));
+        }
+        if (mob instanceof net.minecraft.world.entity.ambient.Bat bat) bat.setResting(false);
         if (mob instanceof net.minecraft.world.entity.monster.hoglin.Hoglin h) h.setImmuneToZombification(true);
         if (mob instanceof net.minecraft.world.entity.animal.Chicken c) c.eggTime = Integer.MAX_VALUE;
         MobAI.setup(mob, def);
@@ -99,6 +104,7 @@ public final class Mobs {
         Double dr = Balance.MOB_DEF.get(def.key());
         m.defRate = dr != null ? dr : Boss.isBoss(m) ? 30 : Math.min(10, lv / 5.0);
         mob.setHealth(mob.getMaxHealth());
+        if (def.look().scale() != 1) { mob.refreshDimensions(); mob.setPos(mob.getX(), mob.getY(), mob.getZ()); }
         // 넉백 90% 줄임 (Epic Fight 콤보가 안 끊기게)
         var kb = mob.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.KNOCKBACK_RESISTANCE);
         if (kb != null) kb.setBaseValue(Math.max(kb.getBaseValue(), 0.9));

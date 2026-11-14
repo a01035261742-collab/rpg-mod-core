@@ -84,8 +84,10 @@ public final class Balance {
     public record MobSkill(String type, double range, double cd, double delay, double pct, double r, double len,
                            double w, double angle, int hits, String effect, double hpBelow, int count) {}
 
-    /** 몹 모양·행동 옵션: head = 머리에 씌울 아이템, baby = 아기, passive = 먼저 안 때림, chase = 다가오게 만듦 */
-    public record MobLook(String head, boolean baby, boolean passive, boolean chase) {}
+    /** 몹 모양·행동 옵션: head = 머리에 씌울 아이템, baby = 아기, passive = 먼저 안 때림, chase = 다가오게 만듦, scale = 크기 배수, size = 슬라임 크기, hand = 손에 든 아이템, split = 죽으면 나오는 몹 key (splitCount 마리) */
+    public record MobLook(String head, boolean baby, boolean passive, boolean chase, double scale, int size, String hand, String split, int splitCount) {}
+    /** 크기 배수 (mobs.json scale, 없으면 1) */
+    public static double scaleOf(String key) { MobDef d = key == null ? null : MOBS.get(key); return d == null ? 1 : d.look().scale(); }
 
     /** 사냥터 프리셋 */
     public record Ground(String name, java.util.List<String> mobs, int min, int max) {}
@@ -244,7 +246,8 @@ public final class Balance {
                 String name = m.has("name") ? m.get("name").getAsString() : e.getKey();
                 MobLook look = new MobLook(m.has("head") ? m.get("head").getAsString() : "",
                         m.has("baby") && m.get("baby").getAsBoolean(), m.has("passive") && m.get("passive").getAsBoolean(),
-                        m.has("chase") && m.get("chase").getAsBoolean());
+                        m.has("chase") && m.get("chase").getAsBoolean(), d(m, "scale", 1), (int) d(m, "size", 0),
+                        m.has("hand") ? m.get("hand").getAsString() : "", m.has("split") ? m.get("split").getAsString() : "", (int) d(m, "splitCount", 2));
                 java.util.List<MobSkill> skills = new java.util.ArrayList<>();
                 if (m.has("skills")) for (var sk : m.getAsJsonArray("skills")) {
                     JsonObject o = sk.getAsJsonObject();

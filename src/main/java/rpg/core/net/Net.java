@@ -928,11 +928,11 @@ public final class Net {
     }
 
     public static void mobInfo(Mob mob, MobData m) {
-        CH.send(PacketDistributor.TRACKING_ENTITY.with(() -> mob), new MobInfo(mob.getId(), m.level, m.hp, m.maxHp, m.name));
+        CH.send(PacketDistributor.TRACKING_ENTITY.with(() -> mob), new MobInfo(mob.getId(), m.level, m.hp, m.maxHp, m.name, (float) rpg.core.balance.Balance.scaleOf(m.key)));
     }
 
     public static void mobInfoTo(ServerPlayer p, Mob mob, MobData m) {
-        CH.send(PacketDistributor.PLAYER.with(() -> p), new MobInfo(mob.getId(), m.level, m.hp, m.maxHp, m.name));
+        CH.send(PacketDistributor.PLAYER.with(() -> p), new MobInfo(mob.getId(), m.level, m.hp, m.maxHp, m.name, (float) rpg.core.balance.Balance.scaleOf(m.key)));
     }
 
     public static void damageText(Mob mob, double amount, int type) {
@@ -944,11 +944,11 @@ public final class Net {
     }
 
     // ───────── 서버 → 클라: 몹 레벨·체력 ─────────
-    public record MobInfo(int id, int level, double hp, double maxHp, String name) {
-        MobInfo(FriendlyByteBuf b) { this(b.readVarInt(), b.readVarInt(), b.readDouble(), b.readDouble(), b.readUtf(64)); }
-        void encode(FriendlyByteBuf b) { b.writeVarInt(id); b.writeVarInt(level); b.writeDouble(hp); b.writeDouble(maxHp); b.writeUtf(name, 64); }
+    public record MobInfo(int id, int level, double hp, double maxHp, String name, float scale) {
+        MobInfo(FriendlyByteBuf b) { this(b.readVarInt(), b.readVarInt(), b.readDouble(), b.readDouble(), b.readUtf(64), b.readFloat()); }
+        void encode(FriendlyByteBuf b) { b.writeVarInt(id); b.writeVarInt(level); b.writeDouble(hp); b.writeDouble(maxHp); b.writeUtf(name, 64); b.writeFloat(scale); }
         void handle(Supplier<NetworkEvent.Context> ctx) {
-            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> rpg.core.client.ClientMobs.update(id, level, hp, maxHp, name));
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> rpg.core.client.ClientMobs.update(id, level, hp, maxHp, name, scale));
             ctx.get().setPacketHandled(true);
         }
     }

@@ -69,7 +69,8 @@ public final class ModItems {
 
     /** 몹 전용 장신구 16종 (drops.json uniques) */
     public static final String[] UNIQUE = {"pig_snout_pendant", "cow_horn_earring", "slime_ring", "rat_tail_belt", "dog_fang_earring", "bee_cape", "tusk_gloves", "bear_belt", "spirit_pendant", "mushroom_ring", "soldier_gloves", "fairy_cape", "gland_earring", "witch_pendant", "dark_eye_ring", "beast_belt", "forest_lord_ring", "guardian_ring", "forest_lord_belt", "guardian_pendant", "guardian_cape", "forest_hunter_medal", "mush_hunter_medal", "hunter_medal", "slayer_medal", "enhancer_medal", "unlucky_medal", "boss_hunter_medal", "rich_medal",
-            "spider_queen_earring", "spider_queen_gloves", "spider_queen_ring", "spider_queen_medal"};   // + 보스 장신구
+            "spider_queen_earring", "spider_queen_gloves", "spider_queen_ring", "spider_queen_medal",
+            "cave_fang_earring", "bat_cape", "venom_ring", "spike_gloves", "ore_pendant", "miner_belt", "void_earring"};   // 3지역 몹 전용   // + 보스 장신구
 
     static {
         java.util.List<String> all = new java.util.ArrayList<>(java.util.List.of(BASIC));
@@ -112,7 +113,7 @@ public final class ModItems {
     // 퀘스트 물건 (배달·가져오기)
     public static final java.util.List<RegistryObject<Item>> QUEST_ITEMS = new java.util.ArrayList<>();
     static {
-        for (String id : new String[]{"quest_letter", "quest_parcel", "quest_medicine", "quest_notes", "quest_patrol_log", "quest_old_bow", "quest_spore_tome", "quest_battle_map", "quest_witch_scroll", "quest_patrol_journal"})
+        for (String id : new String[]{"quest_letter", "quest_parcel", "quest_medicine", "quest_notes", "quest_patrol_log", "quest_old_bow", "quest_spore_tome", "quest_battle_map", "quest_witch_scroll", "quest_patrol_journal", "quest_miner_pick", "quest_amethyst", "quest_miner_journal"})
             QUEST_ITEMS.add(ITEMS.register(id, QuestItem::new));
     }
 
@@ -125,7 +126,9 @@ public final class ModItems {
             {"boar_bristle", "c"}, {"boar_tusk", "r"}, {"bear_pelt", "c"}, {"bear_paw", "r"}, {"spore_dust", "c"}, {"spirit_cap", "r"},
             {"tiny_cap", "c"}, {"glow_spore", "r"}, {"toxic_cap", "c"}, {"soldier_badge", "r"}, {"fairy_wing", "c"}, {"fairy_dust", "r"},
             {"spore_silk", "c"}, {"spore_gland", "r"}, {"witch_herb", "c"}, {"odd_potion", "r"}, {"dark_silk", "c"}, {"dark_eye", "r"},
-            {"beast_shell", "c"}, {"beast_core", "r"}};
+            {"beast_shell", "c"}, {"beast_core", "r"},
+            {"cave_silk", "c"}, {"cave_fang", "r"}, {"bat_wing", "c"}, {"echo_crystal", "r"}, {"venom_sac", "c"}, {"venom_crystal", "r"}, {"stone_spike", "c"}, {"spike_heart", "r"},
+            {"ore_goo", "c"}, {"ore_core", "r"}, {"miner_bone", "c"}, {"miner_badge", "r"}, {"golem_shard", "c"}, {"void_core", "r"}};   // 3지역
     public static final RegistryObject<Item> SCROLL_FRAGMENT, STAR_FRAGMENT;
     static {
         for (String[] m : MAT) {

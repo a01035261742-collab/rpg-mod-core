@@ -354,6 +354,132 @@
      0.6
     ]
    ]
+  },
+  "cave_spider": {
+   "items": [
+    [
+     "cave_silk",
+     40
+    ],
+    [
+     "cave_fang",
+     3
+    ]
+   ],
+   "uniques": [
+    [
+     "cave_fang_earring",
+     0.6
+    ]
+   ]
+  },
+  "cave_bat": {
+   "items": [
+    [
+     "bat_wing",
+     40
+    ],
+    [
+     "echo_crystal",
+     3
+    ]
+   ],
+   "uniques": [
+    [
+     "bat_cape",
+     0.6
+    ]
+   ]
+  },
+  "venom_spider": {
+   "items": [
+    [
+     "venom_sac",
+     40
+    ],
+    [
+     "venom_crystal",
+     3
+    ]
+   ],
+   "uniques": [
+    [
+     "venom_ring",
+     0.6
+    ]
+   ]
+  },
+  "spike_spider": {
+   "items": [
+    [
+     "stone_spike",
+     40
+    ],
+    [
+     "spike_heart",
+     3
+    ]
+   ],
+   "uniques": [
+    [
+     "spike_gloves",
+     0.6
+    ]
+   ]
+  },
+  "ore_slime": {
+   "items": [
+    [
+     "ore_goo",
+     40
+    ],
+    [
+     "ore_core",
+     3
+    ]
+   ],
+   "uniques": [
+    [
+     "ore_pendant",
+     0.6
+    ]
+   ]
+  },
+  "skel_miner": {
+   "items": [
+    [
+     "miner_bone",
+     40
+    ],
+    [
+     "miner_badge",
+     3
+    ]
+   ],
+   "uniques": [
+    [
+     "miner_belt",
+     0.6
+    ]
+   ]
+  },
+  "mine_golem": {
+   "items": [
+    [
+     "golem_shard",
+     40
+    ],
+    [
+     "void_core",
+     3
+    ]
+   ],
+   "uniques": [
+    [
+     "void_earring",
+     0.6
+    ]
+   ]
   }
  },
  "returnScroll": 0,

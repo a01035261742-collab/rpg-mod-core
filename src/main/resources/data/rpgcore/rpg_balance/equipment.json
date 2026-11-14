@@ -2351,6 +2351,82 @@
     "def": 22,
     "luk": 6
    }
+  },
+  "cave_fang_earring": {
+   "slot": "earring",
+   "job": 0,
+   "level": 45,
+   "stats": {
+    "str": 14,
+    "dex": 14,
+    "int": 14,
+    "luk": 14
+   }
+  },
+  "bat_cape": {
+   "slot": "cape",
+   "job": 0,
+   "level": 45,
+   "stats": {
+    "def": 19,
+    "hp": 95,
+    "dex": 6,
+    "luk": 6
+   }
+  },
+  "venom_ring": {
+   "slot": "ring",
+   "job": 0,
+   "level": 50,
+   "stats": {
+    "str": 11,
+    "dex": 11,
+    "int": 11,
+    "luk": 11,
+    "hp": 75
+   }
+  },
+  "spike_gloves": {
+   "slot": "gloves",
+   "job": 0,
+   "level": 50,
+   "stats": {
+    "def": 18,
+    "atk": 7,
+    "matk": 7,
+    "str": 7
+   }
+  },
+  "ore_pendant": {
+   "slot": "pendant",
+   "job": 0,
+   "level": 55,
+   "stats": {
+    "hp": 240,
+    "mp": 200,
+    "int": 8
+   }
+  },
+  "miner_belt": {
+   "slot": "belt",
+   "job": 0,
+   "level": 55,
+   "stats": {
+    "hp": 245,
+    "def": 18,
+    "vit": 10
+   }
+  },
+  "void_earring": {
+   "slot": "earring",
+   "job": 0,
+   "level": 60,
+   "stats": {
+    "str": 18,
+    "dex": 18,
+    "int": 18,
+    "luk": 18
+   }
   }
  },
  "options": {
@@ -3607,6 +3683,39 @@
     "4": {
      "bossPct": 20,
      "critDmg": 20
+    }
+   }
+  },
+  "drop_acc_cave": {
+   "name": "동굴 장신구 세트",
+   "items": [
+    "cave_fang_earring",
+    "bat_cape",
+    "venom_ring",
+    "spike_gloves",
+    "ore_pendant",
+    "miner_belt",
+    "void_earring"
+   ],
+   "max": 7,
+   "bonus": {
+    "3": {
+     "str": 5,
+     "dex": 5,
+     "int": 5,
+     "luk": 5,
+     "hpPct": 3
+    },
+    "5": {
+     "atk": 7,
+     "matk": 7
+    },
+    "7": {
+     "str": 8,
+     "dex": 8,
+     "int": 8,
+     "luk": 8,
+     "bossPct": 7
     }
    }
   }
