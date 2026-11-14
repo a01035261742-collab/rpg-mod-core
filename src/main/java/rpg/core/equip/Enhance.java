@@ -38,6 +38,8 @@ public final class Enhance {
     public static int restoreStar = 12, safeguardFrom = 12;
     public static double weaponPct = 2, weaponFlat = 1, defPct = 5;
     public static int[] gloveAtkStars = {5, 7, 9, 11, 13, 14, 15};
+    /** 이 ★부터 무기 말고 모든 장비 ★마다 공격력·마력 + highStarAtk */
+    public static int highStarAtkFrom = 16, highStarAtk = 2;
     public static final Map<String, Integer> UPGRADES = new LinkedHashMap<>(Map.of("weapon", 7, "armor", 5, "accessory", 3, "medal", 0));
     /** 등급별 [성공률, 공격력/마력, 주 스탯] (무기) · [성공률, 스탯] (방어구·장신구) */
     public static int[][] weaponScroll = {{100, 1, 1}, {60, 2, 1}, {30, 3, 2}, {10, 5, 3}};
@@ -88,6 +90,8 @@ public final class Enhance {
             weaponPct = d(o, "weaponPct", weaponPct);
             weaponFlat = d(o, "weaponFlat", weaponFlat);
             defPct = d(o, "defPct", defPct);
+            highStarAtkFrom = (int) d(o, "highStarAtkFrom", highStarAtkFrom);
+            highStarAtk = (int) d(o, "highStarAtk", highStarAtk);
             whiteRate = d(o, "whiteRate", whiteRate);
             whiteMinLevel = (int) d(o, "whiteMinLevel", whiteMinLevel);
             whiteChance = d(o, "whiteChance", whiteChance);
@@ -176,6 +180,7 @@ public final class Enhance {
                 m.merge("def", Math.max(1, (int) Math.floor(cur * defPct / 100.0)), Integer::sum);
                 if (d.slot().equals("gloves")) for (int g : gloveAtkStars) if (g == n) { m.merge("atk", 1, Integer::sum); m.merge("matk", 1, Integer::sum); }
             }
+            if (!c.equals("weapon") && n >= highStarAtkFrom && highStarAtk > 0) { m.merge("atk", highStarAtk, Integer::sum); m.merge("matk", highStarAtk, Integer::sum); }
         }
         return m;
     }

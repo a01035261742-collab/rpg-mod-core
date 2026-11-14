@@ -1761,6 +1761,596 @@
     "bossPct": 10
    },
    "speed": 1.8
+  },
+  "warrior_sword_50": {
+   "slot": "weapon",
+   "job": 1,
+   "level": 50,
+   "stats": {
+    "atk": 42,
+    "str": 10
+   },
+   "speed": 1.6
+  },
+  "warrior_sword_60": {
+   "slot": "weapon",
+   "job": 1,
+   "level": 60,
+   "stats": {
+    "atk": 49,
+    "str": 12
+   },
+   "speed": 1.6
+  },
+  "archer_bow_50": {
+   "slot": "weapon",
+   "job": 2,
+   "level": 50,
+   "stats": {
+    "atk": 41,
+    "dex": 10
+   },
+   "speed": 1.4
+  },
+  "archer_bow_60": {
+   "slot": "weapon",
+   "job": 2,
+   "level": 60,
+   "stats": {
+    "atk": 48,
+    "dex": 12
+   },
+   "speed": 1.4
+  },
+  "mage_staff_50": {
+   "slot": "weapon",
+   "job": 3,
+   "level": 50,
+   "stats": {
+    "matk": 44,
+    "int": 10
+   },
+   "speed": 1.2
+  },
+  "mage_staff_60": {
+   "slot": "weapon",
+   "job": 3,
+   "level": 60,
+   "stats": {
+    "matk": 51,
+    "int": 12
+   },
+   "speed": 1.2
+  },
+  "thief_dagger_50": {
+   "slot": "weapon",
+   "job": 4,
+   "level": 50,
+   "stats": {
+    "atk": 41,
+    "luk": 10
+   },
+   "speed": 1.8
+  },
+  "thief_dagger_60": {
+   "slot": "weapon",
+   "job": 4,
+   "level": 60,
+   "stats": {
+    "atk": 48,
+    "luk": 12
+   },
+   "speed": 1.8
+  },
+  "hat_50": {
+   "slot": "hat",
+   "job": 0,
+   "level": 50,
+   "stats": {
+    "def": 28
+   }
+  },
+  "hat_60": {
+   "slot": "hat",
+   "job": 0,
+   "level": 60,
+   "stats": {
+    "def": 33
+   }
+  },
+  "top_50": {
+   "slot": "top",
+   "job": 0,
+   "level": 50,
+   "stats": {
+    "def": 40
+   }
+  },
+  "top_60": {
+   "slot": "top",
+   "job": 0,
+   "level": 60,
+   "stats": {
+    "def": 47
+   }
+  },
+  "bottom_50": {
+   "slot": "bottom",
+   "job": 0,
+   "level": 50,
+   "stats": {
+    "def": 34
+   }
+  },
+  "bottom_60": {
+   "slot": "bottom",
+   "job": 0,
+   "level": 60,
+   "stats": {
+    "def": 40
+   }
+  },
+  "shoes_50": {
+   "slot": "shoes",
+   "job": 0,
+   "level": 50,
+   "stats": {
+    "def": 22
+   }
+  },
+  "shoes_60": {
+   "slot": "shoes",
+   "job": 0,
+   "level": 60,
+   "stats": {
+    "def": 26
+   }
+  },
+  "gloves_50": {
+   "slot": "gloves",
+   "job": 0,
+   "level": 50,
+   "stats": {
+    "def": 12,
+    "atk": 5,
+    "matk": 5
+   }
+  },
+  "gloves_60": {
+   "slot": "gloves",
+   "job": 0,
+   "level": 60,
+   "stats": {
+    "def": 14,
+    "atk": 6,
+    "matk": 6
+   }
+  },
+  "cape_50": {
+   "slot": "cape",
+   "job": 0,
+   "level": 50,
+   "stats": {
+    "def": 17,
+    "hp": 85,
+    "vit": 10
+   }
+  },
+  "cape_60": {
+   "slot": "cape",
+   "job": 0,
+   "level": 60,
+   "stats": {
+    "def": 20,
+    "hp": 100,
+    "vit": 12
+   }
+  },
+  "belt_50": {
+   "slot": "belt",
+   "job": 0,
+   "level": 50,
+   "stats": {
+    "hp": 140,
+    "def": 10
+   }
+  },
+  "belt_60": {
+   "slot": "belt",
+   "job": 0,
+   "level": 60,
+   "stats": {
+    "hp": 165,
+    "def": 12
+   }
+  },
+  "earring_50": {
+   "slot": "earring",
+   "job": 0,
+   "level": 50,
+   "stats": {
+    "str": 11,
+    "dex": 11,
+    "int": 11,
+    "luk": 11
+   }
+  },
+  "earring_60": {
+   "slot": "earring",
+   "job": 0,
+   "level": 60,
+   "stats": {
+    "str": 13,
+    "dex": 13,
+    "int": 13,
+    "luk": 13
+   }
+  },
+  "ring_50": {
+   "slot": "ring",
+   "job": 0,
+   "level": 50,
+   "stats": {
+    "str": 6,
+    "dex": 6,
+    "int": 6,
+    "luk": 6,
+    "hp": 50
+   }
+  },
+  "ring_60": {
+   "slot": "ring",
+   "job": 0,
+   "level": 60,
+   "stats": {
+    "str": 7,
+    "dex": 7,
+    "int": 7,
+    "luk": 7,
+    "hp": 60
+   }
+  },
+  "pendant_50": {
+   "slot": "pendant",
+   "job": 0,
+   "level": 50,
+   "stats": {
+    "hp": 170,
+    "mp": 110,
+    "vit": 10
+   }
+  },
+  "pendant_60": {
+   "slot": "pendant",
+   "job": 0,
+   "level": 60,
+   "stats": {
+    "hp": 200,
+    "mp": 130,
+    "vit": 12
+   }
+  },
+  "medal_50": {
+   "slot": "medal",
+   "job": 0,
+   "level": 50,
+   "stats": {
+    "str": 6,
+    "dex": 6,
+    "int": 6,
+    "luk": 6
+   },
+   "title": "광산 수호자",
+   "titleColor": "#E0904A"
+  },
+  "medal_60": {
+   "slot": "medal",
+   "job": 0,
+   "level": 60,
+   "stats": {
+    "str": 7,
+    "dex": 7,
+    "int": 7,
+    "luk": 7
+   },
+   "title": "심층의 영웅",
+   "titleColor": "#FF7A2A"
+  },
+  "warrior_hat_50": {
+   "slot": "hat",
+   "job": 1,
+   "level": 50,
+   "stats": {
+    "def": 37,
+    "str": 10
+   }
+  },
+  "warrior_hat_60": {
+   "slot": "hat",
+   "job": 1,
+   "level": 60,
+   "stats": {
+    "def": 44,
+    "str": 12
+   }
+  },
+  "warrior_top_50": {
+   "slot": "top",
+   "job": 1,
+   "level": 50,
+   "stats": {
+    "def": 52,
+    "str": 15
+   }
+  },
+  "warrior_top_60": {
+   "slot": "top",
+   "job": 1,
+   "level": 60,
+   "stats": {
+    "def": 61,
+    "str": 18
+   }
+  },
+  "warrior_bottom_50": {
+   "slot": "bottom",
+   "job": 1,
+   "level": 50,
+   "stats": {
+    "def": 43,
+    "str": 10
+   }
+  },
+  "warrior_bottom_60": {
+   "slot": "bottom",
+   "job": 1,
+   "level": 60,
+   "stats": {
+    "def": 50,
+    "str": 12
+   }
+  },
+  "warrior_shoes_50": {
+   "slot": "shoes",
+   "job": 1,
+   "level": 50,
+   "stats": {
+    "def": 28,
+    "str": 5
+   }
+  },
+  "warrior_shoes_60": {
+   "slot": "shoes",
+   "job": 1,
+   "level": 60,
+   "stats": {
+    "def": 33,
+    "str": 6
+   }
+  },
+  "archer_hat_50": {
+   "slot": "hat",
+   "job": 2,
+   "level": 50,
+   "stats": {
+    "def": 26,
+    "dex": 10
+   }
+  },
+  "archer_hat_60": {
+   "slot": "hat",
+   "job": 2,
+   "level": 60,
+   "stats": {
+    "def": 31,
+    "dex": 12
+   }
+  },
+  "archer_top_50": {
+   "slot": "top",
+   "job": 2,
+   "level": 50,
+   "stats": {
+    "def": 37,
+    "dex": 15
+   }
+  },
+  "archer_top_60": {
+   "slot": "top",
+   "job": 2,
+   "level": 60,
+   "stats": {
+    "def": 44,
+    "dex": 18
+   }
+  },
+  "archer_bottom_50": {
+   "slot": "bottom",
+   "job": 2,
+   "level": 50,
+   "stats": {
+    "def": 30,
+    "dex": 10
+   }
+  },
+  "archer_bottom_60": {
+   "slot": "bottom",
+   "job": 2,
+   "level": 60,
+   "stats": {
+    "def": 35,
+    "dex": 12
+   }
+  },
+  "archer_shoes_50": {
+   "slot": "shoes",
+   "job": 2,
+   "level": 50,
+   "stats": {
+    "def": 19,
+    "dex": 5
+   }
+  },
+  "archer_shoes_60": {
+   "slot": "shoes",
+   "job": 2,
+   "level": 60,
+   "stats": {
+    "def": 22,
+    "dex": 6
+   }
+  },
+  "mage_hat_50": {
+   "slot": "hat",
+   "job": 3,
+   "level": 50,
+   "stats": {
+    "def": 19,
+    "int": 10,
+    "mp": 50
+   }
+  },
+  "mage_hat_60": {
+   "slot": "hat",
+   "job": 3,
+   "level": 60,
+   "stats": {
+    "def": 22,
+    "int": 12,
+    "mp": 60
+   }
+  },
+  "mage_top_50": {
+   "slot": "top",
+   "job": 3,
+   "level": 50,
+   "stats": {
+    "def": 28,
+    "int": 15,
+    "mp": 75
+   }
+  },
+  "mage_top_60": {
+   "slot": "top",
+   "job": 3,
+   "level": 60,
+   "stats": {
+    "def": 33,
+    "int": 18,
+    "mp": 90
+   }
+  },
+  "mage_bottom_50": {
+   "slot": "bottom",
+   "job": 3,
+   "level": 50,
+   "stats": {
+    "def": 25,
+    "int": 10,
+    "mp": 50
+   }
+  },
+  "mage_bottom_60": {
+   "slot": "bottom",
+   "job": 3,
+   "level": 60,
+   "stats": {
+    "def": 30,
+    "int": 12,
+    "mp": 60
+   }
+  },
+  "mage_shoes_50": {
+   "slot": "shoes",
+   "job": 3,
+   "level": 50,
+   "stats": {
+    "def": 16,
+    "int": 5,
+    "mp": 25
+   }
+  },
+  "mage_shoes_60": {
+   "slot": "shoes",
+   "job": 3,
+   "level": 60,
+   "stats": {
+    "def": 19,
+    "int": 6,
+    "mp": 30
+   }
+  },
+  "thief_hat_50": {
+   "slot": "hat",
+   "job": 4,
+   "level": 50,
+   "stats": {
+    "def": 26,
+    "luk": 10
+   }
+  },
+  "thief_hat_60": {
+   "slot": "hat",
+   "job": 4,
+   "level": 60,
+   "stats": {
+    "def": 31,
+    "luk": 12
+   }
+  },
+  "thief_top_50": {
+   "slot": "top",
+   "job": 4,
+   "level": 50,
+   "stats": {
+    "def": 37,
+    "luk": 15
+   }
+  },
+  "thief_top_60": {
+   "slot": "top",
+   "job": 4,
+   "level": 60,
+   "stats": {
+    "def": 44,
+    "luk": 18
+   }
+  },
+  "thief_bottom_50": {
+   "slot": "bottom",
+   "job": 4,
+   "level": 50,
+   "stats": {
+    "def": 30,
+    "luk": 10
+   }
+  },
+  "thief_bottom_60": {
+   "slot": "bottom",
+   "job": 4,
+   "level": 60,
+   "stats": {
+    "def": 35,
+    "luk": 12
+   }
+  },
+  "thief_shoes_50": {
+   "slot": "shoes",
+   "job": 4,
+   "level": 50,
+   "stats": {
+    "def": 19,
+    "luk": 5
+   }
+  },
+  "thief_shoes_60": {
+   "slot": "shoes",
+   "job": 4,
+   "level": 60,
+   "stats": {
+    "def": 22,
+    "luk": 6
+   }
   }
  },
  "options": {
@@ -1957,7 +2547,7 @@
  },
  "keepInventory": true,
  "enhance": {
-  "_설명": "장비 강화 (메뉴 M → 강화). 숫자는 임시값. maxStars = [장비 레벨 이상, 최대 ★]. rates/destroy = ★n→n+1 성공·파괴 확률(%), 실패하면 ★ 유지. 파괴 방지 = 비용 × safeguardMul (destroy가 있는 단계만). 비용 = (costBase + 레벨²) × (★+1), 10단위. 파괴된 장비는 같은 장비 1개 + 12→13 비용 × restoreMul 로 ★restoreStar 복구. starStat = ★마다 4스탯(힘·민첩·지력·운) 증가. 무기 = (기본 + 앞의 ★로 오른 값) 공격력/마력 × weaponPct% + weaponFlat (내림, 누적, 주문서 수치는 안 넣음). 방어구 = 현재 방어력 × defPct% (최소 1). 장갑은 gloveAtkStars 에서 공격력·마력 +1. 장신구 = 4스탯만. upgrades = 주문서 업그레이드 횟수. weaponScroll = [성공률, 공격력/마력, 주 스탯], statScroll = [성공률, 스탯]. 드롭·합성 등급 비중 gradeWeight, 나오는 레벨 gradeMinLevel (100·60·30·10%), 순백은 whiteMinLevel 이상에서 whiteChance%. fragments = 주문서 조각 합성 개수",
+  "_설명": "장비 강화 (메뉴 M → 강화). 숫자는 임시값. maxStars = [장비 레벨 이상, 최대 ★]. rates/destroy = ★n→n+1 성공·파괴 확률(%), 실패하면 ★ 유지. 파괴 방지 = 비용 × safeguardMul (destroy가 있는 단계만). 비용 = (costBase + 레벨²) × (★+1), 10단위. 파괴된 장비는 같은 장비 1개 + 12→13 비용 × restoreMul 로 ★restoreStar 복구. starStat = ★마다 4스탯(힘·민첩·지력·운) 증가. 무기 = (기본 + 앞의 ★로 오른 값) 공격력/마력 × weaponPct% + weaponFlat (내림, 누적, 주문서 수치는 안 넣음). 방어구 = 현재 방어력 × defPct% (최소 1). 장갑은 gloveAtkStars 에서 공격력·마력 +1. 장신구 = 4스탯만. upgrades = 주문서 업그레이드 횟수. weaponScroll = [성공률, 공격력/마력, 주 스탯], statScroll = [성공률, 스탯]. 드롭·합성 등급 비중 gradeWeight, 나오는 레벨 gradeMinLevel (100·60·30·10%), 순백은 whiteMinLevel 이상에서 whiteChance%. fragments = 주문서 조각 합성 개수 highStarAtkFrom·highStarAtk = 그 ★부터 무기 말고 모든 장비 ★마다 공격력·마력 +값.",
   "maxStars": [
    [
     1,
@@ -1978,6 +2568,14 @@
    [
     40,
     15
+   ],
+   [
+    50,
+    18
+   ],
+   [
+    60,
+    18
    ]
   ],
   "rates": [
@@ -1995,7 +2593,10 @@
    45,
    40,
    35,
-   30
+   30,
+   30,
+   30,
+   25
   ],
   "destroy": [
    0,
@@ -2012,7 +2613,10 @@
    0,
    0.6,
    1.3,
-   1.4
+   1.4,
+   1.5,
+   1.8,
+   2
   ],
   "costBase": 30,
   "safeguardMul": 3,
@@ -2033,7 +2637,10 @@
    2,
    2,
    2,
-   2
+   2,
+   3,
+   3,
+   3
   ],
   "weaponPct": 2,
   "weaponFlat": 1,
@@ -2045,7 +2652,8 @@
    11,
    13,
    14,
-   15
+   15,
+   17
   ],
   "upgrades": {
    "weapon": 7,
@@ -2108,7 +2716,9 @@
   ],
   "whiteMinLevel": 30,
   "whiteChance": 3,
-  "fragments": 10
+  "fragments": 10,
+  "highStarAtkFrom": 16,
+  "highStarAtk": 2
  },
  "potential": {
   "_설명": "잠재능력 (메이플식). 등급 0 레어 · 1 에픽 · 2 유니크 · 3 레전드리, 3줄. upChance = 재설정 때 등급 상승 % (레어→에픽, 에픽→유니크, 유니크→레전드리), ceiling = 그 번째 재설정은 확정 등급업 (아이템마다 저장), costMul = 골드 재설정 (착용 Lv + 10) × 배율, line2Same/line3Same = 2·3번째 줄이 같은 등급일 확률 % (아니면 한 등급 아래). pools = 부위별 옵션 [레어, 에픽, 유니크, 레전드리] 수치 (0 = 안 나옴). 재설정하면 새 옵션 / 기존 유지 중 고름. 에디셔널은 나중에 · 부위 전용 pools(gloves·hat·top 등)은 분류 옵션에 더해짐. ignoreDef = 방어율 무시 % (줄끼리 곱으로 쌓임, 무기만). 키: str/dex/int/luk/atk/matk 깡 수치(무기 레어만), *Pct %, *PerLv 캐릭터 9레벨당 스탯, critDmg 크리 데미지(장갑), cdPct 쿨감 %(모자, 합계 최대 40%), ignorePct = 피격 시 ignoreChance% 확률로 피해 % 무시(합계 최대 80), iframe 피격 후 무적 +초(합계 최대 2), invulProc = 피격 시 % 확률로 v2초 무적(상의)",
@@ -2829,6 +3439,174 @@
     "8": {
      "bossPct": 5,
      "critDmg": 5
+    }
+   }
+  },
+  "warrior_50": {
+   "name": "Lv50 전사 세트",
+   "items": [
+    "warrior_hat_50",
+    "warrior_top_50",
+    "warrior_bottom_50",
+    "warrior_shoes_50"
+   ],
+   "bonus": {
+    "2": {
+     "str": 15
+    },
+    "3": {
+     "atkPct": 10
+    },
+    "4": {
+     "bossPct": 16,
+     "hpPct": 16
+    }
+   }
+  },
+  "warrior_60": {
+   "name": "Lv60 전사 세트",
+   "items": [
+    "warrior_hat_60",
+    "warrior_top_60",
+    "warrior_bottom_60",
+    "warrior_shoes_60"
+   ],
+   "bonus": {
+    "2": {
+     "str": 18
+    },
+    "3": {
+     "atkPct": 12
+    },
+    "4": {
+     "bossPct": 20,
+     "hpPct": 20
+    }
+   }
+  },
+  "archer_50": {
+   "name": "Lv50 궁수 세트",
+   "items": [
+    "archer_hat_50",
+    "archer_top_50",
+    "archer_bottom_50",
+    "archer_shoes_50"
+   ],
+   "bonus": {
+    "2": {
+     "dex": 15
+    },
+    "3": {
+     "atkPct": 10
+    },
+    "4": {
+     "bossPct": 16,
+     "critDmg": 16
+    }
+   }
+  },
+  "archer_60": {
+   "name": "Lv60 궁수 세트",
+   "items": [
+    "archer_hat_60",
+    "archer_top_60",
+    "archer_bottom_60",
+    "archer_shoes_60"
+   ],
+   "bonus": {
+    "2": {
+     "dex": 18
+    },
+    "3": {
+     "atkPct": 12
+    },
+    "4": {
+     "bossPct": 20,
+     "critDmg": 20
+    }
+   }
+  },
+  "mage_50": {
+   "name": "Lv50 마법사 세트",
+   "items": [
+    "mage_hat_50",
+    "mage_top_50",
+    "mage_bottom_50",
+    "mage_shoes_50"
+   ],
+   "bonus": {
+    "2": {
+     "int": 15
+    },
+    "3": {
+     "atkPct": 10
+    },
+    "4": {
+     "bossPct": 16,
+     "cdPct": 7
+    }
+   }
+  },
+  "mage_60": {
+   "name": "Lv60 마법사 세트",
+   "items": [
+    "mage_hat_60",
+    "mage_top_60",
+    "mage_bottom_60",
+    "mage_shoes_60"
+   ],
+   "bonus": {
+    "2": {
+     "int": 18
+    },
+    "3": {
+     "atkPct": 12
+    },
+    "4": {
+     "bossPct": 20,
+     "cdPct": 8
+    }
+   }
+  },
+  "thief_50": {
+   "name": "Lv50 도적 세트",
+   "items": [
+    "thief_hat_50",
+    "thief_top_50",
+    "thief_bottom_50",
+    "thief_shoes_50"
+   ],
+   "bonus": {
+    "2": {
+     "luk": 15
+    },
+    "3": {
+     "atkPct": 10
+    },
+    "4": {
+     "bossPct": 16,
+     "critDmg": 16
+    }
+   }
+  },
+  "thief_60": {
+   "name": "Lv60 도적 세트",
+   "items": [
+    "thief_hat_60",
+    "thief_top_60",
+    "thief_bottom_60",
+    "thief_shoes_60"
+   ],
+   "bonus": {
+    "2": {
+     "luk": 18
+    },
+    "3": {
+     "atkPct": 12
+    },
+    "4": {
+     "bossPct": 20,
+     "critDmg": 20
     }
    }
   }

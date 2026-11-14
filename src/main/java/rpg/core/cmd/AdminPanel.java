@@ -150,7 +150,7 @@ public final class AdminPanel {
     static void gearMenu(CommandSourceStack src) {
         title(src, "장비 받기 (그 레벨 전 부위)");
         say(src, row("레벨", btn("1", "/rpg gear 1", ChatFormatting.AQUA), btn("10", "/rpg gear 10", ChatFormatting.AQUA), btn("20", "/rpg gear 20", ChatFormatting.AQUA),
-                btn("30", "/rpg gear 30", ChatFormatting.AQUA), btn("40", "/rpg gear 40", ChatFormatting.AQUA), btn("◀ 패널", "/rpg 관리", ChatFormatting.WHITE)));
+                btn("30", "/rpg gear 30", ChatFormatting.AQUA), btn("40", "/rpg gear 40", ChatFormatting.AQUA), btn("50", "/rpg gear 50", ChatFormatting.AQUA), btn("60", "/rpg gear 60", ChatFormatting.AQUA), btn("◀ 패널", "/rpg 관리", ChatFormatting.WHITE)));
     }
 
     // ───────── NPC 삭제 ─────────

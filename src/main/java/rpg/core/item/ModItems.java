@@ -74,7 +74,7 @@ public final class ModItems {
     static {
         java.util.List<String> all = new java.util.ArrayList<>(java.util.List.of(BASIC));
         for (String b : new String[]{"warrior_sword", "archer_bow", "mage_staff", "thief_dagger", "gloves", "cape", "belt", "earring", "ring", "pendant", "medal"})
-            for (int lv : new int[]{20, 30, 40}) all.add(b + "_" + lv);   // Lv20·30·40 (제작·상점)
+            for (int lv : new int[]{20, 30, 40, 50, 60}) all.add(b + "_" + lv);   // Lv20~60 (제작·상점)
         all.addAll(java.util.List.of(UNIQUE));   // 몹 전용 장신구 (드롭 전용)
         all.addAll(java.util.List.of("warrior_sword_queen", "archer_bow_queen", "mage_staff_queen", "thief_dagger_queen"));   // 여왕의 독니 무기 (레이드)
         for (String id : all) GEAR.add(ITEMS.register(id, () -> id.startsWith("archer_bow")
@@ -90,11 +90,13 @@ public final class ModItems {
             GEAR.add(ITEMS.register(a[0] + "_20", () -> new rpg.core.equip.GearItems.Armor(rpg.core.equip.GearItems.GOLD, type, new Item.Properties(), a[0] + "_20")));
             GEAR.add(ITEMS.register(a[0] + "_30", () -> new rpg.core.equip.GearItems.Armor(rpg.core.equip.GearItems.DIAMOND, type, new Item.Properties(), a[0] + "_30")));
             GEAR.add(ITEMS.register(a[0] + "_40", () -> new rpg.core.equip.GearItems.Armor(rpg.core.equip.GearItems.NETHERITE, type, new Item.Properties(), a[0] + "_40")));
+            GEAR.add(ITEMS.register(a[0] + "_50", () -> new rpg.core.equip.GearItems.Armor(rpg.core.equip.GearItems.IRON, type, new Item.Properties(), a[0] + "_50")));
+            GEAR.add(ITEMS.register(a[0] + "_60", () -> new rpg.core.equip.GearItems.Armor(rpg.core.equip.GearItems.NETHERITE, type, new Item.Properties(), a[0] + "_60")));
             // 직업별 방어구 (제작 전용): 전사 = 금속(철·금·다이아·네더라이트), 나머지 = 직업 색 가죽
-            int[] tiers = {10, 20, 30, 40};
+            int[] tiers = {10, 20, 30, 40, 50, 60};
             var metal = new rpg.core.equip.GearItems.Mat[]{rpg.core.equip.GearItems.IRON, rpg.core.equip.GearItems.GOLD,
-                    rpg.core.equip.GearItems.DIAMOND, rpg.core.equip.GearItems.NETHERITE};
-            for (int t = 0; t < 4; t++) {
+                    rpg.core.equip.GearItems.DIAMOND, rpg.core.equip.GearItems.NETHERITE, rpg.core.equip.GearItems.IRON, rpg.core.equip.GearItems.NETHERITE};
+            for (int t = 0; t < tiers.length; t++) {
                 final int ti = t;
                 String wid = "warrior_" + a[0] + "_" + tiers[t];
                 GEAR.add(ITEMS.register(wid, () -> new rpg.core.equip.GearItems.Armor(metal[ti], type, new Item.Properties(), wid)));
