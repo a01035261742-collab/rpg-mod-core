@@ -151,10 +151,13 @@ def rotation(job, L, branch, sk, targets=1):
         hits = HITS1.get(k, s.get('hits') or 1)
         if k == 'poison_mist': hits = 9
         if k == 'chain_lightning': hits = 1          # 1마리에 1번, 다음 몹으로 튐 (최대 5마리)
+        if k == 'combo_slash': hits = 1
         pct = sv(k, lv) * hits
+        if k == 'combo_slash': pct = sv(k, lv) + sv(k, lv, 'value2') + sv(k, lv, 'value3')
         aoe = 5 if k == 'chain_lightning' else 1 if k in ('magic_claw', 'holy_arrow', 'sniping', 'mark_shot', 'retreat_shot') else (2 if k == 'double_shot' else targets)
         cd = max(s.get('cooldown', 0) + s.get('cooldownPerLevel', 0) * (lv - 1), 0.01)
         c = CAST.get(k, 0.5)
+        if k == 'combo_slash': cd, c = 3 + 3 * 0.4, 1.2
         opts.append((pct * min(aoe, targets) / c, pct * min(aoe, targets), c, cd, k))
     opts.sort(key=lambda x: -x[0]); time = 1.0; total = 0
     for rate, pct, c, cd, k in opts:
