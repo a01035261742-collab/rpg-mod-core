@@ -310,8 +310,13 @@ public final class BranchSkills {
         if (target != caster) RpgData.sync(target);
     }
 
+    /** 홀리 애로우 관통 수 (최대 몇 마리) */
+    static final int HOLY_PIERCE = 3;
+
     private static boolean holyArrow(ServerPlayer p, Defs.SkillDef s, int lv) {
-        SHOTS.add(new Shot(p, "holy", 1.6, 24, s.value(lv), 0));
+        Shot sh = new Shot(p, "holy", 1.6, 24, s.value(lv), 0);
+        sh.pierce = HOLY_PIERCE;
+        SHOTS.add(sh);
         p.serverLevel().playSound(null, p.blockPosition(), SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.PLAYERS, 0.8f, 1.6f);
         if (!rpg.core.compat.EpicFightCompat.playAnim(p, "SPEAR_TWOHAND_AUTO1"))
             p.swing(net.minecraft.world.InteractionHand.MAIN_HAND, true);
@@ -414,6 +419,8 @@ public final class BranchSkills {
     private static final class Shot {
         final ServerPlayer owner; final String kind; final double speed, range, pct, radius;
         Vec3 pos, dir; double travelled, dot; int dotTicks;
+        int pierce = 1;   // 몇 마리까지 뚫고 지나감 (홀리 애로우 3)
+        final java.util.Set<Integer> done = new java.util.HashSet<>();
         Shot(ServerPlayer o, String kind, double speed, double range, double pct, double radius) {
             owner = o; this.kind = kind; this.speed = speed; this.range = range; this.pct = pct; this.radius = radius;
             pos = o.getEyePosition().add(0, -0.15, 0);
@@ -463,7 +470,7 @@ public final class BranchSkills {
         var bh = l.clip(new ClipContext(b.pos, next, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, b.owner));
         Vec3 end = bh.getType() != HitResult.Type.MISS ? bh.getLocation() : next;
         EntityHitResult hit = ProjectileUtil.getEntityHitResult(l, b.owner, b.pos, end, new AABB(b.pos, end).inflate(0.6),
-                x -> x instanceof Mob m && m.isAlive() && !m.isSpectator() && Combat.isRpgMob(m));
+                x -> x instanceof Mob m && m.isAlive() && !m.isSpectator() && Combat.isRpgMob(m) && !b.done.contains(x.getId()));
         for (int i = 0; i < 3; i++) {
             Vec3 q = b.pos.add(end.subtract(b.pos).scale(i / 3.0));
             switch (b.kind) {
@@ -491,6 +498,12 @@ public final class BranchSkills {
                         t.getX(), t.getY() + t.getBbHeight() * 0.6, t.getZ(), 10, 0.25, 0.25, 0.25, 0.05);
                 l.playSound(null, t.blockPosition(), b.kind.equals("holy") ? SoundEvents.AMETHYST_BLOCK_HIT : SoundEvents.TRIDENT_HIT,
                         SoundSource.PLAYERS, 0.8f, 1.4f);
+                b.done.add(t.getId());
+                if (b.done.size() < b.pierce && bh.getType() == HitResult.Type.MISS) {   // 관통: 계속 날아감
+                    b.travelled += hit.getLocation().distanceTo(b.pos) + 0.01;
+                    b.pos = hit.getLocation().add(b.dir.scale(0.05));
+                    return b.travelled >= b.range;
+                }
             }
             return true;
         }

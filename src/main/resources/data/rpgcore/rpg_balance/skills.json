@@ -570,7 +570,7 @@
   "duration": 0,
   "value": 260,
   "valuePerLevel": 8.9474,
-  "desc": "빛의 화살, 스공의 {v}%",
+  "desc": "빛의 화살, 스공의 {v}% (최대 3마리 관통)",
   "hits": 1,
   "step": 5
  },
