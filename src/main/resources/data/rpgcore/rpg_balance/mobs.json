@@ -733,6 +733,17 @@
     "angle": 90
    }
   ],
+  "attacks": [
+   {
+    "anim": "attack",
+    "start": 10,
+    "end": 13,
+    "length": 19,
+    "range": 2.4,
+    "angle": 90,
+    "lunge": 0.4
+   }
+  ],
   "stunArmor": 0.4,
   "levels": {
    "14": {

@@ -37,9 +37,8 @@ public final class ModEntities {
     public static final RegistryObject<EntityType<FlyingRpgMonster>> MUSH_FAIRY = TYPES.register("mush_fairy",
             () -> EntityType.Builder.<FlyingRpgMonster>of(FlyingRpgMonster::new, MobCategory.MONSTER)
                     .sized(0.5f, 0.6f).clientTrackingRange(10).build(RpgCore.MODID + ":mush_fairy"));
-    public static final RegistryObject<EntityType<BrownBear>> BROWN_BEAR = TYPES.register("brown_bear",
-            () -> EntityType.Builder.<BrownBear>of(BrownBear::new, MobCategory.CREATURE)
-                    .sized(1.4f, 1.4f).clientTrackingRange(10).build(RpgCore.MODID + ":brown_bear"));
+    /** 곰: Blockbench 모델 (북극곰 비율 + 갈색 털). 보스 숲의 주인은 아직 북극곰 몸 (BrownBear 클래스) */
+    public static final RegistryObject<EntityType<GeoRpgMonster>> BROWN_BEAR = geoMonster("brown_bear", 1.4f, 1.4f, 4);
     /** 보스 "거대버섯 수호자": 버섯 짐승 몸 2배 */
     public static final RegistryObject<EntityType<MushGuardian>> MUSH_GUARDIAN = TYPES.register("mush_guardian",
             () -> EntityType.Builder.<MushGuardian>of(MushGuardian::new, MobCategory.MONSTER)
@@ -63,7 +62,7 @@ public final class ModEntities {
         e.put(MUSH_SOLDIER.get(), RpgMonster.attrs(0.24).build());
         e.put(MUSH_BEAST.get(), RpgMonster.attrs(0.27).build());
         e.put(MUSH_FAIRY.get(), FlyingRpgMonster.flyAttrs().build());
-        e.put(BROWN_BEAR.get(), PolarBear.createAttributes().build());
+        e.put(BROWN_BEAR.get(), RpgMonster.attrs(0.25).build());
         e.put(FOREST_LORD.get(), PolarBear.createAttributes().build());
         e.put(MUSH_GUARDIAN.get(), RpgMonster.attrs(0.25).build());
     }

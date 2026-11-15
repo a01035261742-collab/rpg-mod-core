@@ -18,7 +18,7 @@ import net.minecraft.world.level.Level;
 
 /** 새로 만든 몹 공통: 플레이어를 보면 쫓아와서 근접 공격 (피해는 RPG 공식) */
 public class RpgMonster extends Monster {
-    /** 소리 종류: 0 쥐 · 1 버섯 · 2 짐승 · 3 요정 */
+    /** 소리 종류: 0 쥐 · 1 버섯 · 2 짐승 · 3 요정 · 4 곰 */
     private final int voice;
 
     public RpgMonster(EntityType<? extends Monster> type, Level level, int voice) {
@@ -48,6 +48,7 @@ public class RpgMonster extends Monster {
             case 0 -> SoundEvents.SILVERFISH_AMBIENT;
             case 2 -> SoundEvents.RAVAGER_AMBIENT;
             case 3 -> SoundEvents.ALLAY_AMBIENT_WITHOUT_ITEM;
+            case 4 -> SoundEvents.POLAR_BEAR_AMBIENT;
             default -> SoundEvents.SLIME_SQUISH_SMALL;
         };
     }
@@ -57,6 +58,7 @@ public class RpgMonster extends Monster {
             case 0 -> SoundEvents.SILVERFISH_HURT;
             case 2 -> SoundEvents.RAVAGER_HURT;
             case 3 -> SoundEvents.ALLAY_HURT;
+            case 4 -> SoundEvents.POLAR_BEAR_HURT;
             default -> SoundEvents.SLIME_HURT_SMALL;
         };
     }
@@ -66,6 +68,7 @@ public class RpgMonster extends Monster {
             case 0 -> SoundEvents.SILVERFISH_DEATH;
             case 2 -> SoundEvents.RAVAGER_DEATH;
             case 3 -> SoundEvents.ALLAY_DEATH;
+            case 4 -> SoundEvents.POLAR_BEAR_DEATH;
             default -> SoundEvents.SLIME_DEATH_SMALL;
         };
     }
