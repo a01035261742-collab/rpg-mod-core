@@ -201,7 +201,7 @@
     "gold": 84
    }
   },
-  "fixedLevel": 2
+  "fixedLevel": 1
  },
  "cow": {
   "entity": "minecraft:cow",
@@ -3186,6 +3186,6 @@
     "gold": 1494
    }
   },
-  "fixedLevel": 58
+  "fixedLevel": 60
  }
 }
