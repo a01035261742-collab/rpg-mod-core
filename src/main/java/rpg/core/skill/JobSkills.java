@@ -27,7 +27,7 @@ import rpg.core.data.PlayerData;
 
 /**
  * 1차 전직 스킬 (skills.json, tier 1)
- *  전사  power_strike 강타 차지(누르고 떼기) · iron_body 아이언 바디
+ *  전사  combo_slash 연속 베기 (1차) · iron_body 아이언 바디 · power_strike 강타는 버서커 2차 (코드는 여기)
  *  궁수  double_shot 더블 샷 · retreat_shot 후퇴 샷
  *  마법사 magic_bolt 매직 볼트 · magic_guard 매직 가드
  *  도적  stealth 은신(첫 공격 추가 피해 + 출혈) · haste 헤이스트

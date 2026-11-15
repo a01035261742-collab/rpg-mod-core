@@ -62,6 +62,16 @@ public final class PlayerEvents {
             keep.putInt("rpgWarriorReset", 1);
             sp.getPersistentData().put(net.minecraft.world.entity.player.Player.PERSISTED_NBT_TAG, keep);
         }
+        // 전사 스킬 맞바꿈 (강타 ↔ 연속 베기, 한 번만): 전사는 스킬 포인트 전부 돌려받음
+        if (keep.getInt("rpgWarriorSwap") < 1) {
+            if (d.job == 1) {
+                d.refundSkills();
+                sp.sendSystemMessage(net.minecraft.network.chat.Component.literal("[전사 개편] 연속 베기가 1차, 강타가 버서커 2차 스킬이 됐어요. 스킬 포인트를 전부 돌려받았으니 스킬 창(L)에서 다시 찍어주세요")
+                        .withStyle(net.minecraft.ChatFormatting.GOLD));
+            }
+            keep.putInt("rpgWarriorSwap", 1);
+            sp.getPersistentData().put(net.minecraft.world.entity.player.Player.PERSISTED_NBT_TAG, keep);
+        }
         // 트리 무료 초기화 (한 번만): 이미 2차인 사람한테 1회
         if (keep.getInt("rpgTreeResetV1") < 1) {
             if (d.branch > 0 && d.freeTreeReset == 0) d.freeTreeReset = 1;

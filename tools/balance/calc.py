@@ -29,7 +29,7 @@ JOB = {1: ('전사', 'warrior', 'warrior_sword', 'str', 'dex', 'atk'), 2: ('궁�
        3: ('마법사', 'mage', 'mage_staff', 'int', 'luk', 'matk'), 4: ('도적', 'thief', 'thief_dagger', 'luk', 'dex', 'atk')}
 BRANCH = {(1, 1): '가디언', (1, 2): '버서커', (2, 1): '스나이퍼', (2, 2): '헌터', (3, 1): '아크메이지', (3, 2): '클레릭', (4, 1): '어쌔신', (4, 2): '트릭스터'}
 BASIC = {1: 112, 2: 70, 3: 84, 4: 126}
-MAIN1 = {1: 'power_strike', 2: 'double_shot', 3: 'magic_claw', 4: 'double_stab'}
+MAIN1 = {1: 'combo_slash', 2: 'double_shot', 3: 'magic_claw', 4: 'double_stab'}
 MASTERY1 = {1: 'greatsword_mastery', 2: 'bow_mastery', 3: 'staff_mastery', 4: 'dagger_mastery'}
 EXPERT = {1: 'greatsword_expert', 2: 'bow_expert', 3: 'staff_expert', 4: 'dagger_expert'}
 # 1번 쓰는 데 걸리는 시간 (초, 모션·조준). 없으면 0.5
