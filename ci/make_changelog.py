@@ -38,6 +38,11 @@ def add(entry, front=False):
 
 for e in load(prev_path): add(e)
 for e in load('ci/changelog.json'): add(e, front=True)
+# ci/changelog.json 의 "drop": [버전] = 기록에서 뺄 버전 (잘못 붙인 버전 이름 등)
+try:
+    with open('ci/changelog.json', encoding='utf-8') as f: DROP = set(json.load(f).get('drop', []))
+except Exception: DROP = set()
+for v in DROP: merged.pop(v, None); TITLES.pop(v, None)
 
 lines = []; title_line = ''; first = ''
 if msg_path and os.path.exists(msg_path):
