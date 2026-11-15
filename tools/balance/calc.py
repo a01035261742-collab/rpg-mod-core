@@ -150,8 +150,9 @@ def rotation(job, L, branch, sk, targets=1):
         if k in SKIP or s.get('type') == 'passive' or k in (MASTERY1[job], EXPERT[job]): continue
         hits = HITS1.get(k, s.get('hits') or 1)
         if k == 'poison_mist': hits = 9
+        if k == 'chain_lightning': hits = 1          # 1마리에 1번, 다음 몹으로 튐 (최대 5마리)
         pct = sv(k, lv) * hits
-        aoe = 1 if k in ('magic_claw', 'holy_arrow', 'sniping', 'mark_shot', 'retreat_shot') else (2 if k == 'double_shot' else targets)
+        aoe = 5 if k == 'chain_lightning' else 1 if k in ('magic_claw', 'holy_arrow', 'sniping', 'mark_shot', 'retreat_shot') else (2 if k == 'double_shot' else targets)
         cd = max(s.get('cooldown', 0) + s.get('cooldownPerLevel', 0) * (lv - 1), 0.01)
         c = CAST.get(k, 0.5)
         opts.append((pct * min(aoe, targets) / c, pct * min(aoe, targets), c, cd, k))
