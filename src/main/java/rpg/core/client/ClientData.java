@@ -16,7 +16,8 @@ public final class ClientData {
     public static double hp, mp, maxHp = 1, maxMp = 1;
     public static double crit, healBonus, dropBonus, goldBonus, staminaBonus;
     public static double atkMin, atkMax, defPct, critDmgPct, ignoreDef, bossPct, overloadPct;
-    public static int skillPoints, passivePoints;
+    public static int passivePoints;
+    public static final int[] sp = new int[3];   // 차수별 남은 스킬 포인트 (초보 · 1차 · 2차)
     public static final java.util.Map<String, Integer> skills = new java.util.LinkedHashMap<>();
     public static final String[] slots = new String[6];
     public static final java.util.Map<String, Integer> passives = new java.util.HashMap<>();
@@ -47,7 +48,7 @@ public final class ClientData {
         ignoreDef = b.readDouble(); bossPct = b.readDouble();
         overloadPct = b.readDouble();
         freeTreeReset = b.readVarInt();
-        skillPoints = b.readVarInt(); passivePoints = b.readVarInt();
+        for (int i = 0; i < 3; i++) sp[i] = b.readVarInt(); passivePoints = b.readVarInt();
         skills.clear();
         int n = b.readVarInt();
         for (int i = 0; i < n; i++) skills.put(b.readUtf(), b.readVarInt());

@@ -86,7 +86,6 @@ public final class PlayerEvents {
             if (sd != null && se.getValue() > sd.maxLevel()) { back += se.getValue() - sd.maxLevel(); se.setValue(sd.maxLevel()); }
         }
         if (back > 0) {
-            d.skillPoints += back;
             d.recalc();
             sp.sendSystemMessage(net.minecraft.network.chat.Component.literal("[스킬] 최대 레벨이 줄어든 스킬의 포인트 " + back + "점을 돌려받았어요").withStyle(net.minecraft.ChatFormatting.GOLD));
         }

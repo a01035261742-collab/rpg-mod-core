@@ -37,6 +37,9 @@ public final class Balance {
     public static double critBase = 5.0, critPerDex = 0.1, healPerInt = 0.5, dropPerLuk = 0.2, goldPerLuk = 0.3;
     public static double expBase = 15, expPower = 2.0, expLinear = 30;
     public static int skillPointsPerLevel = 2, passivePointsPerLevel = 1;
+    /** 스킬 포인트 (옛 메이플식, 차수별 칸): 초보자 Lv1~10 레벨마다 1 (최대 beginnerSkillPoints) · 전직하면 그 차수 칸에 jobSkillBonus + 그 차수 레벨 구간 레벨업마다 skillPointsPerLevel */
+    public static int beginnerSkillPoints = 10, jobSkillBonus = 3;
+    public static int[] skillTierLevels = {10, 30, 70};
     public static int jobLevel1 = 10, jobRewardPotions = 10, jobLevel2 = 30, jobReward2Potions = 20;
     public static double potionCooldown = 1.0, rangedRange = 20;
     /** 물약 종류 (player.json potions): hp/mp 고정 회복, hpPct/mpPct 최대치 %, cooldown 초 (0 = potionCooldown) */
@@ -169,6 +172,8 @@ public final class Balance {
             if (o.has("basicAttackPct")) { var a = o.getAsJsonArray("basicAttackPct"); for (int i = 0; i < Math.min(5, a.size()); i++) basicAttackPct[i] = a.get(i).getAsDouble(); }
             mastery = d(o, "mastery", mastery); critDamage = d(o, "critDamage", critDamage); fistAttack = d(o, "fistAttack", fistAttack);
             skillPointsPerLevel = i(o, "skillPointsPerLevel", skillPointsPerLevel);
+            beginnerSkillPoints = i(o, "beginnerSkillPoints", beginnerSkillPoints); jobSkillBonus = i(o, "jobSkillBonus", jobSkillBonus);
+            if (o.has("skillTierLevels")) { var a = o.getAsJsonArray("skillTierLevels"); for (int i = 0; i < Math.min(skillTierLevels.length, a.size()); i++) skillTierLevels[i] = a.get(i).getAsInt(); }
             passivePointsPerLevel = i(o, "passivePointsPerLevel", passivePointsPerLevel);
             dodgeCooldown = d(o, "dodgeCooldown", dodgeCooldown); dodgePower = d(o, "dodgePower", dodgePower);
             dodgeIframes = i(o, "dodgeIframes", dodgeIframes);

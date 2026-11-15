@@ -27,6 +27,8 @@ public class SkillScreen extends ScaledScreen {
         return s.branch() == 0 || s.branch() == ClientData.branch;
     }
 
+    private static int sp(Defs.SkillDef s) { return ClientData.sp[Math.min(2, s.tier())]; }
+
     private static boolean inTab(Defs.SkillDef s) {
         return tab == 0 ? s.tier() < 2 : s.tier() >= 2;   // 패시브도 1차·2차 안에
     }
@@ -53,8 +55,8 @@ public class SkillScreen extends ScaledScreen {
             String id = sd.id();
             int lv = ClientData.skills.getOrDefault(id, 0);
             addRenderableWidget(Ui.button(Component.literal("+"), b -> Net.CH.sendToServer(new Net.Learn(0, id)))
-                    .bounds(x + W - 42, y + TOP + r * ROW + 8, 18, 16).accent(ClientData.skillPoints > 0 && lv < sd.maxLevel()).build())
-                    .active = ClientData.skillPoints > 0 && lv < sd.maxLevel();
+                    .bounds(x + W - 42, y + TOP + r * ROW + 8, 18, 16).accent(sp(sd) > 0 && lv < sd.maxLevel()).build())
+                    .active = sp(sd) > 0 && lv < sd.maxLevel();
         }
     }
 
@@ -62,8 +64,13 @@ public class SkillScreen extends ScaledScreen {
     public void render(GuiGraphics g, int mx, int my, float pt) {
         renderBackground(g);
         CharWin.draw(g, font, x, y);
-        String sp = "SP " + ClientData.skillPoints;
-        g.drawString(font, sp, x + W - 20 - font.width(sp), y + 34, ClientData.skillPoints > 0 ? Ui.GREEN : Ui.GRAY, true);
+        // 차수별 SP: 1차 탭 = 초보(남았거나 아직 초보일 때) + 1차, 2차 탭 = 2차
+        String sp;
+        int spn;
+        if (tab == 1) { spn = ClientData.sp[2]; sp = "2차 SP " + spn; }
+        else if (ClientData.jobTier() == 0) { spn = ClientData.sp[0]; sp = "SP " + spn; }
+        else { spn = ClientData.sp[0] + ClientData.sp[1]; sp = (ClientData.sp[0] > 0 ? "초보 SP " + ClientData.sp[0] + " · " : "") + "1차 SP " + ClientData.sp[1]; }
+        g.drawString(font, sp, x + W - 20 - font.width(sp), y + 34, spn > 0 ? Ui.GREEN : Ui.GRAY, true);
         if (list.isEmpty()) g.drawString(font, tab == 1 ? "2차 전직 후 열려요" : "배울 수 있는 스킬이 없어요", x + 90, y + 70, Ui.GRAY, false);
         if (list.size() > rows) {
             String sc = (scroll + 1) + "-" + Math.min(list.size(), scroll + rows) + "/" + list.size() + " (휠)";

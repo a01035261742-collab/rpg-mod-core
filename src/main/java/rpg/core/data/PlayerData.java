@@ -33,7 +33,7 @@ public class PlayerData {
     public double hp, mp;
 
     // 스킬·패시브
-    public int skillPoints, passivePoints;
+    public int passivePoints;
     public final Map<String, Integer> skills = new LinkedHashMap<>();   // 스킬 id → 레벨
     public final String[] slots = new String[SLOTS];                    // Q E R F Z X 에 들어간 스킬 id
     public final Map<String, Integer> passives = new HashMap<>();       // 노드 id → 랭크
@@ -140,9 +140,31 @@ public class PlayerData {
         return job == 0 ? 0 : branch > 0 ? 2 : 1;
     }
 
+    /** 차수 t(0 초보 · 1 · 2)의 스킬 포인트 총량: 초보는 레벨마다 1, 전직한 차수는 보너스 + 그 차수 레벨 구간 레벨업마다 */
+    public int spEarned(int t) {
+        if (t == 0) return Math.min(level, rpg.core.balance.Balance.beginnerSkillPoints);
+        int[] tl = rpg.core.balance.Balance.skillTierLevels;
+        if (jobTier() < t || t >= tl.length) return 0;
+        int ups = Math.max(0, Math.min(level, tl[t]) - tl[t - 1]);
+        return rpg.core.balance.Balance.jobSkillBonus + ups * rpg.core.balance.Balance.skillPointsPerLevel;
+    }
+
+    public int spSpent(int t) {
+        int n = 0;
+        for (var e : skills.entrySet()) {
+            var sd = rpg.core.skill.Defs.SKILLS.get(e.getKey());
+            if (sd != null && Math.min(2, sd.tier()) == t) n += e.getValue();
+        }
+        return n;
+    }
+
+    public int spLeft(int t) { return Math.max(0, spEarned(t) - spSpent(t)); }
+
+    public int spTotalEarned() { return spEarned(0) + spEarned(1) + spEarned(2); }
+
     /** 처음 시작 */
     public void init() {
-        level = 1; exp = 0; job = 0; branch = 0; pendingBranch = 0; trialCleared = false; gold = 0; statPoints = 0; skillPoints = 0; passivePoints = 0;
+        level = 1; exp = 0; job = 0; branch = 0; pendingBranch = 0; trialCleared = false; gold = 0; statPoints = 0; passivePoints = 0;
         for (int i = 0; i < N; i++) stats[i] = start(i);
         skills.clear(); passives.clear(); cdEnd.clear(); cdLen.clear();
         questActive.clear(); questDone.clear();
@@ -192,11 +214,8 @@ public class PlayerData {
 
     /** 직업 개편: 스킬 포인트 전부 돌려받고 스킬 칸 비우기 */
     public void refundSkills() {
-        int sp = 0;
-        for (int v : skills.values()) sp += v;
         skills.clear();
         for (int i = 0; i < slots.length; i++) slots[i] = null;
-        skillPoints += sp;
         recalc();
     }
 
@@ -234,7 +253,7 @@ public class PlayerData {
         t.putInt("freeTreeReset", freeTreeReset); t.putLong("tradeNet", tradeNet);
         t.putInt("branch", branch); t.putInt("pendingBranch", pendingBranch); t.putBoolean("trialCleared", trialCleared);
         t.putDouble("hp", hp); t.putDouble("mp", mp);
-        t.putInt("skp", skillPoints); t.putInt("pp", passivePoints);
+        t.putInt("pp", passivePoints);
         CompoundTag sk = new CompoundTag();
         skills.forEach(sk::putInt);
         t.put("skills", sk);
@@ -261,7 +280,7 @@ public class PlayerData {
         freeTreeReset = t.getInt("freeTreeReset"); tradeNet = t.getLong("tradeNet");
         branch = t.getInt("branch"); pendingBranch = t.getInt("pendingBranch"); trialCleared = t.getBoolean("trialCleared");
         hp = t.getDouble("hp"); mp = t.getDouble("mp");
-        skillPoints = t.getInt("skp"); passivePoints = t.getInt("pp");
+        passivePoints = t.getInt("pp");
         skills.clear();
         CompoundTag sk = t.getCompound("skills");
         for (String k : sk.getAllKeys()) skills.put(k, sk.getInt(k));
@@ -299,7 +318,7 @@ public class PlayerData {
         b.writeDouble(rpg.core.skill.PassiveEffects.overload(this));
         b.writeVarInt(freeTreeReset);
         // 스킬
-        b.writeVarInt(skillPoints); b.writeVarInt(passivePoints);
+        b.writeVarInt(spLeft(0)); b.writeVarInt(spLeft(1)); b.writeVarInt(spLeft(2)); b.writeVarInt(passivePoints);
         b.writeVarInt(skills.size());
         skills.forEach((k, v) -> { b.writeUtf(k); b.writeVarInt(v); });
         for (int i = 0; i < SLOTS; i++) b.writeUtf(slots[i] == null ? "" : slots[i]);
