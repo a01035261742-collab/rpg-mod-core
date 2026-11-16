@@ -252,6 +252,16 @@ public final class Boss {
     }
 
     static State stateOf(Mob mob) { return STATES.get(mob.getUUID()); }
+
+    /** 경기장(반경 - margin) 밖이면 가장자리로 당김 */
+    static Vec3 inArena(State st, Vec3 q, double margin) {
+        double r = Math.max(1, st.radius - margin), dx = q.x - st.center.x, dz = q.z - st.center.z, d = Math.sqrt(dx * dx + dz * dz);
+        if (d <= r) return q;
+        return new Vec3(st.center.x + dx / d * r, q.y, st.center.z + dz / d * r);
+    }
+
+    /** 고치에 묶인 사람이 공격 키를 누름 (Net) */
+    public static void cocoonTap(ServerPlayer p) { BossX.cocoonTap(p); }
     static java.util.Collection<State> states() { return STATES.values(); }
 
     private static String barName(MobData m, Def def) {
@@ -747,7 +757,7 @@ public final class Boss {
             st.dashTick++;
             double f = Math.min(1, st.dashTick / (double) DASH_TICKS);
             double along = p.len() * f;
-            Vec3 q = st.dashFrom.add(st.dir.scale(along));
+            Vec3 q = inArena(st, st.dashFrom.add(st.dir.scale(along)), mob.getBbWidth() / 2 + 1);   // 돌진도 경기장 끝에서 멈춤
             mob.moveTo(q.x, st.dashFrom.y, q.z, mob.getYRot(), mob.getXRot());
             mob.setDeltaMovement(Vec3.ZERO);
             l.sendParticles(ParticleTypes.CLOUD, q.x, q.y + 0.3, q.z, 3, 0.6, 0.1, 0.6, 0.01);
@@ -812,6 +822,8 @@ public final class Boss {
                     long rel = now + Math.round(p.x("throwAt", 0.5) * 20);
                     for (Vec3 q : st.rocks.values()) rpg.core.entity.BossProp.rock(l, paw, q, rel, now + dl + HIT_LAG);
                 }
+                if (p.type().equals("jump"))   // 도약류: 착지점은 경기장 안으로 (보스 몸이 밖으로 안 나가게)
+                    for (var en : st.rocks.entrySet()) en.setValue(inArena(st, en.getValue(), mob.getBbWidth() / 2 + 1));
                 if (p.x("ball", 0) > 0) for (Vec3 q : st.rocks.values()) rpg.core.entity.BossProp.ball(l, staffTip(mob, st), q, now, now + dl + HIT_LAG);   // 포자탄
                 if (!line) for (Vec3 q : st.rocks.values()) Net.telegraph(l, q, st.dir, p.type().equals("share") ? 40 + MobAI.CIRCLE : MobAI.CIRCLE, p.r(), 0, dl);
                 if (p.type().equals("jump") && p.x("blink", 0) > 0) {   // 순간이동: 마법진 속으로 사라졌다가, 도착 자리 위 공중 마법진에서 내려찍기

@@ -234,7 +234,7 @@ public final class Net {
         void encode(FriendlyByteBuf b) { b.writeVarInt(dummy); }
         void handle(Supplier<NetworkEvent.Context> ctx) {
             ServerPlayer p = ctx.get().getSender();
-            if (p != null) rpg.core.combat.BossX.cocoonTap(p);
+            if (p != null) rpg.core.combat.Boss.cocoonTap(p);
             ctx.get().setPacketHandled(true);
         }
     }
