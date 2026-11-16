@@ -2,8 +2,8 @@
  "format_version": "1.8.0",
  "animations": {
   "open": {
-   "animation_length": 0.15,
    "loop": "hold_on_last_frame",
+   "animation_length": 0.2,
    "bones": {
     "crack": {
      "scale": {
@@ -12,19 +12,52 @@
        1,
        0.3
       ],
-      "0.15": [
+      "0.2": [
        1,
        1,
        1
+      ]
+     }
+    },
+    "shards": {
+     "position": {
+      "0.0": [
+       0,
+       -4,
+       0
+      ],
+      "0.1": [
+       0,
+       0.8,
+       0
+      ],
+      "0.2": [
+       0,
+       0,
+       0
       ]
      }
     }
    }
   },
   "close": {
-   "animation_length": 0.5,
    "loop": "hold_on_last_frame",
+   "animation_length": 0.5,
    "bones": {
+    "shards": {
+     "position": {
+      "0.0": [
+       0,
+       0,
+       0
+      ],
+      "0.5": [
+       0,
+       -4,
+       0
+      ]
+     }
+    },
     "crack": {
      "scale": {
       "0.0": [

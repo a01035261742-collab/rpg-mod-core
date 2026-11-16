@@ -226,7 +226,9 @@ public class BossProp extends Entity implements GeoEntity {
             if (isBeam()) return s.setAndContinue(entityData.get(ENDING) ? RawAnimation.begin().thenPlayAndHold("close") : RawAnimation.begin().thenPlay("open").thenLoop("pulse"));
             if (t == ModEntities.RESONANCE_RING.get())
                 return s.setAndContinue(entityData.get(ENDING) ? RawAnimation.begin().thenPlayAndHold("close") : RawAnimation.begin().thenPlay("open").thenLoop("spin"));
-            if (t == ModEntities.POISON_POOL.get() || t == ModEntities.VOID_CRACK.get() || t == ModEntities.SHOCKWAVE.get())
+            if (t == ModEntities.POISON_POOL.get())
+                return s.setAndContinue(entityData.get(ENDING) ? RawAnimation.begin().thenPlayAndHold("close") : RawAnimation.begin().thenPlay("open").thenLoop("bubble"));
+            if (t == ModEntities.VOID_CRACK.get() || t == ModEntities.SHOCKWAVE.get())
                 return s.setAndContinue(RawAnimation.begin().thenPlayAndHold(entityData.get(ENDING) ? "close" : "open"));
             boolean end = entityData.get(ENDING);
             if (t == ModEntities.MAGIC_CIRCLE.get())

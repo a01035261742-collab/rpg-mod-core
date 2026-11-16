@@ -17,7 +17,9 @@ public class PropRenderer extends GeoEntityRenderer<BossProp> {
     /** 발광 마스크(_glowmask)가 있는 것 */
     private static final Set<String> GLOW = Set.of("boss_rock", "rock_pillar", "void_crystal", "magic_circle", "void_crack", "resonance_ring");
     /** 반투명 + 스스로 빛남 (레이저·독 웅덩이) */
-    private static final Set<String> TRANSLUCENT = Set.of("void_beam", "spore_beam", "poison_pool");
+    private static final Set<String> TRANSLUCENT = Set.of("void_beam", "spore_beam", "poison_pool", "spore_ball");
+    /** 반투명 (빛 받음): 흙먼지 충격파 */
+    private static final Set<String> TRANSLUCENT_LIT = Set.of("shockwave");
 
     private final float scale;
     private final String id;
@@ -53,6 +55,8 @@ public class PropRenderer extends GeoEntityRenderer<BossProp> {
 
     @Override
     public RenderType getRenderType(BossProp e, ResourceLocation texture, MultiBufferSource buf, float pt) {
-        return TRANSLUCENT.contains(id) ? RenderType.entityTranslucentEmissive(texture) : RenderType.entityCutout(texture);
+        if (TRANSLUCENT.contains(id)) return RenderType.entityTranslucentEmissive(texture);
+        if (TRANSLUCENT_LIT.contains(id)) return RenderType.entityTranslucent(texture);
+        return RenderType.entityCutout(texture);
     }
 }
