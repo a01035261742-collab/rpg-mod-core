@@ -93,7 +93,7 @@ public final class Gear {
         if (!d.title().isEmpty()) tip.add(Component.literal("칭호 《" + d.title() + "》 (훈장 칸에 끼면 머리 위에 표시)").withStyle(s2 -> s2.withColor(d.titleColor())));
         if (Enhance.broken(s)) tip.add(Component.literal("파괴된 장비 (능력치 없음) · 메뉴(M) → 강화에서 복구").withStyle(ChatFormatting.DARK_RED));
         int max = Enhance.maxStar(d), st = Enhance.star(s);
-        if (max > 0) tip.add(Component.literal("★".repeat(Math.min(st, max)) + "☆".repeat(Math.max(0, max - st))).withStyle(ChatFormatting.YELLOW));
+        if (max > 0) tip.add(Component.literal(starLine(st, max)).withStyle(ChatFormatting.YELLOW));
         int um = Enhance.upgMax(d);
         if (um > 0) tip.add(Component.literal("업그레이드 가능 " + Enhance.upgLeft(s) + " (실패 " + Enhance.upgFail(s) + ")").withStyle(ChatFormatting.GRAY));
         // 능력치 = 기본 + 주문서(파랑) + 스타포스(노랑) + 추가 옵션(초록)
@@ -157,5 +157,15 @@ public final class Gear {
     private static String fmt(double v, String k) {
         String n = v == Math.floor(v) ? String.valueOf((long) v) : String.format("%.1f", v);
         return k.equals("allPct") ? n + "%" : n;
+    }
+
+    /** 별 줄: 5개마다 띄어 씀 (★★★★★ ★★☆☆☆ …) */
+    static String starLine(int st, int max) {
+        StringBuilder b = new StringBuilder();
+        for (int i = 0; i < max; i++) {
+            if (i > 0 && i % 5 == 0) b.append(' ');
+            b.append(i < st ? '★' : '☆');
+        }
+        return b.toString();
     }
 }

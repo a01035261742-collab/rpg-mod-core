@@ -1,12 +1,7 @@
 {
- "type": "epicfight:dagger",
+ "type": "epicfight:sword",
  "attributes": {
-  "one_hand": {
-   "armor_negation": 10.0,
-   "max_strikes": 1,
-   "impact": 0.7
-  },
-  "two_hand": {
+  "common": {
    "armor_negation": 10.0,
    "max_strikes": 1,
    "impact": 0.7
