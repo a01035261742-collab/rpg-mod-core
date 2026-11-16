@@ -30,7 +30,7 @@ public class GeoRpgMonster extends RpgMonster implements GeoEntity {
             // 보스 (숲의 주인): 패턴 id 와 같은 이름
             "melee", "claw", "charge", "rocks", "roar", "gap", "pillars", "spikes", "plant", "rings",
             // 보스 (거대버섯 수호자)
-            "combo", "combo2", "combo_alt", "delayed", "jump", "blink_in", "spore_shot", "counter", "beam", "comet", "rain", "poke", "intro", "phase2"};
+            "combo", "combo2", "combo_alt", "delayed", "jump", "blink_in", "spore_shot", "counter", "beam", "comet", "rain", "poke", "intro", "phase2", "beam2", "beam3"};
 
     /** 근접 공격(swing) 때 attack 애니메이션 재생 (보스는 끔) */
     protected boolean swingAnim = true;
@@ -55,6 +55,7 @@ public class GeoRpgMonster extends RpgMonster implements GeoEntity {
                 .triggerableAnim("attack", ATTACK).triggerableAnim("attack2", ATTACK2));
         AnimationController<GeoRpgMonster> pat = new AnimationController<>(this, "pattern", 2, s -> PlayState.STOP);
         for (String n : PATTERNS) pat.triggerableAnim(n, RawAnimation.begin().thenPlay(n));
+        pat.triggerableAnim("stun", RawAnimation.begin().thenLoop("stun"));   // 기절 (멈출 때까지 반복)
         c.add(pat);
     }
 
@@ -68,6 +69,10 @@ public class GeoRpgMonster extends RpgMonster implements GeoEntity {
     public void stopAttack() {
         stopTriggeredAnimation("attack", null);
     }
+
+    /** 기절 동작 시작 / 끝 (서버) */
+    public void playStun() { triggerAnim("pattern", "stun"); }
+    public void stopStun() { stopTriggeredAnimation("pattern", "stun"); }
 
     /** 패턴 애니메이션 재생 (서버) */
     public void playPattern(String type) {

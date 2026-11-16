@@ -172,6 +172,7 @@ public final class Boss {
         boolean awake;         // 등장 연출을 했나 (초기화하면 다시)
         long introUntil;       // 등장 연출 중 (무적·패턴 없음)
         UUID ringId;           // 결정 공명 고리 이펙트
+        boolean stunAnim;      // 기절 동작 재생 중
         boolean back;          // 독니: 지금 타가 뒤쪽 (뒷다리 차기)
         Pattern swing;         // 독니: 지금 타에 쓰는 패턴 (앞 = 자기, 뒤 = 뒷다리 차기)
         int hitNo;             // 연속 패턴 몇 번째 (0 = 처음)
@@ -372,8 +373,11 @@ public final class Boss {
         if (st.cur != null && BossX.TYPES.contains(st.cur.type())) { BossX.run(mob, m, st, def, l, now); return; }
         if (st.cur != null) { run(mob, m, st, def, l, now); return; }
 
-        // 기절 중: 제자리
+        // 기절 동작 끝
+        if (st.stunAnim && now >= m.stunUntil) { st.stunAnim = false; if (mob instanceof rpg.core.entity.GeoRpgMonster g) g.stopStun(); }
+        // 기절 중: 제자리 (모델 있는 보스는 하던 동작 끊고 기절 동작)
         if (now < m.stunUntil) {
+            if (!st.stunAnim && mob instanceof rpg.core.entity.GeoRpgMonster g) { st.stunAnim = true; g.playStun(); }
             mob.getNavigation().stop();
             if (mob.tickCount % 10 == 0) l.sendParticles(ParticleTypes.CRIT, mob.getX(), mob.getY() + mob.getBbHeight() + 0.3, mob.getZ(), 6, 0.5, 0.1, 0.5, 0);
             return;
@@ -635,7 +639,8 @@ public final class Boss {
         st.stageEnd = now + ticks(p.track());
         st.pos = mob.position();
         if (t != null) Net.track((ServerLevel) mob.level(), mob.getId(), t.getId(), MobAI.LINE, p.len(), p.w(), ticks(p.track()));
-        if (p.type().equals("beam") && mob instanceof rpg.core.entity.GeoRpgMonster g) g.playPattern(p.id());   // 광선: 한 발마다 조준 동작
+        if (p.type().equals("beam") && mob instanceof rpg.core.entity.GeoRpgMonster g)   // 광선: 첫 발은 조준부터, 다음 발은 조준한 채로 (같은 이름이면 다시 안 틀어짐)
+            g.playPattern(st.repeatLeft >= (int) Math.max(1, p.x("count", 1)) ? p.id() : (st.repeatLeft % 2 == 0 ? p.id() + "2" : p.id() + "3"));
     }
 
     /** 원 추적 (바위·지연·점프): st.rocks 의 플레이어 발밑 노란 원 */
