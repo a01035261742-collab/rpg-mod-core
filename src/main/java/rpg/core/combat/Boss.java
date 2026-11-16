@@ -1260,7 +1260,6 @@ public final class Boss {
     static void hitAs(Mob mob, MobData m, State st, ServerLevel l, ServerPlayer p, String name, double pct, double maxPct, double poison) {
         boolean landed = maxPct > 0 ? CombatEvents.maxHpHit(mob, p, maxPct) : CombatEvents.mobSkillHit(mob, p, pct);
         if (!landed) return;   // 구르기·가드로 피함
-        Net.alertHit(p, name);
         if (poison > 0) BossX.poison(p, poison, l.getGameTime());
         PlayerData d = RpgData.get(p);
         if (!p.isAlive() || d.isDown() || d.hp <= 0)
@@ -1280,7 +1279,6 @@ public final class Boss {
         boolean landed = pt.x("maxPct", 0) > 0 ? CombatEvents.maxHpHit(mob, p, pt.x("maxPct", 0))   // 최대 HP 비율
                 : CombatEvents.mobSkillHit(mob, p, pt.pct());
         if (!landed) return;   // 구르기·가드로 피함: 맞음 표시·독·상태이상 없음
-        if (pt != DEFS.get(m.key).melee()) Net.alertHit(p, pt.name());   // 뭐에 맞았는지
         if (pt.x("poison", 0) > 0) BossX.poison(p, pt.x("poison", 0), l.getGameTime());   // 독 (초)
         Status.fromPattern(p, pt);   // 기절 · 침묵 · 출혈
         PlayerData d = RpgData.get(p);
