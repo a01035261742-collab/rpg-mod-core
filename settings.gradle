@@ -2,7 +2,11 @@ pluginManagement {
     repositories {
         // 평소엔 Forge 서버. 빌드가 실패하면 CI 가 USE_FORGE_MIRROR=1 로 다시 돌려서 CreeperHost 미러로 바꿈
         gradlePluginPortal()
-        maven { name = 'MinecraftForge'; url = System.getenv('USE_FORGE_MIRROR') ? 'https://maven.creeperhost.net/' : 'https://maven.minecraftforge.net/' }
+        maven {
+            name = 'MinecraftForge'
+            url = System.getenv('USE_FORGE_MIRROR') ? 'https://maven.creeperhost.net/' : 'https://maven.minecraftforge.net/'
+            if (System.getenv('USE_FORGE_MIRROR')) metadataSources { mavenPom(); artifact() }
+        }
     }
 }
 plugins {

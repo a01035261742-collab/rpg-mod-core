@@ -11,7 +11,13 @@ base { archivesName = mod_id }
 
 // Forge 서버 실패 시 (CI 가 USE_FORGE_MIRROR=1 로 다시 빌드): ForgeGradle 이 넣는 Forge 저장소 주소까지 전부 CreeperHost 미러로 바꿈
 if (System.getenv('USE_FORGE_MIRROR')) {
-    def toMirror = { r -> if (r instanceof MavenArtifactRepository && r.url.toString().contains('maven.minecraftforge.net')) r.url = 'https://maven.creeperhost.net/' }
+    // 미러는 .module 파일 대신 HTML 을 돌려줘서 POM 만 읽게 함
+    def toMirror = { r ->
+        if (r instanceof MavenArtifactRepository && r.url.toString().contains('maven.minecraftforge.net')) {
+            r.url = 'https://maven.creeperhost.net/'
+            r.metadataSources { mavenPom(); artifact() }
+        }
+    }
     repositories.all(toMirror)
     buildscript.repositories.all(toMirror)
 }
