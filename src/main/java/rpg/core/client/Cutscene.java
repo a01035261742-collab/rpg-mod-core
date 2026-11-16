@@ -150,9 +150,11 @@ public final class Cutscene {
         }
         // 보스 대사: 토막마다 한 글자씩 나타났다가 다음 토막으로 (전체의 앞 90%)
         if (lines.length > 0) {
-            double span = 0.9 / lines.length;
-            int i = (int) Math.min(lines.length - 1, Math.floor(f / span));
-            double lf = (f - i * span) / span;
+            // 첫 토막은 결정이 솟기 전(0~0.3), 나머지는 0.3~0.9 를 나눠 씀
+            double first = lines.length == 1 ? 0.9 : 0.3, rest = lines.length == 1 ? 0 : 0.6 / (lines.length - 1);
+            int i = f < first ? 0 : (int) Math.min(lines.length - 1, 1 + Math.floor((f - first) / rest));
+            double a0 = i == 0 ? 0 : first + (i - 1) * rest, a1 = i == 0 ? first : a0 + rest;
+            double lf = (f - a0) / (a1 - a0);
             String ln = lines[i].trim();
             int n = (int) Math.min(ln.length(), Math.ceil(ln.length() * Math.min(1, lf / 0.55)));
             double la = f > 0.9 ? Math.max(0, 1 - (f - 0.9) / 0.06) : 1;
