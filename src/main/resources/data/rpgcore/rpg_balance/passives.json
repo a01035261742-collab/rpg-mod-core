@@ -1185,11 +1185,11 @@
   },
   {
    "id": "wg1",
-   "name": "위압",
+   "name": "가드 숙련",
    "x": 3,
    "y": 0,
    "maxRank": 1,
-   "stat": "intimidate",
+   "stat": "guardPct",
    "perRank": 20,
    "requires": [
     "wg0"
@@ -1198,7 +1198,7 @@
    "kind": "n",
    "branch": 1,
    "special": true,
-   "desc": "주변 4칸 일반 몹 이동속도 -20%"
+   "desc": "가드로 막은 패턴 피해 감소 60% → 80%"
   },
   {
    "id": "wg2",
@@ -1759,7 +1759,7 @@
    "y": 6,
    "maxRank": 1,
    "stat": "rollDmg",
-   "perRank": 15,
+   "perRank": 20,
    "requires": [
     "a_hp5"
    ],

@@ -68,6 +68,7 @@ public final class CombatEvents {
         MOB_PCT.put(p.getId(), pct);
         boolean hit = p.hurt(mob.damageSources().mobAttack(mob), 4.0f);
         MOB_PCT.remove(p.getId());
+        GUARD_MUL.remove(p.getId());
         return hit;
     }
 
@@ -78,7 +79,28 @@ public final class CombatEvents {
         MAXHP_PCT.put(p.getId(), pct);
         boolean hit = p.hurt(mob.damageSources().mobAttack(mob), 4.0f);
         MAXHP_PCT.remove(p.getId());
+        GUARD_MUL.remove(p.getId());
         return hit;
+    }
+
+    /** EF 가드로 막은 패턴 피해: 받는 피해 배수 (이번 한 번) */
+    private static final Map<Integer, Double> GUARD_MUL = new java.util.HashMap<>();
+
+    /**
+     * 몹 패턴(스킬) 가드: EF 가드는 다 막아버림 → 막힌 걸 되살려서 피해 60% 감소 (트리 guardPct 로 더, 최대 90%).
+     * 스태미나는 패턴 위력만큼 더 닳고, 모자라면 가드가 깨져서 그대로 맞음. 구르기(무적)는 그대로 피함.
+     */
+    @SubscribeEvent(priority = EventPriority.LOW, receiveCanceled = true)
+    public static void guardPattern(net.minecraftforge.event.entity.living.LivingAttackEvent e) {
+        if (!e.isCanceled() || !(e.getEntity() instanceof ServerPlayer p) || !(e.getSource().getEntity() instanceof Mob)) return;
+        Double pc = MOB_PCT.get(p.getId()), mx = MAXHP_PCT.get(p.getId());
+        if (pc == null && mx == null) return;
+        if (!rpg.core.compat.EpicFightCompat.guarding(p)) return;
+        double cost = mx != null ? mx * 0.25 : pc / 60.0;
+        PlayerData d = RpgData.get(p);
+        boolean held = rpg.core.compat.EpicFightCompat.useStamina(p, cost);
+        GUARD_MUL.put(p.getId(), held ? 1 - Math.min(90, 60 + d.bonus("guardPct")) / 100.0 : 1.0);
+        e.setCanceled(false);
     }
 
     /** RPG 몹 근접 공격은 몸 바깥 1.2칸(+여유) 안에서만 맞음 (멀리서 휘두르는 몹 막기) */
@@ -346,6 +368,8 @@ public final class CombatEvents {
             else if (src instanceof Mob) dmg = Math.max(1, e.getAmount() / 20.0 * d.maxHp * (1 - Combat.defRatio(d, d.level)));  // 일반 몹: 비율, 내 레벨 몹으로 보고 방어
             else dmg = e.getAmount() / 20.0 * d.maxHp;   // 환경 피해: 바닐라와 같은 비율
             long now = sp.level().getGameTime();
+            Double gm = GUARD_MUL.remove(sp.getId());
+            if (gm != null) dmg *= gm;                                            // EF 가드로 막은 패턴
             dmg *= 1 - Math.min(90, d.buffV("iron_wall", now)) / 100.0;           // 철벽: 받는 피해 감소
             dmg *= 1 + d.buffV2("berserk", now) / 100.0;                           // 광폭화: 받는 피해 증가
             dmg *= rpg.core.skill.PassiveEffects.takenMul(d);                     // 트리: 광란

@@ -57,6 +57,98 @@ public final class EpicFightCompat {
         run(sp.getServer(), "epicfight skill add " + name + " guard epicfight:guard");
     }
 
+    // ───────── 구르기 쿨타임 · 가드 (EF 이벤트에 이름으로 연결) ─────────
+    /** 구르기 기본 쿨타임 (초) — 패시브 dodgeCd (%) 로 줄어듦 (최대 60%) */
+    public static final double ROLL_CD = 1.2;
+    private static final UUID CAST_ID = UUID.fromString("6f1f0d2e-7a51-4c1e-9b0a-52d0c1a1e010");
+    private static final java.util.Map<UUID, Long> ROLL_READY = new java.util.concurrent.ConcurrentHashMap<>();
+    private static Object castType;
+    private static Class<?> dodgeClass, guardClass;
+    private static java.lang.reflect.Method addListener, getListener, evContainer, evCancel, contSkill, holdingSkill, getSta, setSta;
+    private static boolean castLookedUp;
+
+    private static boolean lookupCast() {
+        if (castLookedUp) return addListener != null;
+        castLookedUp = true;
+        try {
+            Class<?> et = Class.forName("yesman.epicfight.world.entity.eventlistener.PlayerEventListener$EventType");
+            castType = et.getField("SKILL_CAST_EVENT").get(null);
+            Class<?> pel = Class.forName("yesman.epicfight.world.entity.eventlistener.PlayerEventListener");
+            addListener = pel.getMethod("addEventListener", et, UUID.class, java.util.function.Consumer.class);
+            Class<?> pp = Class.forName("yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch");
+            getListener = pp.getMethod("getEventListener");
+            holdingSkill = pp.getMethod("getHoldingSkill");
+            getSta = pp.getMethod("getStamina");
+            setSta = pp.getMethod("setStamina", float.class);
+            Class<?> ce = Class.forName("yesman.epicfight.world.entity.eventlistener.SkillCastEvent");
+            evContainer = ce.getMethod("getSkillContainer");
+            evCancel = ce.getMethod("setCanceled", boolean.class);
+            contSkill = Class.forName("yesman.epicfight.skill.SkillContainer").getMethod("getSkill");
+            dodgeClass = Class.forName("yesman.epicfight.skill.dodge.DodgeSkill");
+            guardClass = Class.forName("yesman.epicfight.skill.guard.GuardSkill");
+            return true;
+        } catch (Throwable ex) {
+            RpgCore.LOG.warn("[rpgcore] Epic Fight 구르기 쿨타임 연결 실패: {}", ex.toString());
+            addListener = null;
+            return false;
+        }
+    }
+
+    private static Object patch(net.minecraft.world.entity.player.Player p) throws Exception {
+        if (!efLookedUp) battleMode(p);
+        return getPatch == null ? null : getPatch.invoke(null, p, playerPatchClass);
+    }
+
+    /** 서버 플레이어에 구르기 쿨타임 걸기 (접속·리스폰·차원 이동 때마다, 같은 id 라 겹치지 않음) */
+    private static void hookRoll(ServerPlayer sp) {
+        if (!lookupCast()) return;
+        try {
+            Object patch = patch(sp);
+            if (patch == null) return;
+            UUID id = sp.getUUID();
+            java.util.function.Consumer<Object> fn = ev -> {
+                try {
+                    Object skill = contSkill.invoke(evContainer.invoke(ev));
+                    if (!dodgeClass.isInstance(skill)) return;
+                    long now = sp.level().getGameTime();
+                    Long ready = ROLL_READY.get(id);
+                    if (ready != null && now < ready) { evCancel.invoke(ev, true); return; }
+                    double red = Math.min(60, RpgData.get(sp).bonus("dodgeCd"));
+                    ROLL_READY.put(id, now + Math.round(ROLL_CD * (1 - red / 100.0) * 20));
+                } catch (Throwable ignored) {}
+            };
+            addListener.invoke(getListener.invoke(patch), castType, CAST_ID, fn);
+        } catch (Throwable ex) {
+            RpgCore.LOG.warn("[rpgcore] 구르기 쿨타임 걸기 실패: {}", ex.toString());
+        }
+    }
+
+    @SubscribeEvent
+    public static void joinLevel(net.minecraftforge.event.entity.EntityJoinLevelEvent e) {
+        if (e.getEntity() instanceof ServerPlayer sp) hookRoll(sp);
+    }
+
+    /** EF 가드 중인가 (가드 스킬을 누르고 있음) */
+    public static boolean guarding(net.minecraft.world.entity.player.Player p) {
+        if (!lookupCast()) return false;
+        try {
+            Object patch = patch(p);
+            return patch != null && guardClass.isInstance(holdingSkill.invoke(patch));
+        } catch (Throwable ex) { return false; }
+    }
+
+    /** EF 스태미나를 amount 만큼 씀. 모자라면 0 으로 만들고 false (가드 깨짐) */
+    public static boolean useStamina(net.minecraft.world.entity.player.Player p, double amount) {
+        try {
+            Object patch = patch(p);
+            if (patch == null) return true;
+            float st = (float) getSta.invoke(patch);
+            if (st < amount) { setSta.invoke(patch, 0f); return false; }
+            setSta.invoke(patch, (float) (st - amount));
+            return true;
+        } catch (Throwable ex) { return true; }
+    }
+
     @SubscribeEvent
     public static void skillbook(PlayerInteractEvent.RightClickItem e) {
         if (SKILLBOOK.equals(ForgeRegistries.ITEMS.getKey(e.getItemStack().getItem()))) {

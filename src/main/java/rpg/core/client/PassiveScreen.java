@@ -115,7 +115,7 @@ public class PassiveScreen extends ScaledScreen {
             case "bossPct", "mobPct", "firstStrike" -> Items.SKELETON_SKULL;
             case "hpPct", "vit", "vitHpPct", "hpRegenPct", "healPct", "killHeal", "rageHeal", "lifesteal" -> Items.APPLE;
             case "giantHp", "crisisShield" -> Items.GOLDEN_APPLE;
-            case "defPct", "kbResist", "thorns", "guardInstinct", "oath" -> Items.SHIELD;
+            case "defPct", "kbResist", "thorns", "guardInstinct", "oath", "guardPct" -> Items.SHIELD;
             case "speedPct", "cdPct", "dodgeCd", "stamina", "moveDmg", "thrillSpeed" -> Items.FEATHER;
             case "mpPct", "mpRegenPct", "killMp", "mpCost", "meditation", "buffDur" -> Items.LAPIS_LAZULI;
             case "overloadMp" -> Items.AMETHYST_SHARD;
