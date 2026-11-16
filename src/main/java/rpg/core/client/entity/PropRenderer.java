@@ -44,6 +44,8 @@ public class PropRenderer extends GeoEntityRenderer<BossProp> {
     /** 레이저: 돌린 다음 굵기(x·y)·길이(z) 따로 늘림 */
     @Override
     protected void applyRotations(BossProp e, PoseStack ps, float age, float rotYaw, float pt) {
+        // GeckoLib 은 생물이 아니면 방향을 0 으로 넘김 → 레이저는 자기 방향(yaw)으로 직접 돌림
+        if (e.isBeam()) rotYaw = net.minecraft.util.Mth.rotLerp(pt, e.yRotO, e.getYRot());
         super.applyRotations(e, ps, age, rotYaw, pt);
         if (e.isBeam()) ps.scale(e.size(), e.size(), e.len());
     }

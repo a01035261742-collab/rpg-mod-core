@@ -99,10 +99,20 @@ public final class Cutscene {
         Vec3 d = focus.subtract(pos);
         float fy = (float) (Math.toDegrees(Math.atan2(d.z, d.x)) - 90);
         float fp = (float) -Math.toDegrees(Math.atan2(d.y, Math.sqrt(d.x * d.x + d.z * d.z)));
-        float py = f < b ? yaw0 : mc.player.getYRot(), pp = f < b ? pitch0 : mc.player.getXRot();
+        float py = yaw0, pp = pitch0;
         float yaw = py + Mth.wrapDegrees(fy - py) * (float) lookMix;
         float pitch = Mth.lerp((float) lookMix, pp, fp);
         place(pos, yaw, pitch, false);
+    }
+
+    /** 마우스로 고개 돌리기 막음 (컷씬 동안 플레이어 시점 고정) */
+    @SubscribeEvent
+    public static void lockLook(TickEvent.RenderTickEvent e) {
+        if (cam == null || e.phase != TickEvent.Phase.START) return;
+        var pl = Minecraft.getInstance().player;
+        if (pl == null) return;
+        pl.setYRot(yaw0); pl.setXRot(pitch0); pl.yRotO = yaw0; pl.xRotO = pitch0;
+        pl.setYHeadRot(yaw0); pl.yHeadRotO = yaw0;
     }
 
     @SubscribeEvent
