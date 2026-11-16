@@ -63,10 +63,12 @@ public final class Boss {
     public static final Map<String, Def> DEFS = new HashMap<>();
 
     // ───────── 읽기 (Balance 가 mobs.json 읽을 때) ─────────
-    public static void clear() { DEFS.clear(); TREASURE.clear(); POKE.clear(); GAP.clear(); }
+    public static void clear() { DEFS.clear(); TREASURE.clear(); POKE.clear(); GAP.clear(); TRANS_LINE.clear(); }
 
     /** 원거리 평타 (대상이 평타 거리 밖일 때, 패턴 사이) · 뛰어 붙기 (대상이 dist칸 넘게 멀 때) — 보스 키별 */
     static final Map<String, Pattern> POKE = new HashMap<>(), GAP = new HashMap<>();
+    /** 2페이즈 전환 컷씬 대사 (boss.transLine) */
+    static final Map<String, String> TRANS_LINE = new HashMap<>();
 
     /** 보스 보물 열기 표: 보물 아이템 id → [보스 키, 줄들]. 줄 = {아이템 id, 비중, 개수}. 특수 id: gold(개수 = 골드) · scroll(보스 레벨 무작위 주문서) · job:a|b|c|d(내 직업 것, 초보자는 무작위) */
     public record TreasureRow(String id, double weight, int count) {}
@@ -93,6 +95,7 @@ public final class Boss {
                 POKE.put(key, new Pattern("poke", s(p, "name", "원거리 공격"), "poke", d(p, "r", 2.5), 0, 0, 0, 0,
                         d(p, "delay", 1.0), d(p, "pct", 100), 0, 1, 1, nums(p)));
             }
+            if (o.has("transLine")) TRANS_LINE.put(key, o.get("transLine").getAsString());
             if (o.has("gap")) {    // 뛰어 붙기: 대상 자리로 점프
                 JsonObject p = o.getAsJsonObject("gap");
                 GAP.put(key, new Pattern("gap", s(p, "name", "덮치기"), "jump", d(p, "r", 3), 0, 0, 0, d(p, "track", 0),
@@ -277,7 +280,7 @@ public final class Boss {
                 st.introUntil = now + Math.round(intro * 20);
                 st.nextAt = Math.max(st.nextAt, st.introUntil + 10);
                 if (mob instanceof rpg.core.entity.GeoRpgMonster g) g.playPattern("intro");
-                for (ServerPlayer x : arena(l, st, 16)) Net.cutscene(x, mob, (int) Math.round(intro * 20), "");
+                for (ServerPlayer x : arena(l, st, 16)) Net.cutscene(x, mob, (int) Math.round(intro * 20), "", "");
                 l.playSound(null, mob.blockPosition(), SoundEvents.WARDEN_EMERGE, SoundSource.HOSTILE, 2f, 0.8f);
             }
         }
@@ -314,7 +317,7 @@ public final class Boss {
                 BossX.clearFloor(l, st);   // 독 늪 · 거미줄 장판 · 떨어지는 것 정리
                 if (def.g("transCut", 0) > 0) {   // 전환 컷씬 (자막 없음): 카메라가 보스를 비춤 + 전환 애니
                     if (mob instanceof rpg.core.entity.GeoRpgMonster g) g.playPattern("phase2");
-                    for (ServerPlayer p : arena(l, st, 16)) Net.cutscene(p, mob, ticks(def.g("transSec", 3)), "");
+                    for (ServerPlayer p : arena(l, st, 16)) Net.cutscene(p, mob, ticks(def.g("transSec", 3)), "", TRANS_LINE.getOrDefault(def.key(), ""));
                     l.playSound(null, mob.blockPosition(), SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.HOSTILE, 2.5f, 0.5f);
                 } else {
                     for (ServerPlayer p : arena(l, st, 16)) Net.alert(p, "◆ 둥지가 무너진다 — 2페이즈", ChatFormatting.LIGHT_PURPLE, 70);

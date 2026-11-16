@@ -143,17 +143,18 @@ public final class Net {
     }
 
     // ───────── 서버 → 클라: 보스 등장 컷씬 ─────────
-    public record CutscenePkt(int entity, int ticks, String name) {
-        CutscenePkt(FriendlyByteBuf b) { this(b.readVarInt(), b.readVarInt(), b.readUtf(64)); }
-        void encode(FriendlyByteBuf b) { b.writeVarInt(entity); b.writeVarInt(ticks); b.writeUtf(name, 64); }
+    public record CutscenePkt(int entity, int ticks, String name, String line) {
+        CutscenePkt(FriendlyByteBuf b) { this(b.readVarInt(), b.readVarInt(), b.readUtf(64), b.readUtf(256)); }
+        void encode(FriendlyByteBuf b) { b.writeVarInt(entity); b.writeVarInt(ticks); b.writeUtf(name, 64); b.writeUtf(line, 256); }
         void handle(Supplier<NetworkEvent.Context> ctx) {
-            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> rpg.core.client.Cutscene.start(entity, ticks, name));
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> rpg.core.client.Cutscene.start(entity, ticks, name, line));
             ctx.get().setPacketHandled(true);
         }
     }
 
-    public static void cutscene(ServerPlayer p, net.minecraft.world.entity.Entity boss, int ticks, String name) {
-        CH.send(PacketDistributor.PLAYER.with(() -> p), new CutscenePkt(boss.getId(), ticks, name.replace("★", "").trim()));
+    /** name = 큰 이름 자막 (빈칸이면 없음), line = 보스 대사 (보라, 한 글자씩) */
+    public static void cutscene(ServerPlayer p, net.minecraft.world.entity.Entity boss, int ticks, String name, String line) {
+        CH.send(PacketDistributor.PLAYER.with(() -> p), new CutscenePkt(boss.getId(), ticks, name.replace("★", "").trim(), line));
     }
 
     // ───────── 마을 이동 (이동의 돌 · 마을 이동 주문서) ─────────

@@ -42,6 +42,15 @@ public class RpgGeoRenderer extends GeoEntityRenderer<GeoRpgMonster> {
         return cull ? RenderType.entityCutout(texture) : super.getRenderType(e, texture, buf, pt);
     }
 
+    private static final ResourceLocation GUARDIAN_P1 = RpgCore.id("textures/entity/mush_guardian_p1.png");
+
+    /** 거대버섯 수호자 1페이즈: 침식 전 텍스처 (보라 균열·얼룩 없음) */
+    @Override
+    public ResourceLocation getTextureLocation(GeoRpgMonster e) {
+        if (e instanceof rpg.core.entity.MushGuardian mg && !mg.phase2()) return GUARDIAN_P1;
+        return super.getTextureLocation(e);
+    }
+
     @Override
     public void render(GeoRpgMonster e, float yaw, float pt, PoseStack ps, MultiBufferSource buf, int light) {
         if (e.isInvisible()) return;   // 보스 순간이동 중

@@ -26,18 +26,20 @@ public final class Cutscene {
 
     private static int bossId = -1, total, tick;
     private static String name = "";
+    private static String[] lines = new String[0];   // 보스 대사 ("|" 로 나눈 토막을 차례로)
     private static ArmorStand cam;
     private static Vec3 eye0;
     private static float yaw0, pitch0;
 
     public static boolean active() { return cam != null; }
 
-    public static void start(int entityId, int ticks, String bossName) {
+    public static void start(int entityId, int ticks, String bossName, String line) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null || mc.level == null) return;
         Entity boss = mc.level.getEntity(entityId);
         if (boss == null) return;
         bossId = entityId; total = Math.max(20, ticks); tick = 0; name = bossName;
+        lines = line == null || line.isBlank() ? new String[0] : line.split("\\|");
         eye0 = mc.player.getEyePosition();
         yaw0 = mc.player.getYRot(); pitch0 = mc.player.getXRot();
         cam = new ArmorStand(mc.level, eye0.x, eye0.y, eye0.z);
@@ -88,7 +90,7 @@ public final class Cutscene {
         else if (f < b) { pos = orbit; lookMix = 1; }
         else { double k = ease((f - b) / (1 - b)); pos = orbit.lerp(mc.player.getEyePosition(), k); lookMix = 1 - k; }
         // 지팡이 내려찍기 (애니 3.05초) 순간 흔들림
-        double slam = total * (3.05 / 4.4);
+        double slam = 61;   // 애니 3.05초
         if (tick > slam && tick < slam + 8) {
             double a = (slam + 8 - tick) / 8.0 * 0.25;
             pos = pos.add((Math.random() - 0.5) * a, (Math.random() - 0.5) * a, (Math.random() - 0.5) * a);
@@ -145,6 +147,24 @@ public final class Cutscene {
             g.pose().scale(2.6f, 2.6f, 1);
             g.drawString(font, name, -font.width(name) / 2, 0, al | 0xFFFFFF, true);
             g.pose().popPose();
+        }
+        // 보스 대사: 토막마다 한 글자씩 나타났다가 다음 토막으로 (전체의 앞 90%)
+        if (lines.length > 0) {
+            double span = 0.9 / lines.length;
+            int i = (int) Math.min(lines.length - 1, Math.floor(f / span));
+            double lf = (f - i * span) / span;
+            String ln = lines[i].trim();
+            int n = (int) Math.min(ln.length(), Math.ceil(ln.length() * Math.min(1, lf / 0.55)));
+            double la = f > 0.9 ? Math.max(0, 1 - (f - 0.9) / 0.06) : 1;
+            if (n > 0 && la > 0.02) {
+                String shown = ln.substring(0, n);
+                int al = Math.max(8, (int) (la * 255)) << 24;
+                g.pose().pushPose();
+                g.pose().translate(w / 2f, h - bar - 26, 0);
+                g.pose().scale(1.5f, 1.5f, 1);
+                g.drawString(font, shown, -font.width(ln) / 2, 0, al | 0xC79BFF, true);
+                g.pose().popPose();
+            }
         }
         String skip = "점프: 건너뛰기";
         g.drawString(font, skip, w - font.width(skip) - 8, h - bar / 2 - 4, 0x99FFFFFF, false);
