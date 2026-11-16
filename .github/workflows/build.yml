@@ -14,7 +14,8 @@ jobs:
         run: |
           chmod +x gradlew
           set -o pipefail
-          ./gradlew build --stacktrace 2>&1 | tee build.log
+          # Forge 서버 먼저, 실패하면 CreeperHost 미러로 한 번 더
+          ./gradlew build --stacktrace 2>&1 | tee build.log || { echo "::warning::Forge 서버 실패 → 미러로 다시 빌드"; USE_FORGE_MIRROR=1 ./gradlew build --stacktrace 2>&1 | tee build.log; }
       - name: Report errors
         if: failure()
         run: |

@@ -29,6 +29,7 @@ minecraft {
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
+    if (System.getenv('USE_FORGE_MIRROR')) maven { name = 'ForgeMirror'; url = 'https://maven.creeperhost.net/' }   // Forge 서버 실패 시 미러
     mavenCentral()   // 일반 라이브러리는 Maven Central 먼저 (Forge 서버가 느릴 때 대비)
     maven { url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/' }
 }
