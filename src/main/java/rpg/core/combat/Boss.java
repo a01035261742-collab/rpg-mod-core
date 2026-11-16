@@ -331,9 +331,20 @@ public final class Boss {
                 x.displayClientMessage(Component.literal(m.name + " 체력 증가 (" + n + "명)").withStyle(ChatFormatting.GOLD), true);
         }
 
-        // 2페이즈 (transSec 있으면: 하던 패턴 끝나고 전환 연출 — 그동안 HP 는 경계에서 멈춤 · 무적)
+        // 2페이즈 (transSec 있으면: 하던 패턴·기절 바로 끊고 전환 연출 — 그동안 무적)
         boolean trans = def.g("transSec", 0) > 0;
-        if (st.phase == 1 && m.hp <= m.maxHp * def.phase2() / 100.0 + (trans ? 1 : 0) && (!trans || st.cur == null)) {
+        if (st.phase == 1 && m.hp <= m.maxHp * def.phase2() / 100.0 + (trans ? 1 : 0)) {
+            if (trans) {
+                if (st.cur != null) {
+                    endRing(l, st);
+                    if (st.x.beam != null && l.getEntity(st.x.beam) instanceof rpg.core.entity.BossProp b) b.endSoon();
+                    st.x.beam = null;
+                    finish(mob, st, def, now);
+                }
+                if (now < m.stunUntil) m.stunUntil = now;
+                if (st.stunAnim) { st.stunAnim = false; if (mob instanceof rpg.core.entity.GeoRpgMonster g) g.stopStun(); }
+                Net.track(l, mob.getId(), -1, 0, 0, 0, 0);
+            }
             st.phase = 2;
             st.deck.clear();
             st.bar.setColor(BossEvent.BossBarColor.PURPLE);
