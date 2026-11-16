@@ -1986,6 +1986,7 @@
     {
      "id": "spore_shot",
      "name": "썩은 포자탄",
+     "ball": 1,
      "type": "web",
      "r": 4,
      "track": 1.5,
@@ -2131,6 +2132,7 @@
    },
    "poke": {
     "name": "포자 한 발",
+    "ball": 1,
     "r": 2.5,
     "delay": 1.0,
     "pct": 100,

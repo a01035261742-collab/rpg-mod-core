@@ -71,6 +71,13 @@ public final class EntityClient {
         e.registerEntityRenderer(ModEntities.ROCK_PILLAR.get(), ctx -> new PropRenderer(ctx, "rock_pillar", 2.2f));
         e.registerEntityRenderer(ModEntities.VOID_CRYSTAL.get(), ctx -> new PropRenderer(ctx, "void_crystal", 1.6f));
         e.registerEntityRenderer(ModEntities.MAGIC_CIRCLE.get(), ctx -> new PropRenderer(ctx, "magic_circle", 1.0f));
+        e.registerEntityRenderer(ModEntities.VOID_BEAM.get(), ctx -> new PropRenderer(ctx, "void_beam", 1.0f));
+        e.registerEntityRenderer(ModEntities.SPORE_BEAM.get(), ctx -> new PropRenderer(ctx, "spore_beam", 1.0f));
+        e.registerEntityRenderer(ModEntities.SPORE_BALL.get(), ctx -> new PropRenderer(ctx, "spore_ball", 1.6f));
+        e.registerEntityRenderer(ModEntities.POISON_POOL.get(), ctx -> new PropRenderer(ctx, "poison_pool", 1.0f));
+        e.registerEntityRenderer(ModEntities.VOID_CRACK.get(), ctx -> new PropRenderer(ctx, "void_crack", 1.0f));
+        e.registerEntityRenderer(ModEntities.RESONANCE_RING.get(), ctx -> new PropRenderer(ctx, "resonance_ring", 1.0f));
+        e.registerEntityRenderer(ModEntities.SHOCKWAVE.get(), ctx -> new PropRenderer(ctx, "shockwave", 1.0f));
     }
 
     /** 직업 가죽 방어구: 아이콘 색 (아래층만 칠함, 위 오버레이는 그대로) */

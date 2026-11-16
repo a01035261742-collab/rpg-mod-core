@@ -57,6 +57,14 @@ public final class ModEntities {
     public static final RegistryObject<EntityType<BossProp>> ROCK_PILLAR = prop("rock_pillar", 2.0f, 3.0f);
     public static final RegistryObject<EntityType<BossProp>> VOID_CRYSTAL = prop("void_crystal", 1.5f, 2.6f);
     public static final RegistryObject<EntityType<BossProp>> MAGIC_CIRCLE = prop("magic_circle", 1.0f, 0.2f);
+    // 수호자 패턴 이펙트
+    public static final RegistryObject<EntityType<BossProp>> VOID_BEAM = prop("void_beam", 0.5f, 0.5f);
+    public static final RegistryObject<EntityType<BossProp>> SPORE_BEAM = prop("spore_beam", 0.5f, 0.5f);
+    public static final RegistryObject<EntityType<BossProp>> SPORE_BALL = prop("spore_ball", 0.6f, 0.6f);
+    public static final RegistryObject<EntityType<BossProp>> POISON_POOL = prop("poison_pool", 1.0f, 0.1f);
+    public static final RegistryObject<EntityType<BossProp>> VOID_CRACK = prop("void_crack", 1.0f, 0.1f);
+    public static final RegistryObject<EntityType<BossProp>> RESONANCE_RING = prop("resonance_ring", 1.0f, 1.0f);
+    public static final RegistryObject<EntityType<BossProp>> SHOCKWAVE = prop("shockwave", 1.0f, 0.1f);
 
     /** 레이드 보스 "어둠거미여왕": 거미 몸 3배 (임시) */
     public static final RegistryObject<EntityType<SpiderQueen>> SPIDER_QUEEN = TYPES.register("spider_queen",

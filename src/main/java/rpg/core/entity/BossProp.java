@@ -34,6 +34,7 @@ public class BossProp extends Entity implements GeoEntity {
     private static final EntityDataAccessor<Boolean> ENDING = SynchedEntityData.defineId(BossProp.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Boolean> SOLID = SynchedEntityData.defineId(BossProp.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Float> SIZE = SynchedEntityData.defineId(BossProp.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Float> LEN = SynchedEntityData.defineId(BossProp.class, EntityDataSerializers.FLOAT);
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private Vec3 from, to;
@@ -52,10 +53,59 @@ public class BossProp extends Entity implements GeoEntity {
         entityData.define(ENDING, false);
         entityData.define(SOLID, false);
         entityData.define(SIZE, 1f);
+        entityData.define(LEN, 1f);
     }
 
     public boolean visible() { return entityData.get(VISIBLE); }
     public float size() { return entityData.get(SIZE); }
+    public float len() { return entityData.get(LEN); }
+    public boolean isBeam() { return getType() == ModEntities.VOID_BEAM.get() || getType() == ModEntities.SPORE_BEAM.get(); }
+
+    /** 레이저·광선: pos 에서 yaw 방향으로 len 칸, 굵기 size 칸, life 틱 */
+    public static BossProp beam(ServerLevel l, EntityType<BossProp> type, Vec3 pos, float yaw, float len, float size, int life) {
+        BossProp e = new BossProp(type, l);
+        e.life = Math.max(life, 6); e.endTicks = 4;
+        e.entityData.set(SIZE, size); e.entityData.set(LEN, len);
+        e.setPos(pos); e.setYRot(yaw); e.yRotO = yaw;
+        l.addFreshEntity(e);
+        return e;
+    }
+
+    /** 레이저 따라가기 (보스가 돌면) */
+    public void follow(Vec3 pos, float yaw) { setPos(pos); setYRot(yaw); }
+
+    /** 곧 끝내기 (닫히는 애니 후 사라짐) */
+    public void endSoon() { life = Math.min(life, tickCount + endTicks); }
+
+    /** 바닥 장식 (독 웅덩이 · 금 간 자국 · 충격파): 바닥에 맞춰, size 배율 */
+    public static BossProp decal(ServerLevel l, EntityType<BossProp> type, Vec3 pos, int life, float size) {
+        BossProp e = new BossProp(type, l);
+        e.life = Math.max(life, 6); e.endTicks = type == ModEntities.SHOCKWAVE.get() ? 3 : 10;
+        e.entityData.set(SIZE, size);
+        e.setPos(ground(l, pos));
+        e.setYRot(l.random.nextFloat() * 360);
+        l.addFreshEntity(e);
+        return e;
+    }
+
+    /** 결정 공명: 보스 둘레를 도는 결정 고리 */
+    public static BossProp ring(ServerLevel l, Vec3 pos, int life, float size) {
+        BossProp e = new BossProp(ModEntities.RESONANCE_RING.get(), l);
+        e.life = Math.max(life, 10); e.endTicks = 5;
+        e.entityData.set(SIZE, size);
+        e.setPos(pos);
+        l.addFreshEntity(e);
+        return e;
+    }
+
+    /** 날아가는 포자 덩어리 (포물선, start → land) */
+    public static void ball(ServerLevel l, Vec3 from, Vec3 to, long start, long land) {
+        BossProp e = new BossProp(ModEntities.SPORE_BALL.get(), l);
+        e.from = from; e.to = to; e.start = start; e.land = Math.max(start + 2, land);
+        e.setPos(from);
+        e.entityData.set(VISIBLE, l.getGameTime() >= start);
+        l.addFreshEntity(e);
+    }
 
     /** 마법진: life 틱 동안, size = 크기 배율 (1 = 지름 4칸) */
     public static void circle(ServerLevel l, Vec3 pos, int life, float size) {
@@ -129,14 +179,21 @@ public class BossProp extends Entity implements GeoEntity {
             double h = straight ? 0 : 2 + from.distanceTo(to) * 0.25;
             Vec3 q = from.lerp(to, straight ? f * f : f).add(0, 4 * h * f * (1 - f), 0);
             setPos(q.x, q.y, q.z);
-            if (!straight) { setYRot(getYRot() + 18); setXRot(getXRot() + 11); }
+            if (!straight && getType() == ModEntities.BOSS_ROCK.get()) { setYRot(getYRot() + 18); setXRot(getXRot() + 11); }
+            if (getType() == ModEntities.SPORE_BALL.get() && tickCount % 2 == 0) l.sendParticles(ParticleTypes.SPORE_BLOSSOM_AIR, q.x, q.y + 0.3, q.z, 1, 0.1, 0.1, 0.1, 0);
             if (now >= land) {
+                if (getType() == ModEntities.SPORE_BALL.get())
+                    l.sendParticles(ParticleTypes.ITEM_SLIME, q.x, q.y + 0.3, q.z, 20, 0.6, 0.2, 0.6, 0.1);
+                else
                 l.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, straight ? Blocks.AMETHYST_BLOCK.defaultBlockState() : Blocks.MOSSY_COBBLESTONE.defaultBlockState()), q.x, q.y + 0.3, q.z, 30, 0.6, 0.3, 0.6, 0.1);
                 discard();
             }
             return;
         }
-        if (tickCount == 1 && getType() == ModEntities.MAGIC_CIRCLE.get()) {
+        if (tickCount == 1 && (isBeam() || getType() == ModEntities.POISON_POOL.get() || getType() == ModEntities.VOID_CRACK.get()
+                || getType() == ModEntities.RESONANCE_RING.get() || getType() == ModEntities.SHOCKWAVE.get())) {
+            // 이펙트: 소리·파티클은 패턴 쪽에서
+        } else if (tickCount == 1 && getType() == ModEntities.MAGIC_CIRCLE.get()) {
             l.sendParticles(ParticleTypes.WITCH, getX(), getY() + 0.2, getZ(), 30, 1.5 * size(), 0.1, 1.5 * size(), 0.02);
         } else if (tickCount == 1) {
             boolean cry = getType() == ModEntities.VOID_CRYSTAL.get();
@@ -144,7 +201,7 @@ public class BossProp extends Entity implements GeoEntity {
                     getX(), getY() + 0.3, getZ(), 24, 0.8, 0.2, 0.8, 0.1);
             l.playSound(null, blockPosition(), cry ? SoundEvents.AMETHYST_CLUSTER_PLACE : SoundEvents.STONE_BREAK, SoundSource.HOSTILE, 1.5f, cry ? 0.7f : 0.6f);
         }
-        if (tickCount == life - endTicks) {
+        if (tickCount >= life - endTicks && !entityData.get(ENDING)) {
             entityData.set(ENDING, true);
             if (getType() == ModEntities.VOID_CRYSTAL.get())
                 l.playSound(null, blockPosition(), SoundEvents.AMETHYST_BLOCK_BREAK, SoundSource.HOSTILE, 1.2f, 0.8f);
@@ -165,7 +222,12 @@ public class BossProp extends Entity implements GeoEntity {
     public void registerControllers(AnimatableManager.ControllerRegistrar c) {
         c.add(new AnimationController<>(this, "main", 0, s -> {
             EntityType<?> t = getType();
-            if (t == ModEntities.BOSS_ROCK.get()) return s.setAndContinue(SPIN);
+            if (t == ModEntities.BOSS_ROCK.get() || t == ModEntities.SPORE_BALL.get()) return s.setAndContinue(SPIN);
+            if (isBeam()) return s.setAndContinue(entityData.get(ENDING) ? RawAnimation.begin().thenPlayAndHold("close") : RawAnimation.begin().thenPlay("open").thenLoop("pulse"));
+            if (t == ModEntities.RESONANCE_RING.get())
+                return s.setAndContinue(entityData.get(ENDING) ? RawAnimation.begin().thenPlayAndHold("close") : RawAnimation.begin().thenPlay("open").thenLoop("spin"));
+            if (t == ModEntities.POISON_POOL.get() || t == ModEntities.VOID_CRACK.get() || t == ModEntities.SHOCKWAVE.get())
+                return s.setAndContinue(RawAnimation.begin().thenPlayAndHold(entityData.get(ENDING) ? "close" : "open"));
             boolean end = entityData.get(ENDING);
             if (t == ModEntities.MAGIC_CIRCLE.get())
                 return s.setAndContinue(end ? RawAnimation.begin().thenPlayAndHold("close") : RawAnimation.begin().thenPlay("open").thenLoop("spin"));

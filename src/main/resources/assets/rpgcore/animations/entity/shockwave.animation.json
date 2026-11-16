@@ -1,0 +1,45 @@
+{
+ "format_version": "1.8.0",
+ "animations": {
+  "open": {
+   "animation_length": 0.45,
+   "loop": "hold_on_last_frame",
+   "bones": {
+    "wave": {
+     "scale": {
+      "0.0": [
+       0.15,
+       1,
+       0.15
+      ],
+      "0.45": [
+       1,
+       1,
+       1
+      ]
+     }
+    }
+   }
+  },
+  "close": {
+   "animation_length": 0.15,
+   "loop": "hold_on_last_frame",
+   "bones": {
+    "wave": {
+     "scale": {
+      "0.0": [
+       1,
+       1,
+       1
+      ],
+      "0.15": [
+       1.1,
+       1,
+       1.1
+      ]
+     }
+    }
+   }
+  }
+ }
+}

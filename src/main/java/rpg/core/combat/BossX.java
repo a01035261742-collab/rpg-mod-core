@@ -54,6 +54,7 @@ final class BossX {
         long nextShadow;
         int step;
         long nextHit;                                       // 공허 혜성: 다음 피해 틱
+        UUID beam;                                          // 공허 혜성: 레이저 이펙트
         int safeLane;
         double baseAngle;
         Vec3 axis = new Vec3(1, 0, 0);
@@ -177,6 +178,7 @@ final class BossX {
                 l.playSound(null, BlockPos.containing(s.c()), SoundEvents.DRIPSTONE_BLOCK_BREAK, SoundSource.HOSTILE, 2f, 0.5f);
             } else if (s.p().type().equals("rain")) {   // 공허 결정비: 떨어진 결정이 잠깐 박혔다 부서짐
                 rpg.core.entity.BossProp.crystal(l, s.c(), 16, false);
+                rpg.core.entity.BossProp.decal(l, rpg.core.entity.ModEntities.VOID_CRACK.get(), s.c(), 50, (float) s.r());
                 l.sendParticles(ParticleTypes.WITCH, s.c().x, s.c().y + 0.4, s.c().z, 14, s.r() / 2, 0.2, s.r() / 2, 0.05);
                 l.playSound(null, BlockPos.containing(s.c()), SoundEvents.AMETHYST_CLUSTER_BREAK, SoundSource.HOSTILE, 1.4f, 0.7f);
             } else if (s.p().type().equals("plant")) {   // 공허 결정: 박히고 life 초 동안 장애물
@@ -231,6 +233,7 @@ final class BossX {
             x.step = 1;
             x.nextHit = now;
             st.stageEnd = now + Math.round(p.x("fire", 3) * 20);
+            x.beam = rpg.core.entity.BossProp.beam(l, rpg.core.entity.ModEntities.VOID_BEAM.get(), beamPos(mob, st), yaw, (float) p.len(), (float) p.w(), (int) (st.stageEnd - now) + 6).getUUID();
             l.playSound(null, mob.blockPosition(), SoundEvents.WARDEN_SONIC_BOOM, SoundSource.HOSTILE, 2.5f, 0.6f);
         }
         ServerPlayer t = st.target == null ? null : (ServerPlayer) l.getPlayerByUUID(st.target);
@@ -245,7 +248,9 @@ final class BossX {
             }
         }
         Vec3 o = mob.position();
-        for (double d = 1.5; d <= p.len(); d += 0.7) {   // 레이저 몸통
+        if (x.beam != null && l.getEntity(x.beam) instanceof rpg.core.entity.BossProp b)
+            b.follow(beamPos(mob, st), (float) Math.toDegrees(Math.atan2(-st.dir.x, st.dir.z)));
+        for (double d = 1.5; d <= p.len(); d += 2.1) {   // 레이저 몸통 (반짝이만, 몸통은 모델)
             Vec3 q = o.add(st.dir.scale(d));
             l.sendParticles(ParticleTypes.END_ROD, q.x, q.y + 1.4, q.z, 1, 0.15, 0.15, 0.15, 0);
             if (((long) (d * 10) + now) % 3 == 0) l.sendParticles(ParticleTypes.WITCH, q.x, q.y + 1.2, q.z, 2, p.w() / 4, 0.3, p.w() / 4, 0);
@@ -261,7 +266,15 @@ final class BossX {
                 if (along >= -1 && along <= p.len() + Boss.PAD && Math.abs(side) <= p.w() / 2 + Boss.PAD) Boss.hit(mob, m, st, l, pl, p);
             }
         }
-        if (now >= st.stageEnd) Boss.finish(mob, st, def, now);
+        if (now >= st.stageEnd) {
+            if (x.beam != null && l.getEntity(x.beam) instanceof rpg.core.entity.BossProp b) b.endSoon();
+            x.beam = null;
+            Boss.finish(mob, st, def, now);
+        }
+    }
+
+    private static Vec3 beamPos(Mob mob, Boss.State st) {
+        return mob.position().add(0, mob.getBbHeight() * 0.5, 0).add(st.dir.scale(1.2));
     }
 
     /** 공허 충격파 i 번째 고리 안쪽 반경 */

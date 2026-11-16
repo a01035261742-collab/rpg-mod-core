@@ -164,6 +164,7 @@ public final class Boss {
         boolean blinkHidden;   // 순간이동 (blink): 사라져 있는 중 (무적)
         boolean awake;         // 등장 연출을 했나 (초기화하면 다시)
         long introUntil;       // 등장 연출 중 (무적·패턴 없음)
+        UUID ringId;           // 결정 공명 고리 이펙트
         boolean back;          // 독니: 지금 타가 뒤쪽 (뒷다리 차기)
         Pattern swing;         // 독니: 지금 타에 쓰는 패턴 (앞 = 자기, 뒤 = 뒷다리 차기)
         int hitNo;             // 연속 패턴 몇 번째 (0 = 처음)
@@ -586,6 +587,8 @@ public final class Boss {
                 st.counterDmg = 0;
                 mob.setGlowingTag(true);
                 Net.telegraph(l, st.pos, st.dir, MobAI.CIRCLE + 20, p.r(), 0, w);
+                if (mob instanceof rpg.core.entity.MushGuardian)
+                    st.ringId = rpg.core.entity.BossProp.ring(l, mob.position(), w + 10, (float) ((mob.getBbWidth() / 2 + 1) / 1.75)).getUUID();
                 for (ServerPlayer x : arena(l, st, 16))
                     Net.alert(x, "◆ " + p.name() + " — " + (int) p.x("window", 2) + "초 안에 때려서 끊으세요!", ChatFormatting.AQUA, 60);
                 l.playSound(null, mob.blockPosition(), SoundEvents.BEACON_POWER_SELECT, SoundSource.HOSTILE, 1.5f, 1.4f);
@@ -597,6 +600,7 @@ public final class Boss {
                 st.rocks.clear();
                 st.rocks.put(t.getUUID(), t.position());
                 Net.telegraph(l, t.position(), st.dir, MobAI.CIRCLE, p.r(), 0, dl);
+                if (p.x("ball", 0) > 0) rpg.core.entity.BossProp.ball(l, staffTip(mob, st), t.position(), now, now + dl + HIT_LAG);
                 l.playSound(null, mob.blockPosition(), SoundEvents.LLAMA_SPIT, SoundSource.HOSTILE, 1.5f, 0.6f);
             }
             default -> { Net.telegraph(l, st.pos, st.dir, MobAI.CIRCLE, p.r(), 0, dl); standing(mob, true); }   // slam
@@ -646,6 +650,18 @@ public final class Boss {
         else Net.telegraph(l, st.pos, st.dir, MobAI.CONE, p.r(), p.angle(), dl);
         st.stageEnd = now + dl + HIT_LAG;
         l.playSound(null, mob.blockPosition(), SoundEvents.NOTE_BLOCK_BASS.value(), SoundSource.HOSTILE, 1f, 0.5f);
+    }
+
+    /** 지팡이 끝 (투사체가 나가는 곳) */
+    static Vec3 staffTip(Mob mob, State st) {
+        Vec3 d = st.dir == null ? Vec3.ZERO : st.dir;
+        return mob.position().add(d.scale(mob.getBbWidth() * 0.5)).add(0, mob.getBbHeight() * 0.85, 0);
+    }
+
+    /** 결정 공명 고리 이펙트 끝내기 */
+    static void endRing(ServerLevel l, State st) {
+        if (st.ringId != null && l.getEntity(st.ringId) instanceof rpg.core.entity.BossProp b) b.endSoon();
+        st.ringId = null;
     }
 
     /** 순간이동: 사라짐 / 나타남 (보라 포자 + 소리) */
@@ -744,6 +760,7 @@ public final class Boss {
                     long rel = now + Math.round(p.x("throwAt", 0.5) * 20);
                     for (Vec3 q : st.rocks.values()) rpg.core.entity.BossProp.rock(l, paw, q, rel, now + dl + HIT_LAG);
                 }
+                if (p.x("ball", 0) > 0) for (Vec3 q : st.rocks.values()) rpg.core.entity.BossProp.ball(l, staffTip(mob, st), q, now, now + dl + HIT_LAG);   // 포자탄
                 if (!line) for (Vec3 q : st.rocks.values()) Net.telegraph(l, q, st.dir, p.type().equals("share") ? 40 + MobAI.CIRCLE : MobAI.CIRCLE, p.r(), 0, dl);
                 if (p.type().equals("jump") && p.x("blink", 0) > 0) {   // 순간이동: 마법진 속으로 사라졌다가, 도착 자리 위 공중 마법진에서 내려찍기
                     st.jumpFrom = mob.position();
@@ -803,6 +820,7 @@ public final class Boss {
                 m.stunUntil = now + stun;
                 st.vulnUntil = now + stun;
                 mob.setGlowingTag(false);
+                endRing(l, st);
                 l.sendParticles(ParticleTypes.FLASH, mob.getX(), mob.getY() + 2, mob.getZ(), 1, 0, 0, 0, 0);
                 l.playSound(null, mob.blockPosition(), SoundEvents.SHIELD_BREAK, SoundSource.HOSTILE, 2f, 0.7f);
                 for (ServerPlayer x : arena(l, st, 16))
@@ -917,6 +935,7 @@ public final class Boss {
                     l.sendParticles(ParticleTypes.EXPLOSION, c.x, c.y + 0.2, c.z, 5, p.x("altR", p.r()) / 3, 0.1, p.x("altR", p.r()) / 3, 0);
                     l.playSound(null, mob.blockPosition(), SoundEvents.GENERIC_EXPLODE, SoundSource.HOSTILE, 1f, 0.8f);
                     hitCircle(mob, m, st, l, c, p.x("altR", p.r()), p);
+                    rpg.core.entity.BossProp.decal(l, rpg.core.entity.ModEntities.SHOCKWAVE.get(), c, 10, (float) (p.x("altR", p.r()) / 2));
                     break;
                 }
                 Vec3 q = c.add(dir.scale(p.r() * 0.5));
@@ -941,7 +960,9 @@ public final class Boss {
                         BossX.cocoon(mob, m, l, pl, p.x("cocoon", 4), now);
                     }
                 }
-                l.playSound(null, mob.blockPosition(), SoundEvents.SPIDER_AMBIENT, SoundSource.HOSTILE, 2f, 0.6f);
+                if (p.x("ball", 0) > 0) for (Vec3 q : st.rocks.values())   // 썩은 포자탄: 터진 자리에 독 웅덩이
+                    rpg.core.entity.BossProp.decal(l, rpg.core.entity.ModEntities.POISON_POOL.get(), q, (int) Math.round(Math.max(1.5, p.x("poison", 3)) * 20), (float) p.r());
+                l.playSound(null, mob.blockPosition(), p.x("ball", 0) > 0 ? SoundEvents.SLIME_SQUISH : SoundEvents.SPIDER_AMBIENT, SoundSource.HOSTILE, 2f, 0.6f);
             }
             case "share" -> {
                 java.util.Set<ServerPlayer> inAll = new java.util.HashSet<>();
@@ -982,6 +1003,9 @@ public final class Boss {
             }
             case "charge" -> l.playSound(null, mob.blockPosition(), SoundEvents.RAVAGER_ROAR, SoundSource.HOSTILE, 1f, 1.2f);   // 피해는 돌진 이동 중
             case "beam" -> {
+                if (mob instanceof rpg.core.entity.MushGuardian)   // 포자 광선: 지팡이에서 번쩍
+                    rpg.core.entity.BossProp.beam(l, rpg.core.entity.ModEntities.SPORE_BEAM.get(), c.add(0, mob.getBbHeight() * 0.5, 0).add(dir.scale(1.2)),
+                            (float) Math.toDegrees(Math.atan2(-dir.x, dir.z)), (float) p.len(), (float) (p.w() * 0.6), 8);
                 for (double dd = 0; dd <= p.len(); dd += 0.8) {
                     Vec3 q = c.add(dir.scale(dd));
                     l.sendParticles(ParticleTypes.SPORE_BLOSSOM_AIR, q.x, q.y + 1.2, q.z, 2, 0.3, 0.3, 0.3, 0);
@@ -1010,6 +1034,7 @@ public final class Boss {
                     l.sendParticles(new net.minecraft.core.particles.BlockParticleOption(ParticleTypes.BLOCK,
                             net.minecraft.world.level.block.Blocks.STONE.defaultBlockState()), q.x, q.y + 0.5, q.z, 30, p.r() / 2, 0.3, p.r() / 2, 0.1);
                     hitCircle(mob, m, st, l, q, p.r(), p);
+                    if (p.type().equals("delayed")) rpg.core.entity.BossProp.decal(l, rpg.core.entity.ModEntities.SHOCKWAVE.get(), q, 10, (float) (p.r() / 2));
                 }
             }
             case "jump" -> {
@@ -1021,6 +1046,7 @@ public final class Boss {
                 l.sendParticles(ParticleTypes.EXPLOSION, q.x, q.y + 0.2, q.z, 6, p.r() / 3, 0.1, p.r() / 3, 0);
                 l.playSound(null, mob.blockPosition(), SoundEvents.GENERIC_EXPLODE, SoundSource.HOSTILE, 1.2f, 0.6f);
                 hitCircle(mob, m, st, l, q, p.r(), p);
+                if (mob instanceof rpg.core.entity.MushGuardian) rpg.core.entity.BossProp.decal(l, rpg.core.entity.ModEntities.SHOCKWAVE.get(), q, 10, (float) (p.r() / 2));
                 // 단단한 버섯이 범위 안에 있으면 부서지면서 보스 기절 (뛰어 붙기는 제외)
                 if (!basic(def, p)) for (BlockPos bp : new ArrayList<>(st.props)) {
                     if (flat(Vec3.atBottomCenterOf(bp), q) > p.r() + 0.5) continue;
@@ -1035,6 +1061,8 @@ public final class Boss {
             }
             case "counter" -> {   // 카운터 실패: 폭발
                 mob.setGlowingTag(false);
+                endRing(l, st);
+                rpg.core.entity.BossProp.decal(l, rpg.core.entity.ModEntities.SHOCKWAVE.get(), c, 10, (float) (p.r() / 2));
                 l.sendParticles(ParticleTypes.EXPLOSION_EMITTER, c.x, c.y + 0.5, c.z, 1, 0, 0, 0, 0);
                 l.playSound(null, mob.blockPosition(), SoundEvents.GENERIC_EXPLODE, SoundSource.HOSTILE, 2f, 0.6f);
                 hitCircle(mob, m, st, l, c, p.r(), p);
