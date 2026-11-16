@@ -175,6 +175,7 @@ final class BossX {
             Shot s = it.next();
             if (now < s.land()) continue;
             it.remove();
+            CombatEvents.NO_DODGE = s.p().x("noDodge", 0) > 0;
             double web = s.p().x("web", 0);
             if (web > 0) {   // 거미줄 덩어리: 떨어진 자리에 장판
                 l.sendParticles(new net.minecraft.core.particles.BlockParticleOption(ParticleTypes.BLOCK,
@@ -202,6 +203,7 @@ final class BossX {
             }
             Boss.hitCircle(mob, m, st, l, s.c(), s.r(), s.p());
         }
+        CombatEvents.NO_DODGE = false;
         // 거미줄 장판: 밟으면 느려짐 (구속 III = 45%)
         x.webs.removeIf(w -> now >= w.until());
         if (now % 5 == 0 && !x.webs.isEmpty()) for (ServerPlayer p : Boss.arena(l, st, 4)) {

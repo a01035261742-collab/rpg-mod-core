@@ -407,8 +407,12 @@ public final class Boss {
                     net.minecraft.world.level.block.Blocks.COBWEB.defaultBlockState()), st.center.x, st.center.y + 4, st.center.z, 40, st.radius / 2, 2, st.radius / 2, 0);
             return;
         }
-        if (st.cur != null && BossX.TYPES.contains(st.cur.type())) { BossX.run(mob, m, st, def, l, now); return; }
-        if (st.cur != null) { run(mob, m, st, def, l, now); return; }
+        if (st.cur != null) {   // noDodge 1 = 구르기로 못 피하는 패턴 (가드도 못 막음)
+            CombatEvents.NO_DODGE = st.cur.x("noDodge", 0) > 0;
+            try { if (BossX.TYPES.contains(st.cur.type())) BossX.run(mob, m, st, def, l, now); else run(mob, m, st, def, l, now); }
+            finally { CombatEvents.NO_DODGE = false; }
+            return;
+        }
 
         // 기절 동작 끝
         if (st.stunAnim && now >= m.stunUntil) { st.stunAnim = false; if (mob instanceof rpg.core.entity.GeoRpgMonster g) g.stopStun(); }

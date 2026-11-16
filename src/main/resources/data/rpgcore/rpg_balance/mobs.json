@@ -2009,7 +2009,8 @@
      "window": 5.0,
      "stun": 5,
      "pct": 250,
-     "needPer": 1
+     "needPer": 1,
+     "noDodge": 1
     },
     {
      "id": "beam",
@@ -2294,7 +2295,8 @@
      "delay": 4,
      "maxPct": 70,
      "pull": 0.07,
-     "only": 1
+     "only": 1,
+     "noDodge": 1
     },
     {
      "id": "combo",
@@ -2332,7 +2334,8 @@
      "outPct": 70,
      "outPoison": 3,
      "center": 1,
-     "only": 2
+     "only": 2,
+     "noDodge": 1
     },
     {
      "id": "webrain",
@@ -2391,7 +2394,8 @@
      "finalPct": 300,
      "only": 2,
      "pBleed": 5,
-     "bleedPct": 1
+     "bleedPct": 1,
+     "noDodge": 1
     },
     {
      "id": "hide",
@@ -2408,7 +2412,8 @@
      "maxPct": 30,
      "stun": 8,
      "failMaxPct": 60,
-     "only": 2
+     "only": 2,
+     "noDodge": 1
     }
    ],
    "melee": {

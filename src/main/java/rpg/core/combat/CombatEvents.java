@@ -63,10 +63,20 @@ public final class CombatEvents {
     /** 몹 패턴 피해: 몹 공격력 × pct% */
     private static final Map<Integer, Double> MOB_PCT = new java.util.HashMap<>();
 
+    /** 지금 주는 패턴 피해가 구르기·가드 불가인가 (Boss 가 패턴 도는 동안 켬) */
+    public static boolean NO_DODGE;
+
+    /** 구르기·가드 불가 피해: 마법 피해 종류 (EF 구르기 무적이 안 막음) */
+    private static net.minecraft.world.damagesource.DamageSource src(Mob mob) {
+        if (!NO_DODGE) return mob.damageSources().mobAttack(mob);
+        var reg = mob.level().registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.DAMAGE_TYPE);
+        return new net.minecraft.world.damagesource.DamageSource(reg.getHolderOrThrow(net.minecraft.world.damagesource.DamageTypes.MAGIC), mob);
+    }
+
     /** @return 실제로 맞았나 (구르기·가드 등으로 막히면 false) */
     public static boolean mobSkillHit(Mob mob, ServerPlayer p, double pct) {
         MOB_PCT.put(p.getId(), pct);
-        boolean hit = p.hurt(mob.damageSources().mobAttack(mob), 4.0f);
+        boolean hit = p.hurt(src(mob), 4.0f);
         MOB_PCT.remove(p.getId());
         GUARD_MUL.remove(p.getId());
         return hit;
@@ -77,7 +87,7 @@ public final class CombatEvents {
 
     public static boolean maxHpHit(Mob mob, ServerPlayer p, double pct) {
         MAXHP_PCT.put(p.getId(), pct);
-        boolean hit = p.hurt(mob.damageSources().mobAttack(mob), 4.0f);
+        boolean hit = p.hurt(src(mob), 4.0f);
         MAXHP_PCT.remove(p.getId());
         GUARD_MUL.remove(p.getId());
         return hit;
