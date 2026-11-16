@@ -32,6 +32,9 @@ public class GeoRpgMonster extends RpgMonster implements GeoEntity {
 
     /** 근접 공격(swing) 때 attack 애니메이션 재생 (보스는 끔) */
     protected boolean swingAnim = true;
+    /** 맞았을 때 몸 젖히기 (보스는 끔) */
+    protected boolean hurtAnim = true;
+    public boolean hurtAnim() { return hurtAnim; }
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private boolean otherHand;

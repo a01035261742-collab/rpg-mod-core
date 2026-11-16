@@ -10,7 +10,7 @@ import net.minecraft.world.level.Level;
 public class ForestLord extends GeoRpgMonster {
     public ForestLord(EntityType<? extends Monster> type, Level level) {
         super(type, level, 4);
-        swingAnim = false;   // 근접은 패턴 애니(melee)로
+        swingAnim = false; hurtAnim = false;   // 근접은 패턴 애니(melee)로
     }
 
     @Override
