@@ -9,6 +9,13 @@ group = mod_group_id
 
 base { archivesName = mod_id }
 
+// Forge 서버 실패 시 (CI 가 USE_FORGE_MIRROR=1 로 다시 빌드): ForgeGradle 이 넣는 Forge 저장소 주소까지 전부 CreeperHost 미러로 바꿈
+if (System.getenv('USE_FORGE_MIRROR')) {
+    def toMirror = { r -> if (r instanceof MavenArtifactRepository && r.url.toString().contains('maven.minecraftforge.net')) r.url = 'https://maven.creeperhost.net/' }
+    repositories.all(toMirror)
+    buildscript.repositories.all(toMirror)
+}
+
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 minecraft {
@@ -29,7 +36,6 @@ minecraft {
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
-    if (System.getenv('USE_FORGE_MIRROR')) maven { name = 'ForgeMirror'; url = 'https://maven.creeperhost.net/' }   // Forge 서버 실패 시 미러
     mavenCentral()   // 일반 라이브러리는 Maven Central 먼저 (Forge 서버가 느릴 때 대비)
     maven { url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/' }
 }
