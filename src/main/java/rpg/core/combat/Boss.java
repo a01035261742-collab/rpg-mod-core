@@ -252,6 +252,7 @@ public final class Boss {
     }
 
     static State stateOf(Mob mob) { return STATES.get(mob.getUUID()); }
+    static java.util.Collection<State> states() { return STATES.values(); }
 
     private static String barName(MobData m, Def def) {
         return (def.bar().isEmpty() ? m.name : def.bar()) + " Lv." + m.level + " · 방어율 " + Math.round(m.defRate) + "%";

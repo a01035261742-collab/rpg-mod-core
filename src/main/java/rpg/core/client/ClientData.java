@@ -73,6 +73,8 @@ public final class ClientData {
     /** 받은 뒤 흐른 시간을 빼서 남은 쿨타임(틱) */
     /** 구르기 쿨타임 (HUD 구르기 칸): 끝나는 시각 · 길이 (ms) */
     public static long rollEnd, rollLen;
+    /** 고치에 묶여 있나 (공격 키 누르면 서버에 알림) */
+    public static boolean cocooned;
     public static void rollCd(int ticks) { rollLen = ticks * 50L; rollEnd = System.currentTimeMillis() + rollLen; }
 
     public static int left(int ticksAtReceive) {

@@ -142,6 +142,10 @@ public final class Net {
                 .encoder(CutscenePkt::encode).decoder(CutscenePkt::new).consumerMainThread(CutscenePkt::handle).add();
         CH.messageBuilder(MusicPkt.class, id++, NetworkDirection.PLAY_TO_CLIENT)
                 .encoder(MusicPkt::encode).decoder(MusicPkt::new).consumerMainThread(MusicPkt::handle).add();
+        CH.messageBuilder(CocoonPkt.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(CocoonPkt::encode).decoder(CocoonPkt::new).consumerMainThread(CocoonPkt::handle).add();
+        CH.messageBuilder(CocoonTap.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(CocoonTap::encode).decoder(CocoonTap::new).consumerMainThread(CocoonTap::handle).add();
         CH.messageBuilder(RollCd.class, id++, NetworkDirection.PLAY_TO_CLIENT)
                 .encoder(RollCd::encode).decoder(RollCd::new).consumerMainThread(RollCd::handle).add();
     }
@@ -207,6 +211,30 @@ public final class Net {
         void encode(FriendlyByteBuf b) { b.writeUtf(text, 256); b.writeInt(color); b.writeVarInt(ticks); }
         void handle(Supplier<NetworkEvent.Context> ctx) {
             DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> rpg.core.client.BossAlert.show(text, color, ticks));
+            ctx.get().setPacketHandled(true);
+        }
+    }
+
+    // ───────── 고치: 서버 → 클라 묶임 여부 · 클라 → 서버 공격 키 누름 ─────────
+    public record CocoonPkt(boolean on) {
+        CocoonPkt(FriendlyByteBuf b) { this(b.readBoolean()); }
+        void encode(FriendlyByteBuf b) { b.writeBoolean(on); }
+        void handle(Supplier<NetworkEvent.Context> ctx) {
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> rpg.core.client.ClientData.cocooned = on);
+            ctx.get().setPacketHandled(true);
+        }
+    }
+
+    public static void cocoon(ServerPlayer p, boolean on) {
+        CH.send(PacketDistributor.PLAYER.with(() -> p), new CocoonPkt(on));
+    }
+
+    public record CocoonTap(int dummy) {
+        CocoonTap(FriendlyByteBuf b) { this(b.readVarInt()); }
+        void encode(FriendlyByteBuf b) { b.writeVarInt(dummy); }
+        void handle(Supplier<NetworkEvent.Context> ctx) {
+            ServerPlayer p = ctx.get().getSender();
+            if (p != null) rpg.core.combat.BossX.cocoonTap(p);
             ctx.get().setPacketHandled(true);
         }
     }

@@ -33,6 +33,10 @@ final class BossX {
             "comet", "rain");                        // 거대버섯 수호자
 
     record Cocoon(UUID entity, Vec3 pos, long until) {}
+    /** 고치 풀기 게이지: 본인 키 1칸 · 파티원 타격 2칸, COCOON_NEED 칸이면 풀림 */
+    static final int COCOON_NEED = 6;
+    private static final Map<UUID, Integer> COCOON_PTS = new HashMap<>();      // 묶인 사람 → 칸
+    private static final Map<String, Long> COCOON_LAST = new HashMap<>();      // "묶인사람:때린사람" → 마지막으로 센 틱
     record Zone(Vec3 c, Vec3 dir, double r, double angle, long until) {}
     /** 떨어지는 바위 (바위 연타): 굳은 원, land 틱에 터짐 */
     record Shot(Vec3 c, double r, long land, Boss.Pattern p) {}
@@ -135,13 +139,20 @@ final class BossX {
             boolean done = p == null || !p.isAlive() || RpgData.get(p).isDown() || now >= c.until() || ce == null || !ce.isAlive();
             if (done) {
                 if (ce != null) ce.discard();
-                if (p != null) p.displayClientMessage(Component.literal("고치에서 풀려났어요").withStyle(ChatFormatting.GREEN), true);
+                if (p != null) {
+                    p.displayClientMessage(Component.literal("고치에서 풀려났어요").withStyle(ChatFormatting.GREEN), true);
+                    rpg.core.net.Net.cocoon(p, false);
+                }
+                COCOON_PTS.remove(e.getKey());
                 it.remove();
                 continue;
             }
             if (p.position().distanceToSqr(c.pos()) > 0.09) { p.teleportTo(c.pos().x, c.pos().y, c.pos().z); p.setDeltaMovement(Vec3.ZERO); }
+            if (now % 5 == 0) {
+                int pts = COCOON_PTS.getOrDefault(e.getKey(), 0);
+                p.displayClientMessage(Component.literal("고치에 묶였어요! 공격 키 연타  " + "■".repeat(Math.min(COCOON_NEED, pts)) + "□".repeat(Math.max(0, COCOON_NEED - pts))).withStyle(ChatFormatting.WHITE), true);
+            }
             if (now % 10 == 0) {
-                p.displayClientMessage(Component.literal("고치에 묶였어요! 고치를 연타 (파티원이 때려도 풀려요)  " + (c.until() - now + 19) / 20 + "초").withStyle(ChatFormatting.WHITE), true);
                 l.sendParticles(ParticleTypes.ITEM_SNOWBALL, c.pos().x, c.pos().y + 1, c.pos().z, 4, 0.3, 0.6, 0.3, 0);
             }
         }
@@ -307,13 +318,41 @@ final class BossX {
         c.getPersistentData().putBoolean("rpgPillar", true);
         c.getPersistentData().putUUID("rpgCocoon", p.getUUID());
         st.x.cocoons.put(p.getUUID(), new Cocoon(c.getUUID(), p.position(), now + Math.round(sec * 20)));
+        COCOON_PTS.put(p.getUUID(), 0);
+        rpg.core.net.Net.cocoon(p, true);
         l.playSound(null, p.blockPosition(), SoundEvents.SPIDER_AMBIENT, SoundSource.HOSTILE, 1.5f, 1.5f);
     }
 
-    /** 고치를 때림: 본인 = 10번, 다른 사람 = 3번이면 풀림 */
+    /** 고치를 때림 (피해는 0, 게이지만): 파티원 2칸 · 본인 1칸, 한 사람당 0.25초에 한 번만 셈 (다단히트로 한 방에 안 풀리게) */
     static double cocoonHit(Mob c, MobData cm, ServerPlayer attacker) {
         UUID victim = c.getPersistentData().getUUID("rpgCocoon");
-        return cm.maxHp * (attacker.getUUID().equals(victim) ? 0.101 : 0.34);
+        addCocoon(victim, attacker, attacker.getUUID().equals(victim) ? 1 : 2, c, cm);
+        return 0;
+    }
+
+    /** 묶인 사람이 공격 키를 누름 (클라 → 서버) */
+    public static void cocoonTap(ServerPlayer p) {
+        if (!COCOON_PTS.containsKey(p.getUUID())) return;
+        for (Boss.State st : Boss.states()) {
+            Cocoon co = st.x.cocoons.get(p.getUUID());
+            if (co == null) continue;
+            if (((ServerLevel) p.level()).getEntity(co.entity()) instanceof Mob c) addCocoon(p.getUUID(), p, 1, c, Combat.mob(c));
+            return;
+        }
+    }
+
+    private static void addCocoon(UUID victim, ServerPlayer by, int pts, Mob c, MobData cm) {
+        if (!COCOON_PTS.containsKey(victim)) return;
+        long now = c.level().getGameTime();
+        String k = victim + ":" + by.getUUID();
+        Long last = COCOON_LAST.get(k);
+        if (last != null && now - last < 5) return;
+        COCOON_LAST.put(k, now);
+        int v = COCOON_PTS.merge(victim, pts, Integer::sum);
+        cm.hp = cm.maxHp * Math.max(0, 1 - v / (double) COCOON_NEED);   // 고치 체력바 = 남은 게이지
+        Mobs.sync(c);
+        ((ServerLevel) c.level()).sendParticles(ParticleTypes.ITEM_SNOWBALL, c.getX(), c.getY() + 1, c.getZ(), 6, 0.3, 0.5, 0.3, 0.05);
+        if (v >= COCOON_NEED) c.discard();   // 다음 틱에 풀림 처리
     }
 
     /** 부채꼴 (독니) */

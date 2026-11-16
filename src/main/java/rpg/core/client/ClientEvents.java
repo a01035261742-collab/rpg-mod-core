@@ -289,7 +289,8 @@ public final class ClientEvents {
         }
 
         private static KeyMapping efRoll;
-        private static boolean efRollSearched, rollWasDown;
+        private static boolean efRollSearched, rollWasDown, atkWasDown;
+        private static KeyMapping efAtk;
 
         /** Epic Fight 구르기 키 (이름으로 찾기, 없으면 null) */
         static KeyMapping efDodgeKey(Minecraft mc) {
@@ -323,6 +324,11 @@ public final class ClientEvents {
             boolean rollDown = roll != null && roll.isDown();
             if (rollDown && !rollWasDown && free && mc.player.onGround()) Net.CH.sendToServer(new Net.Rolled(0));
             rollWasDown = rollDown;
+            // 고치에 묶임: 공격 키 누를 때마다 서버에 (맞출 필요 없이 연타)
+            if (efAtk == null) for (KeyMapping k : mc.options.keyMappings) if (k.getName().equals("key.epicfight.attack")) efAtk = k;
+            boolean atk = mc.options.keyAttack.isDown() || (efAtk != null && efAtk.isDown());
+            if (ClientData.cocooned && atk && !atkWasDown && mc.player != null) Net.CH.sendToServer(new Net.CocoonTap(0));
+            atkWasDown = atk;
             while (STAT_KEY.consumeClick()) if (free) mc.setScreen(new StatScreen());
             while (SKILL_WINDOW_KEY.consumeClick()) if (free) mc.setScreen(new SkillScreen());
             while (PASSIVE_KEY.consumeClick()) if (free) mc.setScreen(new PassiveScreen());
