@@ -218,6 +218,7 @@ public final class Boss {
             if (kb != null) kb.setBaseValue(1.0);
             st.bar = new ServerBossEvent(Component.literal(barName(m, def)), BossEvent.BossBarColor.RED, BossEvent.BossBarOverlay.NOTCHED_10);
             if (st.phase == 2) st.bar.setColor(BossEvent.BossBarColor.PURPLE);
+            if (mob instanceof rpg.core.entity.MushGuardian mg) mg.setPhase2(st.phase == 2);
             st.nextAt = mob.level().getGameTime() + 40;
         }
         return st;
@@ -276,7 +277,7 @@ public final class Boss {
                 st.introUntil = now + Math.round(intro * 20);
                 st.nextAt = Math.max(st.nextAt, st.introUntil + 10);
                 if (mob instanceof rpg.core.entity.GeoRpgMonster g) g.playPattern("intro");
-                for (ServerPlayer x : arena(l, st, 16)) Net.cutscene(x, mob, (int) Math.round(intro * 20), m.name);
+                for (ServerPlayer x : arena(l, st, 16)) Net.cutscene(x, mob, (int) Math.round(intro * 20), "");
                 l.playSound(null, mob.blockPosition(), SoundEvents.WARDEN_EMERGE, SoundSource.HOSTILE, 2f, 0.8f);
             }
         }
@@ -306,12 +307,19 @@ public final class Boss {
             for (ServerPlayer p : arena(l, st, 16))
                 p.sendSystemMessage(Component.literal("[" + m.name + "] 분노했어요! 패턴이 더 거세져요").withStyle(ChatFormatting.LIGHT_PURPLE));
             l.playSound(null, mob.blockPosition(), SoundEvents.RAVAGER_ROAR, SoundSource.HOSTILE, 1.5f, 0.6f);
+            if (mob instanceof rpg.core.entity.MushGuardian mg) mg.setPhase2(true);
             if (trans) {
                 st.transUntil = now + ticks(def.g("transSec", 3));
                 st.nextAt = st.transUntil + 10;
                 BossX.clearFloor(l, st);   // 독 늪 · 거미줄 장판 · 떨어지는 것 정리
-                for (ServerPlayer p : arena(l, st, 16)) Net.alert(p, "◆ 둥지가 무너진다 — 2페이즈", ChatFormatting.LIGHT_PURPLE, 70);
-                l.playSound(null, mob.blockPosition(), SoundEvents.WITHER_BREAK_BLOCK, SoundSource.HOSTILE, 1.5f, 0.6f);
+                if (def.g("transCut", 0) > 0) {   // 전환 컷씬 (자막 없음): 카메라가 보스를 비춤 + 전환 애니
+                    if (mob instanceof rpg.core.entity.GeoRpgMonster g) g.playPattern("phase2");
+                    for (ServerPlayer p : arena(l, st, 16)) Net.cutscene(p, mob, ticks(def.g("transSec", 3)), "");
+                    l.playSound(null, mob.blockPosition(), SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.HOSTILE, 2.5f, 0.5f);
+                } else {
+                    for (ServerPlayer p : arena(l, st, 16)) Net.alert(p, "◆ 둥지가 무너진다 — 2페이즈", ChatFormatting.LIGHT_PURPLE, 70);
+                    l.playSound(null, mob.blockPosition(), SoundEvents.WITHER_BREAK_BLOCK, SoundSource.HOSTILE, 1.5f, 0.6f);
+                }
             }
         }
 
@@ -329,8 +337,14 @@ public final class Boss {
         BossX.ambient(mob, m, st, def, l, now);
         if (now < st.transUntil) {   // 전환 연출: 제자리 · 무적 · 패턴 없음
             mob.getNavigation().stop();
+            long tk = st.transUntil - now, tot = ticks(def.g("transSec", 3));
+            if (def.g("transCut", 0) > 0 && tot - tk == 32) {   // 결정이 솟는 순간 (애니 1.6초)
+                l.sendParticles(ParticleTypes.WITCH, mob.getX(), mob.getY() + mob.getBbHeight() * 0.7, mob.getZ(), 80, mob.getBbWidth() * 0.4, 0.8, mob.getBbWidth() * 0.4, 0.2);
+                l.playSound(null, mob.blockPosition(), SoundEvents.AMETHYST_CLUSTER_BREAK, SoundSource.HOSTILE, 2.5f, 0.5f);
+            }
+            if (def.g("transCut", 0) > 0 && tot - tk == 61) l.playSound(null, mob.blockPosition(), SoundEvents.GENERIC_EXPLODE, SoundSource.HOSTILE, 1.5f, 0.6f);
             if (now % 4 == 0) l.sendParticles(ParticleTypes.DRAGON_BREATH, mob.getX(), mob.getY() + 1, mob.getZ(), 12, 1.5, 0.8, 1.5, 0.02);
-            if (now % 10 == 0) l.sendParticles(new net.minecraft.core.particles.BlockParticleOption(ParticleTypes.BLOCK,
+            if (now % 10 == 0 && def.g("transCut", 0) <= 0) l.sendParticles(new net.minecraft.core.particles.BlockParticleOption(ParticleTypes.BLOCK,
                     net.minecraft.world.level.block.Blocks.COBWEB.defaultBlockState()), st.center.x, st.center.y + 4, st.center.z, 40, st.radius / 2, 2, st.radius / 2, 0);
             return;
         }
@@ -1202,6 +1216,7 @@ public final class Boss {
         st.usedHp.clear();
         st.transUntil = 0;
         st.introUntil = 0;
+        if (mob instanceof rpg.core.entity.MushGuardian mg) mg.setPhase2(false);
         st.awake = false;
         st.lastFar = null;
         st.back = false;

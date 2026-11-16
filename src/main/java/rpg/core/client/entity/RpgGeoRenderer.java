@@ -78,6 +78,16 @@ public class RpgGeoRenderer extends GeoEntityRenderer<GeoRpgMonster> {
                 head.setRotX(baseX + pitch * Mth.DEG_TO_RAD);
                 head.setRotY(baseY + yaw * Mth.DEG_TO_RAD);
             }
+            // 거대버섯 수호자: 1페이즈엔 공허 결정·보라 눈 숨김, 2페이즈엔 초록 눈 숨김
+            if (e instanceof rpg.core.entity.MushGuardian mg) {
+                boolean p2 = mg.phase2();
+                for (String b : new String[]{"crystals", "staff_gem", "pendant", "eyes_p2"}) {
+                    CoreGeoBone bone = getAnimationProcessor().getBone(b);
+                    if (bone != null) bone.setHidden(!p2);
+                }
+                CoreGeoBone e1 = getAnimationProcessor().getBone("eyes_p1");
+                if (e1 != null) e1.setHidden(p2);
+            }
             // 맞았을 때 임시 반응: 몸을 뒤로 젖혔다 돌아옴 (hit 애니메이션 만들면 교체)
             if (e.hurtTime > 0 && e.hurtAnim()) {
                 CoreGeoBone body = getAnimationProcessor().getBone("body");

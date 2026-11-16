@@ -137,7 +137,7 @@ public final class Cutscene {
         g.fill(0, h - bar, w, h, 0xFF000000);
         // 이름: 0.3~0.9 사이에 나타났다 사라짐
         double a = Math.min(ease((f - 0.3) / 0.08), ease((0.9 - f) / 0.08));
-        if (a > 0.02) {
+        if (a > 0.02 && !name.isEmpty()) {
             int al = Math.max(8, (int) (a * 255)) << 24;
             g.pose().pushPose();
             g.pose().translate(w / 2f, h * 0.68f, 0);
