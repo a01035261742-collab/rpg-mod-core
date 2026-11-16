@@ -17,6 +17,9 @@ public class MobData {
     public String zone = "";     // 소속 사냥터 이름
     public transient boolean returning;   // 구역으로 돌아가는 중 (무적 · 안 노림)
     public transient long returnSince;
+    public transient double evadeBest = Double.MAX_VALUE;   // 못 닿는 상대 회피: 지금까지 가장 가까웠던 거리
+    public transient long evadeBestAt;
+    public transient long playerHitAt;                       //   마지막으로 플레이어에게 맞은 시각 (게임 시간)                       //   그 거리를 찍은 시각
     public int level;
     public double hp, maxHp, atk;
     public long exp, gold;

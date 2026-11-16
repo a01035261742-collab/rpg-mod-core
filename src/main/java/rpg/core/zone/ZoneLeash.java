@@ -18,18 +18,43 @@ import rpg.core.combat.Mobs;
  * 사냥터 몹 묶어두기.
  * - 돌아다닐 때: 구역 경계가 벽 (밖으로 한 칸도 안 나감)
  * - 쫓을 때: 구역 밖 CHASE 칸까지만, 더 멀어지면 포기하고 구역 안으로 돌아감 (돌아가는 동안 무적 · 안 노림, 도착하면 체력 가득)
+ * - 회피: 맞고 있는데 EVADE_TICKS 동안 상대에게 더 못 다가가고 EVADE_DIST 칸보다 멀면 (높은 곳·벽 너머 원거리 날먹) → 돌아감
+ * - 나는 몹(벌·요정·박쥐 등): 발밑 땅에서 FLY_MAX 칸 위로는 못 올라감
  */
 @Mod.EventBusSubscriber(modid = RpgCore.MODID)
 public final class ZoneLeash {
     private ZoneLeash() {}
 
     public static final double CHASE = 6;
+    public static final int EVADE_TICKS = 60;
+    public static final double EVADE_DIST = 6;
+    public static final double FLY_MAX = 4;
+
+    /** 나는 몹 높이 제한 (매 2틱) */
+    private static void flyCap(Mob mob, ServerLevel l) {
+        boolean flyer = mob.isNoGravity() || mob instanceof net.minecraft.world.entity.animal.FlyingAnimal || mob instanceof net.minecraft.world.entity.ambient.Bat;
+        if (!flyer) return;
+        var pos = mob.blockPosition().mutable();
+        int ground = Integer.MIN_VALUE;
+        for (int i = 0; i < 24; i++) {
+            if (!l.getBlockState(pos).getCollisionShape(l, pos).isEmpty()) { ground = pos.getY() + 1; break; }
+            pos.move(0, -1, 0);
+        }
+        if (ground == Integer.MIN_VALUE) return;
+        double over = mob.getY() - (ground + FLY_MAX);
+        if (over <= 0) return;
+        var v = mob.getDeltaMovement();
+        if (over > 1.5) mob.setPos(mob.getX(), ground + FLY_MAX + 0.5, mob.getZ());
+        mob.setDeltaMovement(v.x, Math.min(v.y, -0.12), v.z);
+    }
 
     @SubscribeEvent
     public static void tick(LivingEvent.LivingTickEvent e) {
-        if (!(e.getEntity() instanceof Mob mob) || !(mob.level() instanceof ServerLevel l) || !mob.isAlive() || mob.tickCount % 5 != 0) return;
+        if (!(e.getEntity() instanceof Mob mob) || !(mob.level() instanceof ServerLevel l) || !mob.isAlive()) return;
         MobData m = Combat.mob(mob);
-        if (m == null || m.zone.isEmpty() || rpg.core.combat.Boss.isBoss(m)) return;
+        if (m == null || rpg.core.combat.Boss.isBoss(m)) return;
+        if (mob.tickCount % 2 == 0) flyCap(mob, l);
+        if (m.zone.isEmpty() || mob.tickCount % 5 != 0) return;
         Zone z = ZoneData.get(l).zones.get(m.zone);
         if (z == null) return;
         AABB b = z.box();
@@ -53,6 +78,22 @@ public final class ZoneLeash {
         }
         boolean chasing = mob.getTarget() != null;
         if (chasing) {
+            // 못 닿는 상대에게 맞고만 있으면 회피 (원거리 날먹 방지)
+            double dist = mob.distanceTo(mob.getTarget());
+            boolean hurtRecently = now - m.playerHitAt < 40;
+            if (dist < m.evadeBest - 0.5) { m.evadeBest = dist; m.evadeBestAt = now; }
+            if (dist <= EVADE_DIST || !hurtRecently) { if (dist <= EVADE_DIST) m.evadeBest = Double.MAX_VALUE; m.evadeBestAt = now; }
+            else if (now - m.evadeBestAt > EVADE_TICKS) {
+                if (mob.getTarget() instanceof net.minecraft.server.level.ServerPlayer p)
+                    p.displayClientMessage(net.minecraft.network.chat.Component.literal("회피! (닿지 않는 곳에서는 사냥할 수 없어요)").withStyle(net.minecraft.ChatFormatting.GRAY), true);
+                l.sendParticles(ParticleTypes.CLOUD, mob.getX(), mob.getY() + mob.getBbHeight() * 0.6, mob.getZ(), 8, 0.4, 0.4, 0.4, 0.02);
+                m.evadeBest = Double.MAX_VALUE;
+                m.returning = true;
+                m.returnSince = now;
+                mob.setTarget(null);
+                mob.getNavigation().moveTo(tx, mob.getY(), tz, 1.4);
+                return;
+            }
             if (out > CHASE) {   // 너무 멀리 끌려 나옴 → 포기하고 돌아감
                 m.returning = true;
                 m.returnSince = now;

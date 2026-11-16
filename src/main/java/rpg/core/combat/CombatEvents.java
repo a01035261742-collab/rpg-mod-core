@@ -444,6 +444,7 @@ public final class CombatEvents {
             dmg = src instanceof ServerPlayer bp ? Boss.onHurt(mob, m, bp, dmg) : 0;
         }
         m.hp = Math.max(0, m.hp - dmg);
+        if (src instanceof ServerPlayer && dmg > 0) m.playerHitAt = mob.level().getGameTime();
         mirror(e, mob, m.hp, m.maxHp);
         mob.invulnerableTime = 0;   // 무적 시간 없음: 여러 명이 동시에 때려도 타격이 안 씹히게
         if (DOT_HIT) { dotDealt += dmg; return; }   // 지속 피해: 숫자·체력 동기화는 1초에 한 번 묶어서
