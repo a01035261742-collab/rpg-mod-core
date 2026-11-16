@@ -375,9 +375,15 @@ public final class Boss {
 
         // 기절 동작 끝
         if (st.stunAnim && now >= m.stunUntil) { st.stunAnim = false; if (mob instanceof rpg.core.entity.GeoRpgMonster g) g.stopStun(); }
+        // 기절 시작: 바닥 예고·떨어질 것 다 지움
         // 기절 중: 제자리 (모델 있는 보스는 하던 동작 끊고 기절 동작)
         if (now < m.stunUntil) {
-            if (!st.stunAnim && mob instanceof rpg.core.entity.GeoRpgMonster g) { st.stunAnim = true; g.playStun(); }
+            if (!st.stunAnim) {
+                st.stunAnim = true;
+                BossX.clearFloor(l, st);
+                Net.track(l, mob.getId(), -1, 0, 0, 0, 0);
+                if (mob instanceof rpg.core.entity.GeoRpgMonster g) g.playStun();
+            }
             mob.getNavigation().stop();
             if (mob.tickCount % 10 == 0) l.sendParticles(ParticleTypes.CRIT, mob.getX(), mob.getY() + mob.getBbHeight() + 0.3, mob.getZ(), 6, 0.5, 0.1, 0.5, 0);
             return;
