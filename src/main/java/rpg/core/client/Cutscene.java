@@ -31,7 +31,6 @@ public final class Cutscene {
     private static ArmorStand cam;
     private static Vec3 eye0;
     private static float yaw0, pitch0;
-    private static net.minecraft.client.CameraType view0;   // 컷씬 전 시점 (F5) → 끝나면 되돌림
 
     public static boolean active() { return cam != null; }
 
@@ -47,14 +46,11 @@ public final class Cutscene {
         cam = new ArmorStand(mc.level, eye0.x, eye0.y, eye0.z);
         place(eye0, yaw0, pitch0, true);
         mc.setCameraEntity(cam);
-        view0 = mc.options.getCameraType();
-        mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);
     }
 
     public static void stop() {
         Minecraft mc = Minecraft.getInstance();
         if (cam != null && mc.player != null) mc.setCameraEntity(mc.player);
-        if (cam != null && view0 != null) mc.options.setCameraType(view0);
         cam = null; bossId = -1;
     }
 
@@ -117,8 +113,6 @@ public final class Cutscene {
         if (pl == null) return;
         pl.setYRot(yaw0); pl.setXRot(pitch0); pl.yRotO = yaw0; pl.xRotO = pitch0;
         pl.setYHeadRot(yaw0); pl.yHeadRotO = yaw0;
-        var o = Minecraft.getInstance().options;   // 컷씬 중 F5 눌러도 1인칭 유지
-        if (o.getCameraType() != net.minecraft.client.CameraType.FIRST_PERSON) o.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);
     }
 
     @SubscribeEvent
