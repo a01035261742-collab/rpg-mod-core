@@ -29,6 +29,7 @@ minecraft {
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
+    mavenCentral()   // 일반 라이브러리는 Maven Central 먼저 (Forge 서버가 느릴 때 대비)
     maven { url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/' }
 }
 
