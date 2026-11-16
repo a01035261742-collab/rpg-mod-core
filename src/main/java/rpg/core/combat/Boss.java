@@ -310,7 +310,7 @@ public final class Boss {
             for (ServerPlayer p : arena(l, st, 16))
                 p.sendSystemMessage(Component.literal("[" + m.name + "] 분노했어요! 패턴이 더 거세져요").withStyle(ChatFormatting.LIGHT_PURPLE));
             l.playSound(null, mob.blockPosition(), SoundEvents.RAVAGER_ROAR, SoundSource.HOSTILE, 1.5f, 0.6f);
-            if (mob instanceof rpg.core.entity.MushGuardian mg) mg.setPhase2(true);
+            if (mob instanceof rpg.core.entity.MushGuardian mg && def.g("transCut", 0) <= 0) mg.setPhase2(true);   // 컷씬이 있으면 결정이 솟는 순간에
             if (trans) {
                 st.transUntil = now + ticks(def.g("transSec", 3));
                 st.nextAt = st.transUntil + 10;
@@ -341,7 +341,8 @@ public final class Boss {
         if (now < st.transUntil) {   // 전환 연출: 제자리 · 무적 · 패턴 없음
             mob.getNavigation().stop();
             long tk = st.transUntil - now, tot = ticks(def.g("transSec", 3));
-            if (def.g("transCut", 0) > 0 && tot - tk == 32) {   // 결정이 솟는 순간 (애니 1.6초)
+            if (def.g("transCut", 0) > 0 && tot - tk >= 32 && mob instanceof rpg.core.entity.MushGuardian mg && !mg.phase2()) mg.setPhase2(true);   // 결정이 솟는 순간 (애니 1.6초): 침식된 모습으로
+            if (def.g("transCut", 0) > 0 && tot - tk == 32) {
                 l.sendParticles(ParticleTypes.WITCH, mob.getX(), mob.getY() + mob.getBbHeight() * 0.7, mob.getZ(), 80, mob.getBbWidth() * 0.4, 0.8, mob.getBbWidth() * 0.4, 0.2);
                 l.playSound(null, mob.blockPosition(), SoundEvents.AMETHYST_CLUSTER_BREAK, SoundSource.HOSTILE, 2.5f, 0.5f);
             }
