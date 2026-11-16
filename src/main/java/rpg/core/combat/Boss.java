@@ -63,12 +63,17 @@ public final class Boss {
     public static final Map<String, Def> DEFS = new HashMap<>();
 
     // ───────── 읽기 (Balance 가 mobs.json 읽을 때) ─────────
-    public static void clear() { DEFS.clear(); TREASURE.clear(); POKE.clear(); GAP.clear(); TRANS_LINE.clear(); }
+    public static void clear() { DEFS.clear(); TREASURE.clear(); POKE.clear(); GAP.clear(); TRANS_LINE.clear(); BGM.clear(); BGM2.clear(); }
 
     /** 원거리 평타 (대상이 평타 거리 밖일 때, 패턴 사이) · 뛰어 붙기 (대상이 dist칸 넘게 멀 때) — 보스 키별 */
     static final Map<String, Pattern> POKE = new HashMap<>(), GAP = new HashMap<>();
     /** 2페이즈 전환 컷씬 대사 (boss.transLine) */
     static final Map<String, String> TRANS_LINE = new HashMap<>();
+    /** 보스 BGM (boss.bgm · 2페이즈 boss.bgm2, sounds.json 이름) */
+    static final Map<String, String> BGM = new HashMap<>(), BGM2 = new HashMap<>();
+    /** 플레이어 → 지금 틀어준 곡 · 마지막으로 경기장에서 본 틱 */
+    private static final Map<UUID, String> MUSIC = new HashMap<>();
+    private static final Map<UUID, Long> MUSIC_SEEN = new HashMap<>();
 
     /** 보스 보물 열기 표: 보물 아이템 id → [보스 키, 줄들]. 줄 = {아이템 id, 비중, 개수}. 특수 id: gold(개수 = 골드) · scroll(보스 레벨 무작위 주문서) · job:a|b|c|d(내 직업 것, 초보자는 무작위) */
     public record TreasureRow(String id, double weight, int count) {}
@@ -96,6 +101,8 @@ public final class Boss {
                         d(p, "delay", 1.0), d(p, "pct", 100), 0, 1, 1, nums(p)));
             }
             if (o.has("transLine")) TRANS_LINE.put(key, o.get("transLine").getAsString());
+            if (o.has("bgm")) BGM.put(key, o.get("bgm").getAsString());
+            if (o.has("bgm2")) BGM2.put(key, o.get("bgm2").getAsString());
             if (o.has("gap")) {    // 뛰어 붙기: 대상 자리로 점프
                 JsonObject p = o.getAsJsonObject("gap");
                 GAP.put(key, new Pattern("gap", s(p, "name", "덮치기"), "jump", d(p, "r", 3), 0, 0, 0, d(p, "track", 0),
@@ -262,6 +269,13 @@ public final class Boss {
         for (ServerPlayer p : arena(l, st, 0)) if (valid(p)) fighters.add(p);
 
         if (mob.tickCount % 10 == 0) updateBar(l, st, m);
+        if (mob.tickCount % 10 == 0 && BGM.containsKey(def.key())) {   // 보스 BGM: 경기장(+8칸) 안 사람에게
+            String want = st.phase >= 2 && now >= st.transUntil ? BGM2.getOrDefault(def.key(), BGM.get(def.key())) : BGM.get(def.key());
+            for (ServerPlayer p : arena(l, st, 8)) {
+                MUSIC_SEEN.put(p.getUUID(), now);
+                if (!want.equals(MUSIC.get(p.getUUID()))) { MUSIC.put(p.getUUID(), want); Net.music(p, want); }
+            }
+        }
 
         // 아무도 없으면 일정 시간 뒤 초기화
         if (fighters.isEmpty()) {
@@ -1443,6 +1457,23 @@ public final class Boss {
     }
 
     private static final java.util.List<Runnable> LATER = new java.util.ArrayList<>();
+
+    /** 보스 BGM 끄기: 경기장을 나간 지 2초 (보스 사망·초기화·나감) */
+    @SubscribeEvent
+    public static void musicOff(net.minecraftforge.event.TickEvent.ServerTickEvent e) {
+        if (e.phase != net.minecraftforge.event.TickEvent.Phase.END || MUSIC.isEmpty()) return;
+        var server = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
+        if (server == null || server.getTickCount() % 20 != 0) return;
+        long now = server.overworld().getGameTime();
+        for (var it = MUSIC.entrySet().iterator(); it.hasNext(); ) {
+            var en = it.next();
+            Long seen = MUSIC_SEEN.get(en.getKey());
+            ServerPlayer p = server.getPlayerList().getPlayer(en.getKey());
+            if (p == null) { it.remove(); MUSIC_SEEN.remove(en.getKey()); continue; }
+            long pnow = p.serverLevel().getGameTime();
+            if (seen == null || pnow - seen > 40) { Net.music(p, ""); it.remove(); MUSIC_SEEN.remove(en.getKey()); }
+        }
+    }
 
     @SubscribeEvent
     public static void later(net.minecraftforge.event.TickEvent.ServerTickEvent e) {

@@ -140,6 +140,22 @@ public final class Net {
                 .encoder(TravelAction::encode).decoder(TravelAction::new).consumerMainThread(TravelAction::handle).add();
         CH.messageBuilder(CutscenePkt.class, id++, NetworkDirection.PLAY_TO_CLIENT)
                 .encoder(CutscenePkt::encode).decoder(CutscenePkt::new).consumerMainThread(CutscenePkt::handle).add();
+        CH.messageBuilder(MusicPkt.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(MusicPkt::encode).decoder(MusicPkt::new).consumerMainThread(MusicPkt::handle).add();
+    }
+
+    // ───────── 서버 → 클라: 보스 BGM (빈칸 = 끄기) ─────────
+    public record MusicPkt(String id) {
+        MusicPkt(FriendlyByteBuf b) { this(b.readUtf(64)); }
+        void encode(FriendlyByteBuf b) { b.writeUtf(id, 64); }
+        void handle(Supplier<NetworkEvent.Context> ctx) {
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> rpg.core.client.BossMusic.set(id));
+            ctx.get().setPacketHandled(true);
+        }
+    }
+
+    public static void music(ServerPlayer p, String id) {
+        CH.send(PacketDistributor.PLAYER.with(() -> p), new MusicPkt(id));
     }
 
     // ───────── 서버 → 클라: 보스 등장 컷씬 ─────────
