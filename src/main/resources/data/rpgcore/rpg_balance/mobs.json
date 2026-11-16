@@ -2236,7 +2236,7 @@
     },
     {
      "id": "web",
-     "name": "거미줄 발사",
+     "name": "거미줄 포박",
      "type": "web",
      "r": 4,
      "track": 1.5,
@@ -2250,7 +2250,7 @@
     },
     {
      "id": "leap",
-     "name": "도약",
+     "name": "낙하 습격",
      "type": "jump",
      "r": 8,
      "track": 1.5,
@@ -2258,11 +2258,12 @@
      "pct": 250,
      "far": 1,
      "ranged": 1,
-     "only": 1
+     "repeat2": 2,
+     "delay2": 2.0
     },
     {
      "id": "needle",
-     "name": "독침 사격",
+     "name": "독침 세례",
      "type": "volley",
      "len": 22,
      "w": 2.5,
@@ -2273,11 +2274,13 @@
      "poison": 3,
      "far": 1,
      "ranged": 1,
-     "only": 1
+     "lines2": 5,
+     "spread2": 24,
+     "delay2": 2.4
     },
     {
      "id": "eggs",
-     "name": "알 낳기",
+     "name": "산란",
      "type": "eggs",
      "count": 3,
      "hatch": 20,
@@ -2285,7 +2288,7 @@
     },
     {
      "id": "pull",
-     "name": "실 당기기",
+     "name": "죽음의 실타래",
      "type": "pull",
      "r": 9,
      "delay": 4,
@@ -2295,7 +2298,7 @@
     },
     {
      "id": "combo",
-     "name": "앞뒤 연타",
+     "name": "독니 난무",
      "type": "fang",
      "hits": 3,
      "r": 9,
@@ -2308,7 +2311,7 @@
     },
     {
      "id": "mark",
-     "name": "독 표식",
+     "name": "맹독 낙인",
      "type": "mark",
      "r": 6,
      "track": 2.0,
@@ -2345,7 +2348,7 @@
     },
     {
      "id": "burst",
-     "name": "독 분출",
+     "name": "독안개 분출",
      "type": "burst",
      "rIn": 6,
      "rOut": 20,
@@ -2368,30 +2371,15 @@
     },
     {
      "id": "absorb",
-     "name": "알 흡수",
+     "name": "알 포식",
      "type": "absorb",
      "count": 2,
      "absorbSec": 8,
      "only": 2
     },
     {
-     "id": "needle2",
-     "name": "독침 사격",
-     "type": "volley",
-     "len": 22,
-     "w": 2.5,
-     "spread": 24,
-     "lines": 5,
-     "delay": 2.4,
-     "pct": 130,
-     "poison": 3,
-     "far": 1,
-     "ranged": 1,
-     "only": 2
-    },
-    {
      "id": "frenzy",
-     "name": "광폭 연타",
+     "name": "여왕의 광란",
      "type": "frenzy",
      "r": 8,
      "angle": 120,
@@ -2406,22 +2394,8 @@
      "bleedPct": 1
     },
     {
-     "id": "leap2",
-     "name": "도약 2연속",
-     "type": "jump",
-     "r": 8,
-     "track": 1.5,
-     "delay": 2.4,
-     "delay2": 2.0,
-     "pct": 250,
-     "repeat2": 2,
-     "far": 1,
-     "ranged": 1,
-     "only": 2
-    },
-    {
      "id": "hide",
-     "name": "천장 숨기",
+     "name": "어둠 속으로",
      "type": "hide",
      "hpAt": 25,
      "time": 15,

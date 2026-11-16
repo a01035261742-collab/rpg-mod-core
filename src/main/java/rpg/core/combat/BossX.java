@@ -695,11 +695,13 @@ final class BossX {
             case "volley" -> {   // 독침 사격: 가장 먼 사람 쪽으로 직선 lines 개 (부채꼴로 벌어짐)
                 if (t != null) { Vec3 to = new Vec3(t.getX() - mob.getX(), 0, t.getZ() - mob.getZ()); if (to.lengthSqr() > 1e-4) st.dir = to.normalize(); }
                 st.pos = mob.position();
-                int dl = Boss.ticks(p.delay());
-                int n = (int) p.x("lines", 3);
+                boolean p2 = st.phase >= 2;   // 2페이즈: lines2 · spread2 · delay2 (없으면 1페이즈 값)
+                int dl = Boss.ticks(p2 ? p.x("delay2", p.delay()) : p.delay());
+                int n = (int) (p2 ? p.x("lines2", p.x("lines", 3)) : p.x("lines", 3));
+                double spread = p2 ? p.x("spread2", p.x("spread", 20)) : p.x("spread", 20);
                 x.lines.clear();
                 for (int i = 0; i < n; i++) {
-                    Vec3 d = rot(st.dir, (i - (n - 1) / 2.0) * p.x("spread", 20));
+                    Vec3 d = rot(st.dir, (i - (n - 1) / 2.0) * spread);
                     x.lines.add(d);
                     Net.telegraph(l, st.pos, d, MobAI.LINE, p.len(), p.w(), dl);
                 }
