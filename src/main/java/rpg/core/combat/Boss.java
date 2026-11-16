@@ -204,6 +204,7 @@ public final class Boss {
         boolean pillarsDone;
         final List<BlockPos> props = new ArrayList<>();                 // 단단한 버섯 (아래 칸 위치)
         final Map<BlockPos, net.minecraft.world.level.block.state.BlockState> saved = new HashMap<>();
+        net.minecraft.nbt.CompoundTag pd;   // 보스 저장 데이터 (단단한 버섯 위치 기록)
         long propNext;
         final BossX.X x = new BossX.X();   // 여왕 등 추가 기믹 (알·고치·독 구역)
     }
@@ -215,6 +216,19 @@ public final class Boss {
         if (!st.init) {
             st.init = true;
             var pd = mob.getPersistentData();
+            st.pd = pd;
+            // 서버 재시작 등으로 남은 단단한 버섯 치우기
+            if (pd.contains("rpgProps")) {
+                for (long v : pd.getLongArray("rpgProps")) {
+                    BlockPos b = BlockPos.of(v);
+                    for (int i = 0; i < 3; i++) {
+                        var bs = mob.level().getBlockState(b.above(i));
+                        if (bs.is(net.minecraft.world.level.block.Blocks.MUSHROOM_STEM) || bs.is(net.minecraft.world.level.block.Blocks.SHROOMLIGHT))
+                            mob.level().setBlockAndUpdate(b.above(i), net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
+                    }
+                }
+                pd.remove("rpgProps");
+            }
             st.center = pd.contains("rpgBossCX") ? new Vec3(pd.getDouble("rpgBossCX"), pd.getDouble("rpgBossCY"), pd.getDouble("rpgBossCZ")) : mob.position();
             st.radius = def.arena();   // 경기장 크기는 항상 mobs.json (예전에 등록한 지점도 바뀐 크기로)
             st.point = pd.getString("rpgBossPoint");
@@ -260,7 +274,7 @@ public final class Boss {
     // ───────── 매 틱 (MobAI 에서 부름) ─────────
     public static void tick(Mob mob, MobData m, Balance.MobDef mdef) {
         Def def = DEFS.get(m.key);
-        if (def == null) return;
+        if (def == null || !mob.isAlive()) return;   // 죽는 동작 중엔 아무것도 안 함 (단단한 버섯 다시 세우는 것 방지)
         ServerLevel l = (ServerLevel) mob.level();
         State st = state(mob, m, def);
         long now = l.getGameTime();
@@ -1136,6 +1150,7 @@ public final class Boss {
             l.setBlockAndUpdate(base.above(), net.minecraft.world.level.block.Blocks.MUSHROOM_STEM.defaultBlockState());
             l.setBlockAndUpdate(base.above(2), net.minecraft.world.level.block.Blocks.SHROOMLIGHT.defaultBlockState());
             st.props.add(base);
+            saveProps(st);
             l.sendParticles(ParticleTypes.SPORE_BLOSSOM_AIR, base.getX() + 0.5, base.getY() + 1.5, base.getZ() + 0.5, 20, 0.5, 1, 0.5, 0);
             return;
         }
@@ -1148,6 +1163,13 @@ public final class Boss {
             l.setBlockAndUpdate(q, old != null ? old : net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
         }
         st.props.remove(base);
+        saveProps(st);
+    }
+
+    private static void saveProps(State st) {
+        if (st.pd == null) return;
+        if (st.props.isEmpty()) st.pd.remove("rpgProps");
+        else st.pd.putLongArray("rpgProps", st.props.stream().mapToLong(BlockPos::asLong).toArray());
     }
 
     private static void clearGimmicks(ServerLevel l, State st) {
