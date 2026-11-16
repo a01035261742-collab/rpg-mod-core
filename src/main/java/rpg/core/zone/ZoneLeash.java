@@ -26,8 +26,8 @@ public final class ZoneLeash {
     private ZoneLeash() {}
 
     public static final double CHASE = 6;
-    public static final int EVADE_TICKS = 60;
-    public static final double EVADE_DIST = 6;
+    public static final int EVADE_TICKS = 100;
+    public static final double EVADE_DIST = 10;
     public static final double FLY_MAX = 4;
 
     /** 나는 몹 높이 제한 (매 2틱) */
