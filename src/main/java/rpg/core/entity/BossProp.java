@@ -148,6 +148,15 @@ public class BossProp extends Entity implements GeoEntity {
         return pos;
     }
 
+    /** 단단한 버섯 모양 (치울 때까지 계속) */
+    public static BossProp still(ServerLevel l, EntityType<BossProp> type, Vec3 pos) {
+        BossProp e = new BossProp(type, l);
+        e.life = Integer.MAX_VALUE / 2; e.endTicks = 0;
+        e.setPos(pos);
+        l.addFreshEntity(e);
+        return e;
+    }
+
     /** 바위 기둥: life 틱 동안 서 있음 */
     public static void pillar(ServerLevel l, Vec3 pos, int life) {
         BossProp e = new BossProp(ModEntities.ROCK_PILLAR.get(), l);
@@ -193,6 +202,8 @@ public class BossProp extends Entity implements GeoEntity {
         if (tickCount == 1 && (isBeam() || getType() == ModEntities.POISON_POOL.get() || getType() == ModEntities.VOID_CRACK.get()
                 || getType() == ModEntities.RESONANCE_RING.get() || getType() == ModEntities.SHOCKWAVE.get())) {
             // 이펙트: 소리·파티클은 패턴 쪽에서
+        } else if (tickCount == 1 && getType() == ModEntities.HARD_MUSHROOM.get()) {
+            // 단단한 버섯: 포자 파티클은 세울 때
         } else if (tickCount == 1 && getType() == ModEntities.MAGIC_CIRCLE.get()) {
             l.sendParticles(ParticleTypes.WITCH, getX(), getY() + 0.2, getZ(), 30, 1.5 * size(), 0.1, 1.5 * size(), 0.02);
         } else if (tickCount == 1) {
@@ -222,6 +233,7 @@ public class BossProp extends Entity implements GeoEntity {
     public void registerControllers(AnimatableManager.ControllerRegistrar c) {
         c.add(new AnimationController<>(this, "main", 0, s -> {
             EntityType<?> t = getType();
+            if (t == ModEntities.HARD_MUSHROOM.get()) return software.bernie.geckolib.core.object.PlayState.STOP;
             if (t == ModEntities.BOSS_ROCK.get() || t == ModEntities.SPORE_BALL.get()) return s.setAndContinue(SPIN);
             if (isBeam()) return s.setAndContinue(entityData.get(ENDING) ? RawAnimation.begin().thenPlayAndHold("close") : RawAnimation.begin().thenPlay("open").thenLoop("pulse"));
             if (t == ModEntities.RESONANCE_RING.get())

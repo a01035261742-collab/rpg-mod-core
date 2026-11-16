@@ -37,6 +37,8 @@ public final class ModEntities {
     public static final RegistryObject<EntityType<FlyingRpgMonster>> MUSH_FAIRY = TYPES.register("mush_fairy",
             () -> EntityType.Builder.<FlyingRpgMonster>of(FlyingRpgMonster::new, MobCategory.MONSTER)
                     .sized(0.5f, 0.6f).clientTrackingRange(10).build(RpgCore.MODID + ":mush_fairy"));
+    /** 보스 기믹: 공허에 침식된 독버섯 기둥 (거대버섯 수호자 2페이즈) */
+    public static final RegistryObject<EntityType<GeoRpgMonster>> VOID_PILLAR = geoMonster("void_pillar", 1.6f, 3.6f, 1);
     /** 곰: Blockbench 모델 (북극곰 비율 + 갈색 털). 보스 숲의 주인은 아직 북극곰 몸 (BrownBear 클래스) */
     public static final RegistryObject<EntityType<GeoRpgMonster>> BROWN_BEAR = geoMonster("brown_bear", 1.4f, 1.4f, 4);
     /** 보스 "거대버섯 수호자": 침식된 늙은 버섯 거인 (GeckoLib) */
@@ -65,6 +67,8 @@ public final class ModEntities {
     public static final RegistryObject<EntityType<BossProp>> VOID_CRACK = prop("void_crack", 1.0f, 0.1f);
     public static final RegistryObject<EntityType<BossProp>> RESONANCE_RING = prop("resonance_ring", 1.0f, 1.0f);
     public static final RegistryObject<EntityType<BossProp>> SHOCKWAVE = prop("shockwave", 1.0f, 0.1f);
+    /** 단단한 버섯 (보이는 모양만, 부딪힘은 투명 블록) */
+    public static final RegistryObject<EntityType<BossProp>> HARD_MUSHROOM = prop("hard_mushroom", 1.0f, 2.8f);
 
     /** 레이드 보스 "어둠거미여왕": 거미 몸 3배 (임시) */
     public static final RegistryObject<EntityType<SpiderQueen>> SPIDER_QUEEN = TYPES.register("spider_queen",
@@ -77,6 +81,7 @@ public final class ModEntities {
         e.put(RAT.get(), RpgMonster.attrs(0.32).build());
         e.put(MUSH_KID.get(), RpgMonster.attrs(0.26).build());
         e.put(MUSH_SPIRIT.get(), RpgMonster.attrs(0.25).build());
+        e.put(VOID_PILLAR.get(), RpgMonster.attrs(0.0).add(net.minecraft.world.entity.ai.attributes.Attributes.KNOCKBACK_RESISTANCE, 1.0).build());
         e.put(MUSH_SOLDIER.get(), RpgMonster.attrs(0.24).build());
         e.put(MUSH_BEAST.get(), RpgMonster.attrs(0.27).build());
         e.put(MUSH_FAIRY.get(), FlyingRpgMonster.flyAttrs().build());

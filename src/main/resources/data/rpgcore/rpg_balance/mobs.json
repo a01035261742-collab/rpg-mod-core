@@ -2153,7 +2153,7 @@
   }
  },
  "spore_pillar": {
-  "entity": "rpgcore:mush_spirit",
+  "entity": "rpgcore:void_pillar",
   "name": "독버섯 기둥",
   "area": "보스 기믹 (거대버섯 수호자)",
   "stunArmor": 99,

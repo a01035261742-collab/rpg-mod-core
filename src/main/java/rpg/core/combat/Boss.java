@@ -205,6 +205,7 @@ public final class Boss {
         final List<BlockPos> props = new ArrayList<>();                 // 단단한 버섯 (아래 칸 위치)
         final Map<BlockPos, net.minecraft.world.level.block.state.BlockState> saved = new HashMap<>();
         net.minecraft.nbt.CompoundTag pd;   // 보스 저장 데이터 (단단한 버섯 위치 기록)
+        final Map<BlockPos, UUID> propEnt = new HashMap<>();   // 단단한 버섯 모양 엔티티
         long propNext;
         final BossX.X x = new BossX.X();   // 여왕 등 추가 기믹 (알·고치·독 구역)
     }
@@ -223,7 +224,7 @@ public final class Boss {
                     BlockPos b = BlockPos.of(v);
                     for (int i = 0; i < 3; i++) {
                         var bs = mob.level().getBlockState(b.above(i));
-                        if (bs.is(net.minecraft.world.level.block.Blocks.MUSHROOM_STEM) || bs.is(net.minecraft.world.level.block.Blocks.SHROOMLIGHT))
+                        if (bs.is(net.minecraft.world.level.block.Blocks.MUSHROOM_STEM) || bs.is(net.minecraft.world.level.block.Blocks.SHROOMLIGHT) || bs.is(net.minecraft.world.level.block.Blocks.BARRIER))
                             mob.level().setBlockAndUpdate(b.above(i), net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
                     }
                 }
@@ -1157,9 +1158,9 @@ public final class Boss {
             for (BlockPos o : st.props) if (o.distSqr(base) < 16) near = true;
             if (near) continue;
             for (int i = 0; i < 3; i++) st.saved.put(base.above(i), l.getBlockState(base.above(i)));
-            l.setBlockAndUpdate(base, net.minecraft.world.level.block.Blocks.MUSHROOM_STEM.defaultBlockState());
-            l.setBlockAndUpdate(base.above(), net.minecraft.world.level.block.Blocks.MUSHROOM_STEM.defaultBlockState());
-            l.setBlockAndUpdate(base.above(2), net.minecraft.world.level.block.Blocks.SHROOMLIGHT.defaultBlockState());
+            // 부딪힘은 투명 블록 3칸, 모양은 모델
+            for (int i = 0; i < 3; i++) l.setBlockAndUpdate(base.above(i), net.minecraft.world.level.block.Blocks.BARRIER.defaultBlockState());
+            st.propEnt.put(base, rpg.core.entity.BossProp.still(l, rpg.core.entity.ModEntities.HARD_MUSHROOM.get(), Vec3.atBottomCenterOf(base)).getUUID());
             st.props.add(base);
             saveProps(st);
             l.sendParticles(ParticleTypes.SPORE_BLOSSOM_AIR, base.getX() + 0.5, base.getY() + 1.5, base.getZ() + 0.5, 20, 0.5, 1, 0.5, 0);
@@ -1174,6 +1175,10 @@ public final class Boss {
             l.setBlockAndUpdate(q, old != null ? old : net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
         }
         st.props.remove(base);
+        UUID pe = st.propEnt.remove(base);
+        if (pe != null && l.getEntity(pe) != null) l.getEntity(pe).discard();
+        l.sendParticles(new net.minecraft.core.particles.BlockParticleOption(ParticleTypes.BLOCK, net.minecraft.world.level.block.Blocks.MUSHROOM_STEM.defaultBlockState()),
+                base.getX() + 0.5, base.getY() + 1.2, base.getZ() + 0.5, 30, 0.6, 0.8, 0.6, 0.1);
         saveProps(st);
     }
 

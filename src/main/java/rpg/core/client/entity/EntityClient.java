@@ -78,6 +78,8 @@ public final class EntityClient {
         e.registerEntityRenderer(ModEntities.VOID_CRACK.get(), ctx -> new PropRenderer(ctx, "void_crack", 1.0f));
         e.registerEntityRenderer(ModEntities.RESONANCE_RING.get(), ctx -> new PropRenderer(ctx, "resonance_ring", 1.0f));
         e.registerEntityRenderer(ModEntities.SHOCKWAVE.get(), ctx -> new PropRenderer(ctx, "shockwave", 1.0f));
+        e.registerEntityRenderer(ModEntities.HARD_MUSHROOM.get(), ctx -> new PropRenderer(ctx, "hard_mushroom", 1.0f));
+        e.registerEntityRenderer(ModEntities.VOID_PILLAR.get(), ctx -> new RpgGeoRenderer(ctx, "void_pillar", 0.9f, true));
     }
 
     /** 직업 가죽 방어구: 아이콘 색 (아래층만 칠함, 위 오버레이는 그대로) */
