@@ -45,8 +45,17 @@ public final class ModEntities {
                     .sized(3.8f, 4.4f).clientTrackingRange(16).updateInterval(1).build(RpgCore.MODID + ":mush_guardian"));
     /** 보스 "숲의 주인": 갈색 곰 몸 2.5배 */
     public static final RegistryObject<EntityType<ForestLord>> FOREST_LORD = TYPES.register("forest_lord",
-            () -> EntityType.Builder.<ForestLord>of(ForestLord::new, MobCategory.CREATURE)
+            () -> EntityType.Builder.<ForestLord>of(ForestLord::new, MobCategory.MONSTER)
                     .sized(3.5f, 3.5f).clientTrackingRange(16).updateInterval(1).build(RpgCore.MODID + ":forest_lord"));
+
+    /** 보스 패턴 소품 (판정 없음, 연출): 던지는 바위 · 바위 기둥 · 공허 결정 */
+    private static RegistryObject<EntityType<BossProp>> prop(String id, float w, float h) {
+        return TYPES.register(id, () -> EntityType.Builder.<BossProp>of(BossProp::new, MobCategory.MISC)
+                .sized(w, h).clientTrackingRange(10).updateInterval(1).noSave().build(RpgCore.MODID + ":" + id));
+    }
+    public static final RegistryObject<EntityType<BossProp>> BOSS_ROCK = prop("boss_rock", 1.0f, 1.0f);
+    public static final RegistryObject<EntityType<BossProp>> ROCK_PILLAR = prop("rock_pillar", 2.0f, 3.0f);
+    public static final RegistryObject<EntityType<BossProp>> VOID_CRYSTAL = prop("void_crystal", 1.5f, 2.6f);
 
     /** 레이드 보스 "어둠거미여왕": 거미 몸 3배 (임시) */
     public static final RegistryObject<EntityType<SpiderQueen>> SPIDER_QUEEN = TYPES.register("spider_queen",
@@ -63,7 +72,7 @@ public final class ModEntities {
         e.put(MUSH_BEAST.get(), RpgMonster.attrs(0.27).build());
         e.put(MUSH_FAIRY.get(), FlyingRpgMonster.flyAttrs().build());
         e.put(BROWN_BEAR.get(), RpgMonster.attrs(0.25).build());
-        e.put(FOREST_LORD.get(), PolarBear.createAttributes().build());
+        e.put(FOREST_LORD.get(), RpgMonster.attrs(0.25).add(net.minecraft.world.entity.ai.attributes.Attributes.KNOCKBACK_RESISTANCE, 1.0).build());
         e.put(MUSH_GUARDIAN.get(), RpgMonster.attrs(0.25).build());
     }
 }

@@ -51,7 +51,6 @@ public final class EntityClient {
         e.registerEntityRenderer(ModEntities.MUSH_FAIRY.get(), ctx -> new RpgGeoRenderer(ctx, "mush_fairy", 0.25f));
         e.registerEntityRenderer(ModEntities.MUSH_BEAST.get(), ctx -> new RpgGeoRenderer(ctx, "mush_beast", 1.2f));
         e.registerEntityRenderer(ModEntities.BROWN_BEAR.get(), ctx -> new RpgGeoRenderer(ctx, "brown_bear", 0.9f));
-        ResourceLocation bear = RpgCore.id("textures/entity/forest_lord.png");   // 숲의 주인 = 북극곰 몸 (모델링 전까지)
         // 보스 거대버섯 수호자: 버섯 짐승 모델 2배
         ResourceLocation beastTex = RpgCore.id("textures/entity/mush_guardian.png");   // 수호자 = 옛 버섯 짐승 몸 (모델링 전까지)
         e.registerEntityRenderer(ModEntities.MUSH_GUARDIAN.get(), ctx -> new MobRenderer<rpg.core.entity.MushGuardian, RpgModel<rpg.core.entity.MushGuardian>>(
@@ -75,19 +74,12 @@ public final class EntityClient {
                 ps.scale(3.0f, 3.0f, 3.0f);
             }
         });
-        // 보스 숲의 주인: 곰 2.5배 (북극곰 기본 1.2배 × 2.5)
-        e.registerEntityRenderer(ModEntities.FOREST_LORD.get(), ctx -> {
-            PolarBearRenderer r = new PolarBearRenderer(ctx) {
-                @Override
-                public ResourceLocation getTextureLocation(PolarBear ent) { return bear; }
-
-                @Override
-                protected void scale(PolarBear ent, com.mojang.blaze3d.vertex.PoseStack ps, float pt) {
-                    ps.scale(3.0f, 3.0f, 3.0f);
-                }
-            };
-            return r;
-        });
+        // 보스 숲의 주인: GeckoLib 모델 1.8배, 결정·균열·눈 발광
+        e.registerEntityRenderer(ModEntities.FOREST_LORD.get(), ctx -> new RpgGeoRenderer(ctx, "forest_lord", 2.5f, true));
+        // 보스 패턴 소품
+        e.registerEntityRenderer(ModEntities.BOSS_ROCK.get(), ctx -> new PropRenderer(ctx, "boss_rock", 2.2f));
+        e.registerEntityRenderer(ModEntities.ROCK_PILLAR.get(), ctx -> new PropRenderer(ctx, "rock_pillar", 2.2f));
+        e.registerEntityRenderer(ModEntities.VOID_CRYSTAL.get(), ctx -> new PropRenderer(ctx, "void_crystal", 1.6f));
     }
 
     /** 직업 가죽 방어구: 아이콘 색 (아래층만 칠함, 위 오버레이는 그대로) */

@@ -1749,12 +1749,13 @@
      "ranged": 1
     },
     {
-     "id": "barrage",
-     "name": "바위 연타",
-     "type": "barrage",
+     "id": "pillars",
+     "name": "바위 기둥",
+     "type": "pillars",
      "r": 3.5,
-     "count": 3,
-     "interval": 0.8,
+     "count": 5,
+     "spacing": 4.5,
+     "interval": 0.4,
      "delay": 1.6,
      "pct": 120,
      "far": 1,
@@ -1767,6 +1768,40 @@
      "r": 22,
      "delay": 3.0,
      "push": 8,
+     "phase": 2
+    },
+    {
+     "id": "spikes",
+     "name": "결정 가시밭",
+     "type": "spikes",
+     "lines": 6,
+     "len": 18,
+     "w": 2.5,
+     "delay": 2.0,
+     "pct": 200,
+     "phase": 2
+    },
+    {
+     "id": "plant",
+     "name": "공허 결정 심기",
+     "type": "plant",
+     "r": 2.5,
+     "delay": 1.5,
+     "pct": 150,
+     "life": 8,
+     "phase": 2
+    },
+    {
+     "id": "rings",
+     "name": "공허 충격파",
+     "type": "rings",
+     "count": 3,
+     "width": 4,
+     "gap": 2,
+     "start": 2,
+     "delay": 1.6,
+     "interval": 0.6,
+     "pct": 140,
      "phase": 2
     }
    ],
@@ -1850,13 +1885,6 @@
     "delay": 0.8,
     "pct": 120,
     "cd": 2.5
-   },
-   "poke": {
-    "name": "돌 던지기",
-    "r": 2.5,
-    "delay": 1.0,
-    "pct": 100,
-    "cd": 3
    },
    "gap": {
     "name": "덮치기",

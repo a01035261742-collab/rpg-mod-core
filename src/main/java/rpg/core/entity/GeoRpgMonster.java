@@ -26,7 +26,12 @@ public class GeoRpgMonster extends RpgMonster implements GeoEntity {
     private static final java.util.Set<String> ALT_ATTACK = java.util.Set.of("mush_spirit", "mush_soldier");
 
     /** 패턴 애니메이션 (Blockbench 이름 = 패턴 종류). 없는 몹은 안 부름 */
-    private static final String[] PATTERNS = {"slam", "leap", "dash", "shot", "zone", "cone"};
+    private static final String[] PATTERNS = {"slam", "leap", "dash", "shot", "zone", "cone",
+            // 보스 (숲의 주인): 패턴 id 와 같은 이름
+            "melee", "claw", "charge", "rocks", "roar", "gap", "pillars", "spikes", "plant", "rings"};
+
+    /** 근접 공격(swing) 때 attack 애니메이션 재생 (보스는 끔) */
+    protected boolean swingAnim = true;
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private boolean otherHand;
@@ -77,7 +82,7 @@ public class GeoRpgMonster extends RpgMonster implements GeoEntity {
     @Override
     public void swing(InteractionHand hand, boolean updateSelf) {
         super.swing(hand, updateSelf);
-        if (level().isClientSide) return;
+        if (level().isClientSide || !swingAnim) return;
         boolean alt = ALT_ATTACK.contains(net.minecraftforge.registries.ForgeRegistries.ENTITY_TYPES.getKey(getType()).getPath());
         lastAttack = alt && otherHand ? "attack2" : "attack";
         triggerAnim("attack", lastAttack);

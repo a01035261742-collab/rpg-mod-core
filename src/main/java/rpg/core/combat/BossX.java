@@ -28,7 +28,8 @@ import rpg.core.net.Net;
 final class BossX {
     private BossX() {}
 
-    static final Set<String> TYPES = Set.of("eggs", "pull", "lanes", "absorb", "collapse", "frenzy", "barrage", "volley", "webrain", "burst", "hide");
+    static final Set<String> TYPES = Set.of("eggs", "pull", "lanes", "absorb", "collapse", "frenzy", "barrage", "volley", "webrain", "burst", "hide",
+            "pillars", "spikes", "plant", "rings");   // 숲의 주인
 
     record Cocoon(UUID entity, Vec3 pos, long until) {}
     record Zone(Vec3 c, Vec3 dir, double r, double angle, long until) {}
@@ -168,6 +169,13 @@ final class BossX {
                 long until = now + Math.round(web * 20);
                 x.webs.add(new Web(s.c(), s.r(), until));
                 Net.telegraph(l, s.c(), new Vec3(1, 0, 0), 60 + MobAI.CIRCLE, s.r(), 0, (int) (until - now));
+            } else if (s.p().type().equals("pillars")) {   // 바위 기둥: 땅에서 솟음
+                rpg.core.entity.BossProp.pillar(l, s.c(), (int) Math.round(s.p().x("stand", 1.6) * 20));
+                l.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, s.c().x, s.c().y + 0.3, s.c().z, 6, s.r() / 3, 0.2, s.r() / 3, 0.01);
+                l.playSound(null, BlockPos.containing(s.c()), SoundEvents.DRIPSTONE_BLOCK_BREAK, SoundSource.HOSTILE, 2f, 0.5f);
+            } else if (s.p().type().equals("plant")) {   // 공허 결정: 박히고 life 초 동안 장애물
+                rpg.core.entity.BossProp.crystal(l, s.c(), (int) Math.round(s.p().x("life", 8) * 20), true);
+                l.sendParticles(ParticleTypes.WITCH, s.c().x, s.c().y + 0.5, s.c().z, 20, s.r() / 2, 0.4, s.r() / 2, 0.05);
             } else {
                 l.sendParticles(ParticleTypes.EXPLOSION, s.c().x, s.c().y + 0.3, s.c().z, 2, s.r() / 3, 0.1, s.r() / 3, 0);
                 l.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, s.c().x, s.c().y + 0.3, s.c().z, 6, s.r() / 3, 0.2, s.r() / 3, 0.01);
@@ -204,6 +212,9 @@ final class BossX {
         l.playSound(null, mob.blockPosition(), SoundEvents.SNOW_GOLEM_SHOOT, SoundSource.HOSTILE, 1.5f, 0.5f);
         mob.swing(net.minecraft.world.InteractionHand.MAIN_HAND);
     }
+
+    /** 공허 충격파 i 번째 고리 안쪽 반경 */
+    private static double ringIn(Boss.Pattern p, int i) { return p.x("start", 2) + i * (p.x("width", 4) + p.x("gap", 2.5)); }
 
     private static Vec3 rot(Vec3 d, double deg) {
         double a = Math.toRadians(deg), c = Math.cos(a), s = Math.sin(a);
@@ -485,6 +496,62 @@ final class BossX {
                 l.playSound(null, mob.blockPosition(), SoundEvents.BUBBLE_COLUMN_WHIRLPOOL_INSIDE, SoundSource.HOSTILE, 2f, 0.6f);
                 st.stageEnd = now + dl + Boss.HIT_LAG;
             }
+            case "pillars" -> {   // 바위 기둥: 보스에서 가장 먼 사람 쪽으로 기둥이 차례로 솟음
+                ServerPlayer far = farthest(mob, l, st);
+                Vec3 d = far == null ? st.dir : new Vec3(far.getX() - mob.getX(), 0, far.getZ() - mob.getZ());
+                if (d.lengthSqr() < 1e-4) d = st.dir;
+                d = d.normalize();
+                st.dir = d;
+                st.pos = mob.position();
+                int n = (int) p.x("count", 5), dl = Boss.ticks(p.delay()), iv = (int) Math.round(p.x("interval", 0.4) * 20);
+                double sp = p.x("spacing", 4.5);
+                for (int i = 0; i < n; i++) {
+                    Vec3 c = st.pos.add(d.scale(sp * (i + 1)));
+                    Net.telegraph(l, c, d, MobAI.CIRCLE, p.r(), 0, dl + i * iv);
+                    x.shots.add(new Shot(c, p.r(), now + dl + i * iv + Boss.HIT_LAG, p));
+                }
+                say(l, st, "◆ " + p.name() + " — 기둥이 다가와요! 옆으로 피하세요", ChatFormatting.GOLD);
+                l.playSound(null, mob.blockPosition(), SoundEvents.RAVAGER_STUNNED, SoundSource.HOSTILE, 2f, 0.5f);
+                st.stageEnd = now + dl + (n - 1L) * iv + Boss.HIT_LAG + 2;
+            }
+            case "plant" -> {   // 공허 결정 심기: 모두의 발밑 → 터진 자리에 결정 장애물
+                int dl = Boss.ticks(p.delay());
+                for (ServerPlayer pl : Boss.arena(l, st, 0)) {
+                    if (!Boss.valid(pl)) continue;
+                    Vec3 c = pl.position();
+                    Net.telegraph(l, c, st.dir, MobAI.CIRCLE, p.r(), 0, dl);
+                    x.shots.add(new Shot(c, p.r(), now + dl + Boss.HIT_LAG, p));
+                }
+                say(l, st, "◆ " + p.name() + " — 발밑에서 결정이 솟아요! 벗어나세요", ChatFormatting.LIGHT_PURPLE);
+                l.playSound(null, mob.blockPosition(), SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.HOSTILE, 2.5f, 0.5f);
+                st.stageEnd = now + dl + Boss.HIT_LAG + 2;
+            }
+            case "spikes" -> {   // 결정 가시밭: 보스에서 사방 직선 lines 개
+                st.pos = mob.position();
+                int dl = Boss.ticks(p.delay()), n = (int) p.x("lines", 6);
+                double base = java.util.concurrent.ThreadLocalRandom.current().nextDouble() * 360;
+                x.lines.clear();
+                for (int i = 0; i < n; i++) {
+                    Vec3 d = rot(new Vec3(1, 0, 0), base + i * 360.0 / n);
+                    x.lines.add(d);
+                    Net.telegraph(l, st.pos, d, MobAI.LINE, p.len(), p.w(), dl);
+                }
+                say(l, st, "◆ " + p.name() + " — 선 사이로 피하세요!", ChatFormatting.LIGHT_PURPLE);
+                l.playSound(null, mob.blockPosition(), SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.HOSTILE, 2.5f, 0.6f);
+                st.stageEnd = now + dl + Boss.HIT_LAG;
+            }
+            case "rings" -> {   // 공허 충격파: 보스 중심에서 고리가 차례로 바깥으로
+                st.pos = mob.position();
+                x.step = 0;
+                int dl = Boss.ticks(p.delay()), iv = (int) Math.round(p.x("interval", 0.6) * 20), n = (int) p.x("count", 3);
+                for (int i = 0; i < n; i++) {
+                    double rin = ringIn(p, i), rout = rin + p.x("width", 4);
+                    Net.telegraph(l, st.pos, st.dir, MobAI.RING, rout, rin, dl + i * iv);
+                }
+                say(l, st, "◆ " + p.name() + " — 고리 사이 빈 곳으로!", ChatFormatting.LIGHT_PURPLE);
+                l.playSound(null, mob.blockPosition(), SoundEvents.WARDEN_SONIC_CHARGE, SoundSource.HOSTILE, 2f, 0.7f);
+                st.stageEnd = now + dl + Boss.HIT_LAG;
+            }
             case "barrage" -> {   // 바위 연타: 가장 먼 사람 발밑에 interval 초마다 count 개
                 x.step = 0;
                 throwRock(mob, st, p, t, l, now);
@@ -657,6 +724,38 @@ final class BossX {
                     if (Boss.flat(pl.position(), st.pos) <= r2 + Boss.PAD) Boss.hitAs(mob, m, st, l, pl, "내려찍기", p.x("pct2", 220), 0, 0);
                 }
                 Boss.finish(mob, st, def, now);
+            }
+            case "pillars", "plant" -> Boss.finish(mob, st, def, now);   // 떨어지는 건 ambient 가 처리
+            case "spikes" -> {
+                for (Vec3 d : x.lines) for (double dd = 2.5; dd <= p.len(); dd += 3.2) {
+                    Vec3 q = st.pos.add(d.scale(dd));
+                    rpg.core.entity.BossProp.crystal(l, q, 26, false);
+                }
+                l.playSound(null, mob.blockPosition(), SoundEvents.AMETHYST_CLUSTER_BREAK, SoundSource.HOSTILE, 2.5f, 0.6f);
+                for (ServerPlayer pl : Boss.arena(l, st, 4)) {
+                    if (!Boss.valid(pl) || Math.abs(pl.getY() - st.pos.y) > Boss.HEIGHT) continue;
+                    Vec3 to = new Vec3(pl.getX() - st.pos.x, 0, pl.getZ() - st.pos.z);
+                    for (Vec3 d : x.lines) {
+                        double along = to.dot(d), side = to.x * d.z - to.z * d.x;
+                        if (along >= -1 && along <= p.len() + Boss.PAD && Math.abs(side) <= p.w() / 2 + Boss.PAD) { Boss.hit(mob, m, st, l, pl, p); break; }
+                    }
+                }
+                Boss.finish(mob, st, def, now);
+            }
+            case "rings" -> {
+                double rin = ringIn(p, x.step), rout = rin + p.x("width", 4);
+                for (int k = 0; k < 28; k++) {
+                    double a = Math.PI * 2 * k / 28, rr = (rin + rout) / 2;
+                    l.sendParticles(ParticleTypes.WITCH, st.pos.x + Math.cos(a) * rr, st.pos.y + 0.4, st.pos.z + Math.sin(a) * rr, 2, 0.6, 0.2, 0.6, 0);
+                }
+                l.playSound(null, mob.blockPosition(), SoundEvents.WARDEN_SONIC_BOOM, SoundSource.HOSTILE, 1.2f, 1.4f);
+                for (ServerPlayer pl : Boss.arena(l, st, 4)) {
+                    if (!Boss.valid(pl) || Math.abs(pl.getY() - st.pos.y) > Boss.HEIGHT) continue;
+                    double d = Boss.flat(pl.position(), st.pos);
+                    if (d >= rin - Boss.PAD && d <= rout + Boss.PAD) Boss.hit(mob, m, st, l, pl, p);
+                }
+                if (++x.step < (int) p.x("count", 3)) st.stageEnd = now + Math.round(p.x("interval", 0.6) * 20);
+                else Boss.finish(mob, st, def, now);
             }
             case "barrage" -> {
                 if (++x.step < (int) p.x("count", 3)) {

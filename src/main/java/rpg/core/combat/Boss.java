@@ -466,6 +466,8 @@ public final class Boss {
         if (!basic(def, p) && p.delay() >= 2.0 && !BossX.TYPES.contains(p.type()) && !java.util.Set.of("share", "mark", "counter").contains(p.type()))
             for (ServerPlayer x : arena(l, st, 16)) Net.alert(x, "◆ " + p.name(), ChatFormatting.YELLOW, 50);
         // 여왕 추가 기믹 (BossX.TYPES) 은 전부 BossX.start — 목록에 "hide"(천장 숨기)가 빠져 있어서 기둥 없이 바로 "실 다 끊음" 되던 버그 (0.55.7)
+        // 모델 애니메이션: 패턴 id 이름 (돌진·광선은 추적이 끝나고 확정될 때)
+        if (mob instanceof rpg.core.entity.GeoRpgMonster g && !p.type().equals("charge") && !p.type().equals("beam")) g.playPattern(p.id());
         if (BossX.TYPES.contains(p.type())) { BossX.start(mob, st, def, p, t, l, now); return; }
         switch (p.type()) {
             case "cone" -> Net.telegraph(l, st.pos, st.dir, MobAI.CONE, p.r(), p.angle(), dl);
@@ -548,7 +550,7 @@ public final class Boss {
                 st.stageEnd = now + w;
                 return;
             }
-            case "roar" -> { Net.telegraph(l, st.pos, st.dir, MobAI.CIRCLE, p.r(), 0, dl); standing(mob, true); }
+            case "roar" -> { Net.telegraph(l, st.pos, st.dir, 40 + MobAI.CIRCLE, p.r(), 0, dl); standing(mob, true); }   // 보라 = 피해 없는 위협
             case "poke" -> {   // 원거리 평타: 대상 발밑 원 (추적 없음)
                 st.rocks.clear();
                 st.rocks.put(t.getUUID(), t.position());
@@ -683,7 +685,13 @@ public final class Boss {
                 st.pos = mob.position();
                 Net.track(l, mob.getId(), -1, 0, 0, 0, 0);   // 노랑 지우기
                 if (line) Net.telegraph(l, st.pos, st.dir, MobAI.LINE, p.len(), p.w(), dl);
-                else for (Vec3 q : st.rocks.values()) Net.telegraph(l, q, st.dir, p.type().equals("share") ? 40 + MobAI.CIRCLE : MobAI.CIRCLE, p.r(), 0, dl);
+                if (line && st.hitNo == 0 && mob instanceof rpg.core.entity.GeoRpgMonster g) g.playPattern(p.id());
+                if (p.type().equals("rocks")) {   // 던지는 바위: 앞발에서 포물선으로 날아가서 예고가 다 찰 때 떨어짐
+                    Vec3 paw = mob.position().add(st.dir.scale(mob.getBbWidth() * 0.6)).add(0, mob.getBbHeight() * 1.1, 0);
+                    long rel = now + Math.round(p.x("throwAt", 0.5) * 20);
+                    for (Vec3 q : st.rocks.values()) rpg.core.entity.BossProp.rock(l, paw, q, rel, now + dl + HIT_LAG);
+                }
+                if (!line) for (Vec3 q : st.rocks.values()) Net.telegraph(l, q, st.dir, p.type().equals("share") ? 40 + MobAI.CIRCLE : MobAI.CIRCLE, p.r(), 0, dl);
                 if (p.type().equals("jump")) {   // 포물선: 앞부분은 웅크리고, 마지막 1초 동안 날아가서 예고가 다 찰 때 착지
                     st.jumpFrom = mob.position();
                     st.jumpLand = now + dl;

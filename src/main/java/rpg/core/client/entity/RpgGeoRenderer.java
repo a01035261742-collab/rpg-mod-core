@@ -28,7 +28,7 @@ public class RpgGeoRenderer extends GeoEntityRenderer<GeoRpgMonster> {
         super(ctx, new Model(id));
         this.shadowRadius = shadow;
         this.cull = !id.equals("rat") && !id.equals("mush_fairy");   // 쥐(귀·수염)·버섯 요정(날개)은 얇은 판이 있어서 양면 그대로
-        this.modelScale = id.equals("mush_fairy") ? 0.6f : 1f;
+        this.modelScale = id.equals("mush_fairy") ? 0.6f : id.equals("forest_lord") ? 1.8f : 1f;
         if (glow) addRenderLayer(new AutoGlowingGeoLayer<>(this));
     }
 
