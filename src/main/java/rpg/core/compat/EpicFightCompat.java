@@ -114,7 +114,9 @@ public final class EpicFightCompat {
                     Long ready = ROLL_READY.get(id);
                     if (ready != null && now < ready) { evCancel.invoke(ev, true); return; }
                     double red = Math.min(60, RpgData.get(sp).bonus("dodgeCd"));
-                    ROLL_READY.put(id, now + Math.round(ROLL_CD * (1 - red / 100.0) * 20));
+                    int cd = (int) Math.round(ROLL_CD * (1 - red / 100.0) * 20);
+                    ROLL_READY.put(id, now + cd);
+                    rpg.core.net.Net.rollCd(sp, cd);
                 } catch (Throwable ignored) {}
             };
             addListener.invoke(getListener.invoke(patch), castType, CAST_ID, fn);

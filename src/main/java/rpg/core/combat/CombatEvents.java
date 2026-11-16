@@ -142,8 +142,8 @@ public final class CombatEvents {
         if (SKILL_PCT.containsKey(t.getId()) || FIXED.containsKey(t.getId()) || ap.isCreative() || !rpg.core.world.RpgWorld.in(ap)) return;
         if (!Boolean.FALSE.equals(rpg.core.compat.EpicFightCompat.battleModeOrNull(ap))) return;   // 전투 모드 (또는 EF 확인 실패) → 그대로
         e.setCanceled(true);
-        ap.displayClientMessage(net.minecraft.network.chat.Component.literal("R 키로 전투 모드를 켜야 공격돼요")
-                .withStyle(net.minecraft.ChatFormatting.YELLOW), true);
+        ap.displayClientMessage(net.minecraft.network.chat.Component.keybind("key.epicfight.switch_mode")   // 플레이어가 설정한 키 이름 그대로
+                .append(" 키로 전투 모드를 켜야 공격돼요").withStyle(net.minecraft.ChatFormatting.YELLOW), true);
     }
 
     /** PvP 끔: 플레이어(또는 플레이어가 쏜 것)가 다른 플레이어를 때리면 막음 */

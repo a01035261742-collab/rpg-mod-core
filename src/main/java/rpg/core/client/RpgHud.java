@@ -77,8 +77,8 @@ public final class RpgHud {
     static final int SLOT = 22, SG = 2, DIV = 8;
     static int boxX0, boxX1, boxY0, boxY1;
 
-    /** 칸 줄 폭 (물약 2+2, 스킬 6, 칸막이 2) */
-    static int rowW() { return 10 * SLOT + 7 * SG + 2 * DIV; }
+    /** 칸 줄 폭 (물약 2+2, 스킬 6, 구르기 1, 칸막이 3) */
+    static int rowW() { return 11 * SLOT + 8 * SG + 3 * DIV; }
 
     static void layout(int w, int h) {
         int rw = rowW();
@@ -144,7 +144,10 @@ public final class RpgHud {
         x = skills(g, font, x, ry);
         x += DIV - SG;
         g.fill(x - DIV / 2 - 1, ry + 3, x - DIV / 2, ry + SLOT - 3, Ui.G3);
-        potions(g, font, x, ry, 2, 2);
+        x = potions(g, font, x, ry, 2, 2);
+        x += DIV - SG;
+        g.fill(x - DIV / 2 - 1, ry + 3, x - DIV / 2, ry + SLOT - 3, Ui.G3);
+        rollSlot(g, font, x, ry);
         // EXP
         double ratio = ClientData.need <= 0 || ClientData.need == Long.MAX_VALUE ? 1.0 : (double) ClientData.exp / ClientData.need;
         ratio = Math.max(0, Math.min(1, ratio));
@@ -185,11 +188,29 @@ public final class RpgHud {
                 String cs = String.valueOf(c);
                 g.drawString(font, cs, x + SLOT - 2 - font.width(cs), y + SLOT - 9, c == 0 ? Ui.RED : 0xFFFFFFFF, true);
             } else g.pose().translate(0, 0, 200);
-            g.drawString(font, String.valueOf(k + 1), x + 2, y + 2, Ui.VAL, true);
+            g.drawString(font, ClientEvents.keyLabel(Minecraft.getInstance().options.keyHotbarSlots[k]), x + 2, y + 2, Ui.VAL, true);
             g.pose().popPose();
             x += SLOT + SG;
         }
         return x;
+    }
+
+    /** 구르기 칸 (Epic Fight 구르기): 쿨타임 동안 시계 방향 쓸기 + 남은 초 */
+    private static final net.minecraft.world.item.ItemStack ROLL_ICON = new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.FEATHER);
+
+    private static void rollSlot(GuiGraphics g, Font font, int x, int y) {
+        Ui.slot(g, x, y, SLOT);
+        g.renderItem(ROLL_ICON, x + 3, y + 3);
+        g.pose().pushPose();
+        g.pose().translate(0, 0, 200);
+        long left = ClientData.rollEnd - System.currentTimeMillis();
+        if (left > 0 && ClientData.rollLen > 0) {
+            Ui.sweep(g, x + 3, y + 3, 16, 16, (double) left / ClientData.rollLen, 0xB0000000);
+            String sec = String.format("%.1f", left / 1000.0);
+            g.drawString(font, sec, x + SLOT / 2 - font.width(sec) / 2, y + 7, 0xFFFFFFFF, true);
+        }
+        g.drawString(font, ClientEvents.rollKeyLabel(), x + 2, y + SLOT - 9, Ui.VAL, true);
+        g.pose().popPose();
     }
 
     /** 스킬 6칸 (Q E R F Z X) → 다음 x */
@@ -207,7 +228,7 @@ public final class RpgHud {
                     g.drawString(font, sec, x + SLOT / 2 - font.width(sec) / 2, y + 7, 0xFFFFFFFF, true);
                 }
             }
-            g.drawString(font, ClientEvents.SLOT_LABELS[i], x + 2, y + SLOT - 9, Ui.VAL, true);
+            g.drawString(font, ClientEvents.skillKey(i), x + 2, y + SLOT - 9, Ui.VAL, true);
             x += SLOT + SG;
         }
         return x;

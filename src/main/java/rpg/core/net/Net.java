@@ -142,6 +142,8 @@ public final class Net {
                 .encoder(CutscenePkt::encode).decoder(CutscenePkt::new).consumerMainThread(CutscenePkt::handle).add();
         CH.messageBuilder(MusicPkt.class, id++, NetworkDirection.PLAY_TO_CLIENT)
                 .encoder(MusicPkt::encode).decoder(MusicPkt::new).consumerMainThread(MusicPkt::handle).add();
+        CH.messageBuilder(RollCd.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(RollCd::encode).decoder(RollCd::new).consumerMainThread(RollCd::handle).add();
     }
 
     // ───────── 서버 → 클라: 보스 BGM (빈칸 = 끄기) ─────────
@@ -207,6 +209,20 @@ public final class Net {
             DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> rpg.core.client.BossAlert.show(text, color, ticks));
             ctx.get().setPacketHandled(true);
         }
+    }
+
+    // ───────── 서버 → 클라: 구르기 쿨타임 시작 (HUD 구르기 칸) ─────────
+    public record RollCd(int ticks) {
+        RollCd(FriendlyByteBuf b) { this(b.readVarInt()); }
+        void encode(FriendlyByteBuf b) { b.writeVarInt(ticks); }
+        void handle(Supplier<NetworkEvent.Context> ctx) {
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> rpg.core.client.ClientData.rollCd(ticks));
+            ctx.get().setPacketHandled(true);
+        }
+    }
+
+    public static void rollCd(ServerPlayer p, int ticks) {
+        CH.send(PacketDistributor.PLAYER.with(() -> p), new RollCd(ticks));
     }
 
     /** 보스 패턴에 맞음 표시 (HUD 위 작은 상자) */

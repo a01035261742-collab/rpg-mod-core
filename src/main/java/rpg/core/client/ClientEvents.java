@@ -67,6 +67,24 @@ public final class ClientEvents {
     public static final KeyMapping QUEST_KEY = new KeyMapping("key.rpgcore.quests", InputConstants.KEY_J, CATEGORY);
     public static final KeyMapping MENU_KEY = new KeyMapping("key.rpgcore.menu", InputConstants.KEY_M, CATEGORY);
     public static final String[] SLOT_LABELS = {"Q", "E", "R", "F", "Z", "X"};
+
+    /** 칸에 쓸 키 이름 (설정에서 바꾼 키 그대로, 짧게: "왼쪽 Alt" → "Alt", "마우스 버튼 4" → "M4") */
+    public static String keyLabel(KeyMapping k) {
+        if (k == null || k.isUnbound()) return "";
+        String s = k.getTranslatedKeyMessage().getString().trim();
+        s = s.replaceFirst("^(왼쪽|오른쪽|Left|Right)\\s+", "");
+        java.util.regex.Matcher mb = java.util.regex.Pattern.compile("(?i)(마우스|mouse).*?(\\d+)").matcher(s);
+        if (mb.find()) return "M" + mb.group(2);
+        if (s.equalsIgnoreCase("Control")) s = "Ctrl";
+        if (s.equalsIgnoreCase("Space") || s.equals("스페이스")) s = "Spc";
+        return s.length() > 4 ? s.substring(0, 4) : s;
+    }
+
+    /** 스킬 칸 i 의 키 이름 */
+    public static String skillKey(int i) { return keyLabel(SKILL_KEYS[i]); }
+
+    /** Epic Fight 구르기 키 이름 (없으면 "") */
+    public static String rollKeyLabel() { return keyLabel(GameBus.efDodgeKey(Minecraft.getInstance())); }
     public static final KeyMapping[] SKILL_KEYS = {
             new KeyMapping("key.rpgcore.skill1", InputConstants.KEY_Q, CATEGORY),
             new KeyMapping("key.rpgcore.skill2", InputConstants.KEY_E, CATEGORY),
@@ -274,7 +292,7 @@ public final class ClientEvents {
         private static boolean efRollSearched, rollWasDown;
 
         /** Epic Fight 구르기 키 (이름으로 찾기, 없으면 null) */
-        private static KeyMapping efDodgeKey(Minecraft mc) {
+        static KeyMapping efDodgeKey(Minecraft mc) {
             if (!efRollSearched) {
                 efRollSearched = true;
                 for (KeyMapping k : mc.options.keyMappings) {

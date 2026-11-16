@@ -128,7 +128,7 @@ public class SkillScreen extends ScaledScreen {
     }
 
     private static String keyOf(String id) {
-        for (int i = 0; i < 6; i++) if (id.equals(ClientData.slots[i])) return ClientEvents.SLOT_LABELS[i];
+        for (int i = 0; i < 6; i++) if (id.equals(ClientData.slots[i])) return ClientEvents.skillKey(i);
         return null;
     }
 
