@@ -27,12 +27,15 @@ public class RpgGeoRenderer extends GeoEntityRenderer<GeoRpgMonster> {
     public RpgGeoRenderer(EntityRendererProvider.Context ctx, String id, float shadow, boolean glow) {
         super(ctx, new Model(id));
         this.shadowRadius = shadow;
-        this.cull = !id.equals("rat");   // 쥐는 얇은 판(귀·수염)이 있어서 양면 그대로
+        this.cull = !id.equals("rat") && !id.equals("mush_fairy");   // 쥐(귀·수염)·버섯 요정(날개)은 얇은 판이 있어서 양면 그대로
+        this.modelScale = id.equals("mush_fairy") ? 0.6f : 1f;
         if (glow) addRenderLayer(new AutoGlowingGeoLayer<>(this));
     }
 
     /** 뒷면 그리기 끔 → 맞붙은 면끼리 깜빡이며 겹쳐 보이는 현상 없앰 */
     private final boolean cull;
+    /** 모델 크기 배율 (요정: 날개가 커서 0.6) */
+    private final float modelScale;
 
     @Override
     public RenderType getRenderType(GeoRpgMonster e, ResourceLocation texture, MultiBufferSource buf, float pt) {
@@ -42,9 +45,11 @@ public class RpgGeoRenderer extends GeoEntityRenderer<GeoRpgMonster> {
     @Override
     public void render(GeoRpgMonster e, float yaw, float pt, PoseStack ps, MultiBufferSource buf, int light) {
         boolean elite = WorldText.isElite(e);
-        if (elite) { float k = rpg.core.combat.Mobs.ELITE_SCALE; ps.pushPose(); ps.scale(k, k, k); }
+        float k = (elite ? rpg.core.combat.Mobs.ELITE_SCALE : 1f) * modelScale;
+        boolean sc = k != 1f;
+        if (sc) { ps.pushPose(); ps.scale(k, k, k); }
         super.render(e, yaw, pt, ps, buf, light);
-        if (elite) ps.popPose();
+        if (sc) ps.popPose();
     }
 
     /** 애니메이션 위에 머리 시선(좌우·상하)을 더함 — 기본 모델은 덮어써서 물기 동작이 사라짐 */

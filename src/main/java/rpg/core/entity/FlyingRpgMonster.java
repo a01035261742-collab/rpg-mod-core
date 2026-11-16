@@ -10,8 +10,8 @@ import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
-/** 떠다니는 몹 (버섯 요정): 중력 없음, 날아서 쫓아옴 */
-public class FlyingRpgMonster extends RpgMonster {
+/** 떠다니는 몹 (버섯 요정): 중력 없음, 날아서 쫓아옴. GeckoLib 모델 (애니: idle · walk · attack · dash) */
+public class FlyingRpgMonster extends GeoRpgMonster {
     public FlyingRpgMonster(EntityType<? extends Monster> type, Level level) {
         super(type, level, 3);
         this.moveControl = new FlyingMoveControl(this, 20, true);

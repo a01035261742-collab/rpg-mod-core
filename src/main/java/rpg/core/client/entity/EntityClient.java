@@ -29,7 +29,6 @@ public final class EntityClient {
 
     @SubscribeEvent
     public static void layers(EntityRenderersEvent.RegisterLayerDefinitions e) {
-        e.registerLayerDefinition(FAIRY, MobModels::mushFairy);
         e.registerLayerDefinition(BEAST, MobModels::mushBeast);
     }
 
@@ -49,7 +48,7 @@ public final class EntityClient {
         e.registerEntityRenderer(ModEntities.MUSH_KID.get(), ctx -> new RpgGeoRenderer(ctx, "mush_kid", 0.35f));
         e.registerEntityRenderer(ModEntities.MUSH_SPIRIT.get(), ctx -> new RpgGeoRenderer(ctx, "mush_spirit", 0.5f, true));
         e.registerEntityRenderer(ModEntities.MUSH_SOLDIER.get(), ctx -> new RpgGeoRenderer(ctx, "mush_soldier", 0.5f, true));
-        reg(e, ModEntities.MUSH_FAIRY.get(), FAIRY, "mush_fairy", 0.25f);
+        e.registerEntityRenderer(ModEntities.MUSH_FAIRY.get(), ctx -> new RpgGeoRenderer(ctx, "mush_fairy", 0.25f));
         reg(e, ModEntities.MUSH_BEAST.get(), BEAST, "mush_beast", 1.2f);
         e.registerEntityRenderer(ModEntities.BROWN_BEAR.get(), ctx -> new RpgGeoRenderer(ctx, "brown_bear", 0.9f));
         ResourceLocation bear = RpgCore.id("textures/entity/forest_lord.png");   // 숲의 주인 = 북극곰 몸 (모델링 전까지)

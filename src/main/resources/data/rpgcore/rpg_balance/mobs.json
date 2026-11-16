@@ -1149,6 +1149,17 @@
   "entity": "rpgcore:mush_fairy",
   "name": "버섯 요정",
   "area": "Lv26~30",
+  "attacks": [
+   {
+    "anim": "attack",
+    "start": 8,
+    "end": 11,
+    "length": 15,
+    "range": 1.5,
+    "width": 1.0,
+    "lunge": 0.4
+   }
+  ],
   "skills": [
    {
     "type": "dash",
