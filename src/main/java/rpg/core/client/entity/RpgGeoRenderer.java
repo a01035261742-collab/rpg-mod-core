@@ -28,7 +28,7 @@ public class RpgGeoRenderer extends GeoEntityRenderer<GeoRpgMonster> {
         super(ctx, new Model(id));
         this.shadowRadius = shadow;
         this.cull = !id.equals("rat") && !id.equals("mush_fairy");   // 쥐(귀·수염)·버섯 요정(날개)은 얇은 판이 있어서 양면 그대로
-        this.modelScale = id.equals("mush_fairy") ? 0.6f : id.equals("forest_lord") ? 1.8f : 1f;
+        this.modelScale = id.equals("mush_fairy") ? 0.6f : id.equals("forest_lord") ? 1.8f : id.equals("mush_guardian") ? 1.5f : 1f;
         if (glow) addRenderLayer(new AutoGlowingGeoLayer<>(this));
     }
 
@@ -44,6 +44,7 @@ public class RpgGeoRenderer extends GeoEntityRenderer<GeoRpgMonster> {
 
     @Override
     public void render(GeoRpgMonster e, float yaw, float pt, PoseStack ps, MultiBufferSource buf, int light) {
+        if (e.isInvisible()) return;   // 보스 순간이동 중
         boolean elite = WorldText.isElite(e);
         float k = (elite ? rpg.core.combat.Mobs.ELITE_SCALE : 1f) * modelScale;
         boolean sc = k != 1f;

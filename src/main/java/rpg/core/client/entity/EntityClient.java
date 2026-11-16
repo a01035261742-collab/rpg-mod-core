@@ -51,18 +51,8 @@ public final class EntityClient {
         e.registerEntityRenderer(ModEntities.MUSH_FAIRY.get(), ctx -> new RpgGeoRenderer(ctx, "mush_fairy", 0.25f));
         e.registerEntityRenderer(ModEntities.MUSH_BEAST.get(), ctx -> new RpgGeoRenderer(ctx, "mush_beast", 1.2f));
         e.registerEntityRenderer(ModEntities.BROWN_BEAR.get(), ctx -> new RpgGeoRenderer(ctx, "brown_bear", 0.9f));
-        // 보스 거대버섯 수호자: 버섯 짐승 모델 2배
-        ResourceLocation beastTex = RpgCore.id("textures/entity/mush_guardian.png");   // 수호자 = 옛 버섯 짐승 몸 (모델링 전까지)
-        e.registerEntityRenderer(ModEntities.MUSH_GUARDIAN.get(), ctx -> new MobRenderer<rpg.core.entity.MushGuardian, RpgModel<rpg.core.entity.MushGuardian>>(
-                ctx, new RpgModel<>(ctx.bakeLayer(BEAST)), 2.4f) {
-            @Override
-            public ResourceLocation getTextureLocation(rpg.core.entity.MushGuardian ent) { return beastTex; }
-
-            @Override
-            protected void scale(rpg.core.entity.MushGuardian ent, com.mojang.blaze3d.vertex.PoseStack ps, float pt) {
-                ps.scale(2.0f, 2.0f, 2.0f);
-            }
-        });
+        // 보스 거대버섯 수호자: GeckoLib 모델 (결정·눈 발광)
+        e.registerEntityRenderer(ModEntities.MUSH_GUARDIAN.get(), ctx -> new RpgGeoRenderer(ctx, "mush_guardian", 2.4f, true));
         // 레이드 보스 어둠거미여왕: 동굴 거미 무늬 거미 3배 (임시 몸)
         ResourceLocation queenTex = new ResourceLocation("minecraft", "textures/entity/spider/cave_spider.png");
         e.registerEntityRenderer(ModEntities.SPIDER_QUEEN.get(), ctx -> new net.minecraft.client.renderer.entity.SpiderRenderer<rpg.core.entity.SpiderQueen>(ctx) {
@@ -80,6 +70,7 @@ public final class EntityClient {
         e.registerEntityRenderer(ModEntities.BOSS_ROCK.get(), ctx -> new PropRenderer(ctx, "boss_rock", 2.2f));
         e.registerEntityRenderer(ModEntities.ROCK_PILLAR.get(), ctx -> new PropRenderer(ctx, "rock_pillar", 2.2f));
         e.registerEntityRenderer(ModEntities.VOID_CRYSTAL.get(), ctx -> new PropRenderer(ctx, "void_crystal", 1.6f));
+        e.registerEntityRenderer(ModEntities.MAGIC_CIRCLE.get(), ctx -> new PropRenderer(ctx, "magic_circle", 1.0f));
     }
 
     /** 직업 가죽 방어구: 아이콘 색 (아래층만 칠함, 위 오버레이는 그대로) */

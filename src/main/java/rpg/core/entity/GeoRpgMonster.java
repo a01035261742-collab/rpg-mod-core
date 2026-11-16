@@ -28,7 +28,9 @@ public class GeoRpgMonster extends RpgMonster implements GeoEntity {
     /** 패턴 애니메이션 (Blockbench 이름 = 패턴 종류). 없는 몹은 안 부름 */
     private static final String[] PATTERNS = {"slam", "leap", "dash", "shot", "zone", "cone",
             // 보스 (숲의 주인): 패턴 id 와 같은 이름
-            "melee", "claw", "charge", "rocks", "roar", "gap", "pillars", "spikes", "plant", "rings"};
+            "melee", "claw", "charge", "rocks", "roar", "gap", "pillars", "spikes", "plant", "rings",
+            // 보스 (거대버섯 수호자)
+            "combo", "combo2", "combo_alt", "delayed", "jump", "blink_in", "spore_shot", "counter", "beam", "comet", "rain", "poke", "intro"};
 
     /** 근접 공격(swing) 때 attack 애니메이션 재생 (보스는 끔) */
     protected boolean swingAnim = true;

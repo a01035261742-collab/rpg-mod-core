@@ -1,0 +1,152 @@
+package rpg.core.client;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.decoration.ArmorStand;
+import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.InputEvent;
+import net.minecraftforge.client.event.MovementInputUpdateEvent;
+import net.minecraftforge.client.event.RenderGuiEvent;
+import net.minecraftforge.client.event.RenderGuiOverlayEvent;
+import net.minecraftforge.client.event.RenderHandEvent;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import rpg.core.RpgCore;
+
+/**
+ * 보스 등장 컷씬: 카메라가 플레이어 눈에서 보스 얼굴 앞으로 날아가 반 바퀴 돌고 돌아옴.
+ * 그동안 이동·공격 막음, HUD 대신 위아래 검은 띠 + 보스 이름. 점프 키 = 건너뛰기.
+ */
+@Mod.EventBusSubscriber(modid = RpgCore.MODID, value = Dist.CLIENT)
+public final class Cutscene {
+    private Cutscene() {}
+
+    private static int bossId = -1, total, tick;
+    private static String name = "";
+    private static ArmorStand cam;
+    private static Vec3 eye0;
+    private static float yaw0, pitch0;
+
+    public static boolean active() { return cam != null; }
+
+    public static void start(int entityId, int ticks, String bossName) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player == null || mc.level == null) return;
+        Entity boss = mc.level.getEntity(entityId);
+        if (boss == null) return;
+        bossId = entityId; total = Math.max(20, ticks); tick = 0; name = bossName;
+        eye0 = mc.player.getEyePosition();
+        yaw0 = mc.player.getYRot(); pitch0 = mc.player.getXRot();
+        cam = new ArmorStand(mc.level, eye0.x, eye0.y, eye0.z);
+        place(eye0, yaw0, pitch0, true);
+        mc.setCameraEntity(cam);
+    }
+
+    public static void stop() {
+        Minecraft mc = Minecraft.getInstance();
+        if (cam != null && mc.player != null) mc.setCameraEntity(mc.player);
+        cam = null; bossId = -1;
+    }
+
+    private static void place(Vec3 eye, float yaw, float pitch, boolean snap) {
+        double eh = cam.getEyeHeight();
+        if (snap) { cam.xo = eye.x; cam.yo = eye.y - eh; cam.zo = eye.z; cam.yRotO = yaw; cam.xRotO = pitch; }
+        else { cam.xo = cam.getX(); cam.yo = cam.getY(); cam.zo = cam.getZ(); cam.yRotO = cam.getYRot(); cam.xRotO = cam.getXRot(); }
+        cam.setPos(eye.x, eye.y - eh, eye.z);
+        // 각도가 -180 ↔ 180 을 넘을 때 한 바퀴 휙 도는 것 방지
+        float y = yaw;
+        while (y - cam.yRotO > 180) y -= 360;
+        while (y - cam.yRotO < -180) y += 360;
+        cam.setYRot(y); cam.setXRot(pitch);
+    }
+
+    private static double ease(double f) { f = Mth.clamp(f, 0, 1); return f * f * (3 - 2 * f); }
+
+    @SubscribeEvent
+    public static void tick(TickEvent.ClientTickEvent e) {
+        if (e.phase != TickEvent.Phase.END || cam == null) return;
+        Minecraft mc = Minecraft.getInstance();
+        Entity boss = mc.level == null ? null : mc.level.getEntity(bossId);
+        if (boss == null || mc.player == null || ++tick >= total || (tick > 10 && mc.options.keyJump.isDown())) { stop(); return; }
+        double f = tick / (double) total;
+        double h = boss.getBbHeight();
+        Vec3 focus = boss.position().add(0, h * 0.6, 0);
+        double by = Math.toRadians(boss instanceof net.minecraft.world.entity.LivingEntity le ? le.yBodyRot : boss.getYRot());
+        double front = Math.atan2(Math.cos(by), -Math.sin(by));   // 보스 앞쪽 방향 각도 (x-z 평면)
+        double r = Math.max(6, boss.getBbWidth() * 2.2);
+        // 0~0.18 다가감 · 0.18~0.85 앞에서 반원 · 0.85~1 돌아옴
+        double o = 0.18, b = 0.85;
+        double oa = front - Math.toRadians(35) + Math.toRadians(70) * ease((f - o) / (b - o));
+        double oh = h * (0.45 + 0.3 * ease((f - o) / (b - o)));
+        Vec3 orbit = boss.position().add(Math.cos(oa) * r, oh, Math.sin(oa) * r);
+        Vec3 pos;
+        double lookMix;
+        if (f < o) { double k = ease(f / o); pos = eye0.lerp(orbit, k); lookMix = k; }
+        else if (f < b) { pos = orbit; lookMix = 1; }
+        else { double k = ease((f - b) / (1 - b)); pos = orbit.lerp(mc.player.getEyePosition(), k); lookMix = 1 - k; }
+        // 지팡이 내려찍기 (애니 3.05초) 순간 흔들림
+        double slam = total * (3.05 / 4.4);
+        if (tick > slam && tick < slam + 8) {
+            double a = (slam + 8 - tick) / 8.0 * 0.25;
+            pos = pos.add((Math.random() - 0.5) * a, (Math.random() - 0.5) * a, (Math.random() - 0.5) * a);
+        }
+        Vec3 d = focus.subtract(pos);
+        float fy = (float) (Math.toDegrees(Math.atan2(d.z, d.x)) - 90);
+        float fp = (float) -Math.toDegrees(Math.atan2(d.y, Math.sqrt(d.x * d.x + d.z * d.z)));
+        float py = f < b ? yaw0 : mc.player.getYRot(), pp = f < b ? pitch0 : mc.player.getXRot();
+        float yaw = py + Mth.wrapDegrees(fy - py) * (float) lookMix;
+        float pitch = Mth.lerp((float) lookMix, pp, fp);
+        place(pos, yaw, pitch, false);
+    }
+
+    @SubscribeEvent
+    public static void noMove(MovementInputUpdateEvent e) {
+        if (cam == null) return;
+        var in = e.getInput();
+        in.forwardImpulse = 0; in.leftImpulse = 0;
+        in.up = in.down = in.left = in.right = in.jumping = in.shiftKeyDown = false;
+    }
+
+    @SubscribeEvent
+    public static void noAction(InputEvent.InteractionKeyMappingTriggered e) {
+        if (cam != null) { e.setCanceled(true); e.setSwingHand(false); }
+    }
+
+    @SubscribeEvent
+    public static void noHand(RenderHandEvent e) {
+        if (cam != null) e.setCanceled(true);
+    }
+
+    @SubscribeEvent
+    public static void noHud(RenderGuiOverlayEvent.Pre e) {
+        if (cam != null) e.setCanceled(true);
+    }
+
+    @SubscribeEvent
+    public static void draw(RenderGuiEvent.Post e) {
+        if (cam == null) return;
+        var g = e.getGuiGraphics();
+        var font = Minecraft.getInstance().font;
+        int w = g.guiWidth(), h = g.guiHeight();
+        double f = (tick + e.getPartialTick()) / total;
+        int bar = (int) (h * 0.11 * ease(Math.min(f / 0.08, (1 - f) / 0.08)));
+        g.fill(0, 0, w, bar, 0xFF000000);
+        g.fill(0, h - bar, w, h, 0xFF000000);
+        // 이름: 0.3~0.9 사이에 나타났다 사라짐
+        double a = Math.min(ease((f - 0.3) / 0.08), ease((0.9 - f) / 0.08));
+        if (a > 0.02) {
+            int al = Math.max(8, (int) (a * 255)) << 24;
+            g.pose().pushPose();
+            g.pose().translate(w / 2f, h * 0.68f, 0);
+            g.drawString(font, "— 보스 —", -font.width("— 보스 —") / 2, -14, al | 0xC79BFF, true);
+            g.pose().scale(2.6f, 2.6f, 1);
+            g.drawString(font, name, -font.width(name) / 2, 0, al | 0xFFFFFF, true);
+            g.pose().popPose();
+        }
+        String skip = "점프: 건너뛰기";
+        g.drawString(font, skip, w - font.width(skip) - 8, h - bar / 2 - 4, 0x99FFFFFF, false);
+    }
+}

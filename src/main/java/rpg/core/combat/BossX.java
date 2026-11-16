@@ -29,7 +29,8 @@ final class BossX {
     private BossX() {}
 
     static final Set<String> TYPES = Set.of("eggs", "pull", "lanes", "absorb", "collapse", "frenzy", "barrage", "volley", "webrain", "burst", "hide",
-            "pillars", "spikes", "plant", "rings");   // 숲의 주인
+            "pillars", "spikes", "plant", "rings",   // 숲의 주인
+            "comet", "rain");                        // 거대버섯 수호자
 
     record Cocoon(UUID entity, Vec3 pos, long until) {}
     record Zone(Vec3 c, Vec3 dir, double r, double angle, long until) {}
@@ -52,6 +53,7 @@ final class BossX {
         Boss.Pattern shadow;                                // 천장 숨기: 그림자 낙하
         long nextShadow;
         int step;
+        long nextHit;                                       // 공허 혜성: 다음 피해 틱
         int safeLane;
         double baseAngle;
         Vec3 axis = new Vec3(1, 0, 0);
@@ -173,6 +175,10 @@ final class BossX {
                 rpg.core.entity.BossProp.pillar(l, s.c(), (int) Math.round(s.p().x("stand", 1.6) * 20));
                 l.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, s.c().x, s.c().y + 0.3, s.c().z, 6, s.r() / 3, 0.2, s.r() / 3, 0.01);
                 l.playSound(null, BlockPos.containing(s.c()), SoundEvents.DRIPSTONE_BLOCK_BREAK, SoundSource.HOSTILE, 2f, 0.5f);
+            } else if (s.p().type().equals("rain")) {   // 공허 결정비: 떨어진 결정이 잠깐 박혔다 부서짐
+                rpg.core.entity.BossProp.crystal(l, s.c(), 16, false);
+                l.sendParticles(ParticleTypes.WITCH, s.c().x, s.c().y + 0.4, s.c().z, 14, s.r() / 2, 0.2, s.r() / 2, 0.05);
+                l.playSound(null, BlockPos.containing(s.c()), SoundEvents.AMETHYST_CLUSTER_BREAK, SoundSource.HOSTILE, 1.4f, 0.7f);
             } else if (s.p().type().equals("plant")) {   // 공허 결정: 박히고 life 초 동안 장애물
                 rpg.core.entity.BossProp.crystal(l, s.c(), (int) Math.round(s.p().x("life", 8) * 20), true);
                 l.sendParticles(ParticleTypes.WITCH, s.c().x, s.c().y + 0.5, s.c().z, 20, s.r() / 2, 0.4, s.r() / 2, 0.05);
@@ -211,6 +217,51 @@ final class BossX {
         st.x.shots.add(new Shot(c, p.r(), now + dl + Boss.HIT_LAG, p));
         l.playSound(null, mob.blockPosition(), SoundEvents.SNOW_GOLEM_SHOOT, SoundSource.HOSTILE, 1.5f, 0.5f);
         mob.swing(net.minecraft.world.InteractionHand.MAIN_HAND);
+    }
+
+    /** 공허 혜성: 0 = 기 모으기 · 1 = 발사 (fire 초, 초당 turn 도씩 대상 쪽으로, tick 초마다 피해) */
+    private static void cometTick(Mob mob, MobData m, Boss.State st, Boss.Def def, Boss.Pattern p, ServerLevel l, long now) {
+        X x = st.x;
+        mob.setDeltaMovement(0, mob.getDeltaMovement().y, 0);
+        float yaw = (float) Math.toDegrees(Math.atan2(-st.dir.x, st.dir.z));
+        mob.setYRot(yaw); mob.setYHeadRot(yaw); mob.setYBodyRot(yaw);
+        if (x.step == 0) {
+            if (now % 3 == 0) l.sendParticles(ParticleTypes.WITCH, mob.getX(), mob.getY() + mob.getBbHeight() * 0.6, mob.getZ(), 8, 0.6, 0.6, 0.6, 0.1);
+            if (now < st.stageEnd) return;
+            x.step = 1;
+            x.nextHit = now;
+            st.stageEnd = now + Math.round(p.x("fire", 3) * 20);
+            l.playSound(null, mob.blockPosition(), SoundEvents.WARDEN_SONIC_BOOM, SoundSource.HOSTILE, 2.5f, 0.6f);
+        }
+        ServerPlayer t = st.target == null ? null : (ServerPlayer) l.getPlayerByUUID(st.target);
+        if (t != null && Boss.valid(t)) {   // 대상 쪽으로 천천히 돎
+            Vec3 to = new Vec3(t.getX() - mob.getX(), 0, t.getZ() - mob.getZ());
+            if (to.lengthSqr() > 1e-4) {
+                double cur = Math.atan2(st.dir.z, st.dir.x), want = Math.atan2(to.z, to.x);
+                double diff = Math.atan2(Math.sin(want - cur), Math.cos(want - cur));
+                double max = Math.toRadians(p.x("turn", 20) / 20.0);
+                double na = cur + Math.max(-max, Math.min(max, diff));
+                st.dir = new Vec3(Math.cos(na), 0, Math.sin(na));
+            }
+        }
+        Vec3 o = mob.position();
+        for (double d = 1.5; d <= p.len(); d += 0.7) {   // 레이저 몸통
+            Vec3 q = o.add(st.dir.scale(d));
+            l.sendParticles(ParticleTypes.END_ROD, q.x, q.y + 1.4, q.z, 1, 0.15, 0.15, 0.15, 0);
+            if (((long) (d * 10) + now) % 3 == 0) l.sendParticles(ParticleTypes.WITCH, q.x, q.y + 1.2, q.z, 2, p.w() / 4, 0.3, p.w() / 4, 0);
+        }
+        if (now % 3 == 0) Net.telegraph(l, o, st.dir, 40 + MobAI.LINE, p.len(), p.w(), 4);
+        if (now % 10 == 0) l.playSound(null, mob.blockPosition(), SoundEvents.BEACON_AMBIENT, SoundSource.HOSTILE, 2f, 1.6f);
+        if (now >= x.nextHit) {
+            x.nextHit = now + Math.round(p.x("tick", 0.5) * 20);
+            for (ServerPlayer pl : Boss.arena(l, st, 4)) {
+                if (!Boss.valid(pl) || Math.abs(pl.getY() - o.y) > Boss.HEIGHT) continue;
+                Vec3 to = new Vec3(pl.getX() - o.x, 0, pl.getZ() - o.z);
+                double along = to.dot(st.dir), side = to.x * st.dir.z - to.z * st.dir.x;
+                if (along >= -1 && along <= p.len() + Boss.PAD && Math.abs(side) <= p.w() / 2 + Boss.PAD) Boss.hit(mob, m, st, l, pl, p);
+            }
+        }
+        if (now >= st.stageEnd) Boss.finish(mob, st, def, now);
     }
 
     /** 공허 충격파 i 번째 고리 안쪽 반경 */
@@ -514,6 +565,37 @@ final class BossX {
                 l.playSound(null, mob.blockPosition(), SoundEvents.RAVAGER_STUNNED, SoundSource.HOSTILE, 2f, 0.5f);
                 st.stageEnd = now + dl + (n - 1L) * iv + Boss.HIT_LAG + 2;
             }
+            case "comet" -> {   // 공허 혜성: 기 모으기 (빨간 직선) → 굵은 레이저를 쏘며 대상 쪽으로 천천히 돎
+                if (t != null) { st.target = t.getUUID(); Vec3 to = new Vec3(t.getX() - mob.getX(), 0, t.getZ() - mob.getZ()); if (to.lengthSqr() > 1e-4) st.dir = to.normalize(); }
+                st.pos = mob.position();
+                int dl = Boss.ticks(p.delay());
+                Net.telegraph(l, st.pos, st.dir, MobAI.LINE, p.len(), p.w(), dl);
+                say(l, st, "◆ " + p.name() + " — 레이저가 따라와요! 옆으로 계속 뛰세요", ChatFormatting.LIGHT_PURPLE);
+                l.playSound(null, mob.blockPosition(), SoundEvents.BEACON_POWER_SELECT, SoundSource.HOSTILE, 2.5f, 0.5f);
+                st.stageEnd = now + dl;
+            }
+            case "rain" -> {   // 공허 결정비: 모두의 발밑 + 경기장 곳곳에 차례로 낙하
+                int dl = Boss.ticks(p.delay()), iv = (int) Math.round(p.x("interval", 0.15) * 20), n = (int) p.x("count", 14);
+                List<Vec3> pts = new ArrayList<>();
+                for (ServerPlayer pl : Boss.arena(l, st, 0)) if (Boss.valid(pl)) pts.add(pl.position());
+                ThreadLocalRandom rnd = ThreadLocalRandom.current();
+                while (pts.size() < n) {
+                    double a = rnd.nextDouble() * Math.PI * 2, d = Math.sqrt(rnd.nextDouble()) * st.radius * 0.85;
+                    Vec3 c = st.center.add(Math.cos(a) * d, 0, Math.sin(a) * d);
+                    pts.add(c);
+                }
+                java.util.Collections.shuffle(pts);
+                for (int i = 0; i < pts.size(); i++) {
+                    Vec3 c = pts.get(i);
+                    long land = now + dl + (long) i * iv + Boss.HIT_LAG;
+                    Net.telegraph(l, c, st.dir, MobAI.CIRCLE, p.r(), 0, dl + i * iv);
+                    x.shots.add(new Shot(c, p.r(), land, p));
+                    rpg.core.entity.BossProp.drop(l, c, land - 10, land);
+                }
+                say(l, st, "◆ " + p.name() + " — 결정이 쏟아져요! 원을 피하세요", ChatFormatting.LIGHT_PURPLE);
+                l.playSound(null, mob.blockPosition(), SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.HOSTILE, 2.5f, 0.5f);
+                st.stageEnd = now + dl + (pts.size() - 1L) * iv + Boss.HIT_LAG + 2;
+            }
             case "plant" -> {   // 공허 결정 심기: 모두의 발밑 → 터진 자리에 결정 장애물
                 int dl = Boss.ticks(p.delay());
                 for (ServerPlayer pl : Boss.arena(l, st, 0)) {
@@ -607,6 +689,7 @@ final class BossX {
         X x = st.x;
         mob.getNavigation().stop();
         if (p.type().equals("hide")) { hideTick(mob, m, st, def, p, l, now); return; }
+        if (p.type().equals("comet")) { cometTick(mob, m, st, def, p, l, now); return; }
         Vec3 v = mob.getDeltaMovement();
         mob.setDeltaMovement(0, v.y, 0);
         if (p.type().equals("pull")) {   // 끌어당김 (걸으면 버팀)
@@ -725,7 +808,7 @@ final class BossX {
                 }
                 Boss.finish(mob, st, def, now);
             }
-            case "pillars", "plant" -> Boss.finish(mob, st, def, now);   // 떨어지는 건 ambient 가 처리
+            case "pillars", "plant", "rain" -> Boss.finish(mob, st, def, now);   // 떨어지는 건 ambient 가 처리
             case "spikes" -> {
                 for (Vec3 d : x.lines) for (double dd = 2.5; dd <= p.len(); dd += 3.2) {
                     Vec3 q = st.pos.add(d.scale(dd));

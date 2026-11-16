@@ -158,6 +158,9 @@ public final class Boss {
         String last = "";
         long nextAt;
         Vec3 jumpFrom; long jumpStart, jumpLand;   // 점프 포물선
+        boolean blinkHidden;   // 순간이동 (blink): 사라져 있는 중 (무적)
+        boolean awake;         // 등장 연출을 했나 (초기화하면 다시)
+        long introUntil;       // 등장 연출 중 (무적·패턴 없음)
         boolean back;          // 독니: 지금 타가 뒤쪽 (뒷다리 차기)
         Pattern swing;         // 독니: 지금 타에 쓰는 패턴 (앞 = 자기, 뒤 = 뒷다리 차기)
         int hitNo;             // 연속 패턴 몇 번째 (0 = 처음)
@@ -264,6 +267,25 @@ public final class Boss {
             return;
         }
         st.emptySince = -1;
+
+        // 등장 연출 (intro 초): 처음 누가 들어오면 경기장 모두에게 컷씬, 그동안 무적
+        if (!st.awake) {
+            st.awake = true;
+            double intro = def.g("intro", 0);
+            if (intro > 0) {
+                st.introUntil = now + Math.round(intro * 20);
+                st.nextAt = Math.max(st.nextAt, st.introUntil + 10);
+                if (mob instanceof rpg.core.entity.GeoRpgMonster g) g.playPattern("intro");
+                for (ServerPlayer x : arena(l, st, 16)) Net.cutscene(x, mob, (int) Math.round(intro * 20), m.name);
+                l.playSound(null, mob.blockPosition(), SoundEvents.WARDEN_EMERGE, SoundSource.HOSTILE, 2f, 0.8f);
+            }
+        }
+        if (now < st.introUntil) {
+            mob.getNavigation().stop();
+            if (now == st.introUntil - Math.round(def.g("intro", 0) * 20) + 61)   // 지팡이 내려찍기 순간
+                l.playSound(null, mob.blockPosition(), SoundEvents.GENERIC_EXPLODE, SoundSource.HOSTILE, 1.5f, 0.6f);
+            return;
+        }
 
         // 필드 보스: 싸우는 사람이 늘면 1명당 체력 +70% (최대 6명 = 파티 최대, 레이드는 입장 때 따로)
         if (mob.getPersistentData().getString("rpgRaid").isEmpty() && fighters.size() > st.seen && st.seen < 6) {
@@ -575,6 +597,7 @@ public final class Boss {
         st.stageEnd = now + ticks(p.track());
         st.pos = mob.position();
         if (t != null) Net.track((ServerLevel) mob.level(), mob.getId(), t.getId(), MobAI.LINE, p.len(), p.w(), ticks(p.track()));
+        if (p.type().equals("beam") && mob instanceof rpg.core.entity.GeoRpgMonster g) g.playPattern(p.id());   // 광선: 한 발마다 조준 동작
     }
 
     /** 원 추적 (바위·지연·점프): st.rocks 의 플레이어 발밑 노란 원 */
@@ -597,10 +620,20 @@ public final class Boss {
         st.pos = mob.position();
         st.stage = 1;
         st.alt = st.repeatLeft == 1 && ThreadLocalRandom.current().nextDouble() * 100 < p.x("altChance", 0);
+        if (mob instanceof rpg.core.entity.GeoRpgMonster g && (st.alt || st.hitNo > 0)) g.playPattern(st.alt ? p.id() + "_alt" : p.id() + "2");
+        st.hitNo++;
         if (st.alt) Net.telegraph(l, st.pos, st.dir, MobAI.CIRCLE, p.x("altR", p.r()), 0, dl);
         else Net.telegraph(l, st.pos, st.dir, MobAI.CONE, p.r(), p.angle(), dl);
         st.stageEnd = now + dl + HIT_LAG;
         l.playSound(null, mob.blockPosition(), SoundEvents.NOTE_BLOCK_BASS.value(), SoundSource.HOSTILE, 1f, 0.5f);
+    }
+
+    /** 순간이동: 사라짐 / 나타남 (보라 포자 + 소리) */
+    static void blink(Mob mob, ServerLevel l, boolean hide) {
+        mob.setInvisible(hide);
+        l.sendParticles(ParticleTypes.WITCH, mob.getX(), mob.getY() + mob.getBbHeight() * 0.5, mob.getZ(), 60, mob.getBbWidth() * 0.4, mob.getBbHeight() * 0.4, mob.getBbWidth() * 0.4, 0.05);
+        l.sendParticles(ParticleTypes.SPORE_BLOSSOM_AIR, mob.getX(), mob.getY() + 1, mob.getZ(), 30, mob.getBbWidth() * 0.5, 1, mob.getBbWidth() * 0.5, 0);
+        l.playSound(null, mob.blockPosition(), SoundEvents.ENDERMAN_TELEPORT, SoundSource.HOSTILE, 1.5f, hide ? 0.5f : 0.7f);
     }
 
     private static void standing(Mob mob, boolean on) {
@@ -685,14 +718,23 @@ public final class Boss {
                 st.pos = mob.position();
                 Net.track(l, mob.getId(), -1, 0, 0, 0, 0);   // 노랑 지우기
                 if (line) Net.telegraph(l, st.pos, st.dir, MobAI.LINE, p.len(), p.w(), dl);
-                if (line && st.hitNo == 0 && mob instanceof rpg.core.entity.GeoRpgMonster g) g.playPattern(p.id());
+                if (p.type().equals("charge") && st.hitNo == 0 && mob instanceof rpg.core.entity.GeoRpgMonster g) g.playPattern(p.id());
                 if (p.type().equals("rocks")) {   // 던지는 바위: 앞발에서 포물선으로 날아가서 예고가 다 찰 때 떨어짐
                     Vec3 paw = mob.position().add(st.dir.scale(mob.getBbWidth() * 0.6)).add(0, mob.getBbHeight() * 1.1, 0);
                     long rel = now + Math.round(p.x("throwAt", 0.5) * 20);
                     for (Vec3 q : st.rocks.values()) rpg.core.entity.BossProp.rock(l, paw, q, rel, now + dl + HIT_LAG);
                 }
                 if (!line) for (Vec3 q : st.rocks.values()) Net.telegraph(l, q, st.dir, p.type().equals("share") ? 40 + MobAI.CIRCLE : MobAI.CIRCLE, p.r(), 0, dl);
-                if (p.type().equals("jump")) {   // 포물선: 앞부분은 웅크리고, 마지막 1초 동안 날아가서 예고가 다 찰 때 착지
+                if (p.type().equals("jump") && p.x("blink", 0) > 0) {   // 순간이동: 마법진 속으로 사라졌다가, 도착 자리 위 공중 마법진에서 내려찍기
+                    st.jumpFrom = mob.position();
+                    st.jumpLand = now + dl;
+                    st.jumpStart = st.jumpLand - Math.min(10, dl - 2);
+                    Vec3 q = st.rocks.isEmpty() ? st.pos : st.rocks.values().iterator().next();
+                    rpg.core.entity.BossProp.circle(l, rpg.core.entity.BossProp.ground(l, st.jumpFrom).add(0, 0.05, 0), 18, (float) (mob.getBbWidth() / 3.0));
+                    rpg.core.entity.BossProp.circle(l, rpg.core.entity.BossProp.ground(l, q).add(0, 0.05, 0), dl + 12, (float) (p.r() / 2.0));
+                    blink(mob, l, true);
+                    st.blinkHidden = true;
+                } else if (p.type().equals("jump")) {   // 포물선: 앞부분은 웅크리고, 마지막 1초 동안 날아가서 예고가 다 찰 때 착지
                     st.jumpFrom = mob.position();
                     st.jumpLand = now + dl;
                     st.jumpStart = st.jumpLand - Math.min(20, dl);
@@ -702,7 +744,26 @@ public final class Boss {
             }
             return;
         }
-        if (st.stage == 1 && p.type().equals("jump") && st.jumpFrom != null && !st.rocks.isEmpty() && now >= st.jumpStart && now < st.jumpLand) {
+        if (st.stage == 1 && p.type().equals("jump") && p.x("blink", 0) > 0 && st.jumpFrom != null && !st.rocks.isEmpty()) {
+            Vec3 q = st.rocks.values().iterator().next();
+            MobAI.gravity(mob, false);
+            if (now < st.jumpStart) {   // 사라진 중: 제자리
+                mob.setDeltaMovement(Vec3.ZERO);
+            } else if (now < st.jumpLand) {   // 공중 마법진에서 나타나 내려옴
+                double air = 5;
+                if (st.blinkHidden) {
+                    st.blinkHidden = false;
+                    rpg.core.entity.BossProp.circle(l, q.add(0, air + 0.3, 0), (int) (st.jumpLand - now) + 8, (float) (mob.getBbWidth() / 2.5));
+                    mob.teleportTo(q.x, q.y + air, q.z);
+                    blink(mob, l, false);
+                    if (mob instanceof rpg.core.entity.GeoRpgMonster g) g.playPattern("blink_in");
+                }
+                double f = Math.min(1, (now + 1 - st.jumpStart) / (double) Math.max(1, st.jumpLand - st.jumpStart));
+                Vec3 next = q.add(0, air * (1 - f * f), 0);
+                mob.setDeltaMovement(next.subtract(mob.position()));
+                mob.hurtMarked = true;
+            }
+        } else if (st.stage == 1 && p.type().equals("jump") && st.jumpFrom != null && !st.rocks.isEmpty() && now >= st.jumpStart && now < st.jumpLand) {
             Vec3 q = st.rocks.values().iterator().next();
             double f = Math.min(1, (now + 1 - st.jumpStart) / (double) Math.max(1, st.jumpLand - st.jumpStart));
             double h = 4 + flat(st.jumpFrom, q) * 0.12;
@@ -779,6 +840,7 @@ public final class Boss {
                     if (p.x("far", 0) > 0) st.lastFar = nt.getUUID();
                     st.hitNo++;
                     st.rocks.clear(); st.rocks.put(nt.getUUID(), nt.position()); beginTrack(mob, st, p, now);
+                    if (mob instanceof rpg.core.entity.GeoRpgMonster g) g.playPattern(p.id());
                 } else finish(mob, st, def, now);
             }
             default -> finish(mob, st, def, now);
@@ -790,6 +852,7 @@ public final class Boss {
         MobAI.gravity(mob, true);
         st.jumpFrom = null;
         st.back = false;
+        if (st.blinkHidden) { st.blinkHidden = false; blink(mob, (ServerLevel) mob.level(), false); }
         if (st.cur != null && st.stage == 0) Net.track((ServerLevel) mob.level(), mob.getId(), -1, 0, 0, 0, 0);
         if (st.cur != null && basic(def, st.cur)) {   // 기본 공격 (근접·원거리·뛰어 붙기)은 패턴 대기 시간을 안 늘림
             if (st.cur == def.melee()) st.meleeReady = now + Math.round(def.meleeCd() * 20);
@@ -1138,6 +1201,8 @@ public final class Boss {
         st.threat.clear();
         st.usedHp.clear();
         st.transUntil = 0;
+        st.introUntil = 0;
+        st.awake = false;
         st.lastFar = null;
         st.back = false;
         st.emptySince = -1;
@@ -1167,6 +1232,7 @@ public final class Boss {
             }
             if (now < st.transUntil) return 0;   // 페이즈 전환 연출 중 무적
             if (st.x.hidePos != null) return 0;   // 천장 숨기 중 무적
+            if (st.blinkHidden || now < st.introUntil) return 0;   // 순간이동으로 사라진 중 · 등장 연출 중
             if (!st.pillars.isEmpty() && pillarsAlive(l, st)) dmg = Math.max(1, Math.round(dmg * (1 - def.g("pillarReduce", 80) / 100.0)));   // 기둥
             if (now < st.vulnUntil) dmg = Math.round(dmg * (1 + def.g("counterVuln", 30) / 100.0));                                            // 카운터 성공
             if (st.phase == 1 && def.g("transSec", 0) > 0) {   // 전환 전엔 경계 HP 아래로 안 내려감

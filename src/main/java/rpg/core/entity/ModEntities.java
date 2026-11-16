@@ -39,7 +39,7 @@ public final class ModEntities {
                     .sized(0.5f, 0.6f).clientTrackingRange(10).build(RpgCore.MODID + ":mush_fairy"));
     /** 곰: Blockbench 모델 (북극곰 비율 + 갈색 털). 보스 숲의 주인은 아직 북극곰 몸 (BrownBear 클래스) */
     public static final RegistryObject<EntityType<GeoRpgMonster>> BROWN_BEAR = geoMonster("brown_bear", 1.4f, 1.4f, 4);
-    /** 보스 "거대버섯 수호자": 버섯 짐승 몸 2배 */
+    /** 보스 "거대버섯 수호자": 침식된 늙은 버섯 거인 (GeckoLib) */
     public static final RegistryObject<EntityType<MushGuardian>> MUSH_GUARDIAN = TYPES.register("mush_guardian",
             () -> EntityType.Builder.<MushGuardian>of(MushGuardian::new, MobCategory.MONSTER)
                     .sized(3.8f, 4.4f).clientTrackingRange(16).updateInterval(1).build(RpgCore.MODID + ":mush_guardian"));
@@ -56,6 +56,7 @@ public final class ModEntities {
     public static final RegistryObject<EntityType<BossProp>> BOSS_ROCK = prop("boss_rock", 1.0f, 1.0f);
     public static final RegistryObject<EntityType<BossProp>> ROCK_PILLAR = prop("rock_pillar", 2.0f, 3.0f);
     public static final RegistryObject<EntityType<BossProp>> VOID_CRYSTAL = prop("void_crystal", 1.5f, 2.6f);
+    public static final RegistryObject<EntityType<BossProp>> MAGIC_CIRCLE = prop("magic_circle", 1.0f, 0.2f);
 
     /** 레이드 보스 "어둠거미여왕": 거미 몸 3배 (임시) */
     public static final RegistryObject<EntityType<SpiderQueen>> SPIDER_QUEEN = TYPES.register("spider_queen",
@@ -73,6 +74,6 @@ public final class ModEntities {
         e.put(MUSH_FAIRY.get(), FlyingRpgMonster.flyAttrs().build());
         e.put(BROWN_BEAR.get(), RpgMonster.attrs(0.25).build());
         e.put(FOREST_LORD.get(), RpgMonster.attrs(0.25).add(net.minecraft.world.entity.ai.attributes.Attributes.KNOCKBACK_RESISTANCE, 1.0).build());
-        e.put(MUSH_GUARDIAN.get(), RpgMonster.attrs(0.25).build());
+        e.put(MUSH_GUARDIAN.get(), RpgMonster.attrs(0.25).add(net.minecraft.world.entity.ai.attributes.Attributes.KNOCKBACK_RESISTANCE, 1.0).build());
     }
 }

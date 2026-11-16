@@ -18,7 +18,7 @@ public class PropRenderer extends GeoEntityRenderer<BossProp> {
     public PropRenderer(EntityRendererProvider.Context ctx, String id, float scale) {
         super(ctx, new DefaultedEntityGeoModel<>(RpgCore.id(id), false));
         this.scale = scale;
-        this.shadowRadius = 0.4f * scale;
+        this.shadowRadius = id.equals("magic_circle") ? 0 : 0.4f * scale;
         addRenderLayer(new AutoGlowingGeoLayer<>(this));
     }
 
@@ -26,9 +26,15 @@ public class PropRenderer extends GeoEntityRenderer<BossProp> {
     public void render(BossProp e, float yaw, float pt, PoseStack ps, MultiBufferSource buf, int light) {
         if (!e.visible()) return;
         ps.pushPose();
-        ps.scale(scale, scale, scale);
+        float k = scale * e.size();
+        ps.scale(k, k, k);
         super.render(e, yaw, pt, ps, buf, light);
         ps.popPose();
+    }
+
+    @Override
+    public boolean shouldRender(BossProp e, net.minecraft.client.renderer.culling.Frustum f, double x, double y, double z) {
+        return e.size() > 1.5f || super.shouldRender(e, f, x, y, z);   // 큰 마법진: 가운데가 화면 밖이어도 그림
     }
 
     @Override

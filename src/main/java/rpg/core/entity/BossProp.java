@@ -1,5 +1,6 @@
 package rpg.core.entity;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -26,15 +27,18 @@ import software.bernie.geckolib.util.GeckoLibUtil;
  * - boss_rock: from → to 포물선으로 날아감 (start 틱 전에는 안 보임), land 틱에 사라짐
  * - rock_pillar: 땅에서 솟았다가 (rise) 수명 끝에 가라앉음 (sink)
  * - void_crystal: 박히며 커졌다가 (grow) 수명 끝에 부서짐 (shatter). solid 면 플레이어가 못 지나감
+ * - magic_circle: 바닥·공중 마법진 (open → spin, 수명 끝에 close). SIZE = 크기 배율
  */
 public class BossProp extends Entity implements GeoEntity {
     private static final EntityDataAccessor<Boolean> VISIBLE = SynchedEntityData.defineId(BossProp.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Boolean> ENDING = SynchedEntityData.defineId(BossProp.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Boolean> SOLID = SynchedEntityData.defineId(BossProp.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Float> SIZE = SynchedEntityData.defineId(BossProp.class, EntityDataSerializers.FLOAT);
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private Vec3 from, to;
     private long start, land;
+    private boolean straight;   // 곧게 떨어짐 (포물선 X)
     private int life = 20, endTicks = 10;
 
     public BossProp(EntityType<?> type, Level level) {
@@ -47,9 +51,31 @@ public class BossProp extends Entity implements GeoEntity {
         entityData.define(VISIBLE, true);
         entityData.define(ENDING, false);
         entityData.define(SOLID, false);
+        entityData.define(SIZE, 1f);
     }
 
     public boolean visible() { return entityData.get(VISIBLE); }
+    public float size() { return entityData.get(SIZE); }
+
+    /** 마법진: life 틱 동안, size = 크기 배율 (1 = 지름 4칸) */
+    public static void circle(ServerLevel l, Vec3 pos, int life, float size) {
+        BossProp e = new BossProp(ModEntities.MAGIC_CIRCLE.get(), l);
+        e.life = Math.max(life, 10); e.endTicks = 8;
+        e.entityData.set(SIZE, size);
+        e.setPos(pos);
+        l.addFreshEntity(e);
+        l.playSound(null, BlockPos.containing(pos), SoundEvents.ILLUSIONER_PREPARE_BLINDNESS, SoundSource.HOSTILE, 1.2f, 0.7f);
+    }
+
+    /** 위에서 곧게 떨어지는 공허 결정 (start 틱부터 land 틱까지) */
+    public static void drop(ServerLevel l, Vec3 to, long start, long land) {
+        BossProp e = new BossProp(ModEntities.VOID_CRYSTAL.get(), l);
+        e.from = ground(l, to).add(0, 14, 0); e.to = ground(l, to); e.start = start; e.land = Math.max(start + 2, land);
+        e.straight = true;
+        e.setPos(e.from);
+        e.entityData.set(VISIBLE, l.getGameTime() >= start);
+        l.addFreshEntity(e);
+    }
 
     /** 던지는 바위: start 틱부터 land 틱까지 포물선 */
     public static void rock(ServerLevel l, Vec3 from, Vec3 to, long start, long land) {
@@ -61,7 +87,7 @@ public class BossProp extends Entity implements GeoEntity {
     }
 
     /** 바닥 높이에 맞춤: pos 위 2칸부터 아래로 내려가며 처음 만나는 단단한 블록 윗면 (없으면 그대로) */
-    static Vec3 ground(ServerLevel l, Vec3 pos) {
+    public static Vec3 ground(ServerLevel l, Vec3 pos) {
         net.minecraft.core.BlockPos.MutableBlockPos b = new net.minecraft.core.BlockPos.MutableBlockPos();
         int x = net.minecraft.util.Mth.floor(pos.x), z = net.minecraft.util.Mth.floor(pos.z), y0 = net.minecraft.util.Mth.floor(pos.y + 2);
         for (int y = y0; y > y0 - 10; y--) {
@@ -100,17 +126,19 @@ public class BossProp extends Entity implements GeoEntity {
             if (now < start) { setPos(from); return; }
             if (!visible()) entityData.set(VISIBLE, true);
             double f = Math.min(1, (now - start) / (double) (land - start));
-            double h = 2 + from.distanceTo(to) * 0.25;
-            Vec3 q = from.lerp(to, f).add(0, 4 * h * f * (1 - f), 0);
+            double h = straight ? 0 : 2 + from.distanceTo(to) * 0.25;
+            Vec3 q = from.lerp(to, straight ? f * f : f).add(0, 4 * h * f * (1 - f), 0);
             setPos(q.x, q.y, q.z);
-            setYRot(getYRot() + 18); setXRot(getXRot() + 11);
+            if (!straight) { setYRot(getYRot() + 18); setXRot(getXRot() + 11); }
             if (now >= land) {
-                l.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, Blocks.MOSSY_COBBLESTONE.defaultBlockState()), q.x, q.y + 0.3, q.z, 30, 0.6, 0.3, 0.6, 0.1);
+                l.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, straight ? Blocks.AMETHYST_BLOCK.defaultBlockState() : Blocks.MOSSY_COBBLESTONE.defaultBlockState()), q.x, q.y + 0.3, q.z, 30, 0.6, 0.3, 0.6, 0.1);
                 discard();
             }
             return;
         }
-        if (tickCount == 1) {
+        if (tickCount == 1 && getType() == ModEntities.MAGIC_CIRCLE.get()) {
+            l.sendParticles(ParticleTypes.WITCH, getX(), getY() + 0.2, getZ(), 30, 1.5 * size(), 0.1, 1.5 * size(), 0.02);
+        } else if (tickCount == 1) {
             boolean cry = getType() == ModEntities.VOID_CRYSTAL.get();
             l.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, cry ? Blocks.AMETHYST_BLOCK.defaultBlockState() : Blocks.STONE.defaultBlockState()),
                     getX(), getY() + 0.3, getZ(), 24, 0.8, 0.2, 0.8, 0.1);
@@ -139,6 +167,8 @@ public class BossProp extends Entity implements GeoEntity {
             EntityType<?> t = getType();
             if (t == ModEntities.BOSS_ROCK.get()) return s.setAndContinue(SPIN);
             boolean end = entityData.get(ENDING);
+            if (t == ModEntities.MAGIC_CIRCLE.get())
+                return s.setAndContinue(end ? RawAnimation.begin().thenPlayAndHold("close") : RawAnimation.begin().thenPlay("open").thenLoop("spin"));
             String a = t == ModEntities.ROCK_PILLAR.get() ? (end ? "sink" : "rise") : (end ? "shatter" : "grow");
             return s.setAndContinue(RawAnimation.begin().thenPlayAndHold(a));
         }));
