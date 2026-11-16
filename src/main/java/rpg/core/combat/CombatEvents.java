@@ -63,19 +63,22 @@ public final class CombatEvents {
     /** 몹 패턴 피해: 몹 공격력 × pct% */
     private static final Map<Integer, Double> MOB_PCT = new java.util.HashMap<>();
 
-    public static void mobSkillHit(Mob mob, ServerPlayer p, double pct) {
+    /** @return 실제로 맞았나 (구르기·가드 등으로 막히면 false) */
+    public static boolean mobSkillHit(Mob mob, ServerPlayer p, double pct) {
         MOB_PCT.put(p.getId(), pct);
-        p.hurt(mob.damageSources().mobAttack(mob), 4.0f);
+        boolean hit = p.hurt(mob.damageSources().mobAttack(mob), 4.0f);
         MOB_PCT.remove(p.getId());
+        return hit;
     }
 
     /** 보스 패턴 피해: 최대 HP × pct% (방어 무시) */
     private static final Map<Integer, Double> MAXHP_PCT = new java.util.HashMap<>();
 
-    public static void maxHpHit(Mob mob, ServerPlayer p, double pct) {
+    public static boolean maxHpHit(Mob mob, ServerPlayer p, double pct) {
         MAXHP_PCT.put(p.getId(), pct);
-        p.hurt(mob.damageSources().mobAttack(mob), 4.0f);
+        boolean hit = p.hurt(mob.damageSources().mobAttack(mob), 4.0f);
         MAXHP_PCT.remove(p.getId());
+        return hit;
     }
 
     /** RPG 몹 근접 공격은 몸 바깥 1.2칸(+여유) 안에서만 맞음 (멀리서 휘두르는 몹 막기) */

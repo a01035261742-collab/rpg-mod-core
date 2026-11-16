@@ -1047,7 +1047,7 @@ public final class Boss {
                     int n = 0;
                     for (Vec3 q : qs) if (flat(pl.position(), q) <= p.r() + PAD && Math.abs(pl.getY() - q.y) <= HEIGHT) n++;
                     if (n == 0) continue;
-                    CombatEvents.mobSkillHit(mob, pl, p.pct() * (n >= 2 ? 2 : 1));
+                    if (!CombatEvents.mobSkillHit(mob, pl, p.pct() * (n >= 2 ? 2 : 1))) continue;   // 구르기·가드로 피함
                     if (n >= 2) pl.displayClientMessage(Component.literal("폭발이 겹쳤어요! 피해 2배").withStyle(ChatFormatting.RED), true);
                     BossX.poison(pl, p.x("poison", 0), now);
                 }
@@ -1258,9 +1258,9 @@ public final class Boss {
 
     /** 이름·수치를 직접 주는 피해 (콤보 두 번째 타 등): pct = 공격력 %, maxPct > 0 이면 최대 HP % */
     static void hitAs(Mob mob, MobData m, State st, ServerLevel l, ServerPlayer p, String name, double pct, double maxPct, double poison) {
-        p.displayClientMessage(Component.literal("◆ " + name + "에 맞음").withStyle(ChatFormatting.GRAY), true);
-        if (maxPct > 0) CombatEvents.maxHpHit(mob, p, maxPct);
-        else CombatEvents.mobSkillHit(mob, p, pct);
+        boolean landed = maxPct > 0 ? CombatEvents.maxHpHit(mob, p, maxPct) : CombatEvents.mobSkillHit(mob, p, pct);
+        if (!landed) return;   // 구르기·가드로 피함
+        Net.alertHit(p, name);
         if (poison > 0) BossX.poison(p, poison, l.getGameTime());
         PlayerData d = RpgData.get(p);
         if (!p.isAlive() || d.isDown() || d.hp <= 0)
@@ -1277,9 +1277,10 @@ public final class Boss {
 
     /** 패턴 피해 + 쓰러지면 경기장에 알림 */
     static void hit(Mob mob, MobData m, State st, ServerLevel l, ServerPlayer p, Pattern pt) {
-        if (pt != DEFS.get(m.key).melee()) p.displayClientMessage(Component.literal("◆ " + pt.name() + "에 맞음").withStyle(ChatFormatting.GRAY), true);   // 뭐에 맞았는지
-        if (pt.x("maxPct", 0) > 0) CombatEvents.maxHpHit(mob, p, pt.x("maxPct", 0));   // 최대 HP 비율
-        else CombatEvents.mobSkillHit(mob, p, pt.pct());
+        boolean landed = pt.x("maxPct", 0) > 0 ? CombatEvents.maxHpHit(mob, p, pt.x("maxPct", 0))   // 최대 HP 비율
+                : CombatEvents.mobSkillHit(mob, p, pt.pct());
+        if (!landed) return;   // 구르기·가드로 피함: 맞음 표시·독·상태이상 없음
+        if (pt != DEFS.get(m.key).melee()) Net.alertHit(p, pt.name());   // 뭐에 맞았는지
         if (pt.x("poison", 0) > 0) BossX.poison(p, pt.x("poison", 0), l.getGameTime());   // 독 (초)
         Status.fromPattern(p, pt);   // 기절 · 침묵 · 출혈
         PlayerData d = RpgData.get(p);
@@ -1314,6 +1315,8 @@ public final class Boss {
         st.transUntil = 0;
         st.introUntil = 0;
         if (mob instanceof rpg.core.entity.MushGuardian mg) mg.setPhase2(false);
+        m.stunUntil = 0;
+        if (st.stunAnim) { st.stunAnim = false; if (mob instanceof rpg.core.entity.GeoRpgMonster g) g.stopStun(); }
         st.awake = false;
         st.lastFar = null;
         st.back = false;
