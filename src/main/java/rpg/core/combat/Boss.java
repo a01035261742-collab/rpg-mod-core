@@ -280,7 +280,7 @@ public final class Boss {
                 st.introUntil = now + Math.round(intro * 20);
                 st.nextAt = Math.max(st.nextAt, st.introUntil + 10);
                 if (mob instanceof rpg.core.entity.GeoRpgMonster g) g.playPattern("intro");
-                for (ServerPlayer x : arena(l, st, 16)) Net.cutscene(x, mob, (int) Math.round(intro * 20), "", "");
+                for (ServerPlayer x : arena(l, st, 16)) Net.cutscene(x, mob, (int) Math.round(intro * 20), "", "", 0, 61);
                 l.playSound(null, mob.blockPosition(), SoundEvents.WARDEN_EMERGE, SoundSource.HOSTILE, 2f, 0.8f);
             }
         }
@@ -317,7 +317,8 @@ public final class Boss {
                 BossX.clearFloor(l, st);   // 독 늪 · 거미줄 장판 · 떨어지는 것 정리
                 if (def.g("transCut", 0) > 0) {   // 전환 컷씬 (자막 없음): 카메라가 보스를 비춤 + 전환 애니
                     if (mob instanceof rpg.core.entity.GeoRpgMonster g) g.playPattern("phase2");
-                    for (ServerPlayer p : arena(l, st, 16)) Net.cutscene(p, mob, ticks(def.g("transSec", 3)), "", TRANS_LINE.getOrDefault(def.key(), ""));
+                    for (ServerPlayer p : arena(l, st, 16)) Net.cutscene(p, mob, ticks(def.g("transSec", 3)), "", TRANS_LINE.getOrDefault(def.key(), ""),
+                            (int) Math.round(def.g("transBurst", 1.6) * 20), (int) Math.round(def.g("transSlam", 3.05) * 20));
                     l.playSound(null, mob.blockPosition(), SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.HOSTILE, 2.5f, 0.5f);
                 } else {
                     for (ServerPlayer p : arena(l, st, 16)) Net.alert(p, "◆ 둥지가 무너진다 — 2페이즈", ChatFormatting.LIGHT_PURPLE, 70);
@@ -341,12 +342,13 @@ public final class Boss {
         if (now < st.transUntil) {   // 전환 연출: 제자리 · 무적 · 패턴 없음
             mob.getNavigation().stop();
             long tk = st.transUntil - now, tot = ticks(def.g("transSec", 3));
-            if (def.g("transCut", 0) > 0 && tot - tk >= 32 && mob instanceof rpg.core.entity.MushGuardian mg && !mg.phase2()) mg.setPhase2(true);   // 결정이 솟는 순간 (애니 1.6초): 침식된 모습으로
-            if (def.g("transCut", 0) > 0 && tot - tk == 32) {
+            long burst = Math.round(def.g("transBurst", 1.6) * 20), slamT = Math.round(def.g("transSlam", 3.05) * 20);
+            if (def.g("transCut", 0) > 0 && tot - tk >= burst && mob instanceof rpg.core.entity.MushGuardian mg && !mg.phase2()) mg.setPhase2(true);   // 결정이 솟는 순간 (애니 1.6초): 침식된 모습으로
+            if (def.g("transCut", 0) > 0 && tot - tk == burst) {
                 l.sendParticles(ParticleTypes.WITCH, mob.getX(), mob.getY() + mob.getBbHeight() * 0.7, mob.getZ(), 80, mob.getBbWidth() * 0.4, 0.8, mob.getBbWidth() * 0.4, 0.2);
                 l.playSound(null, mob.blockPosition(), SoundEvents.AMETHYST_CLUSTER_BREAK, SoundSource.HOSTILE, 2.5f, 0.5f);
             }
-            if (def.g("transCut", 0) > 0 && tot - tk == 61) l.playSound(null, mob.blockPosition(), SoundEvents.GENERIC_EXPLODE, SoundSource.HOSTILE, 1.5f, 0.6f);
+            if (def.g("transCut", 0) > 0 && tot - tk == slamT) l.playSound(null, mob.blockPosition(), SoundEvents.GENERIC_EXPLODE, SoundSource.HOSTILE, 1.5f, 0.6f);
             if (now % 4 == 0) l.sendParticles(ParticleTypes.DRAGON_BREATH, mob.getX(), mob.getY() + 1, mob.getZ(), 12, 1.5, 0.8, 1.5, 0.02);
             if (now % 10 == 0 && def.g("transCut", 0) <= 0) l.sendParticles(new net.minecraft.core.particles.BlockParticleOption(ParticleTypes.BLOCK,
                     net.minecraft.world.level.block.Blocks.COBWEB.defaultBlockState()), st.center.x, st.center.y + 4, st.center.z, 40, st.radius / 2, 2, st.radius / 2, 0);

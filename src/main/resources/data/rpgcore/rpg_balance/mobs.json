@@ -1928,8 +1928,10 @@
    "penaltyPerLevel": 5,
    "maxPenalty": 90,
    "gimmick": {
-    "transSec": 5.0,
+    "transSec": 7.0,
     "transCut": 1,
+    "transBurst": 4.0,
+    "transSlam": 5.9,
     "props": 2,
     "propEvery": 20,
     "propMin": 6,

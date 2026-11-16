@@ -27,18 +27,19 @@ public final class Cutscene {
     private static int bossId = -1, total, tick;
     private static String name = "";
     private static String[] lines = new String[0];   // 보스 대사 ("|" 로 나눈 토막을 차례로)
+    private static int burst, slamTick;               // 대사가 다 끝나는 틱 (변신) · 화면 흔들림 틱
     private static ArmorStand cam;
     private static Vec3 eye0;
     private static float yaw0, pitch0;
 
     public static boolean active() { return cam != null; }
 
-    public static void start(int entityId, int ticks, String bossName, String line) {
+    public static void start(int entityId, int ticks, String bossName, String line, int burstAt, int slamAt) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null || mc.level == null) return;
         Entity boss = mc.level.getEntity(entityId);
         if (boss == null) return;
-        bossId = entityId; total = Math.max(20, ticks); tick = 0; name = bossName;
+        bossId = entityId; total = Math.max(20, ticks); tick = 0; name = bossName; burst = burstAt; slamTick = slamAt;
         lines = line == null || line.isBlank() ? new String[0] : line.split("\\|");
         eye0 = mc.player.getEyePosition();
         yaw0 = mc.player.getYRot(); pitch0 = mc.player.getXRot();
@@ -90,7 +91,7 @@ public final class Cutscene {
         else if (f < b) { pos = orbit; lookMix = 1; }
         else { double k = ease((f - b) / (1 - b)); pos = orbit.lerp(mc.player.getEyePosition(), k); lookMix = 1 - k; }
         // 지팡이 내려찍기 (애니 3.05초) 순간 흔들림
-        double slam = 61;   // 애니 3.05초
+        double slam = slamTick;
         if (tick > slam && tick < slam + 8) {
             double a = (slam + 8 - tick) / 8.0 * 0.25;
             pos = pos.add((Math.random() - 0.5) * a, (Math.random() - 0.5) * a, (Math.random() - 0.5) * a);
@@ -150,14 +151,15 @@ public final class Cutscene {
         }
         // 보스 대사: 토막마다 한 글자씩 나타났다가 다음 토막으로 (전체의 앞 90%)
         if (lines.length > 0) {
-            // 첫 토막은 결정이 솟기 전(0~0.3), 나머지는 0.3~0.9 를 나눠 씀
-            double first = lines.length == 1 ? 0.9 : 0.3, rest = lines.length == 1 ? 0 : 0.6 / (lines.length - 1);
-            int i = f < first ? 0 : (int) Math.min(lines.length - 1, 1 + Math.floor((f - first) / rest));
-            double a0 = i == 0 ? 0 : first + (i - 1) * rest, a1 = i == 0 ? first : a0 + rest;
-            double lf = (f - a0) / (a1 - a0);
+            // 대사는 변신(burst) 전까지 토막을 나눠 다 보여주고, 마지막 토막은 변신 뒤 조금 더 남음
+            double end = burst > 0 ? Math.min(0.9, burst / (double) total) : 0.9, st0 = 0.03;
+            double span = (end - st0) / lines.length;
+            int i = (int) Math.max(0, Math.min(lines.length - 1, Math.floor((f - st0) / span)));
+            double lf = (f - st0 - i * span) / span;
+            double out = end + 0.12;
             String ln = lines[i].trim();
             int n = (int) Math.min(ln.length(), Math.ceil(ln.length() * Math.min(1, lf / 0.55)));
-            double la = f > 0.9 ? Math.max(0, 1 - (f - 0.9) / 0.06) : 1;
+            double la = f < st0 ? 0 : f > out ? Math.max(0, 1 - (f - out) / 0.06) : 1;
             if (n > 0 && la > 0.02) {
                 String shown = ln.substring(0, n);
                 int al = Math.max(8, (int) (la * 255)) << 24;
