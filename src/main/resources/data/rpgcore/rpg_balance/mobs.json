@@ -1525,6 +1525,17 @@
   "entity": "rpgcore:mush_beast",
   "name": "버섯 짐승",
   "area": "Lv36~40",
+  "attacks": [
+   {
+    "anim": "attack",
+    "start": 10,
+    "end": 13,
+    "length": 20,
+    "range": 2.6,
+    "width": 1.8,
+    "lunge": 0.45
+   }
+  ],
   "skills": [
    {
     "type": "slam",

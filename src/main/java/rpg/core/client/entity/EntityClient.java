@@ -49,11 +49,11 @@ public final class EntityClient {
         e.registerEntityRenderer(ModEntities.MUSH_SPIRIT.get(), ctx -> new RpgGeoRenderer(ctx, "mush_spirit", 0.5f, true));
         e.registerEntityRenderer(ModEntities.MUSH_SOLDIER.get(), ctx -> new RpgGeoRenderer(ctx, "mush_soldier", 0.5f, true));
         e.registerEntityRenderer(ModEntities.MUSH_FAIRY.get(), ctx -> new RpgGeoRenderer(ctx, "mush_fairy", 0.25f));
-        reg(e, ModEntities.MUSH_BEAST.get(), BEAST, "mush_beast", 1.2f);
+        e.registerEntityRenderer(ModEntities.MUSH_BEAST.get(), ctx -> new RpgGeoRenderer(ctx, "mush_beast", 1.2f));
         e.registerEntityRenderer(ModEntities.BROWN_BEAR.get(), ctx -> new RpgGeoRenderer(ctx, "brown_bear", 0.9f));
         ResourceLocation bear = RpgCore.id("textures/entity/forest_lord.png");   // 숲의 주인 = 북극곰 몸 (모델링 전까지)
         // 보스 거대버섯 수호자: 버섯 짐승 모델 2배
-        ResourceLocation beastTex = RpgCore.id("textures/entity/mush_beast.png");
+        ResourceLocation beastTex = RpgCore.id("textures/entity/mush_guardian.png");   // 수호자 = 옛 버섯 짐승 몸 (모델링 전까지)
         e.registerEntityRenderer(ModEntities.MUSH_GUARDIAN.get(), ctx -> new MobRenderer<rpg.core.entity.MushGuardian, RpgModel<rpg.core.entity.MushGuardian>>(
                 ctx, new RpgModel<>(ctx.bakeLayer(BEAST)), 2.4f) {
             @Override
