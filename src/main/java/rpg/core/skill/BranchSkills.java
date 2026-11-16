@@ -327,7 +327,7 @@ public final class BranchSkills {
     private static boolean flurry(ServerPlayer p, PlayerData d, Defs.SkillDef s, int lv) {
         double pct = s.value(lv);
         int bleedTicks = (int) Math.round(s.duration() * 20);
-        int n = s.hits(lv);   // 레벨 오를수록 타수 3~6
+        int n = s.hits(lv);   // 6타 고정
         for (int i = 0; i < n; i++) {
             final int k = i;
             Runnable hit = () -> {

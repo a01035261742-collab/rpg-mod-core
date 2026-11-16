@@ -60,11 +60,23 @@ public class BossProp extends Entity implements GeoEntity {
         l.addFreshEntity(e);
     }
 
+    /** 바닥 높이에 맞춤: pos 위 2칸부터 아래로 내려가며 처음 만나는 단단한 블록 윗면 (없으면 그대로) */
+    static Vec3 ground(ServerLevel l, Vec3 pos) {
+        net.minecraft.core.BlockPos.MutableBlockPos b = new net.minecraft.core.BlockPos.MutableBlockPos();
+        int x = net.minecraft.util.Mth.floor(pos.x), z = net.minecraft.util.Mth.floor(pos.z), y0 = net.minecraft.util.Mth.floor(pos.y + 2);
+        for (int y = y0; y > y0 - 10; y--) {
+            b.set(x, y, z);
+            var shape = l.getBlockState(b).getCollisionShape(l, b);
+            if (!shape.isEmpty()) return new Vec3(pos.x, y + shape.max(net.minecraft.core.Direction.Axis.Y), pos.z);
+        }
+        return pos;
+    }
+
     /** 바위 기둥: life 틱 동안 서 있음 */
     public static void pillar(ServerLevel l, Vec3 pos, int life) {
         BossProp e = new BossProp(ModEntities.ROCK_PILLAR.get(), l);
         e.life = Math.max(life, 16); e.endTicks = 12;
-        e.setPos(pos);
+        e.setPos(ground(l, pos));
         e.setYRot(l.random.nextFloat() * 360);
         l.addFreshEntity(e);
     }
@@ -74,7 +86,7 @@ public class BossProp extends Entity implements GeoEntity {
         BossProp e = new BossProp(ModEntities.VOID_CRYSTAL.get(), l);
         e.life = Math.max(life, 14); e.endTicks = 10;
         e.entityData.set(SOLID, solid);
-        e.setPos(pos);
+        e.setPos(ground(l, pos));
         e.setYRot(l.random.nextFloat() * 360);
         l.addFreshEntity(e);
     }
