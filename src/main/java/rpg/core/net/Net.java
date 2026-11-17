@@ -849,8 +849,20 @@ public final class Net {
                         var inv = p.getInventory().items;
                         for (int i = inv.size() - 1; i >= 0; i--)
                             if (inv.get(i).getItem() == it) { pot.drink(p, inv.get(i)); break; }
-                    } else if (it instanceof rpg.core.item.ReturnScroll rs && p.getInventory().items.stream().anyMatch(s -> s.getItem() == it))
-                        rs.use(p.level(), p, net.minecraft.world.InteractionHand.MAIN_HAND);   // 귀환 주문서: 3초 시전 (끝나면 가방에서 하나)
+                    } else if (rpg.core.item.QuickUse.usable(it)) {   // 사용템: 가방의 그걸 잠깐 손에 쥐고 우클릭
+                        var inv = p.getInventory();
+                        for (int i = inv.items.size() - 1; i >= 0; i--)
+                            if (inv.items.get(i).getItem() == it) {
+                                int sel = inv.selected;
+                                if (i != sel) { var t = inv.items.get(sel); inv.items.set(sel, inv.items.get(i)); inv.items.set(i, t); }
+                                try { it.use(p.level(), p, net.minecraft.world.InteractionHand.MAIN_HAND); }
+                                finally {
+                                    if (i != sel) { var t = inv.items.get(sel); inv.items.set(sel, inv.items.get(i)); inv.items.set(i, t); }
+                                }
+                                p.inventoryMenu.broadcastChanges();
+                                break;
+                            }
+                    }
                 } else if (action == 1) rpg.core.item.Potion.sortBag(p);
             }
             ctx.get().setPacketHandled(true);

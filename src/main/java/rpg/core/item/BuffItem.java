@@ -66,9 +66,15 @@ public class BuffItem extends Item {
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (level.isClientSide || !(player instanceof ServerPlayer sp)) return InteractionResultHolder.success(stack);
+        return apply(sp, stack) ? InteractionResultHolder.consume(stack) : InteractionResultHolder.fail(stack);
+    }
+
+    /** 먹기 (손에 든 것 · 물약 칸 키 둘 다): 먹었으면 true */
+    public boolean apply(ServerPlayer sp, ItemStack stack) {
+        Level level = sp.level();
         Def def = DEFS.get(id);
         PlayerData d = RpgData.get(sp);
-        if (def == null || d.isDown()) return InteractionResultHolder.fail(stack);
+        if (def == null || d.isDown()) return false;
         d.buffEnd.put(def.buff(), d.clock + TICKS);
         d.buffVal.put(def.buff(), def.val());
         if (!sp.getAbilities().instabuild) stack.shrink(1);
@@ -76,7 +82,7 @@ public class BuffItem extends Item {
         sp.displayClientMessage(Component.literal(def.name() + ": " + def.desc() + " (10분)").withStyle(ChatFormatting.GREEN), true);
         d.recalc();
         RpgData.sync(sp);
-        return InteractionResultHolder.consume(stack);
+        return true;
     }
 
     @Override

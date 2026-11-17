@@ -132,8 +132,8 @@ public class BagScreen extends ScaledContainerScreen<EquipMenu> {
             if (mx >= x && mx < x + BS && my >= y && my < y + BS) {
                 var it = ClientPotions.item(k);
                 g.renderComponentTooltip(font, it == null
-                        ? List.of(Component.literal("§6물약 칸 " + (k + 1)), Component.literal("§7가방의 물약·귀환 주문서를 끌어다 놓기"))
-                        : List.of(Component.literal("§6" + new ItemStack(it).getHoverName().getString()), Component.literal("§7" + (k + 1) + " 키: " + (it instanceof rpg.core.item.ReturnScroll ? "사용" : "마시기") + " · 가진 개수 " + ClientPotions.count(k)), Component.literal("§8우클릭: 칸 비우기")), mx, my);
+                        ? List.of(Component.literal("§6물약 칸 " + (k + 1)), Component.literal("§7가방의 물약·사용템을 끌어다 놓기"))
+                        : List.of(Component.literal("§6" + new ItemStack(it).getHoverName().getString()), Component.literal("§7" + (k + 1) + " 키: " + (it instanceof rpg.core.item.Potion ? "마시기" : "사용") + " · 가진 개수 " + ClientPotions.count(k)), Component.literal("§8우클릭: 칸 비우기")), mx, my);
             }
         }
         buffPanel(g, mx, my);

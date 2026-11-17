@@ -42,9 +42,9 @@ public final class ClientPotions {
         try { Files.writeString(file(), sb.toString()); } catch (Exception ignored) {}
     }
 
-    /** 칸에 넣을 수 있는 물건 (물약 · 귀환 주문서) */
+    /** 칸에 넣을 수 있는 물건 (물약 · 사용템) */
     public static boolean fits(ItemStack s) {
-        return !s.isEmpty() && (s.getItem() instanceof rpg.core.item.Potion || s.getItem() instanceof rpg.core.item.ReturnScroll);
+        return !s.isEmpty() && (s.getItem() instanceof rpg.core.item.Potion || rpg.core.item.QuickUse.usable(s.getItem()));
     }
 
     public static void set(int k, ItemStack s) {
