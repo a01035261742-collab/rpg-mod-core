@@ -175,12 +175,12 @@ public final class ClientEvents {
         private static final net.minecraft.resources.ResourceLocation EF_INNATE =
                 new net.minecraft.resources.ResourceLocation("epicfight", "weapon_innate");
 
-        /** 서바이벌에서 인벤토리를 열면 장비 창(인벤토리 + 장비 칸)으로 바꿔 열기 */
+        /** RPG 대륙 서바이벌에서 인벤토리를 열면 장비 창(인벤토리 + 장비 칸)으로 바꿔 열기 */
         @SubscribeEvent
         public static void openInventory(net.minecraftforge.client.event.ScreenEvent.Opening e) {
             Minecraft mc = Minecraft.getInstance();
             if (e.getNewScreen() instanceof net.minecraft.client.gui.screens.inventory.InventoryScreen
-                    && mc.player != null && !mc.player.isCreative()) {
+                    && mc.player != null && !mc.player.isCreative() && ClientRpg.inRpg()) {   // 야생 = 바닐라 인벤토리
                 e.setCanceled(true);
                 BagScreen.wantBag = true;   // 인벤토리 키 (Tab) = 가방 창
                 Net.CH.sendToServer(new Net.OpenEquip(0));
