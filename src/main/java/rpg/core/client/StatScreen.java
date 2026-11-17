@@ -24,23 +24,30 @@ public class StatScreen extends ScaledScreen {
         y = Ui.cy(height, CharWin.H);
         CharWin.addTabs(this::addRenderableWidget, x, y, CharWin.STAT);
         boolean on = ClientData.statPoints > 0;
+        lastOn = on; lastStaMax = ClientData.stats[5] >= STA_MAX;
         addRenderableWidget(Ui.button(Component.literal(detail ? "상세 ◀" : "상세 ▶"), b -> { detail = !detail; rebuildWidgets(); })
                 .bounds(x + W - 84, y + 260, 64, 18).accent(detail).build());
         for (int i = 0; i < 6; i++) {
             final int stat = i;
             addRenderableWidget(Ui.button(Component.literal("+"), b -> send(stat, hasShiftDown() ? 5 : 1))
-                    .bounds(x + LX + 134, y + 64 + i * ROW, 16, 16).accent(on).build()).active = on;
+                    .bounds(x + LX + 134, y + 64 + i * ROW, 16, 16).accent(on).build()).active = on && !(i == 5 && ClientData.stats[5] >= STA_MAX);
         }
     }
+
+    /** 스태미나 스탯 최대 (서버 Balance.staminaMax 와 같게) */
+    private static final int STA_MAX = 20;
 
     private void send(int stat, int amount) {
         Net.CH.sendToServer(new Net.AllocStat(stat, amount));
     }
 
+    /** 마지막으로 버튼 만들 때 상태 (스탯 포인트 있음 · 스태미나 최대) */
+    private boolean lastOn, lastStaMax;
+
     @Override
     public void tick() {
-        boolean on = ClientData.statPoints > 0;
-        for (var c : children()) if (c instanceof Button b && "+".equals(b.getMessage().getString()) && b.active != on) { rebuildWidgets(); return; }
+        boolean on = ClientData.statPoints > 0, sm = ClientData.stats[5] >= STA_MAX;
+        if (on != lastOn || sm != lastStaMax) rebuildWidgets();
     }
 
     private static int mainIdx() { return switch (ClientData.job) { case 2 -> 2; case 3 -> 3; case 4 -> 4; default -> 1; }; }
@@ -48,7 +55,7 @@ public class StatScreen extends ScaledScreen {
 
     private static String desc(int i) {
         if (i == 0) return "최대 HP ↑";
-        if (i == 5) return "스태미나 ↑ (구르기·달리기)";
+        if (i == 5) return ClientData.stats[5] >= STA_MAX ? "스태미나 최대 (" + STA_MAX + ")" : "스태미나 ↑ (최대 " + STA_MAX + ")";
         if (i == mainIdx()) return "주 스탯 · 공격력 크게 ↑";
         if (i == subIdx()) return "부 스탯 · 공격력 ↑";
         return "지금 직업엔 효과 적음";

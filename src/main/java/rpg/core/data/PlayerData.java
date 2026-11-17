@@ -277,6 +277,7 @@ public class PlayerData {
         int[] s = t.getIntArray("stats");
         for (int i = 0; i < N; i++) stats[i] = i < s.length ? s[i] : start(i);
         statPoints = t.getInt("sp"); job = t.getInt("job"); gold = t.getLong("gold");
+        if (stats[STA] > Balance.staminaMax) { statPoints += stats[STA] - Balance.staminaMax; stats[STA] = Balance.staminaMax; }   // 한도 넘게 찍은 건 돌려줌
         freeTreeReset = t.getInt("freeTreeReset"); tradeNet = t.getLong("tradeNet");
         branch = t.getInt("branch"); pendingBranch = t.getInt("pendingBranch"); trialCleared = t.getBoolean("trialCleared");
         hp = t.getDouble("hp"); mp = t.getDouble("mp");

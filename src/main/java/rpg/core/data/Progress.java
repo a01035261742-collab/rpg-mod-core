@@ -53,6 +53,7 @@ public final class Progress {
         if (stat < 0 || stat >= PlayerData.N) return;
         PlayerData d = RpgData.get(p);
         int n = Math.min(Math.max(0, amount), d.statPoints);
+        if (stat == PlayerData.STA) n = Math.min(n, Balance.staminaMax - d.stats[stat]);   // 스태미나는 최대 20
         if (n <= 0) return;
         d.stats[stat] += n;
         d.statPoints -= n;
