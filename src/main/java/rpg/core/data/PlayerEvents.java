@@ -46,40 +46,62 @@ public final class PlayerEvents {
         e.getOriginal().invalidateCaps();
     }
 
+    /**
+     * 직업 개편 때 한 번만 하는 초기화 한 줄.
+     * flag: 이미 받은 사람을 기억하는 이름. 플레이어 저장 데이터에 남아 있으니 **절대 바꾸지 말 것** (바꾸면 다시 초기화됨)
+     * job: 대상 직업 번호 (1 전사 · 2 궁수 · 3 마법사 · 4 도적), passivesToo: 패시브 포인트도 돌려줄지
+     */
+    private record Reform(String flag, int job, boolean passivesToo, String message) {}
+
+    /** 전사 2건 (예전 순서 유지용). 새 개편은 여기 말고 REFORMS 에 추가 */
+    private static final java.util.List<Reform> EARLY_REFORMS = java.util.List.of(
+            new Reform("rpgWarriorReset", 1, false, "[전사 개편] 스킬 포인트를 전부 돌려받았어요. 스킬 창(L)에서 다시 찍어주세요"),
+            new Reform("rpgWarriorSwap", 1, false, "[전사 개편] 연속 베기가 1차, 강타가 버서커 2차 스킬이 됐어요. 스킬 포인트를 전부 돌려받았으니 스킬 창(L)에서 다시 찍어주세요"));
+
+    /** 앞으로 개편이 생기면 끝에 한 줄만 추가 (플래그 이름은 새로 지을 것) */
+    private static final java.util.List<Reform> REFORMS = java.util.List.of(
+            new Reform("rpgThiefReset", 4, true, "[도적 개편] 스킬·패시브 포인트를 전부 돌려받았어요. 스킬 창(L)·패시브 창(N)에서 다시 찍어주세요"),
+            new Reform("rpgMageReset", 3, true, "[마법사 개편] 스킬·패시브 포인트를 전부 돌려받았어요. 스킬 창(L)·패시브 창(N)에서 다시 찍어주세요"),
+            new Reform("rpgArcherReset", 2, true, "[궁수 개편] 스킬·패시브 포인트를 전부 돌려받았어요. 스킬 창(L)·패시브 창(N)에서 다시 찍어주세요"));
+
+    /** 아직 안 받은 개편만 실행 (대상 직업이면 초기화 + 안내, 아니면 표시만 하고 넘어감) */
+    private static void applyReforms(ServerPlayer sp, PlayerData d, net.minecraft.nbt.CompoundTag keep, java.util.List<Reform> list) {
+        for (Reform r : list) {
+            if (keep.getInt(r.flag()) >= 1) continue;
+            if (d.job == r.job()) refund(sp, d, r.passivesToo(), r.message());
+            markDone(sp, keep, r.flag());
+        }
+    }
+
+    /** 스킬 포인트(+ 원하면 패시브 포인트)를 전부 돌려주고 안내 메시지 */
+    private static void refund(ServerPlayer sp, PlayerData d, boolean passivesToo, String message) {
+        d.refundSkills();
+        if (passivesToo) {
+            d.passives.clear();
+            d.passivePoints = Math.max(0, (d.level - 9) * Balance.passivePointsPerLevel);
+        }
+        sp.sendSystemMessage(net.minecraft.network.chat.Component.literal(message).withStyle(net.minecraft.ChatFormatting.GOLD));
+    }
+
+    /** "이 개편은 받았음" 표시를 플레이어 저장 데이터에 남김 */
+    private static void markDone(ServerPlayer sp, net.minecraft.nbt.CompoundTag keep, String flag) {
+        keep.putInt(flag, 1);
+        sp.getPersistentData().put(Player.PERSISTED_NBT_TAG, keep);
+    }
+
     @SubscribeEvent
     public static void login(PlayerEvent.PlayerLoggedInEvent e) {
         if (!(e.getEntity() instanceof ServerPlayer sp)) return;
         PlayerData d = RpgData.get(sp);
         if (d.isNew()) d.init();
-        // 전사 스킬 개편 (한 번만): 전사는 스킬 포인트 전부 돌려받음
-        var keep = sp.getPersistentData().getCompound(net.minecraft.world.entity.player.Player.PERSISTED_NBT_TAG);
-        if (keep.getInt("rpgWarriorReset") < 1) {
-            if (d.job == 1) {
-                d.refundSkills();
-                sp.sendSystemMessage(net.minecraft.network.chat.Component.literal("[전사 개편] 스킬 포인트를 전부 돌려받았어요. 스킬 창(L)에서 다시 찍어주세요")
-                        .withStyle(net.minecraft.ChatFormatting.GOLD));
-            }
-            keep.putInt("rpgWarriorReset", 1);
-            sp.getPersistentData().put(net.minecraft.world.entity.player.Player.PERSISTED_NBT_TAG, keep);
-        }
-        // 전사 스킬 맞바꿈 (강타 ↔ 연속 베기, 한 번만): 전사는 스킬 포인트 전부 돌려받음
-        if (keep.getInt("rpgWarriorSwap") < 1) {
-            if (d.job == 1) {
-                d.refundSkills();
-                sp.sendSystemMessage(net.minecraft.network.chat.Component.literal("[전사 개편] 연속 베기가 1차, 강타가 버서커 2차 스킬이 됐어요. 스킬 포인트를 전부 돌려받았으니 스킬 창(L)에서 다시 찍어주세요")
-                        .withStyle(net.minecraft.ChatFormatting.GOLD));
-            }
-            keep.putInt("rpgWarriorSwap", 1);
-            sp.getPersistentData().put(net.minecraft.world.entity.player.Player.PERSISTED_NBT_TAG, keep);
-        }
+        // 개편 때 한 번만 하는 초기화 (전사 2건: 아래 "넘친 포인트 돌려주기"보다 먼저 돌던 순서 그대로)
+        applyReforms(sp, d, keep, EARLY_REFORMS);
         // 트리 무료 초기화 (한 번만): 이미 2차인 사람한테 1회
         if (keep.getInt("rpgTreeResetV1") < 1) {
             if (d.branch > 0 && d.freeTreeReset == 0) d.freeTreeReset = 1;
-            keep.putInt("rpgTreeResetV1", 1);
-            sp.getPersistentData().put(net.minecraft.world.entity.player.Player.PERSISTED_NBT_TAG, keep);
+            markDone(sp, keep, "rpgTreeResetV1");
         }
-        // 도적 개편 (한 번만): 도적은 스킬 포인트 + 패시브 포인트 전부 돌려받음
-        // 스킬 최대 레벨이 줄었으면 (편의 스킬 20 → 10) 넘친 포인트 돌려줌
+        // 스킬 최대 레벨이 줄었으면 (편의 스킬 20 → 10) 넘친 포인트 돌려줌 (매 로그인마다)
         int back = 0;
         for (var se : d.skills.entrySet()) {
             var sd = rpg.core.skill.Defs.SKILLS.get(se.getKey());
@@ -89,49 +111,15 @@ public final class PlayerEvents {
             d.recalc();
             sp.sendSystemMessage(net.minecraft.network.chat.Component.literal("[스킬] 최대 레벨이 줄어든 스킬의 포인트 " + back + "점을 돌려받았어요").withStyle(net.minecraft.ChatFormatting.GOLD));
         }
-        if (keep.getInt("rpgThiefReset") < 1) {
-            if (d.job == 4) {
-                d.refundSkills();
-                d.passives.clear();
-                d.passivePoints = Math.max(0, (d.level - 9) * rpg.core.balance.Balance.passivePointsPerLevel);
-                sp.sendSystemMessage(net.minecraft.network.chat.Component.literal("[도적 개편] 스킬·패시브 포인트를 전부 돌려받았어요. 스킬 창(L)·패시브 창(N)에서 다시 찍어주세요")
-                        .withStyle(net.minecraft.ChatFormatting.GOLD));
-            }
-            keep.putInt("rpgThiefReset", 1);
-            sp.getPersistentData().put(net.minecraft.world.entity.player.Player.PERSISTED_NBT_TAG, keep);
-        }
-        // 마법사 개편 (한 번만): 마법사는 스킬 포인트 + 패시브 포인트 전부 돌려받음
-        if (keep.getInt("rpgMageReset") < 1) {
-            if (d.job == 3) {
-                d.refundSkills();
-                d.passives.clear();
-                d.passivePoints = Math.max(0, (d.level - 9) * rpg.core.balance.Balance.passivePointsPerLevel);
-                sp.sendSystemMessage(net.minecraft.network.chat.Component.literal("[마법사 개편] 스킬·패시브 포인트를 전부 돌려받았어요. 스킬 창(L)·패시브 창(N)에서 다시 찍어주세요")
-                        .withStyle(net.minecraft.ChatFormatting.GOLD));
-            }
-            keep.putInt("rpgMageReset", 1);
-            sp.getPersistentData().put(net.minecraft.world.entity.player.Player.PERSISTED_NBT_TAG, keep);
-        }
-        // 궁수 개편 (한 번만): 궁수는 스킬 포인트 + 패시브 포인트 전부 돌려받음
-        if (keep.getInt("rpgArcherReset") < 1) {
-            if (d.job == 2) {
-                d.refundSkills();
-                d.passives.clear();
-                d.passivePoints = Math.max(0, (d.level - 9) * rpg.core.balance.Balance.passivePointsPerLevel);
-                sp.sendSystemMessage(net.minecraft.network.chat.Component.literal("[궁수 개편] 스킬·패시브 포인트를 전부 돌려받았어요. 스킬 창(L)·패시브 창(N)에서 다시 찍어주세요")
-                        .withStyle(net.minecraft.ChatFormatting.GOLD));
-            }
-            keep.putInt("rpgArcherReset", 1);
-            sp.getPersistentData().put(net.minecraft.world.entity.player.Player.PERSISTED_NBT_TAG, keep);
-        }
+        // 직업 개편 (한 번만): 새 개편은 아래 REFORMS 표에 한 줄만 추가
+        applyReforms(sp, d, keep, REFORMS);
         // 패시브 트리 개편 (한 번만): 패시브 초기화 + 레벨당 포인트 다시 계산 (레벨업당 2)
         if (keep.getInt("rpgTreeV1") < 1) {
             d.passives.clear();
             d.passivePoints = Math.max(0, (d.level - 9) * rpg.core.balance.Balance.passivePointsPerLevel);
             if (d.level > 1) sp.sendSystemMessage(net.minecraft.network.chat.Component.literal("[패시브 개편] 패시브가 초기화되고 포인트를 다시 받았어요 (레벨업당 2). 패시브 창(N)에서 찍어주세요")
                     .withStyle(net.minecraft.ChatFormatting.GOLD));
-            keep.putInt("rpgTreeV1", 1);
-            sp.getPersistentData().put(net.minecraft.world.entity.player.Player.PERSISTED_NBT_TAG, keep);
+            markDone(sp, keep, "rpgTreeV1");
         }
         d.recalc();
         rpg.core.net.Net.defsTo(sp);
