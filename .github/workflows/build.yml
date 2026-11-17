@@ -21,6 +21,10 @@ jobs:
           set -o pipefail
           # Forge 서버 먼저, 실패하면 CreeperHost 미러로 한 번 더
           ./gradlew build --no-daemon --stacktrace 2>&1 | tee build.log || { echo "::warning::Forge 서버 실패 → 미러로 다시 빌드"; USE_FORGE_MIRROR=1 ./gradlew build --no-daemon --stacktrace 2>&1 | tee build.log; }
+      - name: Check jar contents
+        run: |
+          JAR=$(ls build/libs/*.jar | grep -v -e sources -e slim | head -1)
+          unzip -l "$JAR" | grep -q ' CREDITS.md$' || { echo "::error title=jar::CREDITS.md 가 jar 안에 없어요"; exit 1; }
       - name: Report errors
         if: failure()
         run: |
