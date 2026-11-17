@@ -41,6 +41,9 @@ public final class ModEntities {
     public static final RegistryObject<EntityType<GeoRpgMonster>> VOID_PILLAR = geoMonster("void_pillar", 1.6f, 3.6f, 1);
     /** 레이드 기믹: 실 기둥 (어둠거미여왕 천장 숨기). 키 = 아래 실 뭉치 높이 → 체력바가 뭉치 위에 뜸 */
     public static final RegistryObject<EntityType<GeoRpgMonster>> WEB_PILLAR = geoMonster("web_pillar", 1.0f, 3.5f, 0);
+    /** 레이드 기믹: 거미 알 · 거미줄 고치 (어둠거미여왕) */
+    public static final RegistryObject<EntityType<GeoRpgMonster>> SPIDER_EGG = geoMonster("spider_egg", 1.0f, 1.2f, 0);
+    public static final RegistryObject<EntityType<GeoRpgMonster>> WEB_COCOON = geoMonster("web_cocoon", 0.9f, 2.1f, 0);
     /** 곰: Blockbench 모델 (북극곰 비율 + 갈색 털). 보스 숲의 주인은 아직 북극곰 몸 (BrownBear 클래스) */
     public static final RegistryObject<EntityType<GeoRpgMonster>> BROWN_BEAR = geoMonster("brown_bear", 1.4f, 1.4f, 4);
     /** 보스 "거대버섯 수호자": 침식된 늙은 버섯 거인 (GeckoLib) */
@@ -72,14 +75,16 @@ public final class ModEntities {
     /** 단단한 버섯 (보이는 모양만, 부딪힘은 투명 블록) */
     public static final RegistryObject<EntityType<BossProp>> HARD_MUSHROOM = prop("hard_mushroom", 1.0f, 2.8f);
 
-    /** 레이드 보스 "어둠거미여왕": 거미 몸 3배 (임시) */
+    /** 레이드 보스 "어둠거미여왕" (GeckoLib) */
     public static final RegistryObject<EntityType<SpiderQueen>> SPIDER_QUEEN = TYPES.register("spider_queen",
             () -> EntityType.Builder.<SpiderQueen>of(SpiderQueen::new, MobCategory.MONSTER)
                     .sized(4.2f, 2.7f).clientTrackingRange(16).updateInterval(1).build(RpgCore.MODID + ":spider_queen"));
 
     @SubscribeEvent
     public static void attributes(EntityAttributeCreationEvent e) {
-        e.put(SPIDER_QUEEN.get(), net.minecraft.world.entity.monster.Spider.createAttributes().build());
+        e.put(SPIDER_QUEEN.get(), RpgMonster.attrs(0.25).add(net.minecraft.world.entity.ai.attributes.Attributes.KNOCKBACK_RESISTANCE, 1.0).build());
+        e.put(SPIDER_EGG.get(), RpgMonster.attrs(0.0).add(net.minecraft.world.entity.ai.attributes.Attributes.KNOCKBACK_RESISTANCE, 1.0).build());
+        e.put(WEB_COCOON.get(), RpgMonster.attrs(0.0).add(net.minecraft.world.entity.ai.attributes.Attributes.KNOCKBACK_RESISTANCE, 1.0).build());
         e.put(RAT.get(), RpgMonster.attrs(0.32).build());
         e.put(MUSH_KID.get(), RpgMonster.attrs(0.26).build());
         e.put(MUSH_SPIRIT.get(), RpgMonster.attrs(0.25).build());

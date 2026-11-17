@@ -54,6 +54,7 @@ final class BossX {
         final List<Web> webs = new ArrayList<>();           // 거미줄 장판
         final List<UUID> hidePillars = new ArrayList<>();   // 천장 숨기: 실 기둥
         Vec3 hideFrom, hidePos;                             // 천장 숨기: 원래 자리 · 숨은 자리 (null = 안 숨음)
+        long landUntil;                                     // 천장에서 내려오는 동작 끝 (그 전엔 기절 동작 안 틂)
         Boss.Pattern shadow;                                // 천장 숨기: 그림자 낙하
         long nextShadow;
         int step;
@@ -315,7 +316,6 @@ final class BossX {
         if (c == null) return;
         c.moveTo(p.getX(), p.getY(), p.getZ(), 0, 0);
         c.setNoAi(true);
-        c.setInvisible(true);
         c.setSilent(true);
         c.getPersistentData().putBoolean("rpgPillar", true);
         c.getPersistentData().putUUID("rpgCocoon", p.getUUID());
@@ -403,13 +403,15 @@ final class BossX {
     private static void hideStart(Mob mob, MobData m, Boss.State st, Boss.Pattern p, ServerLevel l, long now) {
         X x = st.x;
         x.hideFrom = mob.position();
-        double up = 0;   // 위로 (천장에 막히면 거기까지, 최대 10칸)
-        for (int i = 1; i <= 10; i++) { if (l.noCollision(mob, mob.getBoundingBox().move(0, i, 0))) up = i; else break; }
-        mob.setNoGravity(true);
-        mob.setInvisible(true);
         mob.setGlowingTag(false);
-        mob.teleportTo(mob.getX(), mob.getY() + up, mob.getZ());
         mob.setDeltaMovement(Vec3.ZERO);
+        if (!(mob instanceof rpg.core.entity.SpiderQueen)) {   // 모델 없는 보스: 실제로 위로 올라가 숨음
+            double up = 0;   // 위로 (천장에 막히면 거기까지, 최대 10칸)
+            for (int i = 1; i <= 10; i++) { if (l.noCollision(mob, mob.getBoundingBox().move(0, i, 0))) up = i; else break; }
+            mob.setNoGravity(true);
+            mob.setInvisible(true);
+            mob.teleportTo(mob.getX(), mob.getY() + up, mob.getZ());
+        }   // 거미여왕: 몸은 제자리, 모델만 실 타고 천장으로 (hide 애니) · 무적은 Boss 쪽에서
         x.hidePos = mob.position();
         l.sendParticles(ParticleTypes.LARGE_SMOKE, x.hideFrom.x, x.hideFrom.y + 1, x.hideFrom.z, 30, 1, 1, 1, 0.05);
         // 실 기둥: 2명 이하 pillars 개 · 3명 이상 pillars3 개, 여왕 자리에서 pillarDist 칸 (경기장 안으로)
@@ -428,7 +430,6 @@ final class BossX {
             if (c == null) continue;
             c.moveTo(q.x, q.y, q.z, 0, 0);
             c.setNoAi(true);
-            c.setInvisible(true);
             c.setSilent(true);
             c.getPersistentData().putBoolean("rpgPillar", true);
             MobData cm = Combat.mob(c);
@@ -453,15 +454,11 @@ final class BossX {
             Entity e = l.getEntity(id);
             if (e == null || !e.isAlive()) continue;
             alive = true;
-            if (now % 5 == 0) {   // 실 기둥 (흰 기둥) + 여왕 쪽으로 이어진 실
-                l.sendParticles(ParticleTypes.ITEM_SNOWBALL, e.getX(), e.getY() + 2, e.getZ(), 10, 0.25, 1.3, 0.25, 0);
-                Vec3 a = e.position().add(0, 3.5, 0), b = x.hidePos == null ? a : x.hidePos.add(0, 1, 0);
-                for (int k = 0; k <= 10; k++) { Vec3 q = a.lerp(b, k / 10.0); l.sendParticles(ParticleTypes.ITEM_SNOWBALL, q.x, q.y, q.z, 1, 0, 0, 0, 0); }
-            }
+            // 실 기둥은 모델 (천장까지 실 가닥)
         }
-        if (!alive) {   // 성공: 떨어져서 기절
+        if (!alive) {   // 성공: 떨어져서 기절 (내려오는 동작 1.4초 뒤부터 기절 동작)
             hideEnd(mob, st, l);
-            long stun = Math.round(p.x("stun", 8) * 20);
+            long stun = Math.round(p.x("stun", 8) * 20) + (mob instanceof rpg.core.entity.SpiderQueen ? 28 : 0);
             m.stunUntil = now + stun;
             st.vulnUntil = now + stun;
             l.playSound(null, mob.blockPosition(), SoundEvents.ANVIL_LAND, SoundSource.HOSTILE, 2f, 0.5f);
@@ -499,6 +496,11 @@ final class BossX {
         x.hidePillars.clear();
         if (x.hidePos == null) return;
         x.hidePos = null;
+        if (mob instanceof rpg.core.entity.SpiderQueen q) {   // 실 타고 내려와 착지
+            q.playPattern("hide_down");
+            x.landUntil = l.getGameTime() + 28;
+            return;
+        }
         mob.setInvisible(false);
         mob.setNoGravity(false);
         mob.setDeltaMovement(0, -0.5, 0);

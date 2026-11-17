@@ -51,6 +51,13 @@ public class RpgGeoRenderer extends GeoEntityRenderer<GeoRpgMonster> {
         return super.getTextureLocation(e);
     }
 
+    /** 거미여왕은 천장 숨기 때 모델이 몸통 칸보다 훨씬 위로 올라감 → 화면 밖 판정으로 안 사라지게 */
+    @Override
+    public boolean shouldRender(GeoRpgMonster e, net.minecraft.client.renderer.culling.Frustum f, double x, double y, double z) {
+        if (e instanceof rpg.core.entity.SpiderQueen) return e.distanceToSqr(x, y, z) < 96 * 96;
+        return super.shouldRender(e, f, x, y, z);
+    }
+
     @Override
     public void render(GeoRpgMonster e, float yaw, float pt, PoseStack ps, MultiBufferSource buf, int light) {
         if (e.isInvisible()) return;   // 보스 순간이동 중
@@ -96,6 +103,11 @@ public class RpgGeoRenderer extends GeoEntityRenderer<GeoRpgMonster> {
                 }
                 CoreGeoBone e1 = getAnimationProcessor().getBone("eyes_p1");
                 if (e1 != null) e1.setHidden(p2);
+            }
+            // 어둠거미여왕: 1페이즈엔 배의 공허석·균열 숨김
+            if (e instanceof rpg.core.entity.SpiderQueen sq) {
+                CoreGeoBone vs = getAnimationProcessor().getBone("void_stones");
+                if (vs != null) vs.setHidden(!sq.phase2());
             }
             // 맞았을 때 임시 반응: 몸을 뒤로 젖혔다 돌아옴 (hit 애니메이션 만들면 교체)
             if (e.hurtTime > 0 && e.hurtAnim()) {

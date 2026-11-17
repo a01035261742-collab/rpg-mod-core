@@ -53,17 +53,10 @@ public final class EntityClient {
         e.registerEntityRenderer(ModEntities.BROWN_BEAR.get(), ctx -> new RpgGeoRenderer(ctx, "brown_bear", 0.9f));
         // 보스 거대버섯 수호자: GeckoLib 모델 (결정·눈 발광)
         e.registerEntityRenderer(ModEntities.MUSH_GUARDIAN.get(), ctx -> new RpgGeoRenderer(ctx, "mush_guardian", 2.4f, true));
-        // 레이드 보스 어둠거미여왕: 동굴 거미 무늬 거미 3배 (임시 몸)
-        ResourceLocation queenTex = new ResourceLocation("minecraft", "textures/entity/spider/cave_spider.png");
-        e.registerEntityRenderer(ModEntities.SPIDER_QUEEN.get(), ctx -> new net.minecraft.client.renderer.entity.SpiderRenderer<rpg.core.entity.SpiderQueen>(ctx) {
-            @Override
-            public ResourceLocation getTextureLocation(rpg.core.entity.SpiderQueen ent) { return queenTex; }
-
-            @Override
-            protected void scale(rpg.core.entity.SpiderQueen ent, com.mojang.blaze3d.vertex.PoseStack ps, float pt) {
-                ps.scale(3.0f, 3.0f, 3.0f);
-            }
-        });
+        // 레이드 보스 어둠거미여왕 (GeckoLib) + 알 · 고치
+        e.registerEntityRenderer(ModEntities.SPIDER_QUEEN.get(), ctx -> new RpgGeoRenderer(ctx, "spider_queen", 2.2f));
+        e.registerEntityRenderer(ModEntities.SPIDER_EGG.get(), ctx -> new RpgGeoRenderer(ctx, "spider_egg", 0.6f));
+        e.registerEntityRenderer(ModEntities.WEB_COCOON.get(), ctx -> new RpgGeoRenderer(ctx, "web_cocoon", 0.5f));
         // 보스 숲의 주인: GeckoLib 모델 1.8배, 결정·균열·눈 발광
         e.registerEntityRenderer(ModEntities.FOREST_LORD.get(), ctx -> new RpgGeoRenderer(ctx, "forest_lord", 2.5f, true));
         // 보스 패턴 소품

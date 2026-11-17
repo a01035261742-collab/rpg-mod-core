@@ -246,6 +246,7 @@ public final class Boss {
             st.bar = new ServerBossEvent(Component.literal(barName(m, def)), BossEvent.BossBarColor.RED, BossEvent.BossBarOverlay.NOTCHED_10);
             if (st.phase == 2) st.bar.setColor(BossEvent.BossBarColor.PURPLE);
             if (mob instanceof rpg.core.entity.MushGuardian mg) mg.setPhase2(st.phase == 2);
+            if (mob instanceof rpg.core.entity.SpiderQueen sq) sq.setPhase2(st.phase == 2);
             st.nextAt = mob.level().getGameTime() + 40;
         }
         return st;
@@ -364,10 +365,12 @@ public final class Boss {
                 p.sendSystemMessage(Component.literal("[" + m.name + "] 분노했어요! 패턴이 더 거세져요").withStyle(ChatFormatting.LIGHT_PURPLE));
             l.playSound(null, mob.blockPosition(), SoundEvents.RAVAGER_ROAR, SoundSource.HOSTILE, 1.5f, 0.6f);
             if (mob instanceof rpg.core.entity.MushGuardian mg && def.g("transCut", 0) <= 0) mg.setPhase2(true);   // 컷씬이 있으면 결정이 솟는 순간에
+            if (mob instanceof rpg.core.entity.SpiderQueen sq) sq.setPhase2(true);   // 전환 애니가 공허석을 0 에서 키움
             if (trans) {
                 st.transUntil = now + ticks(def.g("transSec", 3));
                 st.nextAt = st.transUntil + 10;
                 BossX.clearFloor(l, st);   // 독 늪 · 거미줄 장판 · 떨어지는 것 정리
+                if (def.g("transCut", 0) <= 0 && mob instanceof rpg.core.entity.SpiderQueen g) g.playPattern("phase2");
                 if (def.g("transCut", 0) > 0) {   // 전환 컷씬 (자막 없음): 카메라가 보스를 비춤 + 전환 애니
                     if (mob instanceof rpg.core.entity.GeoRpgMonster g) g.playPattern("phase2");
                     for (ServerPlayer p : arena(l, st, 16)) Net.cutscene(p, mob, ticks(def.g("transSec", 3)), "", TRANS_LINE.getOrDefault(def.key(), ""),
@@ -419,7 +422,7 @@ public final class Boss {
         // 기절 시작: 바닥 예고·떨어질 것 다 지움
         // 기절 중: 제자리 (모델 있는 보스는 하던 동작 끊고 기절 동작)
         if (now < m.stunUntil) {
-            if (!st.stunAnim) {
+            if (!st.stunAnim && now >= st.x.landUntil) {   // 천장에서 내려오는 동작이 끝난 뒤
                 st.stunAnim = true;
                 BossX.clearFloor(l, st);
                 Net.track(l, mob.getId(), -1, 0, 0, 0, 0);
@@ -1330,6 +1333,7 @@ public final class Boss {
         st.transUntil = 0;
         st.introUntil = 0;
         if (mob instanceof rpg.core.entity.MushGuardian mg) mg.setPhase2(false);
+        if (mob instanceof rpg.core.entity.SpiderQueen sq) sq.setPhase2(false);
         m.stunUntil = 0;
         if (st.stunAnim) { st.stunAnim = false; if (mob instanceof rpg.core.entity.GeoRpgMonster g) g.stopStun(); }
         st.awake = false;
