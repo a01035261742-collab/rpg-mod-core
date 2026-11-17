@@ -9,6 +9,8 @@ TEX = os.path.join(ROOT, 'resources', 'assets', 'rpgcore', 'textures', 'entity')
 # part: (name, pivot(x,y,z), rot(x,y,z) degrees, [cubes]); cube: (x,y,z,w,h,d, palette_key)
 # palette: name -> (base rgb, style)  style: plain / spots / belly / eyes / wing / armor / fur
 MOBS = {}
+# Java 모델(MobModels)을 만들지 않을 몹 (등록되지 않아 쓰이지 않음)
+NO_JAVA_MODEL = {'mush_kid', 'mush_spirit', 'mush_soldier', 'mush_fairy'}
 
 def mob(key, tw, th, palette, parts):
     MOBS[key] = dict(tw=tw, th=th, palette=palette, parts=parts)
@@ -152,6 +154,7 @@ def gen_java():
            '/** 자동 생성 (tools/mobgen.py) — 새 몹 모양. 직접 고치지 말고 생성기를 고치세요 */',
            'public final class MobModels {', '    private MobModels() {}', '']
     for key, m in MOBS.items():
+        if key in NO_JAVA_MODEL: continue   # 게임에서 안 쓰는 모양 (몹은 GeckoLib 모델을 씀). 텍스처 PNG 는 그대로 만듦
         offs = place_all(m); i = 0
         fn = ''.join(p.capitalize() for p in key.split('_'))
         out.append(f'    public static LayerDefinition {fn[0].lower() + fn[1:]}() {{')

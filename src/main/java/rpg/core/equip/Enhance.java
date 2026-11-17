@@ -285,17 +285,6 @@ public final class Enhance {
         RpgData.sync(p);
     }
 
-    /** 복구 재료 후보 (인벤에서 같은 아이템, 파괴 안 된 것) */
-    public static int findMaterial(ServerPlayer p, int loc) {
-        ItemStack s = at(p, loc);
-        for (int i = 0; i < 36; i++) {
-            if (i == loc) continue;
-            ItemStack m = p.getInventory().items.get(i);
-            if (!m.isEmpty() && m.getItem() == s.getItem() && !broken(m)) return i;
-        }
-        return -1;
-    }
-
     // ───────── 주문서 ─────────
     /** 이 주문서를 이 장비에 쓸 수 있으면 null, 아니면 이유 */
     public static String scrollBlock(ItemStack gear, ItemStack scroll) {

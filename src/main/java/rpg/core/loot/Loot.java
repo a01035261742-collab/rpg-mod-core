@@ -3,8 +3,6 @@ package rpg.core.loot;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;

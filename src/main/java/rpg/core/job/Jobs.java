@@ -9,10 +9,12 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.item.ItemStack;
+import rpg.core.RpgCore;
 import rpg.core.balance.Balance;
 import rpg.core.data.PlayerData;
 import rpg.core.data.RpgData;
 import rpg.core.equip.Gear;
+import rpg.core.item.ItemIds;
 import rpg.core.item.ModItems;
 
 /** 1차·2차 전직 (전직 교관 NPC) */
@@ -126,20 +128,7 @@ public final class Jobs {
         d.pendingBranch = 0;
         d.trialCleared = false;
         d.recalc();
-        String weapon = switch (family) {
-            case 1 -> "warrior_sword_30";
-            case 2 -> "archer_bow_30";
-            case 3 -> "mage_staff_30";
-            default -> "thief_dagger_30";
-        };
-        for (var g : ModItems.GEAR) {
-            if (((Gear.GearItem) g.get()).gearId().equals(weapon)) give(p, g.get().getDefaultInstance());
-        }
-        give(p, new ItemStack(ModItems.STAT_RESET_SCROLL.get()));
-        give(p, new ItemStack(ModItems.ORANGE_POTION.get(), Balance.jobReward2Potions));
-        give(p, new ItemStack(ModItems.DEEP_BLUE_POTION.get(), Balance.jobReward2Potions));
-        p.serverLevel().sendParticles(ParticleTypes.TOTEM_OF_UNDYING, p.getX(), p.getY() + 1, p.getZ(), 80, 0.5, 1, 0.5, 0.5);
-        p.level().playSound(null, p.blockPosition(), SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundSource.PLAYERS, 0.8f, 1f);
+        grantReward(p, family, 30, ModItems.ORANGE_POTION, ModItems.DEEP_BLUE_POTION, Balance.jobReward2Potions, 80, 0.5);
         d.freeTreeReset += 1;   // 2차 전직: 무료 트리 초기화 1회
         p.sendSystemMessage(Component.literal("2차 전직 완료! 이제 " + branchName(family, d.branch) + "예요. ").withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD)
                 .append(Component.literal("스킬 창(L)에서 새 스킬을 배울 수 있어요").withStyle(ChatFormatting.YELLOW)));
@@ -166,24 +155,34 @@ public final class Jobs {
         d.job = family;
         d.recalc();
         // 보상: 직업 무기(Lv10) · 스탯 초기화 주문서 · 물약
-        String weapon = switch (family) {
-            case 1 -> "warrior_sword_10";
-            case 2 -> "archer_bow_10";
-            case 3 -> "mage_staff_10";
-            default -> "thief_dagger_10";
-        };
-        for (var g : ModItems.GEAR) {
-            if (((Gear.GearItem) g.get()).gearId().equals(weapon)) give(p, g.get().getDefaultInstance());
-        }
-        give(p, new ItemStack(ModItems.STAT_RESET_SCROLL.get()));
-        give(p, new ItemStack(ModItems.RED_POTION.get(), Balance.jobRewardPotions));
-        give(p, new ItemStack(ModItems.BLUE_POTION.get(), Balance.jobRewardPotions));
-        p.serverLevel().sendParticles(ParticleTypes.TOTEM_OF_UNDYING, p.getX(), p.getY() + 1, p.getZ(), 60, 0.5, 1, 0.5, 0.4);
-        p.level().playSound(null, p.blockPosition(), SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundSource.PLAYERS, 0.8f, 1f);
+        grantReward(p, family, 10, ModItems.RED_POTION, ModItems.BLUE_POTION, Balance.jobRewardPotions, 60, 0.4);
         p.sendSystemMessage(Component.literal("전직 완료! 이제 " + name(family) + "예요. ").withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD)
                 .append(Component.literal("직업 무기·스탯 초기화 주문서·물약을 받았어요").withStyle(ChatFormatting.YELLOW)));
         RpgData.sync(p);
         return null;
+    }
+
+    /**
+     * 전직 보상 (1차·2차 공통): 직업 무기(레벨 weaponLevel) · 스탯 초기화 주문서 · 물약 2종 + 효과(파티클·소리).
+     * 직업 무기는 장비 id(예: warrior_sword_10)로 바로 찾음.
+     */
+    private static void grantReward(ServerPlayer p, int family, int weaponLevel,
+                                    java.util.function.Supplier<? extends net.minecraft.world.level.ItemLike> potion1,
+                                    java.util.function.Supplier<? extends net.minecraft.world.level.ItemLike> potion2,
+                                    int potionCount, int particles, double particleSpeed) {
+        String weapon = switch (family) {
+            case 1 -> "warrior_sword_";
+            case 2 -> "archer_bow_";
+            case 3 -> "mage_staff_";
+            default -> "thief_dagger_";
+        } + weaponLevel;
+        net.minecraft.world.item.Item weaponItem = ItemIds.item(RpgCore.MODID + ":" + weapon);
+        if (weaponItem != null) give(p, weaponItem.getDefaultInstance());
+        give(p, new ItemStack(ModItems.STAT_RESET_SCROLL.get()));
+        give(p, new ItemStack(potion1.get(), potionCount));
+        give(p, new ItemStack(potion2.get(), potionCount));
+        p.serverLevel().sendParticles(ParticleTypes.TOTEM_OF_UNDYING, p.getX(), p.getY() + 1, p.getZ(), particles, 0.5, 1, 0.5, particleSpeed);
+        p.level().playSound(null, p.blockPosition(), SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundSource.PLAYERS, 0.8f, 1f);
     }
 
     private static void give(ServerPlayer p, ItemStack s) {

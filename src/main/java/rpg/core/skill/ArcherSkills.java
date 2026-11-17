@@ -5,7 +5,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.phys.Vec3;
 import rpg.core.data.PlayerData;
 
 /** 궁수 개편 스킬: 스나이핑 (조준 후 한 발) · 표식 사격 */

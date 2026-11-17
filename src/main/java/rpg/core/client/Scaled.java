@@ -1,6 +1,5 @@
 package rpg.core.client;
 
-import net.minecraft.client.Minecraft;
 
 /**
  * 창 1.5배 (시안 ui_bag_big2): 창 안은 원래 크기 좌표로 그리고, 그림·마우스만 배율로 바꿈.

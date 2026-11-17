@@ -6,13 +6,9 @@ import java.util.Map;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.registries.ForgeRegistries;
 import rpg.core.net.Net;
 
 /** 상점 창: 왼쪽 사기 목록 (클릭 1개 / Shift 10개), 오른쪽 내 인벤 (클릭 1개 팔기 / Shift 한 묶음) */

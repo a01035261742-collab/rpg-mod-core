@@ -3,8 +3,6 @@ package rpg.core.client;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import rpg.core.net.Net;
 import rpg.core.skill.Defs;

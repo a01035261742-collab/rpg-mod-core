@@ -1,8 +1,5 @@
 package rpg.core.shop;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
