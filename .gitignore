@@ -20,3 +20,7 @@ buildings/v2d3/
 buildings/v2d5/
 buildings/village2_v*.zip
 __pycache__/
+# 건물 작업 결과물 (스크립트 .py / .json 은 추적, 결과물은 추적 안 함)
+buildings/**/*.png
+buildings/**/*.schem
+buildings/**/*.zip
