@@ -61,6 +61,13 @@ public final class EpicFightCompat {
     /** 구르기 기본 쿨타임 (초) — 패시브 dodgeCd (%) 로 줄어듦 (최대 60%) */
     public static final double ROLL_CD = 1.5;
     private static final UUID CAST_ID = UUID.fromString("6f1f0d2e-7a51-4c1e-9b0a-52d0c1a1e010");
+    /** 같은 곳에서 계속 실패해도 로그는 한 번만 (매 틱 쏟아지지 않게). Error(NoClassDefFoundError 등)도 잡아야 해서 Throwable 유지 */
+    private static final java.util.Set<String> WARNED = java.util.concurrent.ConcurrentHashMap.newKeySet();
+
+    private static void warnOnce(String where, Throwable ex) {
+        if (WARNED.add(where)) RpgCore.LOG.warn("[rpgcore] EpicFight 호환 실패 ({}) - 이후 같은 오류는 기록하지 않아요", where, ex);
+    }
+
     private static final java.util.Map<UUID, Long> ROLL_READY = new java.util.concurrent.ConcurrentHashMap<>();
     private static Object castType;
     private static Class<?> dodgeClass, guardClass;
@@ -117,7 +124,7 @@ public final class EpicFightCompat {
                     int cd = (int) Math.round(ROLL_CD * (1 - red / 100.0) * 20);
                     ROLL_READY.put(id, now + cd);
                     rpg.core.net.Net.rollCd(sp, cd);
-                } catch (Throwable ignored) {}
+                } catch (Throwable ex) { warnOnce("구르기 쿨타임 이벤트", ex); }
             };
             addListener.invoke(getListener.invoke(patch), castType, CAST_ID, fn);
         } catch (Throwable ex) {
@@ -149,7 +156,7 @@ public final class EpicFightCompat {
                 for (var m : dm.getClass().getMethods())
                     if (m.getName().equals("setDataSync") && m.getParameterCount() == 2) { m.invoke(dm, key, 0.0F); break; }
             }
-        } catch (Throwable ignored) {}
+        } catch (Throwable ex) { warnOnce("가드 페널티 초기화", ex); }
     }
 
     /** EF 가드 중인가 (가드 스킬을 누르고 있음) */
@@ -373,7 +380,7 @@ public final class EpicFightCompat {
             for (var f : Class.forName("yesman.epicfight.gameasset.Animations").getFields())
                 if (java.lang.reflect.Modifier.isStatic(f.getModifiers()) && (filter.isEmpty() || f.getName().contains(filter.toUpperCase())))
                     out.add(f.getName());
-        } catch (Throwable ignored) {}
+        } catch (Throwable ex) { warnOnce("모션 이름 목록", ex); }
         java.util.Collections.sort(out);
         return out;
     }
