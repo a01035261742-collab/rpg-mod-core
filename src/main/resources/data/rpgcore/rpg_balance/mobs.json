@@ -2356,7 +2356,7 @@
      "id": "burst",
      "name": "독안개 분출",
      "type": "burst",
-     "rIn": 8,
+     "rIn": 10,
      "rOut": 20,
      "delay": 2.6,
      "pct": 200,
