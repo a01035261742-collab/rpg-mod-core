@@ -171,7 +171,11 @@ public final class RpgCommand {
                     ServerPlayer p = c.getSource().getPlayerOrException();
                     RpgData.get(p).init();
                     RpgData.sync(p);
-                    return ok(c, "캐릭터 초기화 (Lv.1)");
+                    p.closeContainer();
+                    net.minecraft.nbt.CompoundTag keep = p.getPersistentData().getCompound(net.minecraft.world.entity.player.Player.PERSISTED_NBT_TAG);
+                    keep.remove("rpgStorage");   // 창고 (페이지 포함)
+                    p.getPersistentData().put(net.minecraft.world.entity.player.Player.PERSISTED_NBT_TAG, keep);
+                    return ok(c, "캐릭터 초기화 (Lv.1 · 창고 비움)");
                 })));
     }
 
