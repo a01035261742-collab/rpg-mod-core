@@ -80,6 +80,7 @@ public final class EntityClient {
         e.registerEntityRenderer(ModEntities.SHOCKWAVE.get(), ctx -> new PropRenderer(ctx, "shockwave", 1.0f));
         e.registerEntityRenderer(ModEntities.HARD_MUSHROOM.get(), ctx -> new PropRenderer(ctx, "hard_mushroom", 1.0f));
         e.registerEntityRenderer(ModEntities.VOID_PILLAR.get(), ctx -> new RpgGeoRenderer(ctx, "void_pillar", 0.9f, true));
+        e.registerEntityRenderer(ModEntities.WEB_PILLAR.get(), ctx -> new RpgGeoRenderer(ctx, "web_pillar", 0.6f));
     }
 
     /** 직업 가죽 방어구: 아이콘 색 (아래층만 칠함, 위 오버레이는 그대로) */

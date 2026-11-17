@@ -22,6 +22,9 @@ import rpg.core.RpgCore;
 /** 월드에 뜨는 글자: 몹 머리 위 이름·레벨·체력바, 떠오르는 데미지 숫자 */
 @Mod.EventBusSubscriber(modid = RpgCore.MODID, value = Dist.CLIENT)
 public final class WorldText {
+    /** 체력바를 가려도 보이게 그릴 기믹 오브젝트 (몹 이름) */
+    private static final java.util.Set<String> SEE_THRU = java.util.Set.of("실 기둥", "거미 알", "거미줄 고치");
+
     private WorldText() {}
 
     /** 데미지 숫자 (시안 dmg3-③): 흰 픽셀 숫자 + 검은 테, 크리 = 금색 1.25배 + 오른쪽 위 CRIT, 같은 몹 연타는 위로 쌓임 */
@@ -190,6 +193,7 @@ public final class WorldText {
             int a = Math.max(8, (int) (255 * fade)) << 24;
             Vec3 p = ent.getPosition(pt).add(0, ent.getBbHeight() + 0.45, 0);
             boolean elite = info.name().startsWith("★");
+            boolean thru = SEE_THRU.contains(info.name());   // 기믹 오브젝트: 모델·벽에 가려도 바가 보임
             String name = "Lv." + info.level() + " " + info.name();
             float r = info.maxHp() <= 0 ? 0 : (float) Math.max(0, Math.min(1, info.hp() / info.maxHp()));
             // [흰 자리, 마지막 그린 시각, 마지막 깎인 시각, 지난 체력] — 깎이면 0.6초 그대로 있다가 줄어듦 (보스바와 같음)
@@ -212,12 +216,12 @@ public final class WorldText {
             ps.translate(0, 0, 0.01f);
             Matrix4f pm = ps.last().pose();
             int pc = a | 0xFFFFFF;
-            tex(buf.getBuffer(net.minecraft.client.renderer.RenderType.text(PL)), pm, -mw / 2 - cw, py, -mw / 2, py + ph, 0, 0, 1, 1, pc);
-            tex(buf.getBuffer(net.minecraft.client.renderer.RenderType.text(PM)), pm, -mw / 2, py, mw / 2, py + ph, 0, 0, 1, 1, pc);
-            tex(buf.getBuffer(net.minecraft.client.renderer.RenderType.text(PR)), pm, mw / 2, py, mw / 2 + cw, py + ph, 0, 0, 1, 1, pc);
+            tex(buf.getBuffer(thru ? net.minecraft.client.renderer.RenderType.textSeeThrough(PL) : net.minecraft.client.renderer.RenderType.text(PL)), pm, -mw / 2 - cw, py, -mw / 2, py + ph, 0, 0, 1, 1, pc);
+            tex(buf.getBuffer(thru ? net.minecraft.client.renderer.RenderType.textSeeThrough(PM) : net.minecraft.client.renderer.RenderType.text(PM)), pm, -mw / 2, py, mw / 2, py + ph, 0, 0, 1, 1, pc);
+            tex(buf.getBuffer(thru ? net.minecraft.client.renderer.RenderType.textSeeThrough(PR) : net.minecraft.client.renderer.RenderType.text(PR)), pm, mw / 2, py, mw / 2 + cw, py + ph, 0, 0, 1, 1, pc);
             ps.popPose();
-            font.drawInBatch(name, -nw / 2f, py + 5, a | (elite ? 0xFFAA28 : 0xFFE282), false, m, buf, Font.DisplayMode.NORMAL, 0, 0xF000F0);
-            var tb = buf.getBuffer(net.minecraft.client.renderer.RenderType.textBackground());
+            font.drawInBatch(name, -nw / 2f, py + 5, a | (elite ? 0xFFAA28 : 0xFFE282), false, m, buf, thru ? Font.DisplayMode.SEE_THROUGH : Font.DisplayMode.NORMAL, 0, 0xF000F0);
+            var tb = buf.getBuffer(thru ? net.minecraft.client.renderer.RenderType.textBackgroundSeeThrough() : net.minecraft.client.renderer.RenderType.textBackground());
             float hw = elite ? 28 : 22, h = elite ? 5 : 4;
             float xr = -hw + 2 * hw * r, xt = (float) (-hw + 2 * hw * tr[0]);
             // 겹치지 않게 칸 나눠 그림 (테두리 → 채움 · 흰 자리 · 빈 칸)

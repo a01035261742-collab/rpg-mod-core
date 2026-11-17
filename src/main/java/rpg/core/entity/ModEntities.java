@@ -39,6 +39,8 @@ public final class ModEntities {
                     .sized(0.5f, 0.6f).clientTrackingRange(10).build(RpgCore.MODID + ":mush_fairy"));
     /** 보스 기믹: 공허에 침식된 독버섯 기둥 (거대버섯 수호자 2페이즈) */
     public static final RegistryObject<EntityType<GeoRpgMonster>> VOID_PILLAR = geoMonster("void_pillar", 1.6f, 3.6f, 1);
+    /** 레이드 기믹: 실 기둥 (어둠거미여왕 천장 숨기). 키 = 아래 실 뭉치 높이 → 체력바가 뭉치 위에 뜸 */
+    public static final RegistryObject<EntityType<GeoRpgMonster>> WEB_PILLAR = geoMonster("web_pillar", 1.0f, 3.5f, 0);
     /** 곰: Blockbench 모델 (북극곰 비율 + 갈색 털). 보스 숲의 주인은 아직 북극곰 몸 (BrownBear 클래스) */
     public static final RegistryObject<EntityType<GeoRpgMonster>> BROWN_BEAR = geoMonster("brown_bear", 1.4f, 1.4f, 4);
     /** 보스 "거대버섯 수호자": 침식된 늙은 버섯 거인 (GeckoLib) */
@@ -82,6 +84,7 @@ public final class ModEntities {
         e.put(MUSH_KID.get(), RpgMonster.attrs(0.26).build());
         e.put(MUSH_SPIRIT.get(), RpgMonster.attrs(0.25).build());
         e.put(VOID_PILLAR.get(), RpgMonster.attrs(0.0).add(net.minecraft.world.entity.ai.attributes.Attributes.KNOCKBACK_RESISTANCE, 1.0).build());
+        e.put(WEB_PILLAR.get(), RpgMonster.attrs(0.0).add(net.minecraft.world.entity.ai.attributes.Attributes.KNOCKBACK_RESISTANCE, 1.0).build());
         e.put(MUSH_SOLDIER.get(), RpgMonster.attrs(0.24).build());
         e.put(MUSH_BEAST.get(), RpgMonster.attrs(0.27).build());
         e.put(MUSH_FAIRY.get(), FlyingRpgMonster.flyAttrs().build());

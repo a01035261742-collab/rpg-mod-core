@@ -2571,7 +2571,7 @@
   }
  },
  "web_pillar": {
-  "entity": "minecraft:zombie",
+  "entity": "rpgcore:web_pillar",
   "name": "실 기둥",
   "area": "레이드 기믹 (어둠거미여왕 천장 숨기)",
   "stunArmor": 99,
