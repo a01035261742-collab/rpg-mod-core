@@ -94,6 +94,7 @@ public final class PlayerEvents {
         if (!(e.getEntity() instanceof ServerPlayer sp)) return;
         PlayerData d = RpgData.get(sp);
         if (d.isNew()) d.init();
+        var keep = sp.getPersistentData().getCompound(net.minecraft.world.entity.player.Player.PERSISTED_NBT_TAG);
         // 개편 때 한 번만 하는 초기화 (전사 2건: 아래 "넘친 포인트 돌려주기"보다 먼저 돌던 순서 그대로)
         applyReforms(sp, d, keep, EARLY_REFORMS);
         // 트리 무료 초기화 (한 번만): 이미 2차인 사람한테 1회
