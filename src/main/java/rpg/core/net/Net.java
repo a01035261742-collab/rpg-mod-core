@@ -849,7 +849,8 @@ public final class Net {
                         var inv = p.getInventory().items;
                         for (int i = inv.size() - 1; i >= 0; i--)
                             if (inv.get(i).getItem() == it) { pot.drink(p, inv.get(i)); break; }
-                    }
+                    } else if (it instanceof rpg.core.item.ReturnScroll rs && p.getInventory().items.stream().anyMatch(s -> s.getItem() == it))
+                        rs.use(p.level(), p, net.minecraft.world.InteractionHand.MAIN_HAND);   // 귀환 주문서: 3초 시전 (끝나면 가방에서 하나)
                 } else if (action == 1) rpg.core.item.Potion.sortBag(p);
             }
             ctx.get().setPacketHandled(true);
