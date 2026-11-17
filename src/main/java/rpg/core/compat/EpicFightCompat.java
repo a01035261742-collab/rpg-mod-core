@@ -127,7 +127,29 @@ public final class EpicFightCompat {
 
     @SubscribeEvent
     public static void joinLevel(net.minecraftforge.event.entity.EntityJoinLevelEvent e) {
-        if (e.getEntity() instanceof ServerPlayer sp) hookRoll(sp);
+        if (!(e.getEntity() instanceof ServerPlayer sp)) return;
+        hookRoll(sp);
+        // 가드 중 죽으면 EF 가드 벌점(화면의 방패 "x1.2")이 안 지워짐 (새 몸은 tickCount 가 0 이라 40틱 지남 판정이 안 됨) → 들어올 때 0 으로
+        resetGuardPenalty(sp);
+        if (sp.getServer() != null) sp.getServer().tell(new net.minecraft.server.TickTask(sp.getServer().getTickCount() + 20, () -> resetGuardPenalty(sp)));
+    }
+
+    /** EF 가드 벌점 0 (가드 스킬 칸만) */
+    private static void resetGuardPenalty(ServerPlayer sp) {
+        if (!lookupCast()) return;
+        try {
+            Object patch = patch(sp);
+            if (patch == null) return;
+            Object cap = patch.getClass().getMethod("getSkillCapability").invoke(patch);
+            Object key = ((net.minecraftforge.registries.RegistryObject<?>) Class.forName("yesman.epicfight.skill.SkillDataKeys").getField("PENALTY").get(null)).get();
+            Object[] conts = (Object[]) cap.getClass().getField("skillContainers").get(cap);
+            for (Object c : conts) {
+                if (c == null || !guardClass.isInstance(contSkill.invoke(c))) continue;
+                Object dm = c.getClass().getMethod("getDataManager").invoke(c);
+                for (var m : dm.getClass().getMethods())
+                    if (m.getName().equals("setDataSync") && m.getParameterCount() == 2) { m.invoke(dm, key, 0.0F); break; }
+            }
+        } catch (Throwable ignored) {}
     }
 
     /** EF 가드 중인가 (가드 스킬을 누르고 있음) */
