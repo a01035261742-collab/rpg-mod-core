@@ -31,6 +31,7 @@ public final class Cutscene {
     private static ArmorStand cam;
     private static Vec3 eye0;
     private static float yaw0, pitch0;
+    private static float yawB, pitchB;   // 플레이어 눈에서 보스를 바라보는 각도 (끝나면 이 방향으로 고정)
 
     public static boolean active() { return cam != null; }
 
@@ -43,6 +44,7 @@ public final class Cutscene {
         lines = line == null || line.isBlank() ? new String[0] : line.split("\\|");
         eye0 = mc.player.getEyePosition();
         yaw0 = mc.player.getYRot(); pitch0 = mc.player.getXRot();
+        yawB = yaw0; pitchB = pitch0;
         cam = new ArmorStand(mc.level, eye0.x, eye0.y, eye0.z);
         place(eye0, yaw0, pitch0, true);
         mc.setCameraEntity(cam);
@@ -89,7 +91,7 @@ public final class Cutscene {
         if (e.phase != TickEvent.Phase.END || cam == null) return;
         Minecraft mc = Minecraft.getInstance();
         Entity boss = mc.level == null ? null : mc.level.getEntity(bossId);
-        if (boss == null || mc.player == null || ++tick >= total || (tick > 10 && mc.options.keyJump.isDown())) { stop(); return; }
+        if (boss == null || mc.player == null || ++tick >= total || (tick > 10 && com.mojang.blaze3d.platform.InputConstants.isKeyDown(mc.getWindow().getWindow(), mc.options.keyJump.getKey().getValue()))) { stop(); return; }
         if (mc.mouseHandler.isMouseGrabbed()) freeMouse(true);   // 클릭해서 다시 잡혀도 다시 풂
         double f = tick / (double) total;
         double h = boss.getBbHeight();
@@ -106,7 +108,13 @@ public final class Cutscene {
         double lookMix;
         if (f < o) { double k = ease(f / o); pos = eye0.lerp(orbit, k); lookMix = k; }
         else if (f < b) { pos = orbit; lookMix = 1; }
-        else { double k = ease((f - b) / (1 - b)); pos = orbit.lerp(mc.player.getEyePosition(), k); lookMix = 1 - k; }
+        else { double k = ease((f - b) / (1 - b)); pos = orbit.lerp(mc.player.getEyePosition(), k); lookMix = 1; }   // 돌아올 때도 보스를 봄 → 끝나면 그 방향 그대로
+        { Vec3 de = focus.subtract(mc.player.getEyePosition());
+          yawB = (float) (Math.toDegrees(Math.atan2(de.z, de.x)) - 90);
+          pitchB = (float) -Math.toDegrees(Math.atan2(de.y, Math.sqrt(de.x * de.x + de.z * de.z))); }
+        // 컷씬 동안 눌린 키(평타·스킬·EF 공격)는 전부 버림
+        for (net.minecraft.client.KeyMapping km : mc.options.keyMappings) { while (km.consumeClick()) {} }
+        net.minecraft.client.KeyMapping.releaseAll();
         // 지팡이 내려찍기 (애니 3.05초) 순간 흔들림
         double slam = slamTick;
         if (tick > slam && tick < slam + 8) {
@@ -128,8 +136,17 @@ public final class Cutscene {
         if (cam == null || e.phase != TickEvent.Phase.START) return;
         var pl = Minecraft.getInstance().player;
         if (pl == null) return;
-        pl.setYRot(yaw0); pl.setXRot(pitch0); pl.yRotO = yaw0; pl.xRotO = pitch0;
-        pl.setYHeadRot(yaw0); pl.yHeadRotO = yaw0;
+        pl.setYRot(yawB); pl.setXRot(pitchB); pl.yRotO = yawB; pl.xRotO = pitchB;
+        pl.setYHeadRot(yawB); pl.yHeadRotO = yawB;
+    }
+
+    /** 틱 시작에도 키 입력 버림 (EF·스킬 키가 틱 중간에 읽기 전에) */
+    @SubscribeEvent
+    public static void eatKeys(TickEvent.ClientTickEvent e) {
+        if (cam == null || e.phase != TickEvent.Phase.START) return;
+        Minecraft mc = Minecraft.getInstance();
+        for (net.minecraft.client.KeyMapping km : mc.options.keyMappings) { while (km.consumeClick()) {} }
+        net.minecraft.client.KeyMapping.releaseAll();
     }
 
     @SubscribeEvent

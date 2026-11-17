@@ -184,14 +184,14 @@ public final class Raids {
         tags.add(net.minecraft.nbt.StringTag.valueOf(LABEL_TAG));
         t.put("Tags", tags);
         Entity e = net.minecraft.world.entity.EntityType.loadEntityRecursive(t, l, x -> {
-            x.moveTo(pos.getX() + 0.5, pos.getY() + 2.6, pos.getZ() + 0.5, 0, 0);
+            x.moveTo(pos.getX() + 0.5, pos.getY() + 3.4, pos.getZ() + 0.5, 0, 0);
             return x;
         });
         if (e != null) l.addFreshEntity(e);
     }
 
     private static void unlabel(ServerLevel l, BlockPos pos) {
-        AABB box = new AABB(pos).inflate(0.5, 3.5, 0.5);
+        AABB box = new AABB(pos).inflate(0.5, 4.5, 0.5);
         for (Entity e : l.getEntities((Entity) null, box, x -> x.getTags().contains(LABEL_TAG))) e.discard();
     }
 
@@ -213,6 +213,7 @@ public final class Raids {
             p.sendSystemMessage(Component.literal("연결된 레이드가 없어요 (OP: 부수고 /rpg 레이드 단말기 <보스> 로 받은 단말기를 놓으세요)").withStyle(ChatFormatting.GRAY));
             return;
         }
+        if (p.level() instanceof ServerLevel sl) label(sl, pos, def);   // 예전에 놓은 단말기 글자도 새 높이·문구로
         sendInfo(p, def, pos);
     }
 
@@ -511,7 +512,18 @@ public final class Raids {
         clearReturn(m);
         ServerLevel rl = RpgWorld.rpgLevel(m.getServer());
         if (rl == null || gate == null) return;
-        m.teleportTo(rl, gate.getX() + 0.5, gate.getY(), gate.getZ() + 1.5, m.getYRot(), m.getXRot());
+        // 단말기 위가 아니라 옆 (2칸), 단말기를 바라보게 · 나오자마자 다시 밟힌 걸로 안 치게
+        double x = gate.getX() + 0.5, y = gate.getY() + 1, z = gate.getZ() + 2.5;
+        search:
+        for (int[] o : new int[][]{{0, 2}, {2, 0}, {0, -2}, {-2, 0}, {2, 2}, {-2, 2}, {2, -2}, {-2, -2}, {0, 3}, {3, 0}})
+            for (int dy : new int[]{1, 0, 2}) {
+                double cx = gate.getX() + 0.5 + o[0], cy = gate.getY() + dy, cz = gate.getZ() + 0.5 + o[1];
+                if (rl.noCollision(m.getType().getDimensions().makeBoundingBox(cx, cy, cz))
+                        && !rl.getBlockState(BlockPos.containing(cx, cy - 1, cz)).isAir()) { x = cx; y = cy; z = cz; break search; }
+            }
+        float yaw = (float) (Math.toDegrees(Math.atan2(gate.getZ() + 0.5 - z, gate.getX() + 0.5 - x)) - 90);
+        STEP.put(m.getUUID(), rl.getGameTime() + 40);
+        m.teleportTo(rl, x, y, z, yaw, 10);
     }
 
     // 접속 끊기면 다시 들어올 때 단말기로
