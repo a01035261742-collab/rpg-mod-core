@@ -92,4 +92,7 @@ public class ReturnScroll extends Item {
         tip.add(Component.literal("우클릭: 3초 뒤 가장 가까운 마을로").withStyle(ChatFormatting.GRAY));
         tip.add(Component.literal("움직이거나 맞으면 취소 · 보스 경기장에서는 못 씀").withStyle(ChatFormatting.DARK_GRAY));
     }
+
+    /** 서버가 꺼질 때 호출: 게임 중에 쌓인 상태만 비움 (데이터팩에서 읽은 정의는 그대로) */
+    public static void clearState() { CASTS.clear(); }
 }

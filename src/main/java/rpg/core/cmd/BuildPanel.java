@@ -203,4 +203,7 @@ public final class BuildPanel {
                 .append(run("되돌리기", "//undo", ChatFormatting.RED, "방금 붙인 것 취소")).append(" ").append(run("건축 도우미", "/rpg 건축", ChatFormatting.WHITE, "다시 열기")));
         return 1;
     }
+
+    /** 서버가 꺼질 때 호출: 게임 중에 쌓인 상태만 비움 (데이터팩에서 읽은 정의는 그대로) */
+    public static void clearState() { SHOWS.clear(); }
 }

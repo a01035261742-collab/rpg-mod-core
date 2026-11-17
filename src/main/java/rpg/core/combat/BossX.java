@@ -154,6 +154,7 @@ final class BossX {
                     rpg.core.net.Net.cocoon(p, false);
                 }
                 COCOON_PTS.remove(e.getKey());
+                dropCocoonLast(e.getKey());
                 it.remove();
                 continue;
             }
@@ -950,7 +951,17 @@ final class BossX {
         for (UUID id : x.hidePillars) { Entity e = l.getEntity(id); if (e != null) e.discard(); }
         x.hidePillars.clear();
         if (!x.zones.isEmpty() || !x.webs.isEmpty()) Net.telegraph(l, st.center, new Vec3(1, 0, 0), 99, 0, 0, 1);
+        for (UUID victim : x.cocoons.keySet()) dropCocoonLast(victim);
         x.hatch.clear(); x.absorb.clear(); x.adds.clear(); x.cocoons.clear(); x.zones.clear(); x.shots.clear(); x.lines.clear(); x.webs.clear();
         for (ServerPlayer p : Boss.arena(l, st, 24)) { POISON.remove(p.getUUID()); Status.clear(rpg.core.data.RpgData.get(p)); rpg.core.data.RpgData.sync(p); }   // 독·상태이상도 끝
+    }
+
+    /** 서버가 꺼질 때 호출: 게임 중에 쌓인 상태만 비움 (데이터팩에서 읽은 정의는 그대로) */
+    public static void clearState() { COCOON_PTS.clear(); COCOON_LAST.clear(); POISON.clear(); }
+
+    /** 이 사람이 묶였을 때 쌓인 "묶인사람:때린사람" 기록 지우기 */
+    private static void dropCocoonLast(UUID victim) {
+        String prefix = victim + ":";
+        COCOON_LAST.keySet().removeIf(k -> k.startsWith(prefix));
     }
 }
