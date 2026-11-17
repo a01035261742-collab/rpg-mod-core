@@ -167,17 +167,30 @@ public final class RpgCommand {
                     p.getInventory().add(ModItems.STAT_RESET_SCROLL.get().getDefaultInstance());
                     return ok(c, "스탯 초기화 주문서 지급");
                 }))
-                .then(Commands.literal("reset").requires(s -> s.hasPermission(2)).executes(c -> {
-                    ServerPlayer p = c.getSource().getPlayerOrException();
-                    RpgData.get(p).init();
-                    RpgData.sync(p);
-                    p.closeContainer();
-                    net.minecraft.nbt.CompoundTag keep = p.getPersistentData().getCompound(net.minecraft.world.entity.player.Player.PERSISTED_NBT_TAG);
-                    for (String k : new String[]{"rpgStorage", rpg.core.town.Travel.KEY, "rpgDaily", "rpgAch", "rpgBossFirst", "rpgRaidClears", "rpgRaidDay"})
-                        keep.remove(k);   // 창고 · 마을 이동 · 일일 · 업적 · 보스 첫 처치 · 레이드 기록
-                    p.getPersistentData().put(net.minecraft.world.entity.player.Player.PERSISTED_NBT_TAG, keep);
-                    return ok(c, "캐릭터 초기화 (Lv.1 · 창고·마을 이동·일일·업적·레이드 기록도 초기화)");
-                })));
+                .then(Commands.literal("reset").requires(s -> s.hasPermission(2))
+                        .executes(c -> resetChar(c, false))
+                        .then(Commands.literal("장비").executes(c -> resetChar(c, true)))));
+    }
+
+    /** /rpg reset [장비]: 캐릭터·창고·마을 이동·일일·업적·레이드 기록 초기화 (장비 = 착용 장비·장신구도 비움) */
+    private static int resetChar(CommandContext<CommandSourceStack> c, boolean gear) throws CommandSyntaxException {
+        ServerPlayer p = c.getSource().getPlayerOrException();
+        RpgData.get(p).init();
+        RpgData.sync(p);
+        p.closeContainer();
+        net.minecraft.nbt.CompoundTag keep = p.getPersistentData().getCompound(net.minecraft.world.entity.player.Player.PERSISTED_NBT_TAG);
+        for (String k : new String[]{"rpgStorage", rpg.core.town.Travel.KEY, "rpgDaily", "rpgAch", "rpgBossFirst", "rpgRaidClears", "rpgRaidDay"})
+            keep.remove(k);   // 창고 · 마을 이동 · 일일 · 업적 · 보스 첫 처치 · 레이드 기록
+        p.getPersistentData().put(net.minecraft.world.entity.player.Player.PERSISTED_NBT_TAG, keep);
+        if (gear) {
+            var eq = rpg.core.equip.PlayerEquip.get(p);
+            for (int i = 0; i < eq.items.getSlots(); i++) eq.items.setStackInSlot(i, net.minecraft.world.item.ItemStack.EMPTY);
+            eq.dirty = true;
+            p.getInventory().armor.replaceAll(x -> net.minecraft.world.item.ItemStack.EMPTY);
+            p.getInventory().offhand.replaceAll(x -> net.minecraft.world.item.ItemStack.EMPTY);
+            p.inventoryMenu.broadcastChanges();
+        }
+        return ok(c, "캐릭터 초기화 (Lv.1 · 창고·마을 이동·일일·업적·레이드 기록" + (gear ? "·착용 장비·장신구" : "") + " 초기화)");
     }
 
     private static int info(CommandContext<CommandSourceStack> c) throws CommandSyntaxException {
