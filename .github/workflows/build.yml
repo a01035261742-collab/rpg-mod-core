@@ -1,5 +1,10 @@
 name: build
-on: [push, workflow_dispatch]
+on:
+  push:
+    # 이 폴더/문서만 바뀐 push 는 Forge 빌드를 건너뜀 (pack/ 은 mods-only.yml 이 따로 처리)
+    # 주의: 여기만 바뀐 커밋에 [release] 를 붙이면 빌드가 안 돌아서 릴리스도 안 나감
+    paths-ignore: ['pack/**', 'buildings/**', 'tools/**', '**/*.md']
+  workflow_dispatch:
 permissions:
   contents: write
 jobs:
@@ -15,7 +20,7 @@ jobs:
           chmod +x gradlew
           set -o pipefail
           # Forge 서버 먼저, 실패하면 CreeperHost 미러로 한 번 더
-          ./gradlew build --stacktrace 2>&1 | tee build.log || { echo "::warning::Forge 서버 실패 → 미러로 다시 빌드"; USE_FORGE_MIRROR=1 ./gradlew build --stacktrace 2>&1 | tee build.log; }
+          ./gradlew build --no-daemon --stacktrace 2>&1 | tee build.log || { echo "::warning::Forge 서버 실패 → 미러로 다시 빌드"; USE_FORGE_MIRROR=1 ./gradlew build --no-daemon --stacktrace 2>&1 | tee build.log; }
       - name: Report errors
         if: failure()
         run: |
@@ -46,8 +51,9 @@ jobs:
           else
             gh release create "v$VER" "$JAR" /tmp/manifest.json /tmp/changelog.json --title "v$VER" --notes "자동 빌드 ${GITHUB_SHA}" --target "$GITHUB_SHA" --latest
           fi
+      # main 에서만 올림 (다른 브랜치 빌드가 build-output 의 jar 를 덮어쓰지 않게)
       - name: Publish jar to build branch
-        if: success()
+        if: success() && github.ref == 'refs/heads/main'
         run: |
           mkdir -p /tmp/out && cp build/libs/*.jar /tmp/out/
           git config user.name "github-actions"
