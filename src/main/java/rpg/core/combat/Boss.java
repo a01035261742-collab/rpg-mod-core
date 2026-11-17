@@ -1588,5 +1588,5 @@ public final class Boss {
     }
 
     /** 서버가 꺼질 때 호출: 게임 중에 쌓인 상태만 비움 (데이터팩에서 읽은 정의는 그대로) */
-    public static void clearState() { MUSIC.clear(); MUSIC_SEEN.clear(); STATES.clear(); LATER.clear(); }
+    public static void clearState() { MUSIC.clear(); MUSIC_SEEN.clear(); STATES.clear(); LATER.clear(); BossX.clearState(); }
 }

@@ -32,7 +32,6 @@ public final class StateCleanup {
     @SubscribeEvent
     public static void onStopped(ServerStoppedEvent e) {
         rpg.core.combat.Boss.clearState();
-        rpg.core.combat.BossX.clearState();
         rpg.core.combat.MobAI.clearState();
         rpg.core.combat.CombatEvents.clearState();
         rpg.core.combat.Status.clearState();

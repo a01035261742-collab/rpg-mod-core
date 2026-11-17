@@ -957,7 +957,7 @@ final class BossX {
     }
 
     /** 서버가 꺼질 때 호출: 게임 중에 쌓인 상태만 비움 (데이터팩에서 읽은 정의는 그대로) */
-    public static void clearState() { COCOON_PTS.clear(); COCOON_LAST.clear(); POISON.clear(); }
+    static void clearState() { COCOON_PTS.clear(); COCOON_LAST.clear(); POISON.clear(); }
 
     /** 이 사람이 묶였을 때 쌓인 "묶인사람:때린사람" 기록 지우기 */
     private static void dropCocoonLast(UUID victim) {
