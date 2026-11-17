@@ -143,7 +143,7 @@ public final class ModItems {
         MATERIALS.add(ITEMS.register("guardian_treasure", () -> new Treasure(new Item.Properties().rarity(Rarity.EPIC), "보스 \"거대버섯 수호자\" 보물 · 상점에 팔면 40,000 G")));
         MATERIALS.add(ITEMS.register("spider_queen_treasure", () -> new Treasure(new Item.Properties().rarity(Rarity.EPIC), "레이드 \"어둠거미여왕\" 보물 · 상점에 팔면 80,000 G")));
         MATERIALS.add(ITEMS.register("guardian_heart", () -> new Material(new Item.Properties().rarity(Rarity.EPIC), "보스 \"거대버섯 수호자\" 확정 드롭 · 판매용 (나중에 제작 재료)", false)));
-        SCROLL_FRAGMENT = ITEMS.register("scroll_fragment", () -> new Material(new Item.Properties().rarity(Rarity.RARE), "10개 → 메뉴(M) · 강화 · 조각 합성에서 무작위 주문서", false));
+        SCROLL_FRAGMENT = ITEMS.register("scroll_fragment", () -> new Material(new Item.Properties().rarity(Rarity.RARE), "", false));
         MATERIALS.add(SCROLL_FRAGMENT);
     }
 

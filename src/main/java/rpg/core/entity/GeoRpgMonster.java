@@ -32,7 +32,7 @@ public class GeoRpgMonster extends RpgMonster implements GeoEntity {
             // 보스 (거대버섯 수호자)
             "combo", "combo2", "combo_alt", "delayed", "jump", "blink_in", "spore_shot", "counter", "beam", "comet", "rain", "poke", "intro", "phase2", "beam2", "beam3",
             // 레이드 보스 (어둠거미여왕) · 알
-            "fang", "kick", "web", "leap", "needle", "eggs", "pull", "mark", "share", "webrain", "burst", "collapse", "absorb", "frenzy", "hide", "hide_down", "hatch"};
+            "fang", "kick", "web", "leap", "needle", "eggs", "pull", "mark", "share", "webrain", "burst", "collapse", "absorb", "frenzy", "hide", "hide_down", "hatch", "leap2"};
 
     /** 근접 공격(swing) 때 attack 애니메이션 재생 (보스는 끔) */
     protected boolean swingAnim = true;

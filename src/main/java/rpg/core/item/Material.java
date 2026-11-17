@@ -23,6 +23,6 @@ public class Material extends Item {
 
     @Override
     public void appendHoverText(ItemStack s, @Nullable Level level, List<Component> tip, TooltipFlag flag) {
-        tip.add(Component.literal(desc).withStyle(ChatFormatting.GRAY));
+        if (!desc.isEmpty()) tip.add(Component.literal(desc).withStyle(ChatFormatting.GRAY));
     }
 }

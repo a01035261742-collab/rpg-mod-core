@@ -579,7 +579,7 @@ public final class Boss {
             for (ServerPlayer x : arena(l, st, 16)) Net.alert(x, "◆ " + p.name(), ChatFormatting.YELLOW, 50);
         // 여왕 추가 기믹 (BossX.TYPES) 은 전부 BossX.start — 목록에 "hide"(천장 숨기)가 빠져 있어서 기둥 없이 바로 "실 다 끊음" 되던 버그 (0.55.7)
         // 모델 애니메이션: 패턴 id 이름 (돌진·광선은 추적이 끝나고 확정될 때)
-        if (mob instanceof rpg.core.entity.GeoRpgMonster g && !p.type().equals("charge") && !p.type().equals("beam")) g.playPattern(p.id());
+        if (mob instanceof rpg.core.entity.GeoRpgMonster g && !p.type().equals("charge") && !p.type().equals("beam") && !queenLeap(mob, p)) g.playPattern(p.id());
         if (BossX.TYPES.contains(p.type())) { BossX.start(mob, st, def, p, t, l, now); return; }
         switch (p.type()) {
             case "cone" -> Net.telegraph(l, st.pos, st.dir, MobAI.CONE, p.r(), p.angle(), dl);
@@ -847,6 +847,10 @@ public final class Boss {
                     st.jumpFrom = mob.position();
                     st.jumpLand = now + dl;
                     st.jumpStart = st.jumpLand - Math.min(20, dl);
+                    if (queenLeap(mob, p)) {   // 거미여왕: 예고가 확정되자마자 높이 뛰어올라 예고 끝에 내리꽂음
+                        st.jumpStart = now + 6;
+                        ((rpg.core.entity.GeoRpgMonster) mob).playPattern(dl >= 46 ? "leap" : "leap2");
+                    }
                     l.playSound(null, mob.blockPosition(), SoundEvents.RAVAGER_ROAR, SoundSource.HOSTILE, 1f, 1.4f);
                 }
                 l.playSound(null, mob.blockPosition(), SoundEvents.NOTE_BLOCK_BASS.value(), SoundSource.HOSTILE, 1f, 0.5f);
@@ -875,7 +879,7 @@ public final class Boss {
         } else if (st.stage == 1 && p.type().equals("jump") && st.jumpFrom != null && !st.rocks.isEmpty() && now >= st.jumpStart && now < st.jumpLand) {
             Vec3 q = st.rocks.values().iterator().next();
             double f = Math.min(1, (now + 1 - st.jumpStart) / (double) Math.max(1, st.jumpLand - st.jumpStart));
-            double h = 4 + flat(st.jumpFrom, q) * 0.12;
+            double h = mob instanceof rpg.core.entity.SpiderQueen ? 9 + flat(st.jumpFrom, q) * 0.15 : 4 + flat(st.jumpFrom, q) * 0.12;   // 거미여왕: 더 높은 포물선
             Vec3 next = st.jumpFrom.lerp(q, f).add(0, 4 * h * f * (1 - f), 0);
             MobAI.gravity(mob, false);
             mob.setDeltaMovement(next.subtract(mob.position()));
@@ -950,11 +954,16 @@ public final class Boss {
                     if (p.x("far", 0) > 0) st.lastFar = nt.getUUID();
                     st.hitNo++;
                     st.rocks.clear(); st.rocks.put(nt.getUUID(), nt.position()); beginTrack(mob, st, p, now);
-                    if (mob instanceof rpg.core.entity.GeoRpgMonster g) g.playPattern(p.id());
+                    if (mob instanceof rpg.core.entity.GeoRpgMonster g && !queenLeap(mob, p)) g.playPattern(p.id());
                 } else finish(mob, st, def, now);
             }
             default -> finish(mob, st, def, now);
         }
+    }
+
+    /** 거미여왕 도약: 애니는 추적 시작이 아니라 뛰어오르는 순간에 (leap 2.4초 · leap2 2.0초 = 예고 길이) */
+    static boolean queenLeap(Mob mob, Pattern p) {
+        return mob instanceof rpg.core.entity.SpiderQueen && p.type().equals("jump") && p.x("blink", 0) <= 0;
     }
 
     static void finish(Mob mob, State st, Def def, long now) {
