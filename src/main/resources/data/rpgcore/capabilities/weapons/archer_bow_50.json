@@ -1,0 +1,8 @@
+{
+ "type": "epicfight:bow",
+ "attributes": {
+  "common": {
+   "impact": 0.5
+  }
+ }
+}
