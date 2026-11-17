@@ -21,13 +21,23 @@ import rpg.core.net.Net;
 public final class Telegraphs {
     private Telegraphs() {}
 
-    private record T(Net.Telegraph t, long start, long end) {}
+    private record T(Net.Telegraph t, long start, long end, boolean off) {}
     private static final List<T> LIST = new ArrayList<>();
 
     public static void add(Net.Telegraph t) {
         if (t.shape() == 99) { LIST.clear(); return; }   // 바닥 정리 (보스 페이즈 전환 등)
         long now = System.currentTimeMillis();
-        LIST.add(new T(t, now, now + t.ticks() * 50L));
+        LIST.add(new T(t, now, now + t.ticks() * 50L, offBoss(t)));
+    }
+
+    /** 원 중심에 큰 몹(보스)이 없으면 true → 시계 방향으로 차오름 */
+    private static boolean offBoss(Net.Telegraph t) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.level == null || t.shape() % 10 != 0) return false;
+        for (net.minecraft.world.entity.Entity en : mc.level.entitiesForRendering())
+            if (en instanceof net.minecraft.world.entity.Mob && en.getBbWidth() >= 1.5f
+                    && Math.hypot(en.getX() - t.x(), en.getZ() - t.z()) <= Math.max(1.5, en.getBbWidth() * 0.5)) return false;
+        return true;
     }
 
     /** 추적 예고: 클라가 매 프레임 대상 위치로 그림 */
@@ -83,7 +93,7 @@ public final class Telegraphs {
                     case 1 -> { line(vc, m, b, y, 1f, 0x55B050FF, 0); line(vc, m, b, y + 0.01f, p, 0x99A030F0, 0); }
                     case 2 -> { cone(vc, m, b, y, 1f, 0x55B050FF); cone(vc, m, b, y + 0.01f, p, 0x99A030F0); }
                     case 3 -> { ring(vc, m, b, y, 1f, 0x55B050FF); ring(vc, m, b, y + 0.01f, p, 0x99A030F0); }
-                    default -> { circle(vc, m, b, y, 1f, 0x55B050FF); circle(vc, m, b, y + 0.01f, p, 0x99A030F0); }
+                    default -> { circle(vc, m, b, y, 1f, 0x55B050FF); fill(vc, m, b, y + 0.01f, p, 0x99A030F0, x.off()); }
                 }
                 continue;
             }
@@ -114,7 +124,7 @@ public final class Telegraphs {
                     case 1 -> { line(vc, m, b, y, 1f, 0x5530A0FF, 0); line(vc, m, b, y + 0.01f, p, 0x992080FF, 0); }
                     case 2 -> { cone(vc, m, b, y, 1f, 0x5530A0FF); cone(vc, m, b, y + 0.01f, p, 0x992080FF); }
                     case 3 -> { ring(vc, m, b, y, 1f, 0x5530A0FF); ring(vc, m, b, y + 0.01f, p, 0x992080FF); }
-                    default -> { circle(vc, m, b, y, 1f, 0x5530A0FF); circle(vc, m, b, y + 0.01f, p, 0x992080FF); }
+                    default -> { circle(vc, m, b, y, 1f, 0x5530A0FF); fill(vc, m, b, y + 0.01f, p, 0x992080FF, x.off()); }
                 }
                 continue;
             }
@@ -122,7 +132,7 @@ public final class Telegraphs {
                 case 1 -> { line(vc, m, t, y, 1f, 0x55FF2020, 0); line(vc, m, t, y + 0.01f, p, 0x99FF1010, 0); }
                 case 2 -> { cone(vc, m, t, y, 1f, 0x55FF2020); cone(vc, m, t, y + 0.01f, p, 0x99FF1010); }
                 case 3 -> { ring(vc, m, t, y, 1f, 0x55FF2020); ring(vc, m, t, y + 0.01f, p, 0x99FF1010); }
-                default -> { circle(vc, m, t, y, 1f, 0x55FF2020); circle(vc, m, t, y + 0.01f, p, 0x99FF1010); }
+                default -> { circle(vc, m, t, y, 1f, 0x55FF2020); fill(vc, m, t, y + 0.01f, p, 0x99FF1010, x.off()); }
             }
         }
         // 추적 예고 (노랑): 보스·대상의 지금 프레임 위치
@@ -178,6 +188,21 @@ public final class Telegraphs {
             float x2 = cx + (float) Math.cos(a2) * r, z2 = cz + (float) Math.sin(a2) * r;
             quad(vc, m, cx, cz, x2, z2, x1, z1, cx, cz, y, col);   // 위에서 보이게 (반시계)
             quad(vc, m, cx, cz, x1, z1, x2, z2, cx, cz, y, col);   // 아래에서도
+        }
+    }
+
+    /** 차오르는 원: 보스 자리면 가운데서 퍼지고, 다른 곳이면 12시부터 시계 방향으로 */
+    private static void fill(VertexConsumer vc, Matrix4f m, Net.Telegraph t, float y, float p, int col, boolean off) {
+        if (!off) { circle(vc, m, t, y, p, col); return; }
+        float r = t.a(), cx = (float) t.x(), cz = (float) t.z();
+        int n = Math.max(1, (int) Math.ceil(48 * p));
+        double end = Math.PI * 2 * p;
+        for (int i = 0; i < n; i++) {
+            double a1 = end * i / n, a2 = end * (i + 1) / n;
+            float x1 = cx + (float) Math.sin(a1) * r, z1 = cz - (float) Math.cos(a1) * r;
+            float x2 = cx + (float) Math.sin(a2) * r, z2 = cz - (float) Math.cos(a2) * r;
+            quad(vc, m, cx, cz, x2, z2, x1, z1, cx, cz, y, col);
+            quad(vc, m, cx, cz, x1, z1, x2, z2, cx, cz, y, col);
         }
     }
 

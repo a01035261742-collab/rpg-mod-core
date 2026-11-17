@@ -597,7 +597,19 @@ public final class Boss {
                 standing(mob, true);
                 return;
             }
-            case "web", "share" -> {   // 거미줄 발사 (먼 사람 여럿) · 먹잇감 (한 명, 보라)
+            case "share" -> {   // 먹잇감: 보스 발밑 보라 원에 전원 모이기 (그동안 보스는 가만히)
+                st.repeatLeft = 1;
+                st.rocks.clear();
+                st.rocks.put(new UUID(0, 0), mob.position());
+                st.stage = 0;
+                st.stageEnd = now;   // 추적 없이 바로 보라 원 확정
+                standing(mob, true);
+                for (ServerPlayer x : arena(l, st, 16))
+                    Net.alert(x, "◆ " + p.name() + " — 보스 밑 보라 원에 모두 모이세요! (한 명이라도 밖이면 안 " + (int) p.x("inPct", 50) + "% · 밖 " + (int) p.x("outPct", 80) + "%)", ChatFormatting.LIGHT_PURPLE, 70);
+                l.playSound(null, mob.blockPosition(), SoundEvents.BELL_BLOCK, SoundSource.HOSTILE, 2f, 0.7f);
+                return;
+            }
+            case "web" -> {   // 거미줄 발사 (먼 사람 여럿)
                 st.repeatLeft = 1;
                 st.rocks.clear();
                 int n = p.type().equals("web") && st.phase >= 2 ? (int) p.x("targets2", p.x("targets", 1)) : (int) p.x("targets", 1);
@@ -617,19 +629,19 @@ public final class Boss {
                 } else if (pool.contains(t)) { pool.remove(t); pool.add(0, t); }
                 for (int i = 0; i < Math.min(n, pool.size()); i++) st.rocks.put(pool.get(i).getUUID(), pool.get(i).position());
                 beginTrack(mob, st, p, now);
-                if (p.type().equals("share")) {
-                    for (ServerPlayer x : arena(l, st, 16))
-                        Net.alert(x, "◆ " + p.name() + " — 보라 원에 모이세요!" + (p.x("outPct", 0) > 0 ? " (원 밖 = 최대 HP " + (int) p.x("outPct", 0) + "%)" : ""), ChatFormatting.LIGHT_PURPLE, 70);
-                    l.playSound(null, mob.blockPosition(), SoundEvents.BELL_BLOCK, SoundSource.HOSTILE, 2f, 0.7f);
-                }
                 return;
             }
-            case "mark" -> {   // 독 표식: 모두 (고치에 갇힌 사람 제외)
+            case "mark" -> {   // 맹독 낙인: 혼자면 1명, 파티면 2명 (고치에 갇힌 사람 제외) · 터진 자리에 독 장판
                 st.rocks.clear();
-                for (ServerPlayer f : fighters) if (free(st, f)) st.rocks.put(f.getUUID(), f.position());
+                List<ServerPlayer> pool = new ArrayList<>();
+                for (ServerPlayer f : fighters) if (free(st, f)) pool.add(f);
+                if (pool.isEmpty()) pool.addAll(fighters);
+                Collections.shuffle(pool);
+                int n = pool.size() <= 1 ? 1 : (int) p.x("targets", 2);
+                for (int i = 0; i < Math.min(n, pool.size()); i++) st.rocks.put(pool.get(i).getUUID(), pool.get(i).position());
                 beginTrack(mob, st, p, now);
                 for (ServerPlayer x : arena(l, st, 16))
-                    Net.alert(x, "◆ " + p.name() + " — 흩어지세요! 겹치면 피해 2배", ChatFormatting.RED, 70);
+                    Net.alert(x, "◆ " + p.name() + " — 표식 대상은 밖으로! 독 장판이 " + (int) p.x("pool", 8) + "초 남아요", ChatFormatting.RED, 70);
                 l.playSound(null, mob.blockPosition(), SoundEvents.EVOKER_CAST_SPELL, SoundSource.HOSTILE, 2f, 0.6f);
                 return;
             }
@@ -1045,27 +1057,23 @@ public final class Boss {
                     rpg.core.entity.BossProp.decal(l, rpg.core.entity.ModEntities.POISON_POOL.get(), q, (int) Math.round(Math.max(1.5, p.x("poison", 3)) * 20), (float) p.r());
                 l.playSound(null, mob.blockPosition(), p.x("ball", 0) > 0 ? SoundEvents.SLIME_SQUISH : SoundEvents.SPIDER_AMBIENT, SoundSource.HOSTILE, 2f, 0.6f);
             }
-            case "share" -> {
-                java.util.Set<ServerPlayer> inAll = new java.util.HashSet<>();
-                for (Vec3 q : st.rocks.values()) {
-                    List<ServerPlayer> in = new ArrayList<>();
-                    for (ServerPlayer pl : arena(l, st, 4)) if (valid(pl) && flat(pl.position(), q) <= p.r() + PAD && Math.abs(pl.getY() - q.y) <= HEIGHT) in.add(pl);
-                    if (in.isEmpty() && p.x("outPct", 0) <= 0)   // 대상이 원 밖으로 도망가면 혼자 다 맞음 (outPct 있으면 원 밖 규칙)
-                        for (var re : st.rocks.entrySet()) if (re.getValue() == q && l.getPlayerByUUID(re.getKey()) instanceof ServerPlayer tp && valid(tp)) in.add(tp);
-                    l.sendParticles(ParticleTypes.DRAGON_BREATH, q.x, q.y + 0.5, q.z, 60, p.r() / 2, 0.3, p.r() / 2, 0.02);
-                    l.playSound(null, BlockPos.containing(q), SoundEvents.GENERIC_EXPLODE, SoundSource.HOSTILE, 1.2f, 0.7f);
-                    int alone = 0;
-                    for (ServerPlayer x : arena(l, st, 0)) if (valid(x)) alone++;
-                    double total = alone <= 1 ? p.x("maxPctSolo", p.x("maxPct", 90)) : p.x("maxPct", 90);   // 혼자 싸우면 약하게
-                    for (ServerPlayer pl : in) CombatEvents.maxHpHit(mob, pl, total / Math.max(1, in.size()));
-                    inAll.addAll(in);
-                    if (!in.isEmpty()) for (ServerPlayer x : arena(l, st, 16))
-                        x.displayClientMessage(Component.literal(p.name() + ": " + in.size() + "명이 나눠 맞음").withStyle(ChatFormatting.LIGHT_PURPLE), true);
+            case "share" -> {   // 전원 원 안 = 피해 없음 · 한 명이라도 밖 = 안 inPct% · 밖 outPct%
+                Vec3 q = mob.position();
+                List<ServerPlayer> in = new ArrayList<>(), out = new ArrayList<>();
+                for (ServerPlayer pl : arena(l, st, 4)) {
+                    if (!valid(pl)) continue;
+                    if (flat(pl.position(), q) <= p.r() + PAD && Math.abs(pl.getY() - q.y) <= HEIGHT) in.add(pl); else out.add(pl);
                 }
-                // 원 밖에 있던 사람: 최대 HP outPct% + 독 (혼자여도: 원 안 maxPctSolo · 밖 outPct)
-                if (p.x("outPct", 0) > 0) for (ServerPlayer pl : arena(l, st, 0)) {
-                    if (!valid(pl) || inAll.contains(pl)) continue;
-                    hitAs(mob, m, st, l, pl, p.name() + " (원 밖)", 0, p.x("outPct", 0), p.x("outPoison", 0));
+                l.sendParticles(ParticleTypes.DRAGON_BREATH, q.x, q.y + 0.5, q.z, 80, p.r() / 2, 0.3, p.r() / 2, 0.02);
+                l.playSound(null, mob.blockPosition(), SoundEvents.GENERIC_EXPLODE, SoundSource.HOSTILE, 1.2f, 0.7f);
+                if (out.isEmpty()) {
+                    for (ServerPlayer x : arena(l, st, 16))
+                        x.displayClientMessage(Component.literal(p.name() + ": 모두 모였어요! 피해 없음").withStyle(ChatFormatting.LIGHT_PURPLE), true);
+                } else {
+                    for (ServerPlayer pl : in) CombatEvents.maxHpHit(mob, pl, p.x("inPct", 50));
+                    for (ServerPlayer pl : out) hitAs(mob, m, st, l, pl, p.name() + " (원 밖)", 0, p.x("outPct", 80), p.x("outPoison", 0));
+                    for (ServerPlayer x : arena(l, st, 16))
+                        x.displayClientMessage(Component.literal(p.name() + ": " + out.size() + "명이 원 밖!").withStyle(ChatFormatting.RED), true);
                 }
             }
             case "mark" -> {
@@ -1081,7 +1089,11 @@ public final class Boss {
                     if (n >= 2) pl.displayClientMessage(Component.literal("폭발이 겹쳤어요! 피해 2배").withStyle(ChatFormatting.RED), true);
                     BossX.poison(pl, p.x("poison", 0), now);
                 }
-            }
+                long pool = Math.round(p.x("pool", 8) * 20);   // 터진 자리에 독 장판
+                if (pool > 0) for (Vec3 q : qs) {
+                    st.x.zones.add(new BossX.Zone(q, new Vec3(0, 0, 1), p.r(), 360, now + pool));
+                    Net.telegraph(l, q, new Vec3(0, 0, 1), 50 + MobAI.CIRCLE, p.r(), 0, (int) pool);
+                }
             case "charge" -> l.playSound(null, mob.blockPosition(), SoundEvents.RAVAGER_ROAR, SoundSource.HOSTILE, 1f, 1.2f);   // 피해는 돌진 이동 중
             case "beam" -> {
                 if (mob instanceof rpg.core.entity.MushGuardian)   // 포자 광선: 지팡이에서 번쩍
