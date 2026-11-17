@@ -68,4 +68,10 @@ public class ZoneWand extends Item {
         tip.add(Component.literal("좌클릭: 첫 번째 점 · 우클릭: 두 번째 점").withStyle(ChatFormatting.GRAY));
         tip.add(Component.literal("그다음 /rpg zone create <이름> <몹> <레벨> <최대 마리>").withStyle(ChatFormatting.GRAY));
     }
+
+    /** 서버가 꺼질 때 호출: 게임 중에 쌓인 상태만 비움 (데이터팩에서 읽은 정의는 그대로) */
+    public static void clearState() { POS.clear(); }
+
+    /** 플레이어가 나가면 호출: 그 사람 항목 지우기 */
+    public static void forget(java.util.UUID id) { POS.remove(id); }
 }

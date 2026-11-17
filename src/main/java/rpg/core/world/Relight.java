@@ -64,4 +64,7 @@ public final class Relight {
             }
         }
     }
+
+    /** 서버가 꺼질 때 호출: 게임 중에 쌓인 상태만 비움 (데이터팩에서 읽은 정의는 그대로) */
+    public static void clearState() { JOBS.clear(); }
 }

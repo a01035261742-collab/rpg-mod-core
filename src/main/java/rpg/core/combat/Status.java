@@ -82,4 +82,7 @@ public final class Status {
     public static void clear(PlayerData d) {
         for (String k : NAMES.keySet()) d.buffEnd.remove(k);
     }
+
+    /** 서버가 꺼질 때 호출: 게임 중에 쌓인 상태만 비움 (데이터팩에서 읽은 정의는 그대로) */
+    public static void clearState() { STUN_POS.clear(); LAST_POS.clear(); }
 }

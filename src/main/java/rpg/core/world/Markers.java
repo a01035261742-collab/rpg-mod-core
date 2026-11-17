@@ -71,4 +71,7 @@ public final class Markers {
     private static M at(int type, BlockPos b, float r, String label) {
         return new M(type, b.getX(), b.getY(), b.getZ(), b.getX(), b.getY(), b.getZ(), r, label);
     }
+
+    /** 서버가 꺼질 때 호출: 게임 중에 쌓인 상태만 비움 (데이터팩에서 읽은 정의는 그대로) */
+    public static void clearState() { ON.clear(); }
 }

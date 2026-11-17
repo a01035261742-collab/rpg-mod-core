@@ -229,4 +229,7 @@ public final class Trade {
             if (s != null && !s.finished && !p.level().isClientSide) cancel(s, p.getGameProfile().getName() + "님이 거래창을 닫아서 취소됐어요", p);
         }
     }
+
+    /** 서버가 꺼질 때 호출: 게임 중에 쌓인 상태만 비움 (데이터팩에서 읽은 정의는 그대로) */
+    public static void clearState() { REQ.clear(); SESSIONS.clear(); }
 }

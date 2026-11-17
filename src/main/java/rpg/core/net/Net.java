@@ -359,7 +359,7 @@ public final class Net {
     }
 
     // ───────── 툴팁 전투력 비교 (마우스 올릴 때만) ─────────
-    private static final java.util.Map<java.util.UUID, long[]> POWER_RATE = new java.util.HashMap<>();
+    private static final java.util.Map<java.util.UUID, long[]> POWER_RATE = new java.util.concurrent.ConcurrentHashMap<>();   // 패킷이 네트워크 스레드에서 처리돼서 동시 접근 가능
 
     public record PowerReq(int key, net.minecraft.world.item.ItemStack stack) {
         PowerReq(FriendlyByteBuf b) { this(b.readInt(), b.readItem()); }
@@ -1093,4 +1093,10 @@ public final class Net {
             ctx.get().setPacketHandled(true);
         }
     }
+
+    /** 서버가 꺼질 때 호출: 게임 중에 쌓인 상태만 비움 (데이터팩에서 읽은 정의는 그대로) */
+    public static void clearState() { POWER_RATE.clear(); }
+
+    /** 플레이어가 나가면 호출: 그 사람 항목 지우기 */
+    public static void forget(java.util.UUID id) { POWER_RATE.remove(id); }
 }

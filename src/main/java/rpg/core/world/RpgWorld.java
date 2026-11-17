@@ -363,4 +363,10 @@ public final class RpgWorld {
         d.rpgSpawn = p.blockPosition();
         d.setDirty();
     }
+
+    /** 서버가 꺼질 때 호출: 게임 중에 쌓인 상태만 비움 (데이터팩에서 읽은 정의는 그대로) */
+    public static void clearState() { CHANNELS.clear(); PORTAL_CD.clear(); ARRIVED.clear(); }
+
+    /** 플레이어가 나가면 호출: 그 사람 항목 지우기 */
+    public static void forget(java.util.UUID id) { PORTAL_CD.remove(id); }
 }

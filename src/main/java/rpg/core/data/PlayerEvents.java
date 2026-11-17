@@ -228,4 +228,7 @@ public final class PlayerEvents {
     public static void heal(LivingHealEvent e) {
         if (e.getEntity() instanceof Player p && rpg.core.world.RpgWorld.in(p)) e.setCanceled(true);   // RPG 대륙만 (야생은 바닐라 회복)
     }
+
+    /** 서버가 꺼질 때 호출: 게임 중에 쌓인 상태만 비움 (데이터팩에서 읽은 정의는 그대로) */
+    public static void clearState() { FULL_AFTER_RESPAWN.clear(); }
 }

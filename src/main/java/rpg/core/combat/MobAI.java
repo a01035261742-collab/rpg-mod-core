@@ -509,4 +509,10 @@ public final class MobAI {
         }
         if (bat.isResting()) bat.setResting(false);
     }
+
+    /** 서버가 꺼질 때 호출: 게임 중에 쌓인 상태만 비움 (데이터팩에서 읽은 정의는 그대로) */
+    public static void clearState() { PAT_NEXT.clear(); POISON.clear(); }
+
+    /** 플레이어가 나가면 호출: 그 사람 항목 지우기 */
+    public static void forget(java.util.UUID id) { PAT_NEXT.remove(id); }
 }
