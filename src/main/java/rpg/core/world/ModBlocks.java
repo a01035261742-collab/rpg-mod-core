@@ -100,5 +100,10 @@ public final class ModBlocks {
             if (!l.isClientSide && p instanceof ServerPlayer sp) Raids.openGate(sp, pos);
             return InteractionResult.sidedSuccess(l.isClientSide);
         }
+        /** 올라서면 입장 창 (무기를 들면 우클릭이 가드라 안 열려서) — 내려갔다 다시 올라와야 또 열림 */
+        @Override public void stepOn(Level l, BlockPos pos, BlockState s, net.minecraft.world.entity.Entity e) {
+            if (!l.isClientSide && e instanceof ServerPlayer sp) Raids.stepGate(sp, pos);
+            super.stepOn(l, pos, s, e);
+        }
     }
 }

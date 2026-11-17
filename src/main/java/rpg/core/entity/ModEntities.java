@@ -78,7 +78,7 @@ public final class ModEntities {
     /** 레이드 보스 "어둠거미여왕" (GeckoLib) */
     public static final RegistryObject<EntityType<SpiderQueen>> SPIDER_QUEEN = TYPES.register("spider_queen",
             () -> EntityType.Builder.<SpiderQueen>of(SpiderQueen::new, MobCategory.MONSTER)
-                    .sized(5.5f, 4.5f).clientTrackingRange(16).updateInterval(1).build(RpgCore.MODID + ":spider_queen"));
+                    .sized(4.4f, 3.6f).clientTrackingRange(16).updateInterval(1).build(RpgCore.MODID + ":spider_queen"));
 
     @SubscribeEvent
     public static void attributes(EntityAttributeCreationEvent e) {

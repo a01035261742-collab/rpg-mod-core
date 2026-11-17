@@ -177,7 +177,7 @@ public final class Raids {
         CompoundTag t = new CompoundTag();
         t.putString("id", "minecraft:text_display");
         String json = Component.Serializer.toJson(Component.literal(def.title() + " 레이드\n").withStyle(ChatFormatting.LIGHT_PURPLE)
-                .append(Component.literal("Lv." + def.minLevel() + " 이상 · 우클릭").withStyle(ChatFormatting.GRAY)));
+                .append(Component.literal("Lv." + def.minLevel() + " 이상 · 올라서기").withStyle(ChatFormatting.GRAY)));
         t.putString("text", json);
         t.putString("billboard", "center");
         ListTag tags = new ListTag();
@@ -193,6 +193,16 @@ public final class Raids {
     private static void unlabel(ServerLevel l, BlockPos pos) {
         AABB box = new AABB(pos).inflate(0.5, 2, 0.5);
         for (Entity e : l.getEntities((Entity) null, box, x -> x.getTags().contains(LABEL_TAG))) e.discard();
+    }
+
+    /** 단말기를 밟은 마지막 틱 (사람별) */
+    private static final java.util.Map<UUID, Long> STEP = new java.util.HashMap<>();
+
+    /** 단말기에 올라섬: 내려갔다(0.5초 넘게 안 밟음) 다시 올라올 때만 창 */
+    public static void stepGate(ServerPlayer p, BlockPos pos) {
+        long now = p.level().getGameTime();
+        Long last = STEP.put(p.getUUID(), now);
+        if (last == null || now - last > 10) openGate(p, pos);
     }
 
     /** 단말기 우클릭 */

@@ -52,13 +52,18 @@ public class GeoRpgMonster extends RpgMonster implements GeoEntity {
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar c) {
         c.add(new AnimationController<>(this, "move", 4, s ->
-                s.setAndContinue(s.isMoving() ? WALK : IDLE)));
+                s.setAndContinue(s.isMoving() || turning() ? WALK : IDLE)));
         c.add(new AnimationController<>(this, "attack", 2, s -> PlayState.STOP)
                 .triggerableAnim("attack", ATTACK).triggerableAnim("attack2", ATTACK2));
         AnimationController<GeoRpgMonster> pat = new AnimationController<>(this, "pattern", 2, s -> PlayState.STOP);
         for (String n : PATTERNS) pat.triggerableAnim(n, RawAnimation.begin().thenPlay(n));
         pat.triggerableAnim("stun", RawAnimation.begin().thenLoop("stun"));   // 기절 (멈출 때까지 반복)
         c.add(pat);
+    }
+
+    /** 제자리에서 몸을 돌리는 중 (다리가 안 움직이면 미끄러져 보임 → 걷기 동작) */
+    protected boolean turning() {
+        return Math.abs(net.minecraft.util.Mth.wrapDegrees(yBodyRot - yBodyRotO)) > 1.0f;
     }
 
     /** 근접 공격 애니메이션 재생 (서버 → 모든 클라) */

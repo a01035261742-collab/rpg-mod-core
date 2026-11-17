@@ -54,7 +54,7 @@ public final class EntityClient {
         // 보스 거대버섯 수호자: GeckoLib 모델 (결정·눈 발광)
         e.registerEntityRenderer(ModEntities.MUSH_GUARDIAN.get(), ctx -> new RpgGeoRenderer(ctx, "mush_guardian", 2.4f, true));
         // 레이드 보스 어둠거미여왕 (GeckoLib) + 알 · 고치
-        e.registerEntityRenderer(ModEntities.SPIDER_QUEEN.get(), ctx -> new RpgGeoRenderer(ctx, "spider_queen", 4.5f));
+        e.registerEntityRenderer(ModEntities.SPIDER_QUEEN.get(), ctx -> new RpgGeoRenderer(ctx, "spider_queen", 3.6f));
         e.registerEntityRenderer(ModEntities.SPIDER_EGG.get(), ctx -> new RpgGeoRenderer(ctx, "spider_egg", 0.6f));
         e.registerEntityRenderer(ModEntities.WEB_COCOON.get(), ctx -> new RpgGeoRenderer(ctx, "web_cocoon", 0.5f));
         // 보스 숲의 주인: GeckoLib 모델 1.8배, 결정·균열·눈 발광
