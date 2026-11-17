@@ -97,7 +97,7 @@ public final class CombatEvents {
     private static final Map<Integer, Double> GUARD_MUL = new java.util.HashMap<>();
 
     /**
-     * 몹 패턴(스킬) 가드: EF 가드는 다 막아버림 → 막힌 걸 되살려서 피해 60% 감소 (트리 guardPct 로 더, 최대 90%).
+     * 몹 패턴(스킬) 가드: EF 가드는 다 막아버림 → 막힌 걸 되살려서 피해 30% 감소 (가디언 가드 숙련 guardPct +30 = 60%).
      * 스태미나는 패턴 위력만큼 더 닳고, 모자라면 가드가 깨져서 그대로 맞음. 구르기(무적)는 그대로 피함.
      */
     @SubscribeEvent(priority = EventPriority.LOW, receiveCanceled = true)
@@ -109,7 +109,7 @@ public final class CombatEvents {
         double cost = mx != null ? mx * 0.25 : pc / 60.0;
         PlayerData d = RpgData.get(p);
         boolean held = rpg.core.compat.EpicFightCompat.useStamina(p, cost);
-        GUARD_MUL.put(p.getId(), held ? 1 - Math.min(90, 60 + d.bonus("guardPct")) / 100.0 : 1.0);
+        GUARD_MUL.put(p.getId(), held ? 1 - Math.min(90, 30 + d.bonus("guardPct")) / 100.0 : 1.0);
         e.setCanceled(false);
         // EF 가드가 막으면서 무적 시간(20틱)·마지막 피해를 넣어 둠 → 그대로 두면 바닐라가 "방금 맞음" 으로 보고 피해를 0 으로 버림
         p.invulnerableTime = 0;

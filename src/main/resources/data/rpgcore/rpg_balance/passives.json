@@ -1190,7 +1190,7 @@
    "y": 0,
    "maxRank": 1,
    "stat": "guardPct",
-   "perRank": 20,
+   "perRank": 30,
    "requires": [
     "wg0"
    ],
@@ -1198,7 +1198,7 @@
    "kind": "n",
    "branch": 1,
    "special": true,
-   "desc": "가드로 막은 패턴 피해 감소 60% → 80%"
+   "desc": "가드로 막은 패턴 피해 감소 30% → 60%"
   },
   {
    "id": "wg2",
