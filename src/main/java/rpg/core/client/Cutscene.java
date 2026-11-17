@@ -46,12 +46,28 @@ public final class Cutscene {
         cam = new ArmorStand(mc.level, eye0.x, eye0.y, eye0.z);
         place(eye0, yaw0, pitch0, true);
         mc.setCameraEntity(cam);
+        freeMouse(true);
+    }
+
+    /**
+     * 컷씬 동안 마우스 잡기를 풀어서 화면 돌리기 자체를 막음 (커서는 숨김).
+     * 숄더 서핑 같은 3인칭 모드는 플레이어 각도와 따로 카메라를 돌려서, 각도를 되돌리는 것만으론 못 막음
+     */
+    private static void freeMouse(boolean free) {
+        Minecraft mc = Minecraft.getInstance();
+        long win = mc.getWindow().getWindow();
+        if (free) {
+            if (mc.mouseHandler.isMouseGrabbed()) mc.mouseHandler.releaseMouse();
+            org.lwjgl.glfw.GLFW.glfwSetInputMode(win, org.lwjgl.glfw.GLFW.GLFW_CURSOR, org.lwjgl.glfw.GLFW.GLFW_CURSOR_HIDDEN);
+        } else if (mc.screen == null && !mc.mouseHandler.isMouseGrabbed()) mc.mouseHandler.grabMouse();
     }
 
     public static void stop() {
         Minecraft mc = Minecraft.getInstance();
+        boolean was = cam != null;
         if (cam != null && mc.player != null) mc.setCameraEntity(mc.player);
         cam = null; bossId = -1;
+        if (was) freeMouse(false);
     }
 
     private static void place(Vec3 eye, float yaw, float pitch, boolean snap) {
@@ -74,6 +90,7 @@ public final class Cutscene {
         Minecraft mc = Minecraft.getInstance();
         Entity boss = mc.level == null ? null : mc.level.getEntity(bossId);
         if (boss == null || mc.player == null || ++tick >= total || (tick > 10 && mc.options.keyJump.isDown())) { stop(); return; }
+        if (mc.mouseHandler.isMouseGrabbed()) freeMouse(true);   // 클릭해서 다시 잡혀도 다시 풂
         double f = tick / (double) total;
         double h = boss.getBbHeight();
         Vec3 focus = boss.position().add(0, h * 0.6, 0);
