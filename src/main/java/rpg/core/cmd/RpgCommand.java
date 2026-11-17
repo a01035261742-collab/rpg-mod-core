@@ -173,9 +173,10 @@ public final class RpgCommand {
                     RpgData.sync(p);
                     p.closeContainer();
                     net.minecraft.nbt.CompoundTag keep = p.getPersistentData().getCompound(net.minecraft.world.entity.player.Player.PERSISTED_NBT_TAG);
-                    keep.remove("rpgStorage");   // 창고 (페이지 포함)
+                    for (String k : new String[]{"rpgStorage", rpg.core.town.Travel.KEY, "rpgDaily", "rpgAch", "rpgBossFirst", "rpgRaidClears", "rpgRaidDay"})
+                        keep.remove(k);   // 창고 · 마을 이동 · 일일 · 업적 · 보스 첫 처치 · 레이드 기록
                     p.getPersistentData().put(net.minecraft.world.entity.player.Player.PERSISTED_NBT_TAG, keep);
-                    return ok(c, "캐릭터 초기화 (Lv.1 · 창고 비움)");
+                    return ok(c, "캐릭터 초기화 (Lv.1 · 창고·마을 이동·일일·업적·레이드 기록도 초기화)");
                 })));
     }
 
