@@ -9,7 +9,7 @@ jobs:
         with: { distribution: temurin, java-version: '17' }
       - run: |
           chmod +x gradlew
-          ./gradlew compileJava -q || true
+          ./gradlew compileJava --no-daemon -q || true
           find ~/.gradle -name "*.jar" | grep -i -E "recomp|mapped_official|forge-1.20.1.*(client|joined)" | head -20 > jars.txt
           cat jars.txt
           J=$(grep minecraft_user_repo jars.txt | head -1)
