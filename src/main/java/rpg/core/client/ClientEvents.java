@@ -334,18 +334,18 @@ public final class ClientEvents {
             boolean atk = mc.options.keyAttack.isDown() || (efAtk != null && efAtk.isDown());
             if (ClientData.cocooned && atk && !atkWasDown && mc.player != null) Net.CH.sendToServer(new Net.CocoonTap(0));
             atkWasDown = atk;
-            boolean rpg = ClientRpg.inRpg();   // 야생: 파티 창만
-            while (STAT_KEY.consumeClick()) if (free && rpg) mc.setScreen(new StatScreen());
-            while (SKILL_WINDOW_KEY.consumeClick()) if (free && rpg) mc.setScreen(new SkillScreen());
-            while (PASSIVE_KEY.consumeClick()) if (free && rpg) mc.setScreen(new PassiveScreen());
+            boolean inRpg = ClientRpg.inRpg();   // 야생: 파티 창만
+            while (STAT_KEY.consumeClick()) if (free && inRpg) mc.setScreen(new StatScreen());
+            while (SKILL_WINDOW_KEY.consumeClick()) if (free && inRpg) mc.setScreen(new SkillScreen());
+            while (PASSIVE_KEY.consumeClick()) if (free && inRpg) mc.setScreen(new PassiveScreen());
             while (PARTY_KEY.consumeClick()) if (free) mc.setScreen(new PartyScreen());
-            while (QUEST_KEY.consumeClick()) if (free && rpg) mc.setScreen(new QuestScreen());
-            while (MENU_KEY.consumeClick()) if (free && rpg) CharWin.open(CharWin.EQUIP);   // M = 캐릭터 창 (장비 탭)
+            while (QUEST_KEY.consumeClick()) if (free && inRpg) mc.setScreen(new QuestScreen());
+            while (MENU_KEY.consumeClick()) if (free && inRpg) CharWin.open(CharWin.EQUIP);   // M = 캐릭터 창 (장비 탭)
             for (int i = 0; i < 6; i++) {
                 if (wait[i] > 0) wait[i]--;
                 boolean pressed = false;
                 while (SKILL_KEYS[i].consumeClick()) pressed = true;
-                if (pressed && free && rpg && wait[i] == 0) {
+                if (pressed && free && inRpg && wait[i] == 0) {
                     wait[i] = 4;
                     var a = aimPoint(mc);
                     if (ClientData.slots[i] != null) { faceAim(mc, a); faceTicks = 10; }   // 빈 칸이면 시점 안 건드림
