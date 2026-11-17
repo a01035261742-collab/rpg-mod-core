@@ -2206,8 +2206,11 @@
     "restEvery": 3,
     "restSec": 4,
     "intro": 4.4,
-    "transSec": 3,
-    "webSlow": 2
+    "transSec": 5,
+    "webSlow": 2,
+    "transCut": 1,
+    "transBurst": 2.6,
+    "transSlam": 3.2
    },
    "patterns": [
     {
@@ -2522,7 +2525,8 @@
     "pct": 120,
     "cd": 8,
     "dist": 12
-   }
+   },
+   "transLine": "키이이익—!!|끼아아아악!!"
   }
  },
  "spiderling": {

@@ -376,6 +376,7 @@ public final class Boss {
                     for (ServerPlayer p : arena(l, st, 16)) Net.cutscene(p, mob, ticks(def.g("transSec", 3)), "", TRANS_LINE.getOrDefault(def.key(), ""),
                             (int) Math.round(def.g("transBurst", 1.6) * 20), (int) Math.round(def.g("transSlam", 3.05) * 20));
                     l.playSound(null, mob.blockPosition(), SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.HOSTILE, 2.5f, 0.5f);
+                    if (mob instanceof rpg.core.entity.SpiderQueen) l.playSound(null, mob.blockPosition(), SoundEvents.SPIDER_AMBIENT, SoundSource.HOSTILE, 3f, 0.4f);   // 키이이익
                 } else {
                     for (ServerPlayer p : arena(l, st, 16)) Net.alert(p, "◆ 둥지가 무너진다 — 2페이즈", ChatFormatting.LIGHT_PURPLE, 70);
                     l.playSound(null, mob.blockPosition(), SoundEvents.WITHER_BREAK_BLOCK, SoundSource.HOSTILE, 1.5f, 0.6f);
