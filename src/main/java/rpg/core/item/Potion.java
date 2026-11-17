@@ -58,7 +58,10 @@ public class Potion extends Item {
         double cd = p.cooldown() > 0 ? p.cooldown() : Balance.potionCooldown;
         if (rpg.core.combat.Boss.inArena(sp)) cd = Math.max(cd, Balance.bossPotionCooldown);   // 보스전: 물약 쿨 5초
         int ticks = (int) Math.round(cd * 20);
-        for (Item it : net.minecraftforge.registries.ForgeRegistries.ITEMS) if (it instanceof Potion) sp.getCooldowns().addCooldown(it, ticks);
+        // 쿨타임은 같은 묶음끼리만: 엘릭서류(따로 쿨 있는 것)끼리 · 일반 물약끼리 (파워 엘릭서 60초가 빨간 물약까지 막지 않게)
+        boolean special = p.cooldown() > 0;
+        for (Item it : net.minecraftforge.registries.ForgeRegistries.ITEMS)
+            if (it instanceof Potion op && (op.def().cooldown() > 0) == special) sp.getCooldowns().addCooldown(it, ticks);
         level.playSound(null, sp.blockPosition(), SoundEvents.GENERIC_DRINK, SoundSource.PLAYERS, 0.6f, 1.2f);
         RpgData.sync(sp);
         return true;
