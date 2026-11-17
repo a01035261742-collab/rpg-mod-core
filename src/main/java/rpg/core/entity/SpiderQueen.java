@@ -6,7 +6,7 @@ import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.Level;
 
-/** 레이드 보스 어둠거미여왕 (GeckoLib 모델). 2페이즈 = 배에 공허석 */
+/** 레이드 보스 어둠거미여왕 (GeckoLib 모델 2.5배, 숨기 애니 높이도 2.5배 기준 = 천장 24칸). 2페이즈 = 배에 공허석 */
 public class SpiderQueen extends GeoRpgMonster {
     private static final net.minecraft.network.syncher.EntityDataAccessor<Boolean> PHASE2 =
             net.minecraft.network.syncher.SynchedEntityData.defineId(SpiderQueen.class, net.minecraft.network.syncher.EntityDataSerializers.BOOLEAN);
@@ -28,6 +28,6 @@ public class SpiderQueen extends GeoRpgMonster {
 
     @Override
     protected float getStandingEyeHeight(Pose pose, EntityDimensions dims) {
-        return 1.5f;
+        return 3.0f;
     }
 }
