@@ -135,7 +135,7 @@ public final class PlayerEvents {
         }
         d.recalc();
         rpg.core.net.Net.defsTo(sp);
-        RpgData.sync(sp);
+        RpgData.syncNow(sp);
     }
 
     /** /reload 하면 스킬·패시브 정의 다시 보내기 */
@@ -145,7 +145,7 @@ public final class PlayerEvents {
         for (ServerPlayer sp : e.getPlayerList().getPlayers()) {
             rpg.core.net.Net.defsTo(sp);
             RpgData.get(sp).recalc();
-            RpgData.sync(sp);
+            RpgData.syncNow(sp);
         }
     }
 
@@ -157,14 +157,28 @@ public final class PlayerEvents {
         d.hp = d.maxHp;
         d.mp = d.maxMp;
         FULL_AFTER_RESPAWN.put(sp.getUUID(), sp.tickCount + 40);   // 장비·패시브가 늦게 붙어도 2초 동안 가득 채움
-        RpgData.sync(sp);
+        RpgData.syncNow(sp);
     }
 
     private static final java.util.Map<java.util.UUID, Integer> FULL_AFTER_RESPAWN = new java.util.HashMap<>();
 
     @SubscribeEvent
     public static void changedDimension(PlayerEvent.PlayerChangedDimensionEvent e) {
-        if (e.getEntity() instanceof ServerPlayer sp) RpgData.sync(sp);
+        if (e.getEntity() instanceof ServerPlayer sp) RpgData.syncNow(sp);
+    }
+
+    /**
+     * 서버 틱 끝: 이번 틱에 RpgData.sync 가 불린 플레이어에게 한 번만 보냄.
+     * 플레이어 틱이 아니라 서버 틱에서 모든 접속자를 보기 때문에, 죽어 있거나 차원 이동 중이어도 전송이 밀리지 않음.
+     * 다른 틱 처리가 끝난 뒤에 보내도록 우선순위를 가장 낮게.
+     */
+    @SubscribeEvent(priority = net.minecraftforge.eventbus.api.EventPriority.LOWEST)
+    public static void flushSync(TickEvent.ServerTickEvent e) {
+        if (e.phase != TickEvent.Phase.END) return;
+        for (ServerPlayer sp : e.getServer().getPlayerList().getPlayers()) {
+            if (sp.connection == null) continue;
+            if (RpgData.get(sp).syncDirty) RpgData.syncNow(sp);
+        }
     }
 
     @SubscribeEvent
@@ -172,7 +186,7 @@ public final class PlayerEvents {
         if (e.phase != TickEvent.Phase.END || !(e.player instanceof ServerPlayer sp)) return;
         PlayerData d = RpgData.get(sp);
         d.clock = sp.level().getGameTime();
-        if (d.isNew()) { d.init(); RpgData.sync(sp); }
+        if (d.isNew()) { d.init(); RpgData.syncNow(sp); }
         if (!rpg.core.world.RpgWorld.in(sp)) { rpg.core.skill.Skills.tick(sp, d); return; }   // 야생: 바닐라 체력·배고픔
         // 배고픔 없음
         sp.getFoodData().setFoodLevel(20);

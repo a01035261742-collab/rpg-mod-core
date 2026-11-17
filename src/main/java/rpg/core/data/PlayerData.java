@@ -29,6 +29,8 @@ public class PlayerData {
     /** 고른 갈래 (시련 중, 0 = 안 고름) · 교관의 시련 통과했나 */
     public int pendingBranch;
     public boolean trialCleared;
+    /** 서버 틱 끝에 클라로 보낼 게 있다는 표시 (저장 안 함). RpgData.sync 가 켜고, 보낸 뒤 꺼짐. 패킷 처리 스레드에서도 켜질 수 있어서 volatile */
+    public transient volatile boolean syncDirty;
     public long gold;
     public double hp, mp;
 
