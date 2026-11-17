@@ -1,7 +1,6 @@
 package rpg.core.client;
 
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 import rpg.core.data.PlayerData;
 import rpg.core.net.Net;

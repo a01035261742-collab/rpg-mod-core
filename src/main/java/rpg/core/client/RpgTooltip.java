@@ -21,7 +21,6 @@ import net.minecraftforge.fml.common.Mod;
 import org.joml.Matrix4f;
 import rpg.core.RpgCore;
 import rpg.core.equip.Gear;
-import rpg.core.equip.GearDefs;
 import rpg.core.equip.Potential;
 import rpg.core.net.Net;
 
@@ -199,7 +198,4 @@ public final class RpgTooltip {
             g.fill(x, y + 2, x + Math.max(10, w), y + 3, 0xFF5A3A10);
         }
     }
-
-    /** 장비 이름 색 (GearDefs 쪽에서 안 쓰면 무시) */
-    static int nameColor(GearDefs.GearDef d) { return 0xFFFFFFFF; }
 }

@@ -86,12 +86,6 @@ public final class RpgHud {
         boxY1 = h - 3; boxY0 = boxY1 - 58;
     }
 
-    /** 스킬 6칸 시작 {x0, y0} */
-    static int[] skillPos(Font font, int w, int h) {
-        layout(w, h);
-        return new int[]{boxX0 + 8 + 2 * (SLOT + SG) + DIV - SG, boxY1 - 32};
-    }
-
     public static void render(ForgeGui gui, GuiGraphics g, float partialTick, int w, int h) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null || mc.options.hideGui || !ClientData.ready || mc.player.isSpectator() || !ClientRpg.inRpg()) return;   // 야생: RPG HUD 숨김

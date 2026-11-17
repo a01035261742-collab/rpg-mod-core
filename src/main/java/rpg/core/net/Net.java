@@ -253,11 +253,6 @@ public final class Net {
         CH.send(PacketDistributor.PLAYER.with(() -> p), new RollCd(ticks));
     }
 
-    /** 보스 패턴에 맞음 표시 (HUD 위 작은 상자) */
-    public static void alertHit(ServerPlayer p, String pattern) {
-        CH.send(PacketDistributor.PLAYER.with(() -> p), new Alert("◆ " + pattern + "에 맞음", 0xFF8070, -30));
-    }
-
     public static void alert(ServerPlayer p, String text, net.minecraft.ChatFormatting col, int ticks) {
         Integer c = col.getColor();
         CH.send(PacketDistributor.PLAYER.with(() -> p), new Alert(text, c == null ? 0xFFFFFF : c, ticks));
@@ -352,10 +347,6 @@ public final class Net {
             ctx.get().setPacketHandled(true);
             if (p != null) rpg.core.world.RpgWorld.choose(p, toRpg);
         }
-    }
-
-    public static void worldChoice(ServerPlayer p) {
-        CH.send(PacketDistributor.PLAYER.with(() -> p), new WorldChoice());
     }
 
     // ───────── 툴팁 전투력 비교 (마우스 올릴 때만) ─────────

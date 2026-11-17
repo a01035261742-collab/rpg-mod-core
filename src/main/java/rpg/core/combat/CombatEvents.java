@@ -1,8 +1,6 @@
 package rpg.core.combat;
 
 import java.util.Map;
-import java.util.UUID;
-import java.util.WeakHashMap;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -13,7 +11,6 @@ import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingExperienceDropEvent;
-import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -227,16 +224,17 @@ public final class CombatEvents {
         if (direct != null && direct.getPersistentData().contains("rpgSkillPct")) e.getEntity().invulnerableTime = 0;
     }
 
-    // ── 지속 피해 (출혈·화상·독): "몹 id:종류" → (주인, 초당 피해, 끝나는 틱) ──
+    // ── 지속 피해 (출혈·화상·독): 몹 id → 그 몹에 걸린 지속 피해들 (주인·종류마다 하나씩: 주인, 초당 피해, 끝나는 틱) ──
     private record Dot(ServerPlayer owner, int mob, String kind, double dmg, long end) {}
-    private static final Map<String, Dot> DOTS = new java.util.HashMap<>();
+    private static final Map<Integer, java.util.List<Dot>> DOTS = new java.util.HashMap<>();
 
     /** 이 몹에 걸린 지속 피해 (초당, 없으면 0) */
     public static double dotDmg(Mob m, String kind) {   // 주인 여럿이면 합
-        String pre = m.getId() + ":" + kind + ":";
+        java.util.List<Dot> list = DOTS.get(m.getId());
+        if (list == null) return 0;
         long now = m.level().getGameTime();
         double sum = 0;
-        for (var e : DOTS.entrySet()) if (e.getKey().startsWith(pre) && now <= e.getValue().end()) sum += e.getValue().dmg();
+        for (Dot d : list) if (d.kind().equals(kind) && now <= d.end()) sum += d.dmg();
         return sum;
     }
 
@@ -245,29 +243,34 @@ public final class CombatEvents {
         if (perSecond <= 0 || ticks <= 0) return;
         PlayerData od = RpgData.get(owner);   // 트리: 지속 피해 +% · 출혈/독 전문가
         perSecond *= 1 + (od.bonus("dotPct") + od.bonus(kind + "Pct")) / 100.0;
-        String key = m.getId() + ":" + kind + ":" + owner.getUUID();
         long end = owner.level().getGameTime() + ticks;
-        Dot old = DOTS.get(key);
-        if (old != null && owner.level().getGameTime() <= old.end() && old.dmg() > perSecond) {   // 약한 게 새로 오면 센 것 유지, 시간만 늘림
-            DOTS.put(key, new Dot(owner, m.getId(), kind, old.dmg(), Math.max(old.end(), end)));
-            return;
-        }
-        DOTS.put(key, new Dot(owner, m.getId(), kind, perSecond, end));
+        java.util.List<Dot> list = DOTS.computeIfAbsent(m.getId(), k -> new java.util.ArrayList<>());
+        int at = -1;   // 같은 주인·같은 종류는 하나만
+        for (int i = 0; i < list.size(); i++) if (list.get(i).kind().equals(kind) && list.get(i).owner().getUUID().equals(owner.getUUID())) { at = i; break; }
+        Dot old = at < 0 ? null : list.get(at);
+        Dot fresh = old != null && owner.level().getGameTime() <= old.end() && old.dmg() > perSecond
+                ? new Dot(owner, m.getId(), kind, old.dmg(), Math.max(old.end(), end))   // 약한 게 새로 오면 센 것 유지, 시간만 늘림
+                : new Dot(owner, m.getId(), kind, perSecond, end);
+        if (at < 0) list.add(fresh); else list.set(at, fresh);
     }
 
     @SubscribeEvent
     public static void dotTick(net.minecraftforge.event.TickEvent.ServerTickEvent e) {
         if (e.phase != net.minecraftforge.event.TickEvent.Phase.END || DOTS.isEmpty()) return;
-        var it = DOTS.entrySet().iterator();
+        var mobs = DOTS.values().iterator();
         java.util.List<Dot> run = new java.util.ArrayList<>();
-        while (it.hasNext()) {
-            Dot b = it.next().getValue();
-            if (!b.owner().isAlive()) { it.remove(); continue; }
-            Entity ent = b.owner().serverLevel().getEntity(b.mob());
-            long now = b.owner().level().getGameTime();
-            if (!(ent instanceof Mob m) || !m.isAlive() || now > b.end()) { it.remove(); continue; }
-            if (now % 20 == 0) run.add(b);
+        while (mobs.hasNext()) {
+            var it = mobs.next().iterator();
+            while (it.hasNext()) {
+                Dot b = it.next();
+                if (!b.owner().isAlive()) { it.remove(); continue; }
+                Entity ent = b.owner().serverLevel().getEntity(b.mob());
+                long now = b.owner().level().getGameTime();
+                if (!(ent instanceof Mob m) || !m.isAlive() || now > b.end()) { it.remove(); continue; }
+                if (now % 20 == 0) run.add(b);
+            }
         }
+        DOTS.values().removeIf(java.util.List::isEmpty);   // 다 끝난 몹은 목록에서 뺌
         if (run.isEmpty()) return;
         // 몹별로 묶어서: 피해는 각자 넣고, 숫자 1개(합계)·체력 동기화 1번·파티클 2개
         java.util.Map<Integer, java.util.List<Dot>> byMob = new java.util.LinkedHashMap<>();

@@ -2,7 +2,6 @@ package rpg.core.client;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -13,7 +12,6 @@ import net.minecraft.world.item.ItemStack;
 import rpg.core.equip.Enhance;
 import rpg.core.equip.Gear;
 import rpg.core.equip.GearDefs;
-import rpg.core.item.Scroll;
 import rpg.core.net.Net;
 
 /** 강화 탭 (시안 ui_d1): 왼쪽 강화 종류 · 가운데 강화 · 오른쪽 입은 장비 칸 + [가방] 팝업 */
