@@ -580,6 +580,9 @@ public class EnhanceScreen extends ScaledScreen {
         center(g, String.format("%,d G", c), yy + 34, ClientData.gold >= c ? Ui.VAL : Ui.RED);
     }
 
+    /** 주문서 칸 맨 위 y (마지막으로 그린 자리) */
+    private int scrollPy;
+
     private List<Component> renderScroll(GuiGraphics g, ItemStack s, GearDefs.GearDef d, int mx, int my, List<Component> tip) {
         int yy = head(g, s, y + 54) + 14;
         int um = Enhance.upgMax(d);
@@ -594,6 +597,7 @@ public class EnhanceScreen extends ScaledScreen {
         center(g, "업그레이드 남은 " + left + "/" + um + " · 실패 " + fail, yy, Ui.TXT);
         Ui.hsep(g, x + 170, x + 360, yy + 12);
         int px = x + 217, py = yy + 16;
+        scrollPy = py;   // 클릭 판정도 그린 자리 그대로
         for (int i = 0; i < scrolls.size() && i < 10; i++) {
             int cx = px + (i % 5) * 19, cy = py + (i / 5) * 19;
             ItemStack sc = scrolls.get(i);
@@ -815,7 +819,7 @@ public class EnhanceScreen extends ScaledScreen {
             }
         }
         if (tab == 1) {
-            int px = x + 217, py = y + 54 + 34 + 16;
+            int px = x + 217, py = scrollPy;
             for (int i = 0; i < scrolls.size() && i < 10; i++) {
                 int cx = px + (i % 5) * 19, cy = py + (i / 5) * 19;
                 if (mx >= cx && mx < cx + 18 && my >= cy && my < cy + 18) { selScroll = i; rebuildWidgets(); return true; }

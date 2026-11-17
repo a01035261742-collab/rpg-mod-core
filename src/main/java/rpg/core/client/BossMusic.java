@@ -11,7 +11,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import rpg.core.RpgCore;
 
-/** 보스 BGM: 경기장 안에서 반복 재생 (음악 볼륨), 바뀌거나 끝나면 천천히 꺼짐. 그동안 바닐라 음악 멈춤 */
+/** 보스 BGM: 경기장 안에서 반복 재생 (음악 볼륨), 바뀌거나 끝나면 천천히 꺼짐. 바닐라 배경 음악은 항상 끔 */
 @Mod.EventBusSubscriber(modid = RpgCore.MODID, value = Dist.CLIENT)
 public final class BossMusic {
     private BossMusic() {}
@@ -36,8 +36,8 @@ public final class BossMusic {
     public static void tick(TickEvent.ClientTickEvent e) {
         if (e.phase != TickEvent.Phase.END) return;
         Minecraft mc = Minecraft.getInstance();
-        if (mc.level == null) { if (!current.isEmpty()) set(""); return; }
-        if (!current.isEmpty()) mc.getMusicManager().stopPlaying();   // 보스 곡 도중엔 바닐라 음악 안 나오게
+        mc.getMusicManager().stopPlaying();   // 바닐라 배경 음악은 항상 끔 (보스 곡만)
+        if (mc.level == null && !current.isEmpty()) set("");
     }
 
     static final class Track extends AbstractTickableSoundInstance {
