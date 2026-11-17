@@ -177,21 +177,21 @@ public final class Raids {
         CompoundTag t = new CompoundTag();
         t.putString("id", "minecraft:text_display");
         String json = Component.Serializer.toJson(Component.literal(def.title() + " 레이드\n").withStyle(ChatFormatting.LIGHT_PURPLE)
-                .append(Component.literal("Lv." + def.minLevel() + " 이상 · 올라서기").withStyle(ChatFormatting.GRAY)));
+                .append(Component.literal("Lv." + def.minLevel() + " 이상 · 밟으면 입장").withStyle(ChatFormatting.GRAY)));
         t.putString("text", json);
         t.putString("billboard", "center");
         ListTag tags = new ListTag();
         tags.add(net.minecraft.nbt.StringTag.valueOf(LABEL_TAG));
         t.put("Tags", tags);
         Entity e = net.minecraft.world.entity.EntityType.loadEntityRecursive(t, l, x -> {
-            x.moveTo(pos.getX() + 0.5, pos.getY() + 1.25, pos.getZ() + 0.5, 0, 0);
+            x.moveTo(pos.getX() + 0.5, pos.getY() + 2.6, pos.getZ() + 0.5, 0, 0);
             return x;
         });
         if (e != null) l.addFreshEntity(e);
     }
 
     private static void unlabel(ServerLevel l, BlockPos pos) {
-        AABB box = new AABB(pos).inflate(0.5, 2, 0.5);
+        AABB box = new AABB(pos).inflate(0.5, 3.5, 0.5);
         for (Entity e : l.getEntities((Entity) null, box, x -> x.getTags().contains(LABEL_TAG))) e.discard();
     }
 
