@@ -106,6 +106,9 @@ final class BossX {
                 Mob s = Mobs.spawn(l, "spiderling", m.level, egg.blockPosition(), "boss", false);
                 if (s == null) continue;
                 s.getPersistentData().putBoolean("rpgPillar", true);   // 보상 없음
+                ServerPlayer near = null;                              // 바로 가장 가까운 사람에게 덤빔
+                for (ServerPlayer f : Boss.arena(l, st, 0)) if (Boss.valid(f) && (near == null || f.distanceToSqr(egg) < near.distanceToSqr(egg))) near = f;
+                if (near != null) s.setTarget(near);
                 x.adds.add(s.getUUID());
             }
             l.playSound(null, egg.blockPosition(), SoundEvents.TURTLE_EGG_HATCH, SoundSource.HOSTILE, 2f, 0.6f);

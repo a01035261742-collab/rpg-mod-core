@@ -57,6 +57,11 @@ public final class MobAI {
                 return n.contains("Silverfish") && (n.contains("Merge") || n.contains("WakeUp"));
             });
         }
+        // 거미: 바닐라는 밝은 곳(빛 8 이상)에선 먼저 안 덤빔 → 밝은 레이드 방·낮에도 덤비게 대상 찾기 교체
+        if (mob instanceof net.minecraft.world.entity.monster.Spider && targets != null) {
+            targets.getAvailableGoals().removeIf(g -> g.getGoal() instanceof NearestAttackableTargetGoal<?>);
+            targets.addGoal(2, new NearestAttackableTargetGoal<>(mob, Player.class, false));
+        }
         // 중립 몹(늑대·여우·곰 등)도 플레이어를 먼저 공격
         if (!def.look().passive() && !def.look().chase() && !(mob instanceof Enemy) && targets != null
                 && mob instanceof PathfinderMob && mob.getAttribute(Attributes.ATTACK_DAMAGE) != null) {
