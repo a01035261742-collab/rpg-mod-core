@@ -111,6 +111,9 @@ public final class CombatEvents {
         boolean held = rpg.core.compat.EpicFightCompat.useStamina(p, cost);
         GUARD_MUL.put(p.getId(), held ? 1 - Math.min(90, 60 + d.bonus("guardPct")) / 100.0 : 1.0);
         e.setCanceled(false);
+        // EF 가드가 막으면서 무적 시간(20틱)·마지막 피해를 넣어 둠 → 그대로 두면 바닐라가 "방금 맞음" 으로 보고 피해를 0 으로 버림
+        p.invulnerableTime = 0;
+        p.lastHurt = 0;
     }
 
     /** RPG 몹 근접 공격은 몸 바깥 1.2칸(+여유) 안에서만 맞음 (멀리서 휘두르는 몹 막기) */
