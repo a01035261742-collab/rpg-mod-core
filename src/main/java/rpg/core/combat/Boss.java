@@ -1094,6 +1094,7 @@ public final class Boss {
                     st.x.zones.add(new BossX.Zone(q, new Vec3(0, 0, 1), p.r(), 360, now + pool));
                     Net.telegraph(l, q, new Vec3(0, 0, 1), 50 + MobAI.CIRCLE, p.r(), 0, (int) pool);
                 }
+            }
             case "charge" -> l.playSound(null, mob.blockPosition(), SoundEvents.RAVAGER_ROAR, SoundSource.HOSTILE, 1f, 1.2f);   // 피해는 돌진 이동 중
             case "beam" -> {
                 if (mob instanceof rpg.core.entity.MushGuardian)   // 포자 광선: 지팡이에서 번쩍
