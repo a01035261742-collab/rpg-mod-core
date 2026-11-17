@@ -278,6 +278,11 @@ public final class ClientEvents {
         private static void faceAim(Minecraft mc, net.minecraft.world.phys.Vec3 at) {
             var p = mc.player;
             if (p == null) return;
+            // 1인칭·바닐라 3인칭: 캐릭터가 이미 카메라 방향을 봄 → 돌리면 시점이 떨림. 카메라가 따로 노는 모드 3인칭에서만 돌림
+            var ct = mc.options.getCameraType();
+            if (ct.isFirstPerson() || ct.isMirrored()) return;
+            var cam = mc.gameRenderer.getMainCamera();
+            if (Math.abs(net.minecraft.util.Mth.wrapDegrees(cam.getYRot() - p.getYRot())) < 1 && Math.abs(cam.getXRot() - p.getXRot()) < 1) return;
             var d = at.subtract(p.getEyePosition());
             if (d.lengthSqr() < 0.25) return;
             float yaw = (float) Math.toDegrees(Math.atan2(-d.x, d.z));
@@ -329,21 +334,21 @@ public final class ClientEvents {
             boolean atk = mc.options.keyAttack.isDown() || (efAtk != null && efAtk.isDown());
             if (ClientData.cocooned && atk && !atkWasDown && mc.player != null) Net.CH.sendToServer(new Net.CocoonTap(0));
             atkWasDown = atk;
-            while (STAT_KEY.consumeClick()) if (free) mc.setScreen(new StatScreen());
-            while (SKILL_WINDOW_KEY.consumeClick()) if (free) mc.setScreen(new SkillScreen());
-            while (PASSIVE_KEY.consumeClick()) if (free) mc.setScreen(new PassiveScreen());
+            boolean rpg = ClientRpg.inRpg();   // 야생: 파티 창만
+            while (STAT_KEY.consumeClick()) if (free && rpg) mc.setScreen(new StatScreen());
+            while (SKILL_WINDOW_KEY.consumeClick()) if (free && rpg) mc.setScreen(new SkillScreen());
+            while (PASSIVE_KEY.consumeClick()) if (free && rpg) mc.setScreen(new PassiveScreen());
             while (PARTY_KEY.consumeClick()) if (free) mc.setScreen(new PartyScreen());
-            while (QUEST_KEY.consumeClick()) if (free) mc.setScreen(new QuestScreen());
-            while (MENU_KEY.consumeClick()) if (free) CharWin.open(CharWin.EQUIP);   // M = 캐릭터 창 (장비 탭)
+            while (QUEST_KEY.consumeClick()) if (free && rpg) mc.setScreen(new QuestScreen());
+            while (MENU_KEY.consumeClick()) if (free && rpg) CharWin.open(CharWin.EQUIP);   // M = 캐릭터 창 (장비 탭)
             for (int i = 0; i < 6; i++) {
                 if (wait[i] > 0) wait[i]--;
                 boolean pressed = false;
                 while (SKILL_KEYS[i].consumeClick()) pressed = true;
-                if (pressed && free && wait[i] == 0) {
+                if (pressed && free && rpg && wait[i] == 0) {
                     wait[i] = 4;
                     var a = aimPoint(mc);
-                    faceAim(mc, a);
-                    faceTicks = 10;
+                    if (ClientData.slots[i] != null) { faceAim(mc, a); faceTicks = 10; }   // 빈 칸이면 시점 안 건드림
                     float[] mv = moveDir(mc);
                     Net.CH.sendToServer(new Net.UseSkill(i, a.x, a.y, a.z, mv[0], mv[1]));
                     var def = ClientData.slots[i] == null ? null : rpg.core.skill.Defs.SKILLS.get(ClientData.slots[i]);
