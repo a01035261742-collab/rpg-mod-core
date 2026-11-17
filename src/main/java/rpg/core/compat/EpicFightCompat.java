@@ -59,7 +59,7 @@ public final class EpicFightCompat {
 
     // ───────── 구르기 쿨타임 · 가드 (EF 이벤트에 이름으로 연결) ─────────
     /** 구르기 기본 쿨타임 (초) — 패시브 dodgeCd (%) 로 줄어듦 (최대 60%) */
-    public static final double ROLL_CD = 1.2;
+    public static final double ROLL_CD = 1.5;
     private static final UUID CAST_ID = UUID.fromString("6f1f0d2e-7a51-4c1e-9b0a-52d0c1a1e010");
     private static final java.util.Map<UUID, Long> ROLL_READY = new java.util.concurrent.ConcurrentHashMap<>();
     private static Object castType;
