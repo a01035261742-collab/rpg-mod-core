@@ -99,6 +99,12 @@ final class BossX {
             Entity egg = l.getEntity(e.getKey());
             if (egg == null || !egg.isAlive()) { it.remove(); continue; }
             if (now % 10 == 0) l.sendParticles(ParticleTypes.SPORE_BLOSSOM_AIR, egg.getX(), egg.getY() + 0.8, egg.getZ(), 2, 0.3, 0.3, 0.3, 0);
+            // 부화 1초 전: 흔들리다 부풀어 터지는 동작
+            if (now >= e.getValue() - 20 && !egg.getPersistentData().getBoolean("rpgHatching")) {
+                egg.getPersistentData().putBoolean("rpgHatching", true);
+                if (egg instanceof rpg.core.entity.GeoRpgMonster ge) ge.playPattern("hatch");
+                l.playSound(null, egg.blockPosition(), SoundEvents.TURTLE_EGG_CRACK, SoundSource.HOSTILE, 1.5f, 0.6f);
+            }
             if (now < e.getValue()) continue;
             it.remove();
             int n = (int) def.g("hatchCount", 4);

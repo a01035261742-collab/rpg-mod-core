@@ -61,6 +61,15 @@ public class GeoRpgMonster extends RpgMonster implements GeoEntity {
         c.add(pat);
     }
 
+    /** 맞아도 움찔·빨간 번쩍임 없는 오브젝트 (기둥·알·고치) */
+    private static final java.util.Set<String> NO_HURT_FX = java.util.Set.of("web_pillar", "spider_egg", "web_cocoon", "void_pillar");
+
+    @Override
+    public void animateHurt(float yaw) {
+        if (NO_HURT_FX.contains(net.minecraftforge.registries.ForgeRegistries.ENTITY_TYPES.getKey(getType()).getPath())) return;
+        super.animateHurt(yaw);
+    }
+
     /** 제자리에서 몸을 돌리는 중 (다리가 안 움직이면 미끄러져 보임 → 걷기 동작) */
     protected boolean turning() {
         return Math.abs(net.minecraft.util.Mth.wrapDegrees(yBodyRot - yBodyRotO)) > 1.0f;
