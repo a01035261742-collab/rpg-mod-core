@@ -1,0 +1,68 @@
+name: changelog-only
+# 이미 나간 릴리스의 changelog.json(런처 업데이트 기록) 파일만 다시 만들어 올린다.
+# 모드 jar 와 manifest.json 은 건드리지 않는다 (그래서 런처 업데이트·해시에 영향 없음).
+# 사용: Actions → changelog-only → Run workflow (version 을 비우면 gradle.properties 의 mod_version)
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: '다시 만들 버전 (예: 1.0.13-beta). 비우면 현재 mod_version'
+        required: false
+        default: ''
+permissions:
+  contents: write
+concurrency: changelog-only
+jobs:
+  changelog:
+    # 스크립트와 ci/changelog.json 은 main 것을 쓰므로 main 에서만 실행
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with: { fetch-depth: 0 }
+      - name: Rebuild changelog.json
+        env:
+          GH_TOKEN: ${{ github.token }}
+          INPUT_VERSION: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+          VER="${INPUT_VERSION:-$(grep '^mod_version=' gradle.properties | cut -d= -f2)}"
+          VER="${VER#v}"
+          echo "대상 버전: $VER"
+          git fetch --tags -q
+          git rev-parse -q --verify "refs/tags/v$VER" >/dev/null || { echo "::error title=changelog-only::태그 v$VER 이 없어요. 릴리스가 먼저 만들어져 있어야 해요"; exit 1; }
+          gh release view "v$VER" >/dev/null || { echo "::error title=changelog-only::릴리스 v$VER 이 없어요"; exit 1; }
+          # 바로 앞 버전의 태그 (이 버전보다 오래된 것 중 가장 최신)
+          PREV=$(git tag --sort=-v:refname | grep -A1 "^v$VER$" | tail -1)
+          [ "$PREV" = "v$VER" ] && PREV=""
+          echo "앞 버전 태그: ${PREV:-없음}"
+          mkdir -p /tmp/prev /tmp/old
+          if [ -n "$PREV" ]; then
+            git log --format=%B "$PREV..v$VER" > /tmp/msgs.txt
+            gh release download "$PREV" --pattern changelog.json --dir /tmp/prev 2>/dev/null || echo "앞 버전 changelog.json 없음 (빈 기록에서 시작)"
+          else
+            git log -1 --format=%B "v$VER" > /tmp/msgs.txt
+          fi
+          # 지금 올라가 있는 파일은 되돌릴 수 있게 따로 보관 (아래 artifact)
+          gh release download "v$VER" --pattern changelog.json --dir /tmp/old
+          python3 ci/make_changelog.py "$VER" /tmp/prev/changelog.json /tmp/msgs.txt > /tmp/changelog.json
+          python3 - "$VER" <<'PY'
+          import json, sys
+          ver = sys.argv[1]
+          new = json.load(open('/tmp/changelog.json', encoding='utf-8'))['versions']
+          old = json.load(open('/tmp/old/changelog.json', encoding='utf-8'))['versions']
+          cur = next((v for v in new if v['version'] == ver), None)
+          if cur is None:
+              sys.exit("::error title=changelog-only::새 기록에 " + ver + " 항목이 없어요 (올리지 않음)")
+          if len(new) < len(old) - 1:
+              sys.exit("::error title=changelog-only::버전 수가 이상하게 줄었어요 %d -> %d (올리지 않음)" % (len(old), len(new)))
+          print("새 기록의 %s:" % ver)
+          print(json.dumps(cur, ensure_ascii=False, indent=2))
+          PY
+          gh release upload "v$VER" /tmp/changelog.json --clobber
+          echo "v$VER 의 changelog.json 만 교체했어요 (jar·manifest 는 그대로)"
+      - name: Keep the replaced file (restore point)
+        uses: actions/upload-artifact@v4
+        with:
+          name: old-changelog
+          path: /tmp/old/changelog.json
