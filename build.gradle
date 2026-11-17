@@ -71,6 +71,8 @@ tasks.named('jar', Jar).configure {
                     "Implementation-Title": project.name, "Implementation-Version": project.jar.archiveVersion,
                     "Implementation-Vendor": mod_authors])
     }
+    // CC BY 4.0 (Kyrise 아이콘) 등 출처 표기를 배포 jar 안에도 넣음
+    from(rootProject.file('CREDITS.md'))
     finalizedBy 'reobfJar'
 }
 

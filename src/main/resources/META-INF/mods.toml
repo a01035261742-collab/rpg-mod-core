@@ -26,13 +26,13 @@ description='''${mod_description}'''
 [[dependencies.${mod_id}]]
     modId="epicfight"
     mandatory=true
-    versionRange="[20,)"
+    versionRange="[20,21)"
     ordering="AFTER"
     side="BOTH"
 
 [[dependencies.${mod_id}]]
     modId="geckolib"
     mandatory=true
-    versionRange="[4.7,)"
+    versionRange="[4.7,5)"
     ordering="AFTER"
     side="BOTH"
