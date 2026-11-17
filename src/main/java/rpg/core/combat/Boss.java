@@ -1573,7 +1573,7 @@ public final class Boss {
     public static void later(net.minecraftforge.event.TickEvent.ServerTickEvent e) {
         if (e.phase != net.minecraftforge.event.TickEvent.Phase.END || LATER.isEmpty()) return;
         var run = new ArrayList<>(LATER); LATER.clear();
-        for (Runnable r : run) { try { r.run(); } catch (Exception ex) { ex.printStackTrace(); } }
+        for (Runnable r : run) { try { r.run(); } catch (Exception ex) { RpgCore.LOG.error("[rpgcore] 예약된 보스 작업 실행 실패", ex); } }
     }
 
     /** 보스 레벨 (mobs.json levels 의 첫 레벨) */

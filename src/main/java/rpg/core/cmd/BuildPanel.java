@@ -18,6 +18,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.loading.FMLPaths;
+import rpg.core.RpgCore;
 
 /**
  * 건축 도우미 (OP, WorldEdit 필요): /rpg 건축 → 채팅 버튼.
@@ -57,7 +58,11 @@ public final class BuildPanel {
         try (var s = Files.list(dir())) {
             s.filter(p -> { String f = p.getFileName().toString(); return f.endsWith(".schem") || f.endsWith(".schematic"); })
                     .forEach(p -> { String f = p.getFileName().toString(); out.add(f.substring(0, f.lastIndexOf('.'))); });
-        } catch (Exception ignored) {}
+        } catch (java.nio.file.NoSuchFileException e) {
+            // 스케매틱 폴더가 아직 없는 건 정상 (건물 없음)
+        } catch (Exception e) {
+            RpgCore.LOG.warn("[rpgcore] 스케매틱 폴더 읽기 실패: {}", dir(), e);
+        }
         out.sort(null);
         return out;
     }

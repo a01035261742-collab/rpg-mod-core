@@ -495,6 +495,7 @@ public final class MobAI {
 
     // ───────── 박쥐: 대상 위를 맴돌며 날아다님 (바닐라 박쥐는 대상이 없음) ─────────
     private static Field BAT_POS;
+    private static boolean batWarned;
 
     private static void batFollow(net.minecraft.world.entity.ambient.Bat bat, Player t) {
         try {
@@ -503,7 +504,9 @@ public final class MobAI {
                     if (f.getType() == net.minecraft.core.BlockPos.class) { f.setAccessible(true); BAT_POS = f; break; }
             }
             if (BAT_POS != null) BAT_POS.set(bat, net.minecraft.core.BlockPos.containing(t.getX() + bat.getRandom().nextInt(5) - 2, t.getY() + 2, t.getZ() + bat.getRandom().nextInt(5) - 2));
-        } catch (Exception ignored) {}
+        } catch (Exception ex) {
+            if (!batWarned) { batWarned = true; RpgCore.LOG.warn("[rpgcore] 박쥐 위치 연결 실패 - 이후 같은 오류는 기록하지 않아요", ex); }
+        }
         if (bat.isResting()) bat.setResting(false);
     }
 }
