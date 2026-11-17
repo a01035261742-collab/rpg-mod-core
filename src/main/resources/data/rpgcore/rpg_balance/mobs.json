@@ -2297,7 +2297,7 @@
      "r": 13,
      "delay": 6,
      "maxPct": 70,
-     "pull": 0.045,
+     "pull": 0.04,
      "only": 1,
      "noDodge": 1
     },
