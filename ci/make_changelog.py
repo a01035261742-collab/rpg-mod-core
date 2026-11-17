@@ -1,7 +1,7 @@
 """changelog.json 생성 (런처 "업데이트 기록"용). 사용: python3 ci/make_changelog.py <버전> <이전 changelog.json 또는 ''> <커밋 메시지 파일>
 - 이전 릴리스의 changelog.json 에 계속 쌓음 (최신이 위)
 - ci/changelog.json (저장소에 직접 쓴 기록) 을 합침: 같은 버전이면 저장소 쪽 문장이 먼저
-- 커밋 메시지에서 "player: ..." 로 시작하는 줄 → 이 버전의 changes
+- 커밋 메시지에서 "player: ..." 로 시작하는 줄 → 이 버전의 changes (이미 이전 버전 기록에 있는 문장은 건너뜀)
 - changes 가 하나도 없는 버전은 넣지 않음
 - title (런처 패치노트 큰 제목, 60자 이하 글자만): 커밋의 "title: ..." 줄 > ci/changelog.json 의 title > 이전 기록 > 이번 [release] 커밋 첫 줄
   (title 만 있고 changes 가 없는 ci/changelog.json 항목은 그 버전에 제목만 붙임)"""
@@ -55,6 +55,10 @@ if msg_path and os.path.exists(msg_path):
 if clean_title(title_line): TITLES[ver] = clean_title(title_line)
 elif ver not in TITLES and clean_title(first): TITLES[ver] = clean_title(first)
 lines = list(dict.fromkeys(lines))   # 같은 버전 커밋 여러 개에 같은 player: 줄이 있으면 한 번만
+# 이미 이전 버전 기록에 있는 문장은 건너뜀 (이전 릴리스 커밋이 이번 범위에 또 걸려서 같은 줄이 다음 버전에 중복으로 붙는 것 방지)
+# ci/changelog.json 에 직접 쓴 문장은 이 검사를 받지 않음 (일부러 같은 문장을 쓸 수 있게)
+OLDER = {c for v, e in merged.items() if v != ver for c in e['changes']}
+lines = [l for l in lines if l not in OLDER]
 if lines:
     add({'version': ver, 'date': datetime.date.today().isoformat(), 'changes': lines})
 if ver in merged and not merged[ver].get('date'):
