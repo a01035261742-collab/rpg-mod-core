@@ -604,10 +604,8 @@ final class BossX {
                 x.step = 0;
                 int dl = Boss.ticks(p.delay());
                 double rin = p.x("rIn", 6), rout = p.x("rOut", 20);
-                Net.telegraph(l, st.pos, st.dir, MobAI.RING, rout, rin, dl);                     // 빨강 도넛 (안에서 밖으로 차오름)
-                Net.telegraph(l, st.pos, st.dir, 30 + MobAI.CIRCLE, rin, 0, dl);                // 안쪽 안전
-                Net.telegraph(l, st.pos, st.dir, 30 + MobAI.RING, rout + 10, rout, dl);         // 바깥 안전
-                say(l, st, "◆ " + p.name() + " — 여왕 품(" + (int) rin + "칸) 또는 " + (int) rout + "칸 밖으로! 그다음 안쪽이 터져요", ChatFormatting.DARK_GREEN);
+                Net.telegraph(l, st.pos, st.dir, 30 + MobAI.CIRCLE, rin, 0, dl);                // 여왕 품만 안전 (바깥 전체 피격, 큰 빨간 원은 안 그림)
+                say(l, st, "◆ " + p.name() + " — 여왕 품(" + (int) rin + "칸) 안으로! 그다음 안쪽이 터져요", ChatFormatting.DARK_GREEN);
                 l.playSound(null, mob.blockPosition(), SoundEvents.PUFFER_FISH_BLOW_UP, SoundSource.HOSTILE, 2.5f, 0.5f);
                 l.playSound(null, mob.blockPosition(), SoundEvents.BUBBLE_COLUMN_WHIRLPOOL_INSIDE, SoundSource.HOSTILE, 2f, 0.6f);
                 st.stageEnd = now + dl + Boss.HIT_LAG;
@@ -829,7 +827,6 @@ final class BossX {
                     else {   // 마지막: 경기장 전체 + 여왕 주변 안전 원
                         int dl = Boss.ticks(p.x("finalDelay", 2));
                         st.pos = mob.position();
-                        Net.telegraph(l, st.center, st.dir, MobAI.CIRCLE, st.radius + 2, 0, dl);
                         Net.telegraph(l, st.pos, st.dir, 30 + MobAI.CIRCLE, p.x("safeR", 6), 0, dl);
                         say(l, st, "◆ 여왕에게 붙으세요! (초록 원만 안전)", ChatFormatting.RED);
                         st.stageEnd = now + dl + Boss.HIT_LAG;
@@ -850,14 +847,14 @@ final class BossX {
                 if (x.step == 0) {   // 독 분출 (도넛)
                     for (int k = 0; k < 20; k++) {
                         double a = Math.PI * 2 * k / 20;
-                        for (double rr = rin + 1.5; rr <= rout; rr += 3.5)
+                        for (double rr = rin + 1.5; rr <= st.radius; rr += 3.5)
                             l.sendParticles(ParticleTypes.ITEM_SLIME, st.pos.x + Math.cos(a) * rr, st.pos.y + 0.6, st.pos.z + Math.sin(a) * rr, 2, 0.4, 0.5, 0.4, 0);
                     }
                     l.playSound(null, mob.blockPosition(), SoundEvents.PUFFER_FISH_BLOW_OUT, SoundSource.HOSTILE, 2.5f, 0.5f);
                     for (ServerPlayer pl : Boss.arena(l, st, 4)) {
                         if (!Boss.valid(pl) || Math.abs(pl.getY() - st.pos.y) > Boss.HEIGHT) continue;
                         double d = Boss.flat(pl.position(), st.pos);
-                        if (d >= rin - Boss.PAD && d <= rout + Boss.PAD) Boss.hit(mob, m, st, l, pl, p);
+                        if (d >= rin - Boss.PAD) Boss.hit(mob, m, st, l, pl, p);   // 여왕 품 밖은 전부
                     }
                     x.step = 1;   // 바로 안쪽 내려찍기 예고
                     int dl2 = Boss.ticks(p.x("delay2", 1.6));
