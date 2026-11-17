@@ -40,6 +40,14 @@ public final class BossMusic {
         if (mc.level == null && !current.isEmpty()) set("");
     }
 
+    /** 바닐라 배경 음악(메뉴·게임·수중·크리에이티브 등 음악 소리 중 우리 곡 아닌 것)은 재생 자체를 막음 */
+    @SubscribeEvent
+    public static void noVanillaMusic(net.minecraftforge.client.event.sound.PlaySoundEvent e) {
+        SoundInstance s = e.getSound();
+        if (s != null && s.getSource() == SoundSource.MUSIC && !(s instanceof Track) && !RpgCore.MODID.equals(s.getLocation().getNamespace()))
+            e.setSound(null);
+    }
+
     static final class Track extends AbstractTickableSoundInstance {
         boolean fade;
         Track(SoundEvent ev) {
