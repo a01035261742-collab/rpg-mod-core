@@ -2526,7 +2526,9 @@
     "cd": 8,
     "dist": 12
    },
-   "transLine": "키이이익—!!|끼아아아악!!"
+   "transLine": "키이이익—!!|끼아아아악!!",
+   "bgm": "music.boss_spider_1",
+   "bgm2": "music.boss_spider_2"
   }
  },
  "spiderling": {

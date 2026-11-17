@@ -1,5 +1,7 @@
 {
   "music.boss_forest_lord": {"sounds": [{"name": "rpgcore:music/boss_forest_lord", "stream": true}]},
   "music.boss_guardian_1": {"sounds": [{"name": "rpgcore:music/boss_guardian_1", "stream": true}]},
-  "music.boss_guardian_2": {"sounds": [{"name": "rpgcore:music/boss_guardian_2", "stream": true}]}
+  "music.boss_guardian_2": {"sounds": [{"name": "rpgcore:music/boss_guardian_2", "stream": true}]},
+  "music.boss_spider_1": {"sounds": [{"name": "rpgcore:music/boss_spider_1", "stream": true}]},
+  "music.boss_spider_2": {"sounds": [{"name": "rpgcore:music/boss_spider_2", "stream": true}]}
 }
