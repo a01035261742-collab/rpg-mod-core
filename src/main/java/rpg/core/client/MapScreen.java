@@ -59,7 +59,7 @@ public class MapScreen extends ScaledScreen {
     }
 
     private static int[] size(MapData.Node n) {
-        return switch (n.type()) { case "town" -> new int[]{82, 28}; case "exit" -> new int[]{60, 14}; default -> new int[]{76, 26}; };
+        return switch (n.type()) { case "town" -> new int[]{92, 28}; case "exit" -> new int[]{60, 14}; default -> new int[]{76, 26}; };
     }
 
     private static int accent(String t) {
@@ -69,8 +69,7 @@ public class MapScreen extends ScaledScreen {
     private void small(GuiGraphics g, String s, int cx, int yy, int col) {
         g.pose().pushPose();
         g.pose().translate(cx, yy, 0);
-        g.pose().scale(0.75f, 0.75f, 1);
-        g.drawString(font, s, -font.width(s) / 2, 0, col, false);
+        g.drawString(font, s, -font.width(s) / 2, 0, col, false);   // 작은 글씨는 깨져서 원래 크기
         g.pose().popPose();
     }
 
@@ -163,10 +162,9 @@ public class MapScreen extends ScaledScreen {
             int col = kindColor(b.kind());
             g.pose().pushPose();
             g.pose().translate(bx, by, 0);
-            g.pose().scale(0.75f, 0.75f, 1);
             int w = font.width(b.label()) + 8;
-            box(g, -w / 2, -7, w - w / 2, 7, 0xF01E0C10, col);
-            g.drawString(font, b.label(), -w / 2 + 4, -4, Ui.TXT, false);
+            box(g, -w / 2, -7, w - w / 2, 6, 0xF01E0C10, col);
+            g.drawString(font, b.label(), -w / 2 + 4, -5, Ui.TXT, false);
             g.pose().popPose();
         }
         if (tg.contains(open.id()) && blink) box(g, ax - 2, ay - 2, ax + MW + 2, ay + MH + 2, 0, Ui.VAL);
