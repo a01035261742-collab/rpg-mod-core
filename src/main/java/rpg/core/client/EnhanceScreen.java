@@ -463,6 +463,7 @@ public class EnhanceScreen extends ScaledScreen {
                 if (i >= 0 && mx >= cx && mx < cx + 18 && my >= cy && my < cy + 18 && !bag) tip = new ArrayList<>(Screen.getTooltipFromItem(Minecraft.getInstance(), it));
             }
         // 가운데
+        hovStack = ItemStack.EMPTY;
         if (!bag) {
             ItemStack s = cur();
             GearDefs.GearDef d = Gear.def(s);
@@ -474,6 +475,8 @@ public class EnhanceScreen extends ScaledScreen {
             else if (tab == 3) renderPot(g, s, d);
             else renderFlame(g, s, d);
         }
+        if (tip == null && !bag && !hovStack.isEmpty() && mx >= hovX && mx < hovX + hovW && my >= hovY && my < hovY + hovW)
+            tip = new ArrayList<>(Screen.getTooltipFromItem(Minecraft.getInstance(), hovStack));   // 가운데 장비에 마우스 → 정보
         super.render(g, mx, my, pt);
         if (bag) tip = pickNew ? renderPick(g, mx, my) : renderBag(g, mx, my);
         if (tip != null) g.renderComponentTooltip(font, tip, mx, my);
@@ -537,8 +540,14 @@ public class EnhanceScreen extends ScaledScreen {
         Ui.bar(g, x + CX - 60, y + 218, 120, 4, frags / (float) Math.max(1, fragCost()), 0xFF7CE07C);
     }
 
+    /** 가운데 그린 장비 (마우스 올리면 툴팁) */
+    private ItemStack hovStack = ItemStack.EMPTY;
+    private int hovX, hovY, hovW;
+    private void hov(ItemStack s, int hx, int hy, int w) { hovStack = s; hovX = hx; hovY = hy; hovW = w; }
+
     /** 가운데 위: 고른 장비 칸 + 이름 */
     private int head(GuiGraphics g, ItemStack s, int top) {
+        hov(s, x + CX - 9, top, 18);
         Ui.slot(g, x + CX - 9, top);
         g.renderItem(s, x + CX - 8, top + 1);
         Ui.selBox(g, x + CX - 9, top, 18, 18);
@@ -552,6 +561,7 @@ public class EnhanceScreen extends ScaledScreen {
         int ccy = y + 102;
         circle(g, x + CX, ccy);
         Ui.slot(g, x + CX - 9, ccy - 9);
+        hov(s, x + CX - 9, ccy - 9, 18);
         g.renderItem(s, x + CX - 8, ccy - 8);
         Ui.selBox(g, x + CX - 9, ccy - 9, 18, 18);
         center(g, s.getHoverName().getString(), y + 164, Enhance.broken(s) ? Ui.RED : Ui.VAL);
@@ -645,6 +655,7 @@ public class EnhanceScreen extends ScaledScreen {
         if (tab == 3) aura(g, cx, cy, 0xFFFFD86A);   // 시안: 금빛 두 겹 고리
         else if (tab == 4) flameRing(g, cx, cy);
         Ui.slot(g, cx - 14, cy - 14, 28);
+        hov(s, cx - 14, cy - 14, 28);
         g.pose().pushPose(); g.pose().translate(cx - 12, cy - 12, 0); g.pose().scale(1.5f, 1.5f, 1);
         g.renderItem(s, 0, 0);
         g.pose().popPose();
