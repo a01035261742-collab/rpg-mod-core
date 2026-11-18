@@ -168,13 +168,17 @@ public final class RpgCommand {
                     return ok(c, "스탯 초기화 주문서 지급");
                 }))
                 .then(Commands.literal("reset").requires(s -> s.hasPermission(2))
-                        .executes(c -> resetChar(c, false))
-                        .then(Commands.literal("장비").executes(c -> resetChar(c, true)))));
+                        .executes(c -> resetChar(c, false, null))
+                        .then(Commands.literal("장비").executes(c -> resetChar(c, true, null))
+                                .then(Commands.argument("target", net.minecraft.commands.arguments.EntityArgument.player())
+                                        .executes(c -> resetChar(c, true, net.minecraft.commands.arguments.EntityArgument.getPlayer(c, "target")))))
+                        .then(Commands.argument("target", net.minecraft.commands.arguments.EntityArgument.player())
+                                .executes(c -> resetChar(c, false, net.minecraft.commands.arguments.EntityArgument.getPlayer(c, "target"))))));
     }
 
     /** /rpg reset [장비]: 캐릭터·창고·마을 이동·일일·업적·레이드 기록 초기화 (장비 = 착용 장비·장신구·가방 전체도 비움) */
-    private static int resetChar(CommandContext<CommandSourceStack> c, boolean gear) throws CommandSyntaxException {
-        ServerPlayer p = c.getSource().getPlayerOrException();
+    private static int resetChar(CommandContext<CommandSourceStack> c, boolean gear, ServerPlayer target) throws CommandSyntaxException {
+        ServerPlayer p = target != null ? target : c.getSource().getPlayerOrException();
         RpgData.get(p).init();
         RpgData.sync(p);
         p.closeContainer();
@@ -189,7 +193,9 @@ public final class RpgCommand {
             p.getInventory().clearContent();   // 가방 전체 + 방어구 + 왼손
             p.inventoryMenu.broadcastChanges();
         }
-        return ok(c, "캐릭터 초기화 (Lv.1 · 창고·마을 이동·일일·업적·레이드 기록" + (gear ? "·장비·장신구·가방" : "") + " 초기화)");
+        if (target != null && target != c.getSource().getEntity())
+            p.sendSystemMessage(Component.literal("[RPG] 관리자가 캐릭터를 초기화했어요").withStyle(ChatFormatting.YELLOW));
+        return ok(c, (target != null ? p.getGameProfile().getName() + " " : "") + "캐릭터 초기화 (Lv.1 · 창고·마을 이동·일일·업적·레이드 기록" + (gear ? "·장비·장신구·가방" : "") + " 초기화)");
     }
 
     private static int info(CommandContext<CommandSourceStack> c) throws CommandSyntaxException {
