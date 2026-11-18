@@ -172,7 +172,7 @@ public final class RpgCommand {
                         .then(Commands.literal("장비").executes(c -> resetChar(c, true)))));
     }
 
-    /** /rpg reset [장비]: 캐릭터·창고·마을 이동·일일·업적·레이드 기록 초기화 (장비 = 착용 장비·장신구도 비움) */
+    /** /rpg reset [장비]: 캐릭터·창고·마을 이동·일일·업적·레이드 기록 초기화 (장비 = 착용 장비·장신구·가방 전체도 비움) */
     private static int resetChar(CommandContext<CommandSourceStack> c, boolean gear) throws CommandSyntaxException {
         ServerPlayer p = c.getSource().getPlayerOrException();
         RpgData.get(p).init();
@@ -186,11 +186,10 @@ public final class RpgCommand {
             var eq = rpg.core.equip.PlayerEquip.get(p);
             for (int i = 0; i < eq.items.getSlots(); i++) eq.items.setStackInSlot(i, net.minecraft.world.item.ItemStack.EMPTY);
             eq.dirty = true;
-            p.getInventory().armor.replaceAll(x -> net.minecraft.world.item.ItemStack.EMPTY);
-            p.getInventory().offhand.replaceAll(x -> net.minecraft.world.item.ItemStack.EMPTY);
+            p.getInventory().clearContent();   // 가방 전체 + 방어구 + 왼손
             p.inventoryMenu.broadcastChanges();
         }
-        return ok(c, "캐릭터 초기화 (Lv.1 · 창고·마을 이동·일일·업적·레이드 기록" + (gear ? "·착용 장비·장신구" : "") + " 초기화)");
+        return ok(c, "캐릭터 초기화 (Lv.1 · 창고·마을 이동·일일·업적·레이드 기록" + (gear ? "·장비·장신구·가방" : "") + " 초기화)");
     }
 
     private static int info(CommandContext<CommandSourceStack> c) throws CommandSyntaxException {
