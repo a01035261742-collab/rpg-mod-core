@@ -158,7 +158,7 @@ public class BagScreen extends ScaledContainerScreen<EquipMenu> {
             java.util.List<Component> tip = new java.util.ArrayList<>();
             tip.add(Component.literal(b.name()).withStyle(st -> st.withColor(cols[k] & 0xFFFFFF)));
             var idef = k == 0 ? rpg.core.item.BuffItem.DEFS.values().stream().filter(d -> d.name().equals(b.name())).findFirst().orElse(null) : null;
-            tip.add(Component.literal("§7" + (idef != null ? (idef.food() ? "음식 버프" : "물약 버프") : kinds[k]) + (b.extra().isEmpty() ? "" : "  §f" + b.extra())));
+            tip.add(Component.literal("§7" + (idef != null ? "물약 버프" : kinds[k]) + (b.extra().isEmpty() ? "" : "  §f" + b.extra())));
             if (idef != null) tip.add(Component.literal("§f" + idef.desc()));   // 도약의 물약 → 점프력 +10
             var sd = rpg.core.skill.Defs.SKILLS.values().stream().filter(d -> d.name().equals(b.name())).findFirst().orElse(null);
             if (sd != null) {
