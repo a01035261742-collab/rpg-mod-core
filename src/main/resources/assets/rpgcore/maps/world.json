@@ -1,0 +1,1450 @@
+{
+ "npcNames": {
+  "harold": "촌장 해럴드",
+  "bram": "농부 브람",
+  "luke": "경비병 루크",
+  "elin": "약초꾼 엘린",
+  "rowan": "사냥꾼 로완",
+  "kael": "경비대장 카엘",
+  "morris": "버섯 학자 모리스",
+  "nera": "연금술사 네라",
+  "owen": "숲지기 오웬",
+  "sid": "거미 사냥꾼 시드",
+  "mira": "광석 감정사 미라",
+  "brock": "광부 반장 브록",
+  "darik": "광산 경비 다릭"
+ },
+ "regions": [
+  {
+   "name": "1지역 시작 마을",
+   "nodes": [
+    {
+     "id": "ex2",
+     "x": 0,
+     "y": 0,
+     "type": "exit",
+     "title": "▲ 2지역으로",
+     "sub": "",
+     "mobs": [],
+     "mobNames": [],
+     "mats": [],
+     "npcs": [],
+     "points": [],
+     "exitTo": 2
+    },
+    {
+     "id": "g4",
+     "x": 0,
+     "y": 1,
+     "type": "hunt",
+     "title": "깊은 풀숲",
+     "sub": "Lv16~20",
+     "mobs": [
+      "boar",
+      "bear"
+     ],
+     "mobNames": [
+      "멧돼지",
+      "곰"
+     ],
+     "mats": [
+      "boar_bristle",
+      "boar_tusk",
+      "bear_pelt",
+      "bear_paw"
+     ],
+     "npcs": [],
+     "points": [
+      "dog_den"
+     ]
+    },
+    {
+     "id": "g3",
+     "x": 1,
+     "y": 1,
+     "type": "hunt",
+     "title": "풀숲",
+     "sub": "Lv11~15",
+     "mobs": [
+      "wild_dog",
+      "bee"
+     ],
+     "mobNames": [
+      "들개",
+      "풀숲 벌"
+     ],
+     "mats": [
+      "dog_fur",
+      "dog_fang",
+      "bee_sting",
+      "royal_jelly"
+     ],
+     "npcs": [
+      "rowan"
+     ],
+     "points": []
+    },
+    {
+     "id": "g2",
+     "x": 3,
+     "y": 1,
+     "type": "hunt",
+     "title": "초원",
+     "sub": "Lv6~10",
+     "mobs": [
+      "slime",
+      "rat"
+     ],
+     "mobNames": [
+      "슬라임",
+      "들쥐"
+     ],
+     "mats": [
+      "slime_goo",
+      "slime_core",
+      "rat_tail",
+      "rat_tooth"
+     ],
+     "npcs": [
+      "luke"
+     ],
+     "points": [
+      "grass_post"
+     ]
+    },
+    {
+     "id": "t1",
+     "x": 1,
+     "y": 2.3,
+     "type": "town",
+     "title": "시작 마을",
+     "sub": "",
+     "mobs": [],
+     "mobNames": [],
+     "mats": [],
+     "npcs": [
+      "harold",
+      "elin"
+     ],
+     "points": [],
+     "town": "t1"
+    },
+    {
+     "id": "g1",
+     "x": 3,
+     "y": 2.3,
+     "type": "hunt",
+     "title": "농장",
+     "sub": "Lv1~5",
+     "mobs": [
+      "pig",
+      "cow"
+     ],
+     "mobNames": [
+      "돼지",
+      "소"
+     ],
+     "mats": [
+      "pig_hide",
+      "golden_hoof",
+      "cow_hide",
+      "cow_horn"
+     ],
+     "npcs": [
+      "bram"
+     ],
+     "points": []
+    }
+   ],
+   "edges": [
+    [
+     "ex2",
+     "g4"
+    ],
+    [
+     "g4",
+     "g3"
+    ],
+    [
+     "g3",
+     "g2"
+    ],
+    [
+     "g2",
+     "g1"
+    ],
+    [
+     "g1",
+     "t1"
+    ]
+   ],
+   "image": "region_1"
+  },
+  {
+   "name": "2지역 버섯 군락",
+   "nodes": [
+    {
+     "id": "ex3",
+     "x": 0,
+     "y": 0,
+     "type": "exit",
+     "title": "▲ 3지역으로",
+     "sub": "",
+     "mobs": [],
+     "mobNames": [],
+     "mats": [],
+     "npcs": [],
+     "points": [],
+     "exitTo": 3
+    },
+    {
+     "id": "g8",
+     "x": 0,
+     "y": 1,
+     "type": "hunt",
+     "title": "어둠 경계",
+     "sub": "Lv36~40",
+     "mobs": [
+      "dark_spider",
+      "mush_beast"
+     ],
+     "mobNames": [
+      "어둠거미",
+      "버섯 짐승"
+     ],
+     "mats": [
+      "dark_silk",
+      "dark_eye",
+      "beast_shell",
+      "beast_core"
+     ],
+     "npcs": [
+      "owen"
+     ],
+     "points": [
+      "beast_nest"
+     ]
+    },
+    {
+     "id": "g7",
+     "x": 1.5,
+     "y": 1,
+     "type": "hunt",
+     "title": "깊은 곳",
+     "sub": "Lv31~35",
+     "mobs": [
+      "spore_spider",
+      "spore_witch"
+     ],
+     "mobNames": [
+      "포자 거미",
+      "포자 마녀"
+     ],
+     "mats": [
+      "spore_silk",
+      "spore_gland",
+      "witch_herb",
+      "odd_potion"
+     ],
+     "npcs": [],
+     "points": [
+      "deep_post",
+      "witch_hideout"
+     ]
+    },
+    {
+     "id": "b2",
+     "x": 3,
+     "y": 0,
+     "type": "boss",
+     "title": "거대버섯 수호자",
+     "sub": "필드 보스",
+     "mobs": [
+      "mush_guardian"
+     ],
+     "mobNames": [
+      "거대버섯 수호자"
+     ],
+     "mats": [],
+     "npcs": [],
+     "points": []
+    },
+    {
+     "id": "b1",
+     "x": 0,
+     "y": 2,
+     "type": "boss",
+     "title": "숲의 주인",
+     "sub": "필드 보스",
+     "mobs": [
+      "forest_lord"
+     ],
+     "mobNames": [
+      "숲의 주인"
+     ],
+     "mats": [],
+     "npcs": [],
+     "points": []
+    },
+    {
+     "id": "t2",
+     "x": 1.5,
+     "y": 2.2,
+     "type": "town",
+     "title": "두번째 마을",
+     "sub": "",
+     "mobs": [],
+     "mobNames": [],
+     "mats": [],
+     "npcs": [
+      "morris",
+      "nera"
+     ],
+     "points": [],
+     "town": "t2"
+    },
+    {
+     "id": "g6",
+     "x": 3,
+     "y": 1.2,
+     "type": "hunt",
+     "title": "군락 안쪽",
+     "sub": "Lv26~30",
+     "mobs": [
+      "mush_soldier",
+      "mush_fairy"
+     ],
+     "mobNames": [
+      "독버섯 병정",
+      "버섯 요정"
+     ],
+     "mats": [
+      "toxic_cap",
+      "soldier_badge",
+      "fairy_wing",
+      "fairy_dust"
+     ],
+     "npcs": [],
+     "points": [
+      "soldier_camp"
+     ]
+    },
+    {
+     "id": "g5",
+     "x": 3,
+     "y": 2.4,
+     "type": "hunt",
+     "title": "군락 입구",
+     "sub": "Lv21~25",
+     "mobs": [
+      "mush_spirit",
+      "mush_kid"
+     ],
+     "mobNames": [
+      "버섯 정령",
+      "꼬마 버섯"
+     ],
+     "mats": [
+      "spore_dust",
+      "spirit_cap",
+      "tiny_cap",
+      "glow_spore"
+     ],
+     "npcs": [],
+     "points": [
+      "spore_camp",
+      "spirit_altar"
+     ]
+    },
+    {
+     "id": "ex1",
+     "x": 1.5,
+     "y": 3.3,
+     "type": "exit",
+     "title": "▼ 1지역으로",
+     "sub": "",
+     "mobs": [],
+     "mobNames": [],
+     "mats": [],
+     "npcs": [
+      "kael"
+     ],
+     "points": [],
+     "exitTo": 1
+    }
+   ],
+   "edges": [
+    [
+     "ex3",
+     "g8"
+    ],
+    [
+     "g8",
+     "g7"
+    ],
+    [
+     "t2",
+     "b1"
+    ],
+    [
+     "t2",
+     "g5"
+    ],
+    [
+     "g5",
+     "g6"
+    ],
+    [
+     "g6",
+     "b2"
+    ],
+    [
+     "t2",
+     "ex1"
+    ],
+    [
+     "g7",
+     "g6"
+    ]
+   ],
+   "image": "region_2"
+  },
+  {
+   "name": "3지역 동굴 마을",
+   "nodes": [
+    {
+     "id": "g11b",
+     "x": 0,
+     "y": 0.4,
+     "type": "dung",
+     "title": "폐광",
+     "sub": "Lv51~55",
+     "mobs": [
+      "ore_slime",
+      "skel_miner"
+     ],
+     "mobNames": [
+      "광석 슬라임",
+      "해골 광부"
+     ],
+     "mats": [
+      "ore_goo",
+      "ore_core",
+      "miner_bone",
+      "miner_badge"
+     ],
+     "npcs": [],
+     "points": []
+    },
+    {
+     "id": "g11",
+     "x": 1.6,
+     "y": 0,
+     "type": "dung",
+     "title": "채석장",
+     "sub": "Lv51~55",
+     "mobs": [
+      "ore_slime",
+      "skel_miner"
+     ],
+     "mobNames": [
+      "광석 슬라임",
+      "해골 광부"
+     ],
+     "mats": [
+      "ore_goo",
+      "ore_core",
+      "miner_bone",
+      "miner_badge"
+     ],
+     "npcs": [],
+     "points": [
+      "crane",
+      "collapsed"
+     ]
+    },
+    {
+     "id": "g12",
+     "x": 3,
+     "y": 0,
+     "type": "dung",
+     "title": "구덩이",
+     "sub": "Lv56~60",
+     "mobs": [
+      "mine_golem"
+     ],
+     "mobNames": [
+      "광산 골렘"
+     ],
+     "mats": [
+      "golem_shard",
+      "void_core"
+     ],
+     "npcs": [],
+     "points": [
+      "deep_adit"
+     ]
+    },
+    {
+     "id": "t3",
+     "x": 1.6,
+     "y": 1.3,
+     "type": "town",
+     "title": "동굴 마을",
+     "sub": "",
+     "mobs": [],
+     "mobNames": [],
+     "mats": [],
+     "npcs": [
+      "sid",
+      "mira",
+      "brock",
+      "darik"
+     ],
+     "points": [],
+     "town": "t3"
+    },
+    {
+     "id": "g10",
+     "x": 3,
+     "y": 1.5,
+     "type": "dung",
+     "title": "깊은 거미 동굴",
+     "sub": "Lv46~50",
+     "mobs": [
+      "venom_spider",
+      "spike_spider"
+     ],
+     "mobNames": [
+      "독 거미",
+      "가시 거미"
+     ],
+     "mats": [
+      "venom_sac",
+      "venom_crystal",
+      "stone_spike",
+      "spike_heart"
+     ],
+     "npcs": [],
+     "points": [
+      "egg_room",
+      "amethyst_den"
+     ]
+    },
+    {
+     "id": "g9",
+     "x": 1.6,
+     "y": 2.6,
+     "type": "dung",
+     "title": "거미 동굴",
+     "sub": "Lv41~45",
+     "mobs": [
+      "cave_spider",
+      "cave_bat"
+     ],
+     "mobNames": [
+      "동굴 거미",
+      "박쥐"
+     ],
+     "mats": [
+      "cave_silk",
+      "cave_fang",
+      "bat_wing",
+      "echo_crystal"
+     ],
+     "npcs": [],
+     "points": [
+      "old_camp"
+     ]
+    },
+    {
+     "id": "rd",
+     "x": 0,
+     "y": 2.6,
+     "type": "boss",
+     "title": "거미 둥지",
+     "sub": "레이드",
+     "mobs": [
+      "spider_queen"
+     ],
+     "mobNames": [
+      "어둠거미여왕"
+     ],
+     "mats": [],
+     "npcs": [],
+     "points": []
+    },
+    {
+     "id": "ex2b",
+     "x": 1.6,
+     "y": 3.5,
+     "type": "exit",
+     "title": "▼ 2지역으로",
+     "sub": "",
+     "mobs": [],
+     "mobNames": [],
+     "mats": [],
+     "npcs": [],
+     "points": [],
+     "exitTo": 2
+    }
+   ],
+   "edges": [
+    [
+     "g11b",
+     "t3"
+    ],
+    [
+     "g11",
+     "t3"
+    ],
+    [
+     "g11",
+     "g12"
+    ],
+    [
+     "t3",
+     "g10"
+    ],
+    [
+     "t3",
+     "g9"
+    ],
+    [
+     "g9",
+     "rd"
+    ],
+    [
+     "g9",
+     "ex2b"
+    ]
+   ],
+   "image": "region_3"
+  }
+ ],
+ "towns": {
+  "t1": {
+   "title": "시작 마을",
+   "names": [
+    "시작마을",
+    "시작 마을"
+   ],
+   "buildings": [
+    {
+     "label": "촌장 집 (해럴드)",
+     "kind": "quest",
+     "u": 0.3273,
+     "v": 0.2287
+    },
+    {
+     "label": "물약 노점",
+     "kind": "shop",
+     "u": 0.4255,
+     "v": 0.1362
+    },
+    {
+     "label": "장비 상점",
+     "kind": "shop",
+     "u": 0.5103,
+     "v": 0.1809
+    },
+    {
+     "label": "잡화점",
+     "kind": "shop",
+     "u": 0.5061,
+     "v": 0.3191
+    },
+    {
+     "label": "마법사 탑",
+     "kind": "job",
+     "u": 0.3442,
+     "v": 0.6702
+    },
+    {
+     "label": "세공소",
+     "kind": "craft",
+     "u": 0.4109,
+     "v": 0.6383
+    },
+    {
+     "label": "여관 (창고)",
+     "kind": "storage",
+     "u": 0.5394,
+     "v": 0.6596
+    },
+    {
+     "label": "약초 가게 (엘린)",
+     "kind": "quest",
+     "u": 0.3624,
+     "v": 0.7745
+    },
+    {
+     "label": "대장간",
+     "kind": "craft",
+     "u": 0.4394,
+     "v": 0.8404
+    },
+    {
+     "label": "도적 은신처",
+     "kind": "job",
+     "u": 0.5333,
+     "v": 0.8404
+    },
+    {
+     "label": "연금술 공방",
+     "kind": "craft",
+     "u": 0.6091,
+     "v": 0.7926
+    },
+    {
+     "label": "브람 농가",
+     "kind": "quest",
+     "u": 0.8788,
+     "v": 0.2787
+    },
+    {
+     "label": "전사 수련장",
+     "kind": "job",
+     "u": 0.8303,
+     "v": 0.4383
+    },
+    {
+     "label": "궁수 수련장",
+     "kind": "job",
+     "u": 0.9576,
+     "v": 0.5532
+    }
+   ],
+   "image": "town_t1"
+  },
+  "t2": {
+   "title": "두번째 마을",
+   "names": [
+    "두번째마을",
+    "두번째 마을",
+    "버섯마을",
+    "버섯 마을"
+   ],
+   "buildings": [
+    {
+     "label": "버섯 연구소 (모리스)",
+     "kind": "quest",
+     "u": 0.381,
+     "v": 0.2137
+    },
+    {
+     "label": "세공소",
+     "kind": "craft",
+     "u": 0.602,
+     "v": 0.2485
+    },
+    {
+     "label": "잡화점",
+     "kind": "shop",
+     "u": 0.2959,
+     "v": 0.4274
+    },
+    {
+     "label": "장비 상점",
+     "kind": "shop",
+     "u": 0.5782,
+     "v": 0.4771
+    },
+    {
+     "label": "연금술 공방 (네라)",
+     "kind": "quest",
+     "u": 0.7109,
+     "v": 0.4473
+    },
+    {
+     "label": "물약 노점",
+     "kind": "shop",
+     "u": 0.5068,
+     "v": 0.6461
+    },
+    {
+     "label": "여관 (창고)",
+     "kind": "storage",
+     "u": 0.6599,
+     "v": 0.7853
+    },
+    {
+     "label": "대장간",
+     "kind": "craft",
+     "u": 0.4388,
+     "v": 0.8549
+    }
+   ],
+   "image": "town_t2"
+  },
+  "t3": {
+   "title": "동굴 마을",
+   "names": [
+    "동굴마을",
+    "동굴 마을",
+    "세번째마을"
+   ],
+   "buildings": [],
+   "image": ""
+  }
+ },
+ "mobInfo": {
+  "spore_spider": {
+   "name": "포자 거미",
+   "lv": 32,
+   "hp": 8305,
+   "atk": 115.9,
+   "exp": 300,
+   "gold": 336,
+   "skills": [
+    "원거리 사격 (둔화)"
+   ],
+   "drops": [
+    [
+     "포자 거미줄",
+     40
+    ],
+    [
+     "포자 독샘",
+     3
+    ],
+    [
+     "포자 독샘 귀걸이",
+     0.6
+    ]
+   ]
+  },
+  "boar": {
+   "name": "멧돼지",
+   "lv": 17,
+   "hp": 2865,
+   "atk": 71.3,
+   "exp": 148,
+   "gold": 192,
+   "skills": [
+    "돌진"
+   ],
+   "drops": [
+    [
+     "거친 갈기",
+     40
+    ],
+    [
+     "멧돼지 엄니",
+     3
+    ],
+    [
+     "엄니 장갑",
+     0.6
+    ]
+   ]
+  },
+  "cave_spider": {
+   "name": "동굴 거미",
+   "lv": 42,
+   "hp": 13615,
+   "atk": 144.0,
+   "exp": 397,
+   "gold": 426,
+   "skills": [
+    "원거리 사격 (둔화)"
+   ],
+   "drops": [
+    [
+     "동굴 거미줄",
+     40
+    ],
+    [
+     "동굴 거미 송곳니",
+     3
+    ],
+    [
+     "동굴 송곳니 귀걸이",
+     0.6
+    ]
+   ]
+  },
+  "dark_spider": {
+   "name": "어둠거미",
+   "lv": 37,
+   "hp": 10290,
+   "atk": 130.7,
+   "exp": 352,
+   "gold": 390,
+   "skills": [
+    "돌진"
+   ],
+   "drops": [
+    [
+     "어둠 거미줄",
+     40
+    ],
+    [
+     "어둠 거미 눈",
+     3
+    ],
+    [
+     "어둠 거미 눈 반지",
+     0.6
+    ]
+   ]
+  },
+  "bear": {
+   "name": "곰",
+   "lv": 19,
+   "hp": 3565,
+   "atk": 84.3,
+   "exp": 184,
+   "gold": 228,
+   "skills": [
+    "부채꼴 공격"
+   ],
+   "drops": [
+    [
+     "곰 털가죽",
+     40
+    ],
+    [
+     "곰 발바닥",
+     3
+    ],
+    [
+     "곰가죽 벨트",
+     0.6
+    ]
+   ]
+  },
+  "cave_bat": {
+   "name": "박쥐",
+   "lv": 44,
+   "hp": 11475,
+   "atk": 136.0,
+   "exp": 338,
+   "gold": 360,
+   "skills": [
+    "돌진"
+   ],
+   "drops": [
+    [
+     "박쥐 날개",
+     40
+    ],
+    [
+     "메아리 수정",
+     3
+    ],
+    [
+     "박쥐 날개 망토",
+     0.6
+    ]
+   ]
+  },
+  "spider_queen": {
+   "name": "어둠거미여왕",
+   "lv": 45,
+   "hp": 2610000,
+   "atk": 250,
+   "exp": 9500,
+   "gold": 60000,
+   "boss": true,
+   "raid": true,
+   "patterns": [
+    "독니 찌르기",
+    "뒷다리 차기",
+    "거미줄 포박",
+    "낙하 습격",
+    "독침 세례",
+    "산란",
+    "죽음의 실타래",
+    "독니 난무",
+    "맹독 낙인",
+    "먹잇감",
+    "거미줄 비",
+    "독안개 분출",
+    "둥지 붕괴",
+    "알 포식",
+    "여왕의 광란",
+    "어둠 속으로"
+   ],
+   "rewards": [
+    "여왕의 겹눈 반지",
+    "여왕의 독니 귀걸이",
+    "여왕의 거미줄 장갑",
+    "직업별 여왕 무기",
+    "수상한 큐브"
+   ],
+   "respawn": 600
+  },
+  "forest_lord": {
+   "name": "숲의 주인",
+   "lv": 20,
+   "hp": 600000,
+   "atk": 150,
+   "exp": 2940,
+   "gold": 30000,
+   "boss": true,
+   "raid": false,
+   "patterns": [
+    "할퀴기",
+    "내려찍기",
+    "돌진",
+    "바위 던지기",
+    "바위 기둥",
+    "포효",
+    "결정 가시밭",
+    "공허 결정 심기",
+    "공허 충격파"
+   ],
+   "rewards": [
+    "숲의 주인의 반지",
+    "숲의 주인의 벨트",
+    "수상한 큐브"
+   ],
+   "respawn": 1800
+  },
+  "cow": {
+   "name": "소",
+   "lv": 4,
+   "hp": 45,
+   "atk": 25.8,
+   "exp": 23,
+   "gold": 27,
+   "skills": [],
+   "drops": [
+    [
+     "소가죽",
+     40
+    ],
+    [
+     "소의 뿔",
+     3
+    ],
+    [
+     "소뿔 귀걸이",
+     0.6
+    ]
+   ]
+  },
+  "slime": {
+   "name": "슬라임",
+   "lv": 9,
+   "hp": 345,
+   "atk": 33.8,
+   "exp": 58,
+   "gold": 48,
+   "skills": [],
+   "drops": [
+    [
+     "슬라임 점액",
+     40
+    ],
+    [
+     "슬라임 핵",
+     3
+    ],
+    [
+     "말랑 슬라임 반지",
+     0.6
+    ]
+   ]
+  },
+  "pig": {
+   "name": "돼지",
+   "lv": 1,
+   "hp": 5,
+   "atk": 18.8,
+   "exp": 3,
+   "gold": 9,
+   "skills": [],
+   "drops": [
+    [
+     "돼지 가죽",
+     40
+    ],
+    [
+     "황금 발굽",
+     3
+    ],
+    [
+     "돼지코 펜던트",
+     0.6
+    ]
+   ]
+  },
+  "mine_golem": {
+   "name": "광산 골렘",
+   "lv": 60,
+   "hp": 56425,
+   "atk": 264.1,
+   "exp": 1662,
+   "gold": 1368,
+   "skills": [
+    "내려찍기 (기절)"
+   ],
+   "drops": [
+    [
+     "골렘 돌조각",
+     40
+    ],
+    [
+     "공허석 핵",
+     3
+    ],
+    [
+     "공허석 귀걸이",
+     0.6
+    ]
+   ]
+  },
+  "mush_soldier": {
+   "name": "독버섯 병정",
+   "lv": 29,
+   "hp": 6925,
+   "atk": 97.2,
+   "exp": 292,
+   "gold": 336,
+   "skills": [
+    "내려찍기 (둔화)"
+   ],
+   "drops": [
+    [
+     "독버섯 조각",
+     40
+    ],
+    [
+     "병정의 휘장",
+     3
+    ],
+    [
+     "병정의 장갑",
+     0.6
+    ]
+   ]
+  },
+  "venom_spider": {
+   "name": "독 거미",
+   "lv": 47,
+   "hp": 18220,
+   "atk": 170.0,
+   "exp": 471,
+   "gold": 498,
+   "skills": [
+    "부채꼴 공격 (독)"
+   ],
+   "drops": [
+    [
+     "독주머니",
+     40
+    ],
+    [
+     "맹독 결정",
+     3
+    ],
+    [
+     "맹독 반지",
+     0.6
+    ]
+   ]
+  },
+  "mush_guardian": {
+   "name": "거대버섯 수호자",
+   "lv": 35,
+   "hp": 1662960,
+   "atk": 200,
+   "exp": 5415,
+   "gold": 32160,
+   "boss": true,
+   "raid": false,
+   "patterns": [
+    "고목 지팡이 난타",
+    "수호자의 심판",
+    "공허 걸음",
+    "썩은 포자탄",
+    "결정 공명",
+    "포자 광선",
+    "공허 혜성",
+    "공허 결정비"
+   ],
+   "rewards": [
+    "수호자의 반지",
+    "수호자의 펜던트",
+    "수호자의 망토",
+    "수상한 큐브"
+   ],
+   "respawn": 1800
+  },
+  "spike_spider": {
+   "name": "가시 거미",
+   "lv": 49,
+   "hp": 24565,
+   "atk": 177.0,
+   "exp": 584,
+   "gold": 612,
+   "skills": [
+    "부채꼴 공격"
+   ],
+   "drops": [
+    [
+     "돌가시",
+     40
+    ],
+    [
+     "가시 심장석",
+     3
+    ],
+    [
+     "가시 장갑",
+     0.6
+    ]
+   ]
+  },
+  "rat": {
+   "name": "들쥐",
+   "lv": 7,
+   "hp": 100,
+   "atk": 29.6,
+   "exp": 42,
+   "gold": 39,
+   "skills": [],
+   "drops": [
+    [
+     "쥐 꼬리",
+     40
+    ],
+    [
+     "날카로운 앞니",
+     3
+    ],
+    [
+     "쥐꼬리 벨트",
+     0.6
+    ]
+   ]
+  },
+  "mush_spirit": {
+   "name": "버섯 정령",
+   "lv": 24,
+   "hp": 4920,
+   "atk": 75.4,
+   "exp": 268,
+   "gold": 258,
+   "skills": [
+    "zone (둔화)"
+   ],
+   "drops": [
+    [
+     "포자 가루",
+     40
+    ],
+    [
+     "정령의 갓",
+     3
+    ],
+    [
+     "정령의 갓 펜던트",
+     0.6
+    ]
+   ]
+  },
+  "mush_kid": {
+   "name": "꼬마 버섯",
+   "lv": 22,
+   "hp": 3230,
+   "atk": 62.7,
+   "exp": 176,
+   "gold": 174,
+   "skills": [
+    "내려찍기"
+   ],
+   "drops": [
+    [
+     "작은 버섯 갓",
+     40
+    ],
+    [
+     "반짝이는 포자",
+     3
+    ],
+    [
+     "버섯 반지",
+     0.6
+    ]
+   ]
+  },
+  "spore_witch": {
+   "name": "포자 마녀",
+   "lv": 34,
+   "hp": 9690,
+   "atk": 110.7,
+   "exp": 350,
+   "gold": 390,
+   "skills": [
+    "zone (둔화)"
+   ],
+   "drops": [
+    [
+     "마녀의 약초",
+     40
+    ],
+    [
+     "수상한 물약",
+     3
+    ],
+    [
+     "마녀의 펜던트",
+     0.6
+    ]
+   ]
+  },
+  "mush_fairy": {
+   "name": "버섯 요정",
+   "lv": 27,
+   "hp": 5570,
+   "atk": 91.8,
+   "exp": 235,
+   "gold": 258,
+   "skills": [
+    "돌진"
+   ],
+   "drops": [
+    [
+     "요정 날개",
+     40
+    ],
+    [
+     "요정 가루",
+     3
+    ],
+    [
+     "요정 날개 망토",
+     0.6
+    ]
+   ]
+  },
+  "bee": {
+   "name": "풀숲 벌",
+   "lv": 12,
+   "hp": 760,
+   "atk": 51.3,
+   "exp": 84,
+   "gold": 126,
+   "skills": [
+    "원거리 사격"
+   ],
+   "drops": [
+    [
+     "벌침",
+     40
+    ],
+    [
+     "로열 젤리",
+     3
+    ],
+    [
+     "꿀벌 망토",
+     0.6
+    ]
+   ]
+  },
+  "wild_dog": {
+   "name": "들개",
+   "lv": 14,
+   "hp": 970,
+   "atk": 62.3,
+   "exp": 107,
+   "gold": 144,
+   "skills": [
+    "돌진"
+   ],
+   "drops": [
+    [
+     "들개 털",
+     40
+    ],
+    [
+     "들개 송곳니",
+     3
+    ],
+    [
+     "들개 송곳니 귀걸이",
+     0.6
+    ]
+   ]
+  },
+  "mush_beast": {
+   "name": "버섯 짐승",
+   "lv": 39,
+   "hp": 17895,
+   "atk": 161.4,
+   "exp": 612,
+   "gold": 666,
+   "skills": [
+    "내려찍기"
+   ],
+   "drops": [
+    [
+     "짐승의 버섯 껍질",
+     40
+    ],
+    [
+     "거대 버섯 심",
+     3
+    ],
+    [
+     "거대 버섯 벨트",
+     0.6
+    ]
+   ]
+  },
+  "ore_slime": {
+   "name": "광석 슬라임",
+   "lv": 52,
+   "hp": 31695,
+   "atk": 162.0,
+   "exp": 691,
+   "gold": 708,
+   "skills": [
+    "내려찍기"
+   ],
+   "drops": [
+    [
+     "광석 점액",
+     40
+    ],
+    [
+     "광석 핵",
+     3
+    ],
+    [
+     "광석 펜던트",
+     0.6
+    ]
+   ]
+  },
+  "skel_miner": {
+   "name": "해골 광부",
+   "lv": 54,
+   "hp": 31505,
+   "atk": 206.0,
+   "exp": 671,
+   "gold": 684,
+   "skills": [
+    "부채꼴 공격"
+   ],
+   "drops": [
+    [
+     "광부의 뼈",
+     40
+    ],
+    [
+     "녹슨 광부 배지",
+     3
+    ],
+    [
+     "광부의 벨트",
+     0.6
+    ]
+   ]
+  }
+ }
+}

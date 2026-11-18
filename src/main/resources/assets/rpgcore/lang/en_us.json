@@ -392,5 +392,7 @@
  "item.rpgcore.void_earring": "Void Core Earring",
  "item.rpgcore.quest_miner_pick": "Missing Miner's Pickaxe",
  "item.rpgcore.quest_amethyst": "Amethyst Shard",
- "item.rpgcore.quest_miner_journal": "Miner's Journal"
+ "item.rpgcore.quest_miner_journal": "Miner's Journal",
+ "key.rpgcore.charwin": "Character",
+ "key.rpgcore.map": "Map"
 }

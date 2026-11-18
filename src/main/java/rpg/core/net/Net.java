@@ -148,6 +148,8 @@ public final class Net {
                 .encoder(CocoonTap::encode).decoder(CocoonTap::new).consumerMainThread(CocoonTap::handle).add();
         CH.messageBuilder(RollCd.class, id++, NetworkDirection.PLAY_TO_CLIENT)
                 .encoder(RollCd::encode).decoder(RollCd::new).consumerMainThread(RollCd::handle).add();
+        CH.messageBuilder(MapHere.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(MapHere::encode).decoder(MapHere::new).consumerMainThread(MapHere::handle).add();
     }
 
     // ───────── 서버 → 클라: 보스 BGM (빈칸 = 끄기) ─────────
@@ -1103,4 +1105,15 @@ public final class Net {
 
     /** 플레이어가 나가면 호출: 그 사람 항목 지우기 */
     public static void forget(java.util.UUID id) { POWER_RATE.remove(id); }
+
+    // ───────── 서버 → 클라: 약도 지금 위치 (사냥터 몹 목록 · 근처 마을 이름) ─────────
+    public record MapHere(String mobs, String town) {
+        MapHere(FriendlyByteBuf b) { this(b.readUtf(200), b.readUtf(100)); }
+        void encode(FriendlyByteBuf b) { b.writeUtf(mobs, 200); b.writeUtf(town, 100); }
+        void handle(Supplier<NetworkEvent.Context> ctx) {
+            ctx.get().enqueueWork(() -> net.minecraftforge.fml.DistExecutor.unsafeRunWhenOn(net.minecraftforge.api.distmarker.Dist.CLIENT,
+                    () -> () -> rpg.core.client.MapData.setHere(mobs, town)));
+            ctx.get().setPacketHandled(true);
+        }
+    }
 }

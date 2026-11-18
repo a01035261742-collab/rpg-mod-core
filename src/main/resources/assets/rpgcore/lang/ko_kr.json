@@ -392,5 +392,7 @@
  "item.rpgcore.void_earring": "공허석 귀걸이",
  "item.rpgcore.quest_miner_pick": "실종 광부의 곡괭이",
  "item.rpgcore.quest_amethyst": "자수정 조각",
- "item.rpgcore.quest_miner_journal": "광부 일지"
+ "item.rpgcore.quest_miner_journal": "광부 일지",
+ "key.rpgcore.charwin": "캐릭터 창",
+ "key.rpgcore.map": "약도"
 }
