@@ -73,7 +73,8 @@ public class QuestTalkScreen extends ScaledScreen {
         y = Math.max(Ui.MARGIN, height - h() - 40);
         int by = y + h() - Ui.FOOT;
         if (sel == null) {
-            List<Entry> es = entries();
+            List<Entry> es = new ArrayList<>(entries());
+            es.removeIf(en -> en.kind() == 4);   // 레벨 부족은 숨김 (아래에 개수만)
             int i = 0;
             for (Entry en : es) {
                 if (i >= 5) break;
@@ -81,7 +82,6 @@ public class QuestTalkScreen extends ScaledScreen {
                 String prefix = switch (en.kind()) { case 2 -> "§6? "; case 1 -> "§e! "; case 3 -> "§7… "; default -> "§8Lv." + en.q().minLevel() + " "; };
                 Button b = Ui.button(Component.literal(Ui.cut(font, prefix + en.q().name(), W - 30)), btn -> pick(en))
                         .bounds(x + 10, ry, W - 20, 15).build();
-                b.active = en.kind() != 4;
                 addRenderableWidget(b);
                 i++;
             }
@@ -133,7 +133,15 @@ public class QuestTalkScreen extends ScaledScreen {
             var n = Quests.NPCS.get(npc);
             String greet = n == null || n.greet().isEmpty() ? "무슨 일이에요?" : n.greet();
             drawWrapped(g, greet, x + 10, y + 24, W - 20, 0xFFFFFFFF, 2);
-            if (entries().isEmpty()) g.drawString(font, "지금은 부탁할 일이 없어요.", x + 10, y + 50, 0xFF909090, false);
+            List<Entry> all = entries();
+            long open = all.stream().filter(en -> en.kind() != 4).count();
+            List<Entry> locked = all.stream().filter(en -> en.kind() == 4).toList();
+            if (open == 0) g.drawString(font, "지금은 부탁할 일이 없어요.", x + 10, y + 50, 0xFF909090, false);
+            if (!locked.isEmpty()) {
+                int minLv = locked.stream().mapToInt(en -> en.q().minLevel()).min().orElse(0);
+                int ly = y + 44 + (int) Math.min(5, Math.max(open, 1)) * 17 + (open == 0 ? 4 : 2);
+                g.drawString(font, "잠긴 퀘스트 " + locked.size() + "개 · Lv." + minLv + "부터", x + 12, ly, 0xFF8C7C74, false);
+            }
         } else {
             String head = switch (mode) { case 0 -> "§e! "; case 2 -> "§6? "; default -> "§7… "; };
             g.drawString(font, Ui.cut(font, head + sel.name(), W - 20), x + 10, y + 22, 0xFFFFE070, true);

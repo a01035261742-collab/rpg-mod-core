@@ -83,6 +83,10 @@ public final class ModBlocks {
             if (!l.isClientSide && p instanceof ServerPlayer sp && h == InteractionHand.MAIN_HAND) rpg.core.town.Travel.openStone(sp, pos);
             return InteractionResult.sidedSuccess(l.isClientSide);
         }
+        @Override public void stepOn(Level l, BlockPos pos, BlockState s, net.minecraft.world.entity.Entity e) {   // 올라서면 이동 창
+            if (!l.isClientSide && e instanceof ServerPlayer sp) rpg.core.town.Travel.stepStone(sp, pos);
+            super.stepOn(l, pos, s, e);
+        }
     }
 
     /** 레이드 단말기: 아이템의 보스 키로 놓으면 그 보스 레이드 입구, 우클릭하면 입장 창 */

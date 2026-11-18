@@ -103,11 +103,19 @@ public final class Travel {
         return RpgData.get(p).job == 0 ? Balance.travelBeginnerCost : Balance.travelCost;
     }
 
-    /** 이동의 돌 우클릭 */
+    /** 이동의 돌 밟기: 올라선 순간 한 번 (계속 서 있으면 다시 안 열림) */
+    private static final Map<UUID, Long> STEP = new HashMap<>();
+    public static void stepStone(ServerPlayer p, BlockPos pos) {
+        long now = p.level().getGameTime();
+        Long last = STEP.put(p.getUUID(), now);
+        if (last == null || now - last > 10) openStone(p, pos);
+    }
+
+    /** 이동의 돌 우클릭 · 밟기 */
     public static void openStone(ServerPlayer p, BlockPos pos) {
         OPENED.put(p.getUUID(), pos.immutable());
-        ServerLevel l = p.serverLevel();   // /setblock 으로 놓았거나 글자가 지워졌으면 다시 띄움
-        if (l.getEntities((Entity) null, new AABB(pos).inflate(0.5, 2, 0.5), x -> x.getTags().contains(LABEL_TAG)).isEmpty()) label(l, pos, townFor(l, pos));
+        ServerLevel l = p.serverLevel();   // 글자 새 높이·문구로 다시 띄움
+        label(l, pos, townFor(l, pos));
         send(p, STONE);
     }
 
@@ -238,21 +246,21 @@ public final class Travel {
         CompoundTag t = new CompoundTag();
         t.putString("id", "minecraft:text_display");
         Component txt = Component.literal("이동의 돌" + (town.isEmpty() ? "" : " · " + town) + "\n").withStyle(ChatFormatting.AQUA)
-                .append(Component.literal("우클릭: 마을 이동").withStyle(ChatFormatting.GRAY));
+                .append(Component.literal("밟으면 마을 이동").withStyle(ChatFormatting.GRAY));
         t.putString("text", Component.Serializer.toJson(txt));
         t.putString("billboard", "center");
         ListTag tags = new ListTag();
         tags.add(StringTag.valueOf(LABEL_TAG));
         t.put("Tags", tags);
         Entity e = net.minecraft.world.entity.EntityType.loadEntityRecursive(t, l, x -> {
-            x.moveTo(pos.getX() + 0.5, pos.getY() + 1.25, pos.getZ() + 0.5, 0, 0);
+            x.moveTo(pos.getX() + 0.5, pos.getY() + 3.4, pos.getZ() + 0.5, 0, 0);
             return x;
         });
         if (e != null) l.addFreshEntity(e);
     }
 
     private static void unlabel(ServerLevel l, BlockPos pos) {
-        AABB box = new AABB(pos).inflate(0.5, 2, 0.5);
+        AABB box = new AABB(pos).inflate(0.5, 4, 0.5);
         for (Entity e : l.getEntities((Entity) null, box, x -> x.getTags().contains(LABEL_TAG))) e.discard();
     }
 
@@ -261,5 +269,5 @@ public final class Travel {
     }
 
     /** 서버가 꺼질 때 호출: 게임 중에 쌓인 상태만 비움 (데이터팩에서 읽은 정의는 그대로) */
-    public static void clearState() { OPENED.clear(); CASTS.clear(); }
+    public static void clearState() { OPENED.clear(); CASTS.clear(); STEP.clear(); }
 }
