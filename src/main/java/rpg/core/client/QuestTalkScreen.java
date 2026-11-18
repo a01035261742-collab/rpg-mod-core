@@ -17,7 +17,9 @@ import rpg.core.quest.Quests;
  * 고르는 보상(reward.choose)이 있으면 마지막 장 아래에 칸이 생기고, 완료할 때 하나를 눌러 골라야 함
  */
 public class QuestTalkScreen extends ScaledScreen {
-    private static final int W = 400, H0 = 190, PICK = 24, SLOT = 20;
+    private static final int W = 400, H0 = 230, PICK = 24, SLOT = 20, ROWS = 8;
+    private int scroll;   // 목록 스크롤 (줄)
+    private double dragAcc;
     private final int entity;
     private final String npc;
     private int x, y;
@@ -75,13 +77,14 @@ public class QuestTalkScreen extends ScaledScreen {
         if (sel == null) {
             List<Entry> es = new ArrayList<>(entries());
             es.removeIf(en -> en.kind() == 4);   // 레벨 부족은 숨김 (아래에 개수만)
-            int i = 0;
-            for (Entry en : es) {
-                if (i >= 5) break;
-                int ry = y + 44 + i * 17;   // 5개: y+44 ~ y+129 (버튼줄 y+152 위)
-                String prefix = switch (en.kind()) { case 2 -> "§6? "; case 1 -> "§e! "; case 3 -> "§7… "; default -> "§8Lv." + en.q().minLevel() + " "; };
-                Button b = Ui.button(Component.literal(Ui.cut(font, prefix + en.q().name(), W - 30)), btn -> pick(en))
-                        .bounds(x + 10, ry, W - 20, 15).build();
+            scroll = Math.max(0, Math.min(scroll, es.size() - ROWS));
+            int i = 0, bw = es.size() > ROWS ? W - 28 : W - 20;
+            for (Entry en : es.subList(Math.min(scroll, es.size()), es.size())) {
+                if (i >= ROWS) break;
+                int ry = y + 44 + i * 17;   // 8줄: y+44 ~ y+180 (많으면 휠·드래그로 내림)
+                String prefix = switch (en.kind()) { case 2 -> "§a? "; case 1 -> "§e! "; case 3 -> "§f… "; default -> "§8Lv." + en.q().minLevel() + " "; };
+                Button b = Ui.button(Component.literal(Ui.cut(font, prefix + en.q().name(), bw - 10)), btn -> pick(en))
+                        .bounds(x + 10, ry, bw, 15).build();
                 addRenderableWidget(b);
                 i++;
             }
@@ -124,6 +127,38 @@ public class QuestTalkScreen extends ScaledScreen {
         rebuild();
     }
 
+    private int openCount() { return (int) entries().stream().filter(en -> en.kind() != 4).count(); }
+
+    @Override
+    public boolean mouseScrolled(double mx, double my, double delta) {
+        if (sel == null && openCount() > ROWS) {
+            int ns = Math.max(0, Math.min(openCount() - ROWS, scroll - (int) Math.signum(delta)));
+            if (ns != scroll) { scroll = ns; rebuild(); }
+            return true;
+        }
+        return super.mouseScrolled(mx, my, delta);
+    }
+
+    private boolean barDrag;
+
+    @Override
+    public boolean mouseReleased(double mx, double my, int button) { barDrag = false; return super.mouseReleased(mx, my, button); }
+
+    @Override
+    public boolean mouseDragged(double mx, double my, int button, double dx, double dy) {
+        if (barDrag && sel == null && openCount() > ROWS) {   // 스크롤 막대 끌기
+            dragAcc += dy * openCount() / (double) ROWS;
+            int step = (int) (dragAcc / 17);
+            if (step != 0) {
+                dragAcc -= step * 17;
+                int ns = Math.max(0, Math.min(openCount() - ROWS, scroll + step));
+                if (ns != scroll) { scroll = ns; rebuild(); }
+            }
+            return true;
+        }
+        return super.mouseDragged(mx, my, button, dx, dy);
+    }
+
     @Override
     public void render(GuiGraphics g, int mx, int my, float pt) {
         Ui.frame(g, font, x, y, W, h(), 0xFF70F070, title.getString(), "", 0);
@@ -136,10 +171,16 @@ public class QuestTalkScreen extends ScaledScreen {
             List<Entry> all = entries();
             long open = all.stream().filter(en -> en.kind() != 4).count();
             List<Entry> locked = all.stream().filter(en -> en.kind() == 4).toList();
+            if (open > ROWS) {   // 스크롤 막대
+                int top = y + 44, hh = ROWS * 17 - 2, bh = Math.max(12, (int) (hh * ROWS / (double) open));
+                int by0 = top + (int) ((hh - bh) * scroll / (double) Math.max(1, open - ROWS));
+                g.fill(x + W - 14, top, x + W - 10, top + hh, Ui.IN1);
+                g.fill(x + W - 14, by0, x + W - 10, by0 + bh, Ui.G3);
+            }
             if (open == 0) g.drawString(font, "지금은 부탁할 일이 없어요.", x + 10, y + 50, 0xFF909090, false);
             if (!locked.isEmpty()) {
                 int minLv = locked.stream().mapToInt(en -> en.q().minLevel()).min().orElse(0);
-                int ly = y + 44 + (int) Math.min(5, Math.max(open, 1)) * 17 + (open == 0 ? 4 : 2);
+                int ly = y + 44 + (int) Math.min(ROWS, Math.max(open, 1)) * 17 + (open == 0 ? 4 : 2);
                 g.drawString(font, "잠긴 퀘스트 " + locked.size() + "개 · Lv." + minLv + "부터", x + 12, ly, 0xFF8C7C74, false);
             }
         } else {
@@ -195,6 +236,9 @@ public class QuestTalkScreen extends ScaledScreen {
 
     @Override
     public boolean mouseClicked(double mx, double my, int button) {
+        barDrag = sel == null && openCount() > ROWS && mx >= x + W - 18 && mx < x + W - 6 && my >= y + 44 && my < y + 44 + ROWS * 17;
+        dragAcc = 0;
+        if (barDrag) return true;   // 스크롤 막대 잡기
         if (picks() && mode == 2) {
             int i = slotAt(mx, my);
             if (i >= 0) {
