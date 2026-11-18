@@ -62,6 +62,34 @@ public final class Loot {
             sp.take(ie, 1);
             sp.level().playSound(null, sp.blockPosition(), SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 0.4f, 1.6f);
             ie.discard();
+            return;
+        }
+        // RPG 대륙: 손(1번 칸)이 비어 있으면 주운 게 손으로 안 들어가게 (먹어지거나 바닥이 클릭되던 것)
+        var inv = sp.getInventory();
+        if (rpg.core.world.RpgWorld.in(sp) && !sp.isCreative() && inv.items.get(inv.selected).isEmpty()) {
+            e.setCanceled(true);
+            if (ie.hasPickUpDelay() || !ie.isAlive()) return;
+            net.minecraft.world.item.ItemStack st = ie.getItem();
+            int before = st.getCount();
+            for (int pass = 0; pass < 2 && !st.isEmpty(); pass++)
+                for (int i = 0; i < inv.items.size() && !st.isEmpty(); i++) {
+                    if (i == inv.selected) continue;
+                    var cur = inv.items.get(i);
+                    if (pass == 0 && !cur.isEmpty() && net.minecraft.world.item.ItemStack.isSameItemSameTags(cur, st) && cur.getCount() < cur.getMaxStackSize()) {
+                        int n = Math.min(st.getCount(), cur.getMaxStackSize() - cur.getCount());
+                        cur.grow(n); st.shrink(n);
+                    } else if (pass == 1 && cur.isEmpty()) {
+                        inv.items.set(i, st.copy()); st.setCount(0);
+                    }
+                }
+            int got = before - st.getCount();
+            if (got <= 0) return;
+            var shown = ie.getItem().copyWithCount(got);
+            sp.take(ie, got);
+            if (st.isEmpty()) ie.discard(); else ie.setItem(st);
+            sp.inventoryMenu.broadcastChanges();
+            sp.level().playSound(null, sp.blockPosition(), SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 0.2f, (sp.getRandom().nextFloat() - sp.getRandom().nextFloat()) * 1.4f + 2f);
+            Net.itemNote(sp, shown.getHoverName().getString() + (got > 1 ? " ×" + got : "") + " 획득");
         }
     }
 
