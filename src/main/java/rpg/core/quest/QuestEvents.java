@@ -242,7 +242,7 @@ public final class QuestEvents {
     public static void onKill(List<ServerPlayer> members, MobData m) {
         if (m == null || m.key.isEmpty()) return;
         Dailies.onKill(members, m);   // 일일 퀘스트
-        for (ServerPlayer p : members) Achievements.onKill(p);   // 업적 처치 수
+        for (ServerPlayer p : members) Achievements.onKill(p, m);   // 업적 처치 수 (몹별·변종·엘리트)
         for (ServerPlayer p : members) {
             PlayerData d = RpgData.get(p);
             boolean changed = false;

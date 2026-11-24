@@ -604,5 +604,11 @@
  "item.rpgcore.cape_s58": "공허석 망토",
  "item.rpgcore.belt_s58": "공허석 벨트",
  "item.rpgcore.earring_s58": "공허석 귀걸이",
- "item.rpgcore.ring_s58": "공허석 반지"
+ "item.rpgcore.ring_s58": "공허석 반지",
+ "item.rpgcore.legend_medal": "전설의 사냥꾼 훈장",
+ "item.rpgcore.variant_medal": "변종 수집가 훈장",
+ "item.rpgcore.elite_medal": "엘리트 킬러 훈장",
+ "item.rpgcore.boss_veteran_medal": "보스 베테랑 훈장",
+ "item.rpgcore.set_medal": "세트 수집가 훈장",
+ "item.rpgcore.quest_medal": "해결사 훈장"
 }

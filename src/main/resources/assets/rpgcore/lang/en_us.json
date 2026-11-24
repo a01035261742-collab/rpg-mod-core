@@ -604,5 +604,11 @@
  "item.rpgcore.cape_s58": "Voidstone Cape",
  "item.rpgcore.belt_s58": "Voidstone Belt",
  "item.rpgcore.earring_s58": "Voidstone Earring",
- "item.rpgcore.ring_s58": "Voidstone Ring"
+ "item.rpgcore.ring_s58": "Voidstone Ring",
+ "item.rpgcore.legend_medal": "Legendary Hunter Medal",
+ "item.rpgcore.variant_medal": "Variant Collector Medal",
+ "item.rpgcore.elite_medal": "Elite Slayer Medal",
+ "item.rpgcore.boss_veteran_medal": "Boss Veteran Medal",
+ "item.rpgcore.set_medal": "Set Collector Medal",
+ "item.rpgcore.quest_medal": "Troubleshooter Medal"
 }

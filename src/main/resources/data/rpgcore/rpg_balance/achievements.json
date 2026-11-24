@@ -1,10 +1,326 @@
 {
-  "_doc": "업적: type = level|kills|star|destroy|bossKinds|gold, need = 목표, gold = 골드 보상, medal = 훈장 아이템 (한 번만)",
-  "first_step":  {"name": "첫 걸음",       "type": "level",     "need": 10,      "gold": 1000},
-  "hunter":      {"name": "사냥꾼",        "type": "kills",     "need": 1000,    "medal": "hunter_medal"},
-  "slayer":      {"name": "학살자",        "type": "kills",     "need": 10000,   "medal": "slayer_medal"},
-  "enhancer":    {"name": "강화의 달인",   "type": "star",      "need": 10,      "medal": "enhancer_medal"},
-  "unlucky":     {"name": "불운한 대장장이","type": "destroy",   "need": 3,       "medal": "unlucky_medal"},
-  "boss_hunter": {"name": "보스 헌터",     "type": "bossKinds", "need": 2,       "medal": "boss_hunter_medal"},
-  "rich":        {"name": "부자",          "type": "gold",      "need": 1000000, "medal": "rich_medal"}
+  "_doc": "업적: type = level|kills|mob(mob=몹 키, 변종 포함)|variantKinds|elites|bossKinds|bossCount|sets(사냥터 세트 완성 종류)|quests|star|enhance(강화 성공 횟수)|destroy|gold, need = 목표, gold = 골드 보상, medal = 훈장 아이템 (한 번만)",
+  "first_step": {
+    "name": "첫 걸음",
+    "type": "level",
+    "need": 10,
+    "gold": 1000
+  },
+  "lv30": {
+    "name": "중견 모험가",
+    "type": "level",
+    "need": 30,
+    "gold": 20000
+  },
+  "lv50": {
+    "name": "노련한 모험가",
+    "type": "level",
+    "need": 50,
+    "gold": 80000
+  },
+  "lv70": {
+    "name": "정상을 향해",
+    "type": "level",
+    "need": 70,
+    "gold": 200000
+  },
+  "kill100": {
+    "name": "초보 사냥꾼",
+    "type": "kills",
+    "need": 100,
+    "gold": 2000
+  },
+  "hunter": {
+    "name": "사냥꾼",
+    "type": "kills",
+    "need": 1000,
+    "medal": "hunter_medal"
+  },
+  "kill5000": {
+    "name": "베테랑 사냥꾼",
+    "type": "kills",
+    "need": 5000,
+    "gold": 30000
+  },
+  "slayer": {
+    "name": "학살자",
+    "type": "kills",
+    "need": 10000,
+    "medal": "slayer_medal"
+  },
+  "legend": {
+    "name": "전설의 사냥꾼",
+    "type": "kills",
+    "need": 30000,
+    "medal": "legend_medal"
+  },
+  "variant1": {
+    "name": "변종 발견",
+    "type": "variantKinds",
+    "need": 1,
+    "gold": 5000
+  },
+  "variant_all": {
+    "name": "변종 수집가",
+    "type": "variantKinds",
+    "need": 10,
+    "medal": "variant_medal"
+  },
+  "elite10": {
+    "name": "엘리트 사냥",
+    "type": "elites",
+    "need": 10,
+    "gold": 5000
+  },
+  "elite50": {
+    "name": "엘리트 추적자",
+    "type": "elites",
+    "need": 50,
+    "gold": 20000
+  },
+  "elite200": {
+    "name": "엘리트 킬러",
+    "type": "elites",
+    "need": 200,
+    "medal": "elite_medal"
+  },
+  "boss_hunter": {
+    "name": "보스 헌터",
+    "type": "bossKinds",
+    "need": 2,
+    "medal": "boss_hunter_medal"
+  },
+  "boss5": {
+    "name": "보스 도전자",
+    "type": "bossCount",
+    "need": 5,
+    "gold": 20000
+  },
+  "boss15": {
+    "name": "보스 사냥꾼",
+    "type": "bossCount",
+    "need": 15,
+    "gold": 60000
+  },
+  "boss30": {
+    "name": "보스 베테랑",
+    "type": "bossCount",
+    "need": 30,
+    "medal": "boss_veteran_medal"
+  },
+  "set1": {
+    "name": "첫 세트 완성",
+    "type": "sets",
+    "need": 1,
+    "gold": 20000
+  },
+  "set3": {
+    "name": "세트 수집가",
+    "type": "sets",
+    "need": 3,
+    "medal": "set_medal"
+  },
+  "quest10": {
+    "name": "심부름꾼",
+    "type": "quests",
+    "need": 10,
+    "gold": 5000
+  },
+  "quest30": {
+    "name": "믿음직한 일꾼",
+    "type": "quests",
+    "need": 30,
+    "gold": 30000
+  },
+  "quest50": {
+    "name": "해결사",
+    "type": "quests",
+    "need": 50,
+    "medal": "quest_medal"
+  },
+  "enhancer": {
+    "name": "강화의 달인",
+    "type": "star",
+    "need": 10,
+    "medal": "enhancer_medal"
+  },
+  "enhance50": {
+    "name": "강화 장인",
+    "type": "enhance",
+    "need": 50,
+    "gold": 30000
+  },
+  "unlucky": {
+    "name": "불운한 대장장이",
+    "type": "destroy",
+    "need": 3,
+    "medal": "unlucky_medal"
+  },
+  "rich": {
+    "name": "부자",
+    "type": "gold",
+    "need": 1000000,
+    "medal": "rich_medal"
+  },
+  "mob_pig": {
+    "name": "돼지 사냥꾼",
+    "type": "mob",
+    "mob": "pig",
+    "need": 300,
+    "gold": 300
+  },
+  "mob_cow": {
+    "name": "소 사냥꾼",
+    "type": "mob",
+    "mob": "cow",
+    "need": 300,
+    "gold": 800
+  },
+  "mob_slime": {
+    "name": "슬라임 사냥꾼",
+    "type": "mob",
+    "mob": "slime",
+    "need": 300,
+    "gold": 1400
+  },
+  "mob_rat": {
+    "name": "들쥐 사냥꾼",
+    "type": "mob",
+    "mob": "rat",
+    "need": 300,
+    "gold": 1200
+  },
+  "mob_wild_dog": {
+    "name": "들개 사냥꾼",
+    "type": "mob",
+    "mob": "wild_dog",
+    "need": 300,
+    "gold": 4300
+  },
+  "mob_bee": {
+    "name": "풀숲 벌 사냥꾼",
+    "type": "mob",
+    "mob": "bee",
+    "need": 300,
+    "gold": 3800
+  },
+  "mob_boar": {
+    "name": "멧돼지 사냥꾼",
+    "type": "mob",
+    "mob": "boar",
+    "need": 300,
+    "gold": 5800
+  },
+  "mob_bear": {
+    "name": "곰 사냥꾼",
+    "type": "mob",
+    "mob": "bear",
+    "need": 300,
+    "gold": 6800
+  },
+  "mob_mush_spirit": {
+    "name": "버섯 정령 사냥꾼",
+    "type": "mob",
+    "mob": "mush_spirit",
+    "need": 300,
+    "gold": 7700
+  },
+  "mob_mush_kid": {
+    "name": "꼬마 버섯 사냥꾼",
+    "type": "mob",
+    "mob": "mush_kid",
+    "need": 300,
+    "gold": 5200
+  },
+  "mob_mush_soldier": {
+    "name": "독버섯 병정 사냥꾼",
+    "type": "mob",
+    "mob": "mush_soldier",
+    "need": 300,
+    "gold": 10100
+  },
+  "mob_mush_fairy": {
+    "name": "버섯 요정 사냥꾼",
+    "type": "mob",
+    "mob": "mush_fairy",
+    "need": 300,
+    "gold": 7700
+  },
+  "mob_spore_spider": {
+    "name": "포자 거미 사냥꾼",
+    "type": "mob",
+    "mob": "spore_spider",
+    "need": 300,
+    "gold": 10100
+  },
+  "mob_spore_witch": {
+    "name": "포자 마녀 사냥꾼",
+    "type": "mob",
+    "mob": "spore_witch",
+    "need": 300,
+    "gold": 11700
+  },
+  "mob_dark_spider": {
+    "name": "어둠거미 사냥꾼",
+    "type": "mob",
+    "mob": "dark_spider",
+    "need": 300,
+    "gold": 11700
+  },
+  "mob_mush_beast": {
+    "name": "버섯 짐승 사냥꾼",
+    "type": "mob",
+    "mob": "mush_beast",
+    "need": 300,
+    "gold": 20000
+  },
+  "mob_cave_spider": {
+    "name": "동굴 거미 사냥꾼",
+    "type": "mob",
+    "mob": "cave_spider",
+    "need": 300,
+    "gold": 12800
+  },
+  "mob_cave_bat": {
+    "name": "박쥐 사냥꾼",
+    "type": "mob",
+    "mob": "cave_bat",
+    "need": 300,
+    "gold": 10800
+  },
+  "mob_venom_spider": {
+    "name": "독 거미 사냥꾼",
+    "type": "mob",
+    "mob": "venom_spider",
+    "need": 300,
+    "gold": 14900
+  },
+  "mob_spike_spider": {
+    "name": "가시 거미 사냥꾼",
+    "type": "mob",
+    "mob": "spike_spider",
+    "need": 300,
+    "gold": 18400
+  },
+  "mob_ore_slime": {
+    "name": "광석 슬라임 사냥꾼",
+    "type": "mob",
+    "mob": "ore_slime",
+    "need": 300,
+    "gold": 21200
+  },
+  "mob_skel_miner": {
+    "name": "해골 광부 사냥꾼",
+    "type": "mob",
+    "mob": "skel_miner",
+    "need": 300,
+    "gold": 20500
+  },
+  "mob_mine_golem": {
+    "name": "광산 골렘 사냥꾼",
+    "type": "mob",
+    "mob": "mine_golem",
+    "need": 300,
+    "gold": 41000
+  }
 }

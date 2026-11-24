@@ -70,7 +70,8 @@ public final class ModItems {
     /** 몹 전용 장신구 16종 (drops.json uniques) */
     public static final String[] UNIQUE = {"pig_snout_pendant", "cow_horn_earring", "slime_ring", "rat_tail_belt", "dog_fang_earring", "bee_cape", "tusk_gloves", "bear_belt", "spirit_pendant", "mushroom_ring", "soldier_gloves", "fairy_cape", "gland_earring", "witch_pendant", "dark_eye_ring", "beast_belt", "forest_lord_ring", "guardian_ring", "forest_lord_belt", "guardian_pendant", "guardian_cape", "forest_hunter_medal", "mush_hunter_medal", "hunter_medal", "slayer_medal", "enhancer_medal", "unlucky_medal", "boss_hunter_medal", "rich_medal",
             "spider_queen_earring", "spider_queen_gloves", "spider_queen_ring", "spider_queen_medal",
-            "cave_fang_earring", "bat_cape", "venom_ring", "spike_gloves", "ore_pendant", "miner_belt", "void_earring"};   // 3지역 몹 전용   // + 보스 장신구
+            "cave_fang_earring", "bat_cape", "venom_ring", "spike_gloves", "ore_pendant", "miner_belt", "void_earring",
+            "legend_medal", "variant_medal", "elite_medal", "boss_veteran_medal", "set_medal", "quest_medal"};   // 업적 훈장   // 3지역 몹 전용   // + 보스 장신구
 
     /** 사냥터 드롭 세트 레벨 (사냥터 3~12) */
     public static final int[] SET_LVS = {14, 18, 24, 28, 34, 38, 44, 48, 54, 58};

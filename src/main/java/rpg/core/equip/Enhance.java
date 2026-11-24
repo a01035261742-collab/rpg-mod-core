@@ -252,6 +252,7 @@ public final class Enhance {
             s.getOrCreateTag().putInt("rpgStar", st + 1);
             msg(p, "강화 성공! ★" + (st + 1), ChatFormatting.GOLD);
             rpg.core.quest.Achievements.onStar(p, st + 1);
+            rpg.core.quest.Achievements.onEnhanceOk(p);
             sound(p, SoundEvents.PLAYER_LEVELUP, 1.4f);
         } else if (!guard && roll < rate(st) + destroyRate(st)) {
             s.getOrCreateTag().putBoolean("rpgBroken", true);

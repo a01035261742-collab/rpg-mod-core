@@ -4627,6 +4627,87 @@
     "hp": 53
    },
    "dropSet": "s58"
+  },
+  "legend_medal": {
+   "slot": "medal",
+   "job": 0,
+   "level": 1,
+   "stats": {
+    "str": 4,
+    "dex": 4,
+    "int": 4,
+    "luk": 4,
+    "atk": 2,
+    "matk": 2
+   },
+   "title": "전설의 사냥꾼",
+   "titleColor": "#FFC83C"
+  },
+  "variant_medal": {
+   "slot": "medal",
+   "job": 0,
+   "level": 1,
+   "stats": {
+    "str": 3,
+    "dex": 3,
+    "int": 3,
+    "luk": 3
+   },
+   "title": "변종 수집가",
+   "titleColor": "#C07FFF"
+  },
+  "elite_medal": {
+   "slot": "medal",
+   "job": 0,
+   "level": 1,
+   "stats": {
+    "str": 3,
+    "dex": 3,
+    "int": 3,
+    "luk": 3
+   },
+   "title": "엘리트 킬러",
+   "titleColor": "#FF9A3C"
+  },
+  "boss_veteran_medal": {
+   "slot": "medal",
+   "job": 0,
+   "level": 1,
+   "stats": {
+    "str": 3,
+    "dex": 3,
+    "int": 3,
+    "luk": 3,
+    "bossPct": 3
+   },
+   "title": "보스 베테랑",
+   "titleColor": "#E0603A"
+  },
+  "set_medal": {
+   "slot": "medal",
+   "job": 0,
+   "level": 1,
+   "stats": {
+    "str": 3,
+    "dex": 3,
+    "int": 3,
+    "luk": 3
+   },
+   "title": "세트 수집가",
+   "titleColor": "#5A8CFF"
+  },
+  "quest_medal": {
+   "slot": "medal",
+   "job": 0,
+   "level": 1,
+   "stats": {
+    "str": 2,
+    "dex": 2,
+    "int": 2,
+    "luk": 2
+   },
+   "title": "해결사",
+   "titleColor": "#6FD26F"
   }
  },
  "options": {

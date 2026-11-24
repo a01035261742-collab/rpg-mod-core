@@ -27,7 +27,7 @@ import rpg.core.data.RpgData;
 public final class Achievements {
     private Achievements() {}
 
-    public record Ach(String id, String name, String type, long need, long gold, String medal) {}
+    public record Ach(String id, String name, String type, long need, long gold, String medal, String target) {}
     public static final Map<String, Ach> ACHS = new LinkedHashMap<>();
 
     public static void parse(String text) {
@@ -39,7 +39,8 @@ public final class Achievements {
                 JsonObject a = e.getValue().getAsJsonObject();
                 ACHS.put(e.getKey(), new Ach(e.getKey(), a.has("name") ? a.get("name").getAsString() : e.getKey(),
                         a.get("type").getAsString(), a.has("need") ? a.get("need").getAsLong() : 1,
-                        a.has("gold") ? a.get("gold").getAsLong() : 0, a.has("medal") ? a.get("medal").getAsString() : ""));
+                        a.has("gold") ? a.get("gold").getAsLong() : 0, a.has("medal") ? a.get("medal").getAsString() : "",
+                        a.has("mob") ? a.get("mob").getAsString() : ""));
             }
         } catch (Exception ex) {
             RpgCore.LOG.warn("[rpgcore] achievements.json 읽기 실패: {}", ex.toString());
@@ -58,10 +59,21 @@ public final class Achievements {
     }
 
     /** 현재 진행값 */
-    public static long value(ServerPlayer p, String type) {
+    public static long value(ServerPlayer p, String type) { return value(p, type, ""); }
+
+    public static long value(ServerPlayer p, Ach ac) { return value(p, ac.type(), ac.target()); }
+
+    public static long value(ServerPlayer p, String type, String target) {
         CompoundTag a = data(p);
         PlayerData d = RpgData.get(p);
         return switch (type) {
+            case "mob" -> a.getCompound("mob").getLong(target);   // 그 몹 처치 수 (변종 포함)
+            case "variantKinds" -> a.getCompound("variant").size();
+            case "elites" -> a.getLong("elites");
+            case "bossCount" -> a.getLong("bossCount");
+            case "sets" -> a.getCompound("sets").size();   // 완성해 본 사냥터 세트 종류
+            case "quests" -> d.questDone.size();
+            case "enhance" -> a.getLong("enhanceOk");
             case "level" -> d.level;
             case "kills" -> a.getLong("kills");
             case "star" -> a.getInt("bestStar");
@@ -73,11 +85,31 @@ public final class Achievements {
     }
 
     // ───────── 이벤트 ─────────
-    public static void onKill(ServerPlayer p) {
+    public static void onKill(ServerPlayer p) { onKill(p, null); }
+
+    /** 처치: 총 처치 · 몹별 (변종은 기존 몹으로도 셈) · 변종 종류 · 엘리트 */
+    public static void onKill(ServerPlayer p, rpg.core.combat.MobData m) {
         CompoundTag a = data(p);
         a.putLong("kills", a.getLong("kills") + 1);
+        if (m != null && !m.key.isEmpty()) {
+            String base = rpg.core.balance.Balance.VARIANT_OF.get(m.key);
+            CompoundTag mob = a.getCompound("mob");
+            String k = base != null ? base : m.key;
+            mob.putLong(k, mob.getLong(k) + 1);
+            a.put("mob", mob);
+            if (base != null) { CompoundTag v = a.getCompound("variant"); v.putBoolean(m.key, true); a.put("variant", v); }
+            if (m.elite) a.putLong("elites", a.getLong("elites") + 1);
+        }
         save(p, a);
         check(p, "kills");
+        if (m != null) { check(p, "mob"); check(p, "variantKinds"); if (m.elite) check(p, "elites"); }
+    }
+
+    public static void onEnhanceOk(ServerPlayer p) {
+        CompoundTag a = data(p);
+        a.putLong("enhanceOk", a.getLong("enhanceOk") + 1);
+        save(p, a);
+        check(p, "enhance");
     }
 
     public static void onStar(ServerPlayer p, int star) {
@@ -97,12 +129,13 @@ public final class Achievements {
 
     public static void onBoss(ServerPlayer p, String key) {
         CompoundTag a = data(p);
+        a.putLong("bossCount", a.getLong("bossCount") + 1);
         CompoundTag b = a.getCompound("boss");
-        if (b.getBoolean(key)) return;
         b.putBoolean(key, true);
         a.put("boss", b);
         save(p, a);
         check(p, "bossKinds");
+        check(p, "bossCount");
     }
 
     /** 레벨 · 골드: 5초마다 확인 */
@@ -111,6 +144,18 @@ public final class Achievements {
         if (e.phase != TickEvent.Phase.END || !(e.player instanceof ServerPlayer p) || p.tickCount % 100 != 0) return;
         check(p, "level");
         check(p, "gold");
+        check(p, "quests");
+        // 사냥터 세트 (s<레벨>_<직업>) 다 맞춘 적 있으면 기록 — 직업이 달라도 같은 세트는 1종
+        var cnt = rpg.core.equip.Sets.assign(p);
+        CompoundTag a = data(p);
+        CompoundTag sets = a.getCompound("sets");
+        boolean add = false;
+        for (var s : rpg.core.equip.Sets.SETS.values()) {
+            if (!s.id().matches("s\\d+_.*") || cnt.getOrDefault(s.id(), 0) < s.total()) continue;
+            String k = s.id().substring(0, s.id().indexOf('_'));
+            if (!sets.getBoolean(k)) { sets.putBoolean(k, true); add = true; }
+        }
+        if (add) { a.put("sets", sets); save(p, a); check(p, "sets"); }
     }
 
     private static void check(ServerPlayer p, String type) {
@@ -118,7 +163,7 @@ public final class Achievements {
             if (!ac.type().equals(type)) continue;
             CompoundTag a = data(p);
             CompoundTag done = a.getCompound("done");
-            if (done.getBoolean(ac.id()) || value(p, type) < ac.need()) continue;
+            if (done.getBoolean(ac.id()) || value(p, ac) < ac.need()) continue;
             done.putBoolean(ac.id(), true);
             a.put("done", done);
             save(p, a);
@@ -154,7 +199,7 @@ public final class Achievements {
         p.sendSystemMessage(Component.literal("── 업적 ──").withStyle(ChatFormatting.YELLOW));
         for (Ach ac : ACHS.values()) {
             boolean ok = done.getBoolean(ac.id());
-            long v = Math.min(value(p, ac.type()), ac.need());
+            long v = Math.min(value(p, ac), ac.need());
             String rw = (ac.gold() > 0 ? String.format("%,d G", ac.gold()) : "")
                     + (ac.medal().isEmpty() ? "" : rpg.core.item.ItemIds.stack(RpgCore.MODID + ":" + ac.medal(), 1).getHoverName().getString());
             p.sendSystemMessage(Component.literal((ok ? "§a✔ " : "§7· ") + ac.name() + " §f" + String.format("%,d/%,d", v, ac.need()) + " §8(" + rw + ")"));
