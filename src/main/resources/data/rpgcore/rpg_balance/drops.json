@@ -253,6 +253,12 @@
      3,
      1
     ]
+   ],
+   "uniques": [
+    [
+     "dog_fang_earring",
+     0.6
+    ]
    ]
   },
   "bee": {
@@ -300,6 +306,12 @@
      "vit",
      3,
      1
+    ]
+   ],
+   "uniques": [
+    [
+     "bee_cape",
+     0.6
     ]
    ]
   },
@@ -349,6 +361,12 @@
      3,
      1
     ]
+   ],
+   "uniques": [
+    [
+     "tusk_gloves",
+     0.6
+    ]
    ]
   },
   "bear": {
@@ -396,6 +414,12 @@
      "wmatk",
      3,
      1
+    ]
+   ],
+   "uniques": [
+    [
+     "bear_belt",
+     0.6
     ]
    ]
   },
@@ -445,6 +469,12 @@
      3,
      1
     ]
+   ],
+   "uniques": [
+    [
+     "spirit_pendant",
+     0.6
+    ]
    ]
   },
   "mush_kid": {
@@ -492,6 +522,12 @@
      "dex",
      3,
      1
+    ]
+   ],
+   "uniques": [
+    [
+     "mushroom_ring",
+     0.6
     ]
    ]
   },
@@ -541,6 +577,12 @@
      3,
      1
     ]
+   ],
+   "uniques": [
+    [
+     "soldier_gloves",
+     0.6
+    ]
    ]
   },
   "mush_fairy": {
@@ -588,6 +630,12 @@
      "str",
      3,
      1
+    ]
+   ],
+   "uniques": [
+    [
+     "fairy_cape",
+     0.6
     ]
    ]
   },
@@ -637,6 +685,12 @@
      3,
      1
     ]
+   ],
+   "uniques": [
+    [
+     "gland_earring",
+     0.6
+    ]
    ]
   },
   "spore_witch": {
@@ -684,6 +738,12 @@
      "watk",
      3,
      1
+    ]
+   ],
+   "uniques": [
+    [
+     "witch_pendant",
+     0.6
     ]
    ]
   },
@@ -733,6 +793,12 @@
      3,
      1
     ]
+   ],
+   "uniques": [
+    [
+     "dark_eye_ring",
+     0.6
+    ]
    ]
   },
   "mush_beast": {
@@ -780,6 +846,12 @@
      "int",
      3,
      1
+    ]
+   ],
+   "uniques": [
+    [
+     "beast_belt",
+     0.6
     ]
    ]
   },
@@ -834,6 +906,12 @@
      3,
      1
     ]
+   ],
+   "uniques": [
+    [
+     "cave_fang_earring",
+     0.6
+    ]
    ]
   },
   "cave_bat": {
@@ -886,6 +964,12 @@
      "vit",
      3,
      1
+    ]
+   ],
+   "uniques": [
+    [
+     "bat_cape",
+     0.6
     ]
    ]
   },
@@ -940,6 +1024,12 @@
      3,
      1
     ]
+   ],
+   "uniques": [
+    [
+     "venom_ring",
+     0.6
+    ]
    ]
   },
   "spike_spider": {
@@ -992,6 +1082,12 @@
      "luk",
      3,
      1
+    ]
+   ],
+   "uniques": [
+    [
+     "spike_gloves",
+     0.6
     ]
    ]
   },
@@ -1046,6 +1142,12 @@
      3,
      1
     ]
+   ],
+   "uniques": [
+    [
+     "ore_pendant",
+     0.6
+    ]
    ]
   },
   "skel_miner": {
@@ -1098,6 +1200,12 @@
      "dex",
      3,
      1
+    ]
+   ],
+   "uniques": [
+    [
+     "miner_belt",
+     0.6
     ]
    ]
   },
@@ -1168,6 +1276,12 @@
      "luk",
      3,
      1
+    ]
+   ],
+   "uniques": [
+    [
+     "void_earring",
+     0.6
     ]
    ]
   },
