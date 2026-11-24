@@ -150,16 +150,11 @@ public class EquipScreen extends ScaledContainerScreen<EquipMenu> {
 
     /** 입은 장비로 세트 효과 (켜진 단계 초록, 다음 단계 회색) */
     private void setLines(GuiGraphics g, int rx, int rr, int yy) {
-        java.util.Set<String> worn = new java.util.HashSet<>();
-        for (Cell c : cells) {
-            if (c.idx >= 16 && c.idx != WEAPON && c.idx < WEAPON) continue;
-            if (c.idx > WEAPON) continue;
-            var d = rpg.core.equip.Gear.def(menu.slots.get(c.idx).getItem());
-            if (d != null) worn.add(d.id());
-        }
+        if (minecraft == null || minecraft.player == null) return;
+        var cnt = rpg.core.equip.Sets.assign(minecraft.player);   // 공용 장신구는 한 세트에만 셈
         int shown = 0;
         for (var s : rpg.core.equip.Sets.SETS.values()) {
-            int n = rpg.core.equip.Sets.count(s, worn);
+            int n = cnt.getOrDefault(s.id(), 0);
             if (n < 1) continue;
             for (var e : s.bonus().entrySet()) {
                 if (shown >= 4) return;

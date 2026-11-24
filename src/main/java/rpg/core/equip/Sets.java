@@ -3,6 +3,7 @@ package rpg.core.equip;
 import com.google.gson.JsonObject;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -25,12 +26,15 @@ public final class Sets {
 
     public record SetDef(String id, String name, List<String> items, int total, TreeMap<Integer, Map<String, Double>> bonus) {}
     public static final Map<String, SetDef> SETS = new LinkedHashMap<>();
-    /** 아이템 → 세트 */
+    /** 아이템 → 세트 (장신구처럼 여러 세트에 들어가면 마지막 것) */
     public static final Map<String, String> ITEM_SET = new HashMap<>();
+    /** 아이템 → 들어가는 세트 전부 (사냥터 세트 장신구는 직업 세트 4개에 같이 들어감) */
+    public static final Map<String, List<String>> ITEM_SETS = new HashMap<>();
 
     public static void parse(JsonObject o) {
         SETS.clear();
         ITEM_SET.clear();
+        ITEM_SETS.clear();
         if (o == null) return;
         try {
             for (var e : o.entrySet()) {
@@ -47,7 +51,7 @@ public final class Sets {
                 SetDef d = new SetDef(e.getKey(), s.has("name") ? s.get("name").getAsString() : e.getKey(), items,
                         s.has("max") ? s.get("max").getAsInt() : items.size(), b);
                 SETS.put(d.id(), d);
-                for (String it : items) ITEM_SET.put(it, d.id());
+                for (String it : items) { ITEM_SET.put(it, d.id()); ITEM_SETS.computeIfAbsent(it, k -> new ArrayList<>()).add(d.id()); }
             }
         } catch (Exception ex) {
             rpg.core.RpgCore.LOG.warn("[rpgcore] equipment.json sets 읽기 실패: {}", ex.toString());
@@ -75,11 +79,38 @@ public final class Sets {
         return Math.min(n, s.total());
     }
 
+    /** 세트마다 센 부위 수. 여러 세트에 같이 들어가는 장비(사냥터 세트 장신구)는 한 세트에만 셈:
+     *  많이 맞춘 세트부터, 같으면 내 직업 세트 먼저 가져감 (직업 세트 4개에 장신구 효과가 겹쳐 붙지 않게) */
+    public static Map<String, Integer> assign(Player p) {
+        Set<String> worn = worn(p);
+        int job = p.level().isClientSide ? rpg.core.client.ClientData.job : rpg.core.data.RpgData.get(p).job;
+        List<SetDef> order = new ArrayList<>(SETS.values());
+        order.sort((a, b) -> {
+            int c = Integer.compare(count(b, worn), count(a, worn));
+            return c != 0 ? c : Boolean.compare(jobMatch(b, job), jobMatch(a, job));
+        });
+        Set<String> used = new HashSet<>();
+        Map<String, Integer> out = new LinkedHashMap<>();
+        for (SetDef s : order) {
+            int n = 0;
+            for (String it : s.items()) if (worn.contains(it) && used.add(it)) n++;
+            out.put(s.id(), Math.min(n, s.total()));
+        }
+        return out;
+    }
+
+    /** 세트 안에 이 직업 전용 장비가 있나 */
+    private static boolean jobMatch(SetDef s, int job) {
+        if (job <= 0) return false;
+        for (String it : s.items()) { GearDefs.GearDef d = GearDefs.ITEMS.get(it); if (d != null && d.job() == job) return true; }
+        return false;
+    }
+
     /** 세트 효과를 장비 합계에 더함 */
     public static void addBonus(Player p, Map<String, Double> m) {
-        Set<String> worn = worn(p);
+        Map<String, Integer> cnt = assign(p);
         for (SetDef s : SETS.values()) {
-            int n = count(s, worn);
+            int n = cnt.getOrDefault(s.id(), 0);
             if (n < 2) continue;
             for (var t : s.bonus().headMap(n, true).values()) t.forEach((k, v) -> m.merge(k, v, Double::sum));
         }
@@ -111,14 +142,25 @@ public final class Sets {
 
     /** 툴팁: 세트 이름 (n/전체) + 단계별 효과 (켜진 줄 초록) */
     public static void tooltip(ItemStack stack, GearDefs.GearDef d, Player p, List<Component> tip) {
-        String sid = ITEM_SET.get(d.id());
-        SetDef s = sid == null ? null : SETS.get(sid);
+        List<String> ids = ITEM_SETS.get(d.id());
+        if (ids == null || ids.isEmpty()) return;
+        // 여러 세트에 들어가는 장비: 지금 이 장비를 센 세트 → 없으면 내 직업 세트 → 첫 세트
+        Map<String, Integer> cnt = p == null ? Map.of() : assign(p);
+        int job = p == null ? 0 : p.level().isClientSide ? rpg.core.client.ClientData.job : rpg.core.data.RpgData.get(p).job;
+        SetDef s = null;
+        int best = 0;
+        for (String id : ids) { SetDef c = SETS.get(id); int n = cnt.getOrDefault(id, 0); if (c != null && n > best) { best = n; s = c; } }
+        if (s == null) for (String id : ids) { SetDef c = SETS.get(id); if (c != null && jobMatch(c, job)) { s = c; break; } }
+        if (s == null) s = SETS.get(ids.get(0));
         if (s == null) return;
-        int n = p == null ? 0 : count(s, worn(p));
+        int n = cnt.getOrDefault(s.id(), 0);
         tip.add(Component.literal("[" + s.name() + "] (" + n + "/" + s.total() + ")").withStyle(ChatFormatting.GOLD));
+        Integer next = null;
         for (var t : s.bonus().entrySet()) {
             boolean on = n >= t.getKey();
+            if (!on && next == null) next = t.getKey();
             tip.add(Component.literal(" " + t.getKey() + "세트: " + text(t.getValue())).withStyle(on ? ChatFormatting.GREEN : ChatFormatting.DARK_GRAY));
         }
+        if (next != null) tip.add(Component.literal(" 다음 효과까지 " + (next - n) + "부위").withStyle(ChatFormatting.YELLOW));
     }
 }
