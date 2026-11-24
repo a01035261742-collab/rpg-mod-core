@@ -71,7 +71,7 @@
    "items": [
     [
      "pig_hide",
-     40
+     60
     ],
     [
      "golden_hoof",
@@ -89,7 +89,7 @@
    "items": [
     [
      "cow_hide",
-     40
+     60
     ],
     [
      "cow_horn",
@@ -107,7 +107,7 @@
    "items": [
     [
      "slime_goo",
-     40
+     60
     ],
     [
      "slime_core",
@@ -125,7 +125,7 @@
    "items": [
     [
      "rat_tail",
-     40
+     60
     ],
     [
      "rat_tooth",
@@ -143,7 +143,7 @@
    "items": [
     [
      "dog_fur",
-     40
+     60
     ],
     [
      "dog_fang",
@@ -161,7 +161,7 @@
    "items": [
     [
      "bee_sting",
-     40
+     60
     ],
     [
      "royal_jelly",
@@ -179,7 +179,7 @@
    "items": [
     [
      "boar_bristle",
-     40
+     60
     ],
     [
      "boar_tusk",
@@ -197,7 +197,7 @@
    "items": [
     [
      "bear_pelt",
-     40
+     60
     ],
     [
      "bear_paw",
@@ -215,7 +215,7 @@
    "items": [
     [
      "spore_dust",
-     40
+     60
     ],
     [
      "spirit_cap",
@@ -233,7 +233,7 @@
    "items": [
     [
      "tiny_cap",
-     40
+     60
     ],
     [
      "glow_spore",
@@ -251,7 +251,7 @@
    "items": [
     [
      "toxic_cap",
-     40
+     60
     ],
     [
      "soldier_badge",
@@ -269,7 +269,7 @@
    "items": [
     [
      "fairy_wing",
-     40
+     60
     ],
     [
      "fairy_dust",
@@ -287,7 +287,7 @@
    "items": [
     [
      "spore_silk",
-     40
+     60
     ],
     [
      "spore_gland",
@@ -305,7 +305,7 @@
    "items": [
     [
      "witch_herb",
-     40
+     60
     ],
     [
      "odd_potion",
@@ -323,7 +323,7 @@
    "items": [
     [
      "dark_silk",
-     40
+     60
     ],
     [
      "dark_eye",
@@ -341,7 +341,7 @@
    "items": [
     [
      "beast_shell",
-     40
+     60
     ],
     [
      "beast_core",
@@ -359,7 +359,7 @@
    "items": [
     [
      "cave_silk",
-     40
+     60
     ],
     [
      "cave_fang",
@@ -377,7 +377,7 @@
    "items": [
     [
      "bat_wing",
-     40
+     60
     ],
     [
      "echo_crystal",
@@ -395,7 +395,7 @@
    "items": [
     [
      "venom_sac",
-     40
+     60
     ],
     [
      "venom_crystal",
@@ -413,7 +413,7 @@
    "items": [
     [
      "stone_spike",
-     40
+     60
     ],
     [
      "spike_heart",
@@ -431,7 +431,7 @@
    "items": [
     [
      "ore_goo",
-     40
+     60
     ],
     [
      "ore_core",
@@ -449,7 +449,7 @@
    "items": [
     [
      "miner_bone",
-     40
+     60
     ],
     [
      "miner_badge",
@@ -467,7 +467,7 @@
    "items": [
     [
      "golem_shard",
-     40
+     60
     ],
     [
      "void_core",

@@ -1,5 +1,5 @@
 {
- "_설명": "NPC 제작 (작업대 레시피 없음). stations = 제작 NPC (/rpg npc craft <키>), tabs = 창 위 탭. recipes: station·tab·result·count(만들어지는 개수)·gold·mats [아이템, 개수] (minecraft: 없으면 rpgcore). 장비는 추가 옵션 4줄로 나옴. 방어구는 직업별(제작 전용), 공용 방어구는 상점 일반 장비. Lv40까지 광물은 철(방어구·무기)·구리(장신구), 단계마다 양만 늘림(×1·1.5·2·3). 숫자는 임시값 주문서 결과는 scroll#종류#등급 (등급 2=30% 3=10%), scroll#white=순백 smith3·jeweler3 = 3지역 동굴 마을 전용 (Lv50·60 장비, 아래 마을 NPC 에는 안 나옴).",
+ "_설명": "NPC 제작 (작업대 레시피 없음). stations = 제작 NPC (/rpg npc craft <키>), tabs = 창 위 탭. recipes: station·tab·result·count(만들어지는 개수)·gold·mats [아이템, 개수] (minecraft: 없으면 rpgcore). 장비는 추가 옵션 4줄로 나옴. 방어구는 직업별(제작 전용), 공용 방어구는 상점 일반 장비. Lv40까지 광물은 철(방어구·무기)·구리(장신구), 단계마다 양만 늘림(×1·1.5·2·3). 숫자는 임시값 주문서 결과는 scroll#종류#등급 (등급 2=30% 3=10%), scroll#white=순백 smith3·jeweler3 = 3지역 동굴 마을 전용 (Lv50·60 장비, 아래 마을 NPC 에는 안 나옴). (1.0.17) 제작 골드 = 그 레벨 사냥터 사냥 골드 기준: 무기 Lv20까지 5분·Lv30부터 7분, 방어구·장신구는 같은 비율. 희귀 재료 만들기 ×2 (Lv20 이하 몹)·×2.5.",
  "stations": {
   "smith": {
    "name": "대장장이",
@@ -59,7 +59,7 @@
    "tab": "무기",
    "result": "warrior_sword_20",
    "count": 1,
-   "gold": 790,
+   "gold": 5200,
    "mats": [
     [
      "bear_pelt",
@@ -80,7 +80,7 @@
    "tab": "무기",
    "result": "archer_bow_20",
    "count": 1,
-   "gold": 790,
+   "gold": 5200,
    "mats": [
     [
      "dog_fur",
@@ -101,7 +101,7 @@
    "tab": "무기",
    "result": "mage_staff_20",
    "count": 1,
-   "gold": 790,
+   "gold": 5200,
    "mats": [
     [
      "bee_sting",
@@ -122,7 +122,7 @@
    "tab": "무기",
    "result": "thief_dagger_20",
    "count": 1,
-   "gold": 790,
+   "gold": 5200,
    "mats": [
     [
      "boar_bristle",
@@ -143,7 +143,7 @@
    "tab": "무기",
    "result": "warrior_sword_30",
    "count": 1,
-   "gold": 1570,
+   "gold": 10400,
    "mats": [
     [
      "toxic_cap",
@@ -164,7 +164,7 @@
    "tab": "무기",
    "result": "archer_bow_30",
    "count": 1,
-   "gold": 1570,
+   "gold": 10400,
    "mats": [
     [
      "fairy_wing",
@@ -185,7 +185,7 @@
    "tab": "무기",
    "result": "mage_staff_30",
    "count": 1,
-   "gold": 1570,
+   "gold": 10400,
    "mats": [
     [
      "spore_dust",
@@ -206,7 +206,7 @@
    "tab": "무기",
    "result": "thief_dagger_30",
    "count": 1,
-   "gold": 1570,
+   "gold": 10400,
    "mats": [
     [
      "tiny_cap",
@@ -227,7 +227,7 @@
    "tab": "무기",
    "result": "warrior_sword_40",
    "count": 1,
-   "gold": 2640,
+   "gold": 18500,
    "mats": [
     [
      "beast_shell",
@@ -248,7 +248,7 @@
    "tab": "무기",
    "result": "archer_bow_40",
    "count": 1,
-   "gold": 2640,
+   "gold": 18500,
    "mats": [
     [
      "dark_silk",
@@ -269,7 +269,7 @@
    "tab": "무기",
    "result": "mage_staff_40",
    "count": 1,
-   "gold": 2640,
+   "gold": 18500,
    "mats": [
     [
      "witch_herb",
@@ -290,7 +290,7 @@
    "tab": "무기",
    "result": "thief_dagger_40",
    "count": 1,
-   "gold": 2640,
+   "gold": 18500,
    "mats": [
     [
      "spore_silk",
@@ -311,7 +311,7 @@
    "tab": "전사 방어구",
    "result": "warrior_hat_10",
    "count": 1,
-   "gold": 120,
+   "gold": 330,
    "mats": [
     [
      "cow_hide",
@@ -332,7 +332,7 @@
    "tab": "전사 방어구",
    "result": "warrior_top_10",
    "count": 1,
-   "gold": 160,
+   "gold": 440,
    "mats": [
     [
      "cow_hide",
@@ -353,7 +353,7 @@
    "tab": "전사 방어구",
    "result": "warrior_bottom_10",
    "count": 1,
-   "gold": 140,
+   "gold": 380,
    "mats": [
     [
      "cow_hide",
@@ -374,7 +374,7 @@
    "tab": "전사 방어구",
    "result": "warrior_shoes_10",
    "count": 1,
-   "gold": 110,
+   "gold": 300,
    "mats": [
     [
      "cow_hide",
@@ -395,7 +395,7 @@
    "tab": "전사 방어구",
    "result": "warrior_hat_20",
    "count": 1,
-   "gold": 350,
+   "gold": 2300,
    "mats": [
     [
      "boar_bristle",
@@ -416,7 +416,7 @@
    "tab": "전사 방어구",
    "result": "warrior_top_20",
    "count": 1,
-   "gold": 450,
+   "gold": 3000,
    "mats": [
     [
      "boar_bristle",
@@ -437,7 +437,7 @@
    "tab": "전사 방어구",
    "result": "warrior_bottom_20",
    "count": 1,
-   "gold": 420,
+   "gold": 2800,
    "mats": [
     [
      "boar_bristle",
@@ -458,7 +458,7 @@
    "tab": "전사 방어구",
    "result": "warrior_shoes_20",
    "count": 1,
-   "gold": 320,
+   "gold": 2100,
    "mats": [
     [
      "boar_bristle",
@@ -479,7 +479,7 @@
    "tab": "전사 방어구",
    "result": "warrior_hat_30",
    "count": 1,
-   "gold": 690,
+   "gold": 4600,
    "mats": [
     [
      "tiny_cap",
@@ -500,7 +500,7 @@
    "tab": "전사 방어구",
    "result": "warrior_top_30",
    "count": 1,
-   "gold": 900,
+   "gold": 6000,
    "mats": [
     [
      "tiny_cap",
@@ -521,7 +521,7 @@
    "tab": "전사 방어구",
    "result": "warrior_bottom_30",
    "count": 1,
-   "gold": 840,
+   "gold": 5600,
    "mats": [
     [
      "tiny_cap",
@@ -542,7 +542,7 @@
    "tab": "전사 방어구",
    "result": "warrior_shoes_30",
    "count": 1,
-   "gold": 630,
+   "gold": 4200,
    "mats": [
     [
      "tiny_cap",
@@ -563,7 +563,7 @@
    "tab": "전사 방어구",
    "result": "warrior_hat_40",
    "count": 1,
-   "gold": 1160,
+   "gold": 8100,
    "mats": [
     [
      "witch_herb",
@@ -584,7 +584,7 @@
    "tab": "전사 방어구",
    "result": "warrior_top_40",
    "count": 1,
-   "gold": 1520,
+   "gold": 10600,
    "mats": [
     [
      "witch_herb",
@@ -605,7 +605,7 @@
    "tab": "전사 방어구",
    "result": "warrior_bottom_40",
    "count": 1,
-   "gold": 1420,
+   "gold": 9900,
    "mats": [
     [
      "witch_herb",
@@ -626,7 +626,7 @@
    "tab": "전사 방어구",
    "result": "warrior_shoes_40",
    "count": 1,
-   "gold": 1060,
+   "gold": 7400,
    "mats": [
     [
      "witch_herb",
@@ -647,7 +647,7 @@
    "tab": "궁수 방어구",
    "result": "archer_hat_10",
    "count": 1,
-   "gold": 120,
+   "gold": 330,
    "mats": [
     [
      "pig_hide",
@@ -668,7 +668,7 @@
    "tab": "궁수 방어구",
    "result": "archer_top_10",
    "count": 1,
-   "gold": 160,
+   "gold": 440,
    "mats": [
     [
      "pig_hide",
@@ -689,7 +689,7 @@
    "tab": "궁수 방어구",
    "result": "archer_bottom_10",
    "count": 1,
-   "gold": 140,
+   "gold": 380,
    "mats": [
     [
      "pig_hide",
@@ -710,7 +710,7 @@
    "tab": "궁수 방어구",
    "result": "archer_shoes_10",
    "count": 1,
-   "gold": 110,
+   "gold": 300,
    "mats": [
     [
      "pig_hide",
@@ -731,7 +731,7 @@
    "tab": "궁수 방어구",
    "result": "archer_hat_20",
    "count": 1,
-   "gold": 350,
+   "gold": 2300,
    "mats": [
     [
      "bear_pelt",
@@ -752,7 +752,7 @@
    "tab": "궁수 방어구",
    "result": "archer_top_20",
    "count": 1,
-   "gold": 450,
+   "gold": 3000,
    "mats": [
     [
      "bear_pelt",
@@ -773,7 +773,7 @@
    "tab": "궁수 방어구",
    "result": "archer_bottom_20",
    "count": 1,
-   "gold": 420,
+   "gold": 2800,
    "mats": [
     [
      "bear_pelt",
@@ -794,7 +794,7 @@
    "tab": "궁수 방어구",
    "result": "archer_shoes_20",
    "count": 1,
-   "gold": 320,
+   "gold": 2100,
    "mats": [
     [
      "bear_pelt",
@@ -815,7 +815,7 @@
    "tab": "궁수 방어구",
    "result": "archer_hat_30",
    "count": 1,
-   "gold": 690,
+   "gold": 4600,
    "mats": [
     [
      "spore_dust",
@@ -836,7 +836,7 @@
    "tab": "궁수 방어구",
    "result": "archer_top_30",
    "count": 1,
-   "gold": 900,
+   "gold": 6000,
    "mats": [
     [
      "spore_dust",
@@ -857,7 +857,7 @@
    "tab": "궁수 방어구",
    "result": "archer_bottom_30",
    "count": 1,
-   "gold": 840,
+   "gold": 5600,
    "mats": [
     [
      "spore_dust",
@@ -878,7 +878,7 @@
    "tab": "궁수 방어구",
    "result": "archer_shoes_30",
    "count": 1,
-   "gold": 630,
+   "gold": 4200,
    "mats": [
     [
      "spore_dust",
@@ -899,7 +899,7 @@
    "tab": "궁수 방어구",
    "result": "archer_hat_40",
    "count": 1,
-   "gold": 1160,
+   "gold": 8100,
    "mats": [
     [
      "spore_silk",
@@ -920,7 +920,7 @@
    "tab": "궁수 방어구",
    "result": "archer_top_40",
    "count": 1,
-   "gold": 1520,
+   "gold": 10600,
    "mats": [
     [
      "spore_silk",
@@ -941,7 +941,7 @@
    "tab": "궁수 방어구",
    "result": "archer_bottom_40",
    "count": 1,
-   "gold": 1420,
+   "gold": 9900,
    "mats": [
     [
      "spore_silk",
@@ -962,7 +962,7 @@
    "tab": "궁수 방어구",
    "result": "archer_shoes_40",
    "count": 1,
-   "gold": 1060,
+   "gold": 7400,
    "mats": [
     [
      "spore_silk",
@@ -983,7 +983,7 @@
    "tab": "마법사 방어구",
    "result": "mage_hat_10",
    "count": 1,
-   "gold": 120,
+   "gold": 330,
    "mats": [
     [
      "slime_goo",
@@ -1004,7 +1004,7 @@
    "tab": "마법사 방어구",
    "result": "mage_top_10",
    "count": 1,
-   "gold": 160,
+   "gold": 440,
    "mats": [
     [
      "slime_goo",
@@ -1025,7 +1025,7 @@
    "tab": "마법사 방어구",
    "result": "mage_bottom_10",
    "count": 1,
-   "gold": 140,
+   "gold": 380,
    "mats": [
     [
      "slime_goo",
@@ -1046,7 +1046,7 @@
    "tab": "마법사 방어구",
    "result": "mage_shoes_10",
    "count": 1,
-   "gold": 110,
+   "gold": 300,
    "mats": [
     [
      "slime_goo",
@@ -1067,7 +1067,7 @@
    "tab": "마법사 방어구",
    "result": "mage_hat_20",
    "count": 1,
-   "gold": 350,
+   "gold": 2300,
    "mats": [
     [
      "boar_bristle",
@@ -1088,7 +1088,7 @@
    "tab": "마법사 방어구",
    "result": "mage_top_20",
    "count": 1,
-   "gold": 450,
+   "gold": 3000,
    "mats": [
     [
      "boar_bristle",
@@ -1109,7 +1109,7 @@
    "tab": "마법사 방어구",
    "result": "mage_bottom_20",
    "count": 1,
-   "gold": 420,
+   "gold": 2800,
    "mats": [
     [
      "boar_bristle",
@@ -1130,7 +1130,7 @@
    "tab": "마법사 방어구",
    "result": "mage_shoes_20",
    "count": 1,
-   "gold": 320,
+   "gold": 2100,
    "mats": [
     [
      "boar_bristle",
@@ -1151,7 +1151,7 @@
    "tab": "마법사 방어구",
    "result": "mage_hat_30",
    "count": 1,
-   "gold": 690,
+   "gold": 4600,
    "mats": [
     [
      "toxic_cap",
@@ -1172,7 +1172,7 @@
    "tab": "마법사 방어구",
    "result": "mage_top_30",
    "count": 1,
-   "gold": 900,
+   "gold": 6000,
    "mats": [
     [
      "toxic_cap",
@@ -1193,7 +1193,7 @@
    "tab": "마법사 방어구",
    "result": "mage_bottom_30",
    "count": 1,
-   "gold": 840,
+   "gold": 5600,
    "mats": [
     [
      "toxic_cap",
@@ -1214,7 +1214,7 @@
    "tab": "마법사 방어구",
    "result": "mage_shoes_30",
    "count": 1,
-   "gold": 630,
+   "gold": 4200,
    "mats": [
     [
      "toxic_cap",
@@ -1235,7 +1235,7 @@
    "tab": "마법사 방어구",
    "result": "mage_hat_40",
    "count": 1,
-   "gold": 1160,
+   "gold": 8100,
    "mats": [
     [
      "dark_silk",
@@ -1256,7 +1256,7 @@
    "tab": "마법사 방어구",
    "result": "mage_top_40",
    "count": 1,
-   "gold": 1520,
+   "gold": 10600,
    "mats": [
     [
      "dark_silk",
@@ -1277,7 +1277,7 @@
    "tab": "마법사 방어구",
    "result": "mage_bottom_40",
    "count": 1,
-   "gold": 1420,
+   "gold": 9900,
    "mats": [
     [
      "dark_silk",
@@ -1298,7 +1298,7 @@
    "tab": "마법사 방어구",
    "result": "mage_shoes_40",
    "count": 1,
-   "gold": 1060,
+   "gold": 7400,
    "mats": [
     [
      "dark_silk",
@@ -1319,7 +1319,7 @@
    "tab": "도적 방어구",
    "result": "thief_hat_10",
    "count": 1,
-   "gold": 120,
+   "gold": 330,
    "mats": [
     [
      "rat_tail",
@@ -1340,7 +1340,7 @@
    "tab": "도적 방어구",
    "result": "thief_top_10",
    "count": 1,
-   "gold": 160,
+   "gold": 440,
    "mats": [
     [
      "rat_tail",
@@ -1361,7 +1361,7 @@
    "tab": "도적 방어구",
    "result": "thief_bottom_10",
    "count": 1,
-   "gold": 140,
+   "gold": 380,
    "mats": [
     [
      "rat_tail",
@@ -1382,7 +1382,7 @@
    "tab": "도적 방어구",
    "result": "thief_shoes_10",
    "count": 1,
-   "gold": 110,
+   "gold": 300,
    "mats": [
     [
      "rat_tail",
@@ -1403,7 +1403,7 @@
    "tab": "도적 방어구",
    "result": "thief_hat_20",
    "count": 1,
-   "gold": 350,
+   "gold": 2300,
    "mats": [
     [
      "bear_pelt",
@@ -1424,7 +1424,7 @@
    "tab": "도적 방어구",
    "result": "thief_top_20",
    "count": 1,
-   "gold": 450,
+   "gold": 3000,
    "mats": [
     [
      "bear_pelt",
@@ -1445,7 +1445,7 @@
    "tab": "도적 방어구",
    "result": "thief_bottom_20",
    "count": 1,
-   "gold": 420,
+   "gold": 2800,
    "mats": [
     [
      "bear_pelt",
@@ -1466,7 +1466,7 @@
    "tab": "도적 방어구",
    "result": "thief_shoes_20",
    "count": 1,
-   "gold": 320,
+   "gold": 2100,
    "mats": [
     [
      "bear_pelt",
@@ -1487,7 +1487,7 @@
    "tab": "도적 방어구",
    "result": "thief_hat_30",
    "count": 1,
-   "gold": 690,
+   "gold": 4600,
    "mats": [
     [
      "fairy_wing",
@@ -1508,7 +1508,7 @@
    "tab": "도적 방어구",
    "result": "thief_top_30",
    "count": 1,
-   "gold": 900,
+   "gold": 6000,
    "mats": [
     [
      "fairy_wing",
@@ -1529,7 +1529,7 @@
    "tab": "도적 방어구",
    "result": "thief_bottom_30",
    "count": 1,
-   "gold": 840,
+   "gold": 5600,
    "mats": [
     [
      "fairy_wing",
@@ -1550,7 +1550,7 @@
    "tab": "도적 방어구",
    "result": "thief_shoes_30",
    "count": 1,
-   "gold": 630,
+   "gold": 4200,
    "mats": [
     [
      "fairy_wing",
@@ -1571,7 +1571,7 @@
    "tab": "도적 방어구",
    "result": "thief_hat_40",
    "count": 1,
-   "gold": 1160,
+   "gold": 8100,
    "mats": [
     [
      "beast_shell",
@@ -1592,7 +1592,7 @@
    "tab": "도적 방어구",
    "result": "thief_top_40",
    "count": 1,
-   "gold": 1520,
+   "gold": 10600,
    "mats": [
     [
      "beast_shell",
@@ -1613,7 +1613,7 @@
    "tab": "도적 방어구",
    "result": "thief_bottom_40",
    "count": 1,
-   "gold": 1420,
+   "gold": 9900,
    "mats": [
     [
      "beast_shell",
@@ -1634,7 +1634,7 @@
    "tab": "도적 방어구",
    "result": "thief_shoes_40",
    "count": 1,
-   "gold": 1060,
+   "gold": 7400,
    "mats": [
     [
      "beast_shell",
@@ -1655,7 +1655,7 @@
    "tab": "장갑",
    "result": "gloves_1",
    "count": 1,
-   "gold": 30,
+   "gold": 34,
    "mats": [
     [
      "minecraft:leather",
@@ -1672,7 +1672,7 @@
    "tab": "망토",
    "result": "cape_1",
    "count": 1,
-   "gold": 30,
+   "gold": 34,
    "mats": [
     [
      "cow_hide",
@@ -1689,7 +1689,7 @@
    "tab": "벨트",
    "result": "belt_1",
    "count": 1,
-   "gold": 25,
+   "gold": 28,
    "mats": [
     [
      "minecraft:leather",
@@ -1706,7 +1706,7 @@
    "tab": "귀걸이",
    "result": "earring_1",
    "count": 1,
-   "gold": 30,
+   "gold": 34,
    "mats": [
     [
      "minecraft:copper_ingot",
@@ -1723,7 +1723,7 @@
    "tab": "반지",
    "result": "ring_1",
    "count": 1,
-   "gold": 30,
+   "gold": 34,
    "mats": [
     [
      "minecraft:copper_ingot",
@@ -1740,7 +1740,7 @@
    "tab": "펜던트",
    "result": "pendant_1",
    "count": 1,
-   "gold": 30,
+   "gold": 34,
    "mats": [
     [
      "minecraft:copper_ingot",
@@ -1757,7 +1757,7 @@
    "tab": "장갑",
    "result": "gloves_10",
    "count": 1,
-   "gold": 180,
+   "gold": 490,
    "mats": [
     [
      "minecraft:iron_ingot",
@@ -1774,7 +1774,7 @@
    "tab": "망토",
    "result": "cape_10",
    "count": 1,
-   "gold": 180,
+   "gold": 490,
    "mats": [
     [
      "minecraft:leather",
@@ -1795,7 +1795,7 @@
    "tab": "벨트",
    "result": "belt_10",
    "count": 1,
-   "gold": 150,
+   "gold": 410,
    "mats": [
     [
      "minecraft:iron_ingot",
@@ -1812,7 +1812,7 @@
    "tab": "귀걸이",
    "result": "earring_10",
    "count": 1,
-   "gold": 180,
+   "gold": 490,
    "mats": [
     [
      "minecraft:iron_ingot",
@@ -1829,7 +1829,7 @@
    "tab": "반지",
    "result": "ring_10",
    "count": 1,
-   "gold": 180,
+   "gold": 490,
    "mats": [
     [
      "minecraft:iron_ingot",
@@ -1846,7 +1846,7 @@
    "tab": "펜던트",
    "result": "pendant_10",
    "count": 1,
-   "gold": 240,
+   "gold": 650,
    "mats": [
     [
      "minecraft:iron_ingot",
@@ -1863,7 +1863,7 @@
    "tab": "장갑",
    "result": "gloves_20",
    "count": 1,
-   "gold": 380,
+   "gold": 2500,
    "mats": [
     [
      "bear_pelt",
@@ -1884,7 +1884,7 @@
    "tab": "망토",
    "result": "cape_20",
    "count": 1,
-   "gold": 380,
+   "gold": 2500,
    "mats": [
     [
      "boar_bristle",
@@ -1905,7 +1905,7 @@
    "tab": "벨트",
    "result": "belt_20",
    "count": 1,
-   "gold": 380,
+   "gold": 2500,
    "mats": [
     [
      "boar_bristle",
@@ -1926,7 +1926,7 @@
    "tab": "귀걸이",
    "result": "earring_20",
    "count": 1,
-   "gold": 380,
+   "gold": 2500,
    "mats": [
     [
      "bear_pelt",
@@ -1947,7 +1947,7 @@
    "tab": "반지",
    "result": "ring_20",
    "count": 1,
-   "gold": 380,
+   "gold": 2500,
    "mats": [
     [
      "boar_bristle",
@@ -1968,7 +1968,7 @@
    "tab": "펜던트",
    "result": "pendant_20",
    "count": 1,
-   "gold": 380,
+   "gold": 2500,
    "mats": [
     [
      "bear_pelt",
@@ -1989,7 +1989,7 @@
    "tab": "장갑",
    "result": "gloves_30",
    "count": 1,
-   "gold": 670,
+   "gold": 4400,
    "mats": [
     [
      "spore_dust",
@@ -2010,7 +2010,7 @@
    "tab": "망토",
    "result": "cape_30",
    "count": 1,
-   "gold": 670,
+   "gold": 4400,
    "mats": [
     [
      "tiny_cap",
@@ -2031,7 +2031,7 @@
    "tab": "벨트",
    "result": "belt_30",
    "count": 1,
-   "gold": 670,
+   "gold": 4400,
    "mats": [
     [
      "toxic_cap",
@@ -2052,7 +2052,7 @@
    "tab": "귀걸이",
    "result": "earring_30",
    "count": 1,
-   "gold": 670,
+   "gold": 4400,
    "mats": [
     [
      "fairy_wing",
@@ -2073,7 +2073,7 @@
    "tab": "반지",
    "result": "ring_30",
    "count": 1,
-   "gold": 670,
+   "gold": 4400,
    "mats": [
     [
      "spore_dust",
@@ -2094,7 +2094,7 @@
    "tab": "펜던트",
    "result": "pendant_30",
    "count": 1,
-   "gold": 670,
+   "gold": 4400,
    "mats": [
     [
      "tiny_cap",
@@ -2115,7 +2115,7 @@
    "tab": "장갑",
    "result": "gloves_40",
    "count": 1,
-   "gold": 1120,
+   "gold": 7800,
    "mats": [
     [
      "spore_silk",
@@ -2136,7 +2136,7 @@
    "tab": "망토",
    "result": "cape_40",
    "count": 1,
-   "gold": 1120,
+   "gold": 7800,
    "mats": [
     [
      "witch_herb",
@@ -2157,7 +2157,7 @@
    "tab": "벨트",
    "result": "belt_40",
    "count": 1,
-   "gold": 1120,
+   "gold": 7800,
    "mats": [
     [
      "dark_silk",
@@ -2178,7 +2178,7 @@
    "tab": "귀걸이",
    "result": "earring_40",
    "count": 1,
-   "gold": 1120,
+   "gold": 7800,
    "mats": [
     [
      "beast_shell",
@@ -2199,7 +2199,7 @@
    "tab": "반지",
    "result": "ring_40",
    "count": 1,
-   "gold": 1120,
+   "gold": 7800,
    "mats": [
     [
      "spore_silk",
@@ -2220,7 +2220,7 @@
    "tab": "펜던트",
    "result": "pendant_40",
    "count": 1,
-   "gold": 1120,
+   "gold": 7800,
    "mats": [
     [
      "witch_herb",
@@ -2642,7 +2642,7 @@
    "tab": "재료",
    "result": "bear_paw",
    "count": 1,
-   "gold": 570,
+   "gold": 1100,
    "mats": [
     [
      "bear_pelt",
@@ -2655,7 +2655,7 @@
    "tab": "재료",
    "result": "beast_core",
    "count": 1,
-   "gold": 870,
+   "gold": 2200,
    "mats": [
     [
      "beast_shell",
@@ -2668,7 +2668,7 @@
    "tab": "재료",
    "result": "boar_tusk",
    "count": 1,
-   "gold": 570,
+   "gold": 1100,
    "mats": [
     [
      "boar_bristle",
@@ -2681,7 +2681,7 @@
    "tab": "재료",
    "result": "cow_horn",
    "count": 1,
-   "gold": 340,
+   "gold": 680,
    "mats": [
     [
      "cow_hide",
@@ -2694,7 +2694,7 @@
    "tab": "재료",
    "result": "dark_eye",
    "count": 1,
-   "gold": 870,
+   "gold": 2200,
    "mats": [
     [
      "dark_silk",
@@ -2707,7 +2707,7 @@
    "tab": "재료",
    "result": "dog_fang",
    "count": 1,
-   "gold": 500,
+   "gold": 1000,
    "mats": [
     [
      "dog_fur",
@@ -2720,7 +2720,7 @@
    "tab": "재료",
    "result": "fairy_dust",
    "count": 1,
-   "gold": 720,
+   "gold": 1800,
    "mats": [
     [
      "fairy_wing",
@@ -2733,7 +2733,7 @@
    "tab": "재료",
    "result": "glow_spore",
    "count": 1,
-   "gold": 640,
+   "gold": 1600,
    "mats": [
     [
      "tiny_cap",
@@ -2746,7 +2746,7 @@
    "tab": "재료",
    "result": "golden_hoof",
    "count": 1,
-   "gold": 340,
+   "gold": 680,
    "mats": [
     [
      "pig_hide",
@@ -2759,7 +2759,7 @@
    "tab": "재료",
    "result": "odd_potion",
    "count": 1,
-   "gold": 800,
+   "gold": 2000,
    "mats": [
     [
      "witch_herb",
@@ -2772,7 +2772,7 @@
    "tab": "재료",
    "result": "rat_tooth",
    "count": 1,
-   "gold": 420,
+   "gold": 840,
    "mats": [
     [
      "rat_tail",
@@ -2785,7 +2785,7 @@
    "tab": "재료",
    "result": "royal_jelly",
    "count": 1,
-   "gold": 500,
+   "gold": 1000,
    "mats": [
     [
      "bee_sting",
@@ -2798,7 +2798,7 @@
    "tab": "재료",
    "result": "slime_core",
    "count": 1,
-   "gold": 420,
+   "gold": 840,
    "mats": [
     [
      "slime_goo",
@@ -2811,7 +2811,7 @@
    "tab": "재료",
    "result": "soldier_badge",
    "count": 1,
-   "gold": 720,
+   "gold": 1800,
    "mats": [
     [
      "toxic_cap",
@@ -2824,7 +2824,7 @@
    "tab": "재료",
    "result": "spirit_cap",
    "count": 1,
-   "gold": 640,
+   "gold": 1600,
    "mats": [
     [
      "spore_dust",
@@ -2837,7 +2837,7 @@
    "tab": "재료",
    "result": "spore_gland",
    "count": 1,
-   "gold": 800,
+   "gold": 2000,
    "mats": [
     [
      "spore_silk",
@@ -2850,7 +2850,7 @@
    "tab": "무기",
    "result": "warrior_sword_50",
    "count": 1,
-   "gold": 3700,
+   "gold": 19400,
    "mats": [
     [
      "stone_spike",
@@ -2871,7 +2871,7 @@
    "tab": "무기",
    "result": "archer_bow_50",
    "count": 1,
-   "gold": 3700,
+   "gold": 19400,
    "mats": [
     [
      "cave_silk",
@@ -2892,7 +2892,7 @@
    "tab": "무기",
    "result": "mage_staff_50",
    "count": 1,
-   "gold": 3700,
+   "gold": 19400,
    "mats": [
     [
      "bat_wing",
@@ -2913,7 +2913,7 @@
    "tab": "무기",
    "result": "thief_dagger_50",
    "count": 1,
-   "gold": 3700,
+   "gold": 19400,
    "mats": [
     [
      "venom_sac",
@@ -2934,7 +2934,7 @@
    "tab": "전사 방어구",
    "result": "warrior_hat_50",
    "count": 1,
-   "gold": 1620,
+   "gold": 8500,
    "mats": [
     [
      "stone_spike",
@@ -2955,7 +2955,7 @@
    "tab": "전사 방어구",
    "result": "warrior_top_50",
    "count": 1,
-   "gold": 2130,
+   "gold": 11200,
    "mats": [
     [
      "stone_spike",
@@ -2976,7 +2976,7 @@
    "tab": "전사 방어구",
    "result": "warrior_bottom_50",
    "count": 1,
-   "gold": 1990,
+   "gold": 10400,
    "mats": [
     [
      "stone_spike",
@@ -2997,7 +2997,7 @@
    "tab": "전사 방어구",
    "result": "warrior_shoes_50",
    "count": 1,
-   "gold": 1480,
+   "gold": 7800,
    "mats": [
     [
      "stone_spike",
@@ -3018,7 +3018,7 @@
    "tab": "궁수 방어구",
    "result": "archer_hat_50",
    "count": 1,
-   "gold": 1620,
+   "gold": 8500,
    "mats": [
     [
      "bat_wing",
@@ -3039,7 +3039,7 @@
    "tab": "궁수 방어구",
    "result": "archer_top_50",
    "count": 1,
-   "gold": 2130,
+   "gold": 11200,
    "mats": [
     [
      "bat_wing",
@@ -3060,7 +3060,7 @@
    "tab": "궁수 방어구",
    "result": "archer_bottom_50",
    "count": 1,
-   "gold": 1990,
+   "gold": 10400,
    "mats": [
     [
      "bat_wing",
@@ -3081,7 +3081,7 @@
    "tab": "궁수 방어구",
    "result": "archer_shoes_50",
    "count": 1,
-   "gold": 1480,
+   "gold": 7800,
    "mats": [
     [
      "bat_wing",
@@ -3102,7 +3102,7 @@
    "tab": "마법사 방어구",
    "result": "mage_hat_50",
    "count": 1,
-   "gold": 1620,
+   "gold": 8500,
    "mats": [
     [
      "cave_silk",
@@ -3123,7 +3123,7 @@
    "tab": "마법사 방어구",
    "result": "mage_top_50",
    "count": 1,
-   "gold": 2130,
+   "gold": 11200,
    "mats": [
     [
      "cave_silk",
@@ -3144,7 +3144,7 @@
    "tab": "마법사 방어구",
    "result": "mage_bottom_50",
    "count": 1,
-   "gold": 1990,
+   "gold": 10400,
    "mats": [
     [
      "cave_silk",
@@ -3165,7 +3165,7 @@
    "tab": "마법사 방어구",
    "result": "mage_shoes_50",
    "count": 1,
-   "gold": 1480,
+   "gold": 7800,
    "mats": [
     [
      "cave_silk",
@@ -3186,7 +3186,7 @@
    "tab": "도적 방어구",
    "result": "thief_hat_50",
    "count": 1,
-   "gold": 1620,
+   "gold": 8500,
    "mats": [
     [
      "venom_sac",
@@ -3207,7 +3207,7 @@
    "tab": "도적 방어구",
    "result": "thief_top_50",
    "count": 1,
-   "gold": 2130,
+   "gold": 11200,
    "mats": [
     [
      "venom_sac",
@@ -3228,7 +3228,7 @@
    "tab": "도적 방어구",
    "result": "thief_bottom_50",
    "count": 1,
-   "gold": 1990,
+   "gold": 10400,
    "mats": [
     [
      "venom_sac",
@@ -3249,7 +3249,7 @@
    "tab": "도적 방어구",
    "result": "thief_shoes_50",
    "count": 1,
-   "gold": 1480,
+   "gold": 7800,
    "mats": [
     [
      "venom_sac",
@@ -3270,7 +3270,7 @@
    "tab": "장갑",
    "result": "gloves_50",
    "count": 1,
-   "gold": 1570,
+   "gold": 8200,
    "mats": [
     [
      "stone_spike",
@@ -3291,7 +3291,7 @@
    "tab": "망토",
    "result": "cape_50",
    "count": 1,
-   "gold": 1570,
+   "gold": 8200,
    "mats": [
     [
      "bat_wing",
@@ -3312,7 +3312,7 @@
    "tab": "벨트",
    "result": "belt_50",
    "count": 1,
-   "gold": 1570,
+   "gold": 8200,
    "mats": [
     [
      "cave_silk",
@@ -3333,7 +3333,7 @@
    "tab": "귀걸이",
    "result": "earring_50",
    "count": 1,
-   "gold": 1570,
+   "gold": 8200,
    "mats": [
     [
      "venom_sac",
@@ -3354,7 +3354,7 @@
    "tab": "반지",
    "result": "ring_50",
    "count": 1,
-   "gold": 1570,
+   "gold": 8200,
    "mats": [
     [
      "cave_silk",
@@ -3375,7 +3375,7 @@
    "tab": "펜던트",
    "result": "pendant_50",
    "count": 1,
-   "gold": 1570,
+   "gold": 8200,
    "mats": [
     [
      "bat_wing",
@@ -3396,7 +3396,7 @@
    "tab": "무기",
    "result": "warrior_sword_60",
    "count": 1,
-   "gold": 5150,
+   "gold": 26800,
    "mats": [
     [
      "golem_shard",
@@ -3417,7 +3417,7 @@
    "tab": "무기",
    "result": "archer_bow_60",
    "count": 1,
-   "gold": 5150,
+   "gold": 26800,
    "mats": [
     [
      "miner_bone",
@@ -3438,7 +3438,7 @@
    "tab": "무기",
    "result": "mage_staff_60",
    "count": 1,
-   "gold": 5150,
+   "gold": 26800,
    "mats": [
     [
      "ore_goo",
@@ -3459,7 +3459,7 @@
    "tab": "무기",
    "result": "thief_dagger_60",
    "count": 1,
-   "gold": 5150,
+   "gold": 26800,
    "mats": [
     [
      "golem_shard",
@@ -3480,7 +3480,7 @@
    "tab": "전사 방어구",
    "result": "warrior_hat_60",
    "count": 1,
-   "gold": 2260,
+   "gold": 11800,
    "mats": [
     [
      "golem_shard",
@@ -3501,7 +3501,7 @@
    "tab": "전사 방어구",
    "result": "warrior_top_60",
    "count": 1,
-   "gold": 2960,
+   "gold": 15400,
    "mats": [
     [
      "golem_shard",
@@ -3522,7 +3522,7 @@
    "tab": "전사 방어구",
    "result": "warrior_bottom_60",
    "count": 1,
-   "gold": 2770,
+   "gold": 14400,
    "mats": [
     [
      "golem_shard",
@@ -3543,7 +3543,7 @@
    "tab": "전사 방어구",
    "result": "warrior_shoes_60",
    "count": 1,
-   "gold": 2070,
+   "gold": 10800,
    "mats": [
     [
      "golem_shard",
@@ -3564,7 +3564,7 @@
    "tab": "궁수 방어구",
    "result": "archer_hat_60",
    "count": 1,
-   "gold": 2260,
+   "gold": 11800,
    "mats": [
     [
      "ore_goo",
@@ -3585,7 +3585,7 @@
    "tab": "궁수 방어구",
    "result": "archer_top_60",
    "count": 1,
-   "gold": 2960,
+   "gold": 15400,
    "mats": [
     [
      "ore_goo",
@@ -3606,7 +3606,7 @@
    "tab": "궁수 방어구",
    "result": "archer_bottom_60",
    "count": 1,
-   "gold": 2770,
+   "gold": 14400,
    "mats": [
     [
      "ore_goo",
@@ -3627,7 +3627,7 @@
    "tab": "궁수 방어구",
    "result": "archer_shoes_60",
    "count": 1,
-   "gold": 2070,
+   "gold": 10800,
    "mats": [
     [
      "ore_goo",
@@ -3648,7 +3648,7 @@
    "tab": "마법사 방어구",
    "result": "mage_hat_60",
    "count": 1,
-   "gold": 2260,
+   "gold": 11800,
    "mats": [
     [
      "miner_bone",
@@ -3669,7 +3669,7 @@
    "tab": "마법사 방어구",
    "result": "mage_top_60",
    "count": 1,
-   "gold": 2960,
+   "gold": 15400,
    "mats": [
     [
      "miner_bone",
@@ -3690,7 +3690,7 @@
    "tab": "마법사 방어구",
    "result": "mage_bottom_60",
    "count": 1,
-   "gold": 2770,
+   "gold": 14400,
    "mats": [
     [
      "miner_bone",
@@ -3711,7 +3711,7 @@
    "tab": "마법사 방어구",
    "result": "mage_shoes_60",
    "count": 1,
-   "gold": 2070,
+   "gold": 10800,
    "mats": [
     [
      "miner_bone",
@@ -3732,7 +3732,7 @@
    "tab": "도적 방어구",
    "result": "thief_hat_60",
    "count": 1,
-   "gold": 2260,
+   "gold": 11800,
    "mats": [
     [
      "ore_goo",
@@ -3753,7 +3753,7 @@
    "tab": "도적 방어구",
    "result": "thief_top_60",
    "count": 1,
-   "gold": 2960,
+   "gold": 15400,
    "mats": [
     [
      "ore_goo",
@@ -3774,7 +3774,7 @@
    "tab": "도적 방어구",
    "result": "thief_bottom_60",
    "count": 1,
-   "gold": 2770,
+   "gold": 14400,
    "mats": [
     [
      "ore_goo",
@@ -3795,7 +3795,7 @@
    "tab": "도적 방어구",
    "result": "thief_shoes_60",
    "count": 1,
-   "gold": 2070,
+   "gold": 10800,
    "mats": [
     [
      "ore_goo",
@@ -3816,7 +3816,7 @@
    "tab": "장갑",
    "result": "gloves_60",
    "count": 1,
-   "gold": 2180,
+   "gold": 11400,
    "mats": [
     [
      "golem_shard",
@@ -3837,7 +3837,7 @@
    "tab": "망토",
    "result": "cape_60",
    "count": 1,
-   "gold": 2180,
+   "gold": 11400,
    "mats": [
     [
      "miner_bone",
@@ -3858,7 +3858,7 @@
    "tab": "벨트",
    "result": "belt_60",
    "count": 1,
-   "gold": 2180,
+   "gold": 11400,
    "mats": [
     [
      "ore_goo",
@@ -3879,7 +3879,7 @@
    "tab": "귀걸이",
    "result": "earring_60",
    "count": 1,
-   "gold": 2180,
+   "gold": 11400,
    "mats": [
     [
      "golem_shard",
@@ -3900,7 +3900,7 @@
    "tab": "반지",
    "result": "ring_60",
    "count": 1,
-   "gold": 2180,
+   "gold": 11400,
    "mats": [
     [
      "ore_goo",
@@ -3921,7 +3921,7 @@
    "tab": "펜던트",
    "result": "pendant_60",
    "count": 1,
-   "gold": 2180,
+   "gold": 11400,
    "mats": [
     [
      "miner_bone",
@@ -3942,7 +3942,7 @@
    "tab": "재료",
    "result": "cave_fang",
    "count": 1,
-   "gold": 940,
+   "gold": 2400,
    "mats": [
     [
      "cave_silk",
@@ -3955,7 +3955,7 @@
    "tab": "재료",
    "result": "echo_crystal",
    "count": 1,
-   "gold": 970,
+   "gold": 2400,
    "mats": [
     [
      "bat_wing",
@@ -3968,7 +3968,7 @@
    "tab": "재료",
    "result": "venom_crystal",
    "count": 1,
-   "gold": 1030,
+   "gold": 2600,
    "mats": [
     [
      "venom_sac",
@@ -3981,7 +3981,7 @@
    "tab": "재료",
    "result": "spike_heart",
    "count": 1,
-   "gold": 1060,
+   "gold": 2600,
    "mats": [
     [
      "stone_spike",
@@ -3994,7 +3994,7 @@
    "tab": "재료",
    "result": "ore_core",
    "count": 1,
-   "gold": 1120,
+   "gold": 2800,
    "mats": [
     [
      "ore_goo",
@@ -4007,7 +4007,7 @@
    "tab": "재료",
    "result": "miner_badge",
    "count": 1,
-   "gold": 1150,
+   "gold": 2900,
    "mats": [
     [
      "miner_bone",
@@ -4020,7 +4020,7 @@
    "tab": "재료",
    "result": "void_core",
    "count": 1,
-   "gold": 1220,
+   "gold": 3000,
    "mats": [
     [
      "golem_shard",

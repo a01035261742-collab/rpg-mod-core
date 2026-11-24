@@ -26,10 +26,12 @@ public class ShopScreen extends ScaledScreen {
     private final List<Integer> shown = new ArrayList<>();   // 지금 탭의 offers 번호
 
     private static final String[][] CATS = {{"weapon", "무기"}, {"armor", "방어구"}, {"gloves", "장갑"}, {"cape", "망토"}, {"belt", "벨트"},
-            {"earring", "귀걸이"}, {"ring", "반지"}, {"pendant", "펜던트"}, {"medal", "훈장"}, {"etc", "소모품·기타"}, {"potion", "물약"}};
+            {"earring", "귀걸이"}, {"ring", "반지"}, {"pendant", "펜던트"}, {"medal", "훈장"}, {"etc", "소모품·기타"}, {"potion", "물약"}, {"wild", "야생 재료"}};
 
     private static String cat(ItemStack s) {
-        if (s.getItem() instanceof rpg.core.item.Potion || s.getItem() instanceof rpg.core.item.BuffItem) return "potion";   // 물약 탭 (버프 물약 포함)
+        if (s.getItem() instanceof rpg.core.item.Potion || s.getItem() instanceof rpg.core.item.BuffItem) return "potion";
+        var rl = net.minecraftforge.registries.ForgeRegistries.ITEMS.getKey(s.getItem());
+        if (rl != null && rl.getNamespace().equals("minecraft")) return "wild";   // 철·구리 주괴 등 야생 재료   // 물약 탭 (버프 물약 포함)
         String slot = rpg.core.equip.Gear.slotOf(s);
         if (slot.isEmpty()) return "etc";
         if (slot.equals("hat") || slot.equals("top") || slot.equals("bottom") || slot.equals("shoes")) return "armor";
