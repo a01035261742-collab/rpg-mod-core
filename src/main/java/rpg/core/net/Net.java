@@ -150,6 +150,8 @@ public final class Net {
                 .encoder(RollCd::encode).decoder(RollCd::new).consumerMainThread(RollCd::handle).add();
         CH.messageBuilder(MapHere.class, id++, NetworkDirection.PLAY_TO_CLIENT)
                 .encoder(MapHere::encode).decoder(MapHere::new).consumerMainThread(MapHere::handle).add();
+        CH.messageBuilder(AchPop.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(AchPop::encode).decoder(AchPop::new).consumerMainThread(AchPop::handle).add();
         CH.messageBuilder(AchReq.class, id++, NetworkDirection.PLAY_TO_SERVER)
                 .encoder(AchReq::encode).decoder(AchReq::new).consumerMainThread(AchReq::handle).add();
         CH.messageBuilder(AchSync.class, id++, NetworkDirection.PLAY_TO_CLIENT)
@@ -157,6 +159,16 @@ public final class Net {
     }
 
     // ───────── 업적 창 ─────────
+    /** 서버 → 클라: 업적 달성 알림 (오른쪽 위) */
+    public record AchPop(String name, String reward, String medal) {
+        AchPop(FriendlyByteBuf b) { this(b.readUtf(), b.readUtf(), b.readUtf()); }
+        void encode(FriendlyByteBuf b) { b.writeUtf(name); b.writeUtf(reward); b.writeUtf(medal); }
+        void handle(Supplier<NetworkEvent.Context> ctx) {
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> rpg.core.client.AchToast.show(name, reward, medal));
+            ctx.get().setPacketHandled(true);
+        }
+    }
+
     /** 클라 → 서버: 업적 창 열기 */
     public record AchReq(int op) {
         AchReq(FriendlyByteBuf b) { this(b.readVarInt()); }

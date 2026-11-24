@@ -173,6 +173,7 @@ public final class Achievements {
 
     private static void grant(ServerPlayer p, Ach ac) {
         StringBuilder sb = new StringBuilder("[업적 달성] " + ac.name());
+        String pop = ac.gold() > 0 ? String.format("%,d G", ac.gold()) : "";
         if (ac.gold() > 0) {
             RpgData.get(p).gold += ac.gold();
             RpgData.sync(p);
@@ -183,10 +184,13 @@ public final class Achievements {
             if (!medal.isEmpty()) {
                 rpg.core.equip.Gear.rollPlain(medal);
                 sb.append(" · ").append(medal.getHoverName().getString());
+                pop = "훈장 획득";
                 if (!p.getInventory().add(medal)) p.drop(medal, false);
             }
         }
         p.sendSystemMessage(Component.literal(sb.toString()).withStyle(ChatFormatting.GOLD));
+        final String popText = pop;
+        rpg.core.net.Net.CH.send(net.minecraftforge.network.PacketDistributor.PLAYER.with(() -> p), new rpg.core.net.Net.AchPop(ac.name(), popText, ac.medal()));
         p.level().playSound(null, p.blockPosition(), SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundSource.PLAYERS, 0.7f, 1f);
         if (p.getServer() != null)
             p.getServer().getPlayerList().broadcastSystemMessage(Component.literal(p.getGameProfile().getName() + " 님이 업적 [" + ac.name() + "] 달성!")
