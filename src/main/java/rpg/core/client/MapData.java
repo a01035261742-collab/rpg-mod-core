@@ -26,7 +26,8 @@ public final class MapData {
     public record Bld(String label, String kind, float u, float v) {}
     public record Town(String title, String image, List<String> names, List<String> npcs, List<Bld> buildings) {}
     /** 몹·보스 정보 (약도 상세 창) */
-    public record MobInfo(String name, int lv, long exp, long gold, boolean boss, boolean raid, List<String> skills, List<String> drops, List<String> rewards, int respawn) {}
+    public record MobInfo(String name, int lv, long exp, long gold, boolean boss, boolean raid, List<String> skills, List<String> drops, List<String> rewards, int respawn,
+                          String variant, int variantLv, List<String> variantDrops) {}
     public static final Map<String, MobInfo> MOBS = new HashMap<>();
 
     public static final List<Region> REGIONS = new ArrayList<>();
@@ -84,10 +85,12 @@ public final class MapData {
                 root.getAsJsonObject("mobInfo").entrySet().forEach(e -> {
                     JsonObject m = e.getValue().getAsJsonObject();
                     List<String> drops = new ArrayList<>();
+                    JsonObject vr = m.has("variant") ? m.getAsJsonObject("variant") : null;   // 변종 몹 (드물게 나옴)
                     if (m.has("drops")) for (JsonElement de : m.getAsJsonArray("drops")) drops.add(de.getAsJsonArray().get(0).getAsString());
                     MOBS.put(e.getKey(), new MobInfo(str(m, "name"), m.get("lv").getAsInt(), m.get("exp").getAsLong(), m.get("gold").getAsLong(),
                             m.has("boss") && m.get("boss").getAsBoolean(), m.has("raid") && m.get("raid").getAsBoolean(),
-                            strs(m, "skills"), drops, strs(m, "rewards"), m.has("respawn") ? m.get("respawn").getAsInt() : 0));
+                            strs(m, "skills"), drops, strs(m, "rewards"), m.has("respawn") ? m.get("respawn").getAsInt() : 0,
+                            vr == null ? "" : str(vr, "name"), vr == null || !vr.has("lv") ? 0 : vr.get("lv").getAsInt(), vr == null ? List.of() : strs(vr, "drops")));
                 });
             }
         } catch (Exception e) {

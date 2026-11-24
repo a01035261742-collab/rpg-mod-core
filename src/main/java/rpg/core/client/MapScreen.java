@@ -212,6 +212,11 @@ public class MapScreen extends ScaledScreen {
                 yy += 3;
                 g.drawString(font, "드롭", x0 + 8, yy, Ui.GREEN, true); yy += 12;
                 for (String d : o.drops()) { g.drawString(font, "· " + Ui.cut(font, d, cw - 24), x0 + 12, yy, Ui.TXT, false); yy += 11; }
+                if (!o.variant().isEmpty()) {   // 변종: 이름·레벨 + 추가 드롭
+                    yy += 3;
+                    g.drawString(font, Ui.cut(font, "변종  " + o.variant() + "  Lv." + o.variantLv(), cw - 16), x0 + 8, yy, 0xFFE080FF, true); yy += 12;
+                    for (String d : o.variantDrops()) { g.drawString(font, "· " + Ui.cut(font, d, cw - 24), x0 + 12, yy, Ui.TXT, false); yy += 11; }
+                }
             }
         }
         if (!open.npcs().isEmpty()) {
