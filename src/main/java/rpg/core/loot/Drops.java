@@ -30,7 +30,11 @@ public final class Drops {
     private Drops() {}
 
     public record Entry(String item, double chance) {}
-    public record MobDrops(List<Entry> items, double potion, double gear, double enhance, List<Entry> uniques) {}
+    public record MobDrops(List<Entry> items, double potion, double gear, double enhance, List<Entry> uniques,
+                           List<Entry> sets, List<ZoneScroll> scrolls) {}
+
+    /** 사냥터 주문서: 종류, 등급(0=100% 1=60% 2=30% 3=10%), 비중 */
+    public record ZoneScroll(String kind, int grade, int weight) {}
 
     public static double ownerSeconds = 30;
     public static double goldChance = 100;
@@ -88,7 +92,17 @@ public final class Drops {
                     JsonArray a = x.getAsJsonArray();
                     uq.add(new Entry(a.get(0).getAsString(), a.get(1).getAsDouble()));
                 }
-                MOBS.put(e.getKey(), new MobDrops(list, d(m, "potion", -1), d(m, "gear", -1), d(m, "enhance", -1), uq));
+                List<Entry> sets = new ArrayList<>();   // 사냥터 세트 ({job} = 막타 직업)
+                if (m.has("sets")) for (var x : m.getAsJsonArray("sets")) {
+                    JsonArray a = x.getAsJsonArray();
+                    sets.add(new Entry(a.get(0).getAsString(), a.get(1).getAsDouble()));
+                }
+                List<ZoneScroll> sc = new ArrayList<>();
+                if (m.has("scrolls")) for (var x : m.getAsJsonArray("scrolls")) {
+                    JsonArray a = x.getAsJsonArray();
+                    sc.add(new ZoneScroll(a.get(0).getAsString(), a.get(1).getAsInt(), a.size() > 2 ? a.get(2).getAsInt() : 1));
+                }
+                MOBS.put(e.getKey(), new MobDrops(list, d(m, "potion", -1), d(m, "gear", -1), d(m, "enhance", -1), uq, sets, sc));
             }
             RpgCore.LOG.info("[rpgcore] 드롭표 {}종 읽음", MOBS.size());
         } catch (Exception ex) {
@@ -166,14 +180,37 @@ public final class Drops {
             for (ItemStack g : one) { Gear.roll(g); out.add(g); }
         }
 
+        // 사냥터 세트: 막타 직업 것 (초보자는 무작위 직업), 추가 옵션 없음
+        if (md != null && !md.sets().isEmpty()) {
+            String[] jobs = {"warrior", "archer", "mage", "thief"};
+            String job = d.job >= 1 && d.job <= 4 ? jobs[d.job - 1] : jobs[r.nextInt(4)];
+            for (Entry u : md.sets()) {
+                if (!hit(r, u.chance() * mul * (m.elite ? rpg.core.balance.Balance.eliteGear : 1))) continue;
+                List<ItemStack> one = new ArrayList<>();
+                add(one, u.item().replace("{job}", job));
+                for (ItemStack g : one) { Gear.rollPlain(g); out.add(g); }
+            }
+        }
+
         double ec = md != null && md.enhance() >= 0 ? md.enhance() : enhanceChance;
         if (!ENHANCE.isEmpty() && hit(r, ec * mul)) {
             String pick = weighted(ENHANCE, r);
-            if (pick.equals("scroll")) out.add(rpg.core.equip.Enhance.randomScroll(m.level, r));   // 주문서: 몹 레벨로 등급 제한
+            if (pick.equals("scroll")) out.add(md != null && !md.scrolls().isEmpty()
+                    ? zoneScroll(md.scrolls(), r)   // 사냥터 주문서 (그 사냥터에서만 나오는 종류)
+                    : rpg.core.equip.Enhance.randomScroll(m.level, r));   // 주문서: 몹 레벨로 등급 제한
             else add(out, pick);
         }
 
         for (ItemStack s : out) spawn(mob, s, killer);
+    }
+
+    private static ItemStack zoneScroll(List<ZoneScroll> list, ThreadLocalRandom r) {
+        int total = 0;
+        for (ZoneScroll z : list) total += Math.max(0, z.weight());
+        int pick = r.nextInt(Math.max(1, total));
+        for (ZoneScroll z : list) { pick -= Math.max(0, z.weight()); if (pick < 0) return rpg.core.item.Scroll.make(z.kind(), z.grade()); }
+        ZoneScroll z = list.get(0);
+        return rpg.core.item.Scroll.make(z.kind(), z.grade());
     }
 
     private static boolean hit(ThreadLocalRandom r, double pct) {

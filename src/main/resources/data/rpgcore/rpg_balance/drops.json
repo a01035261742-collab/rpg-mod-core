@@ -83,6 +83,23 @@
      "pig_snout_pendant",
      0.6
     ]
+   ],
+   "scrolls": [
+    [
+     "vit",
+     1,
+     4
+    ],
+    [
+     "str",
+     1,
+     4
+    ],
+    [
+     "dex",
+     1,
+     4
+    ]
    ]
   },
   "cow": {
@@ -100,6 +117,23 @@
     [
      "cow_horn_earring",
      0.6
+    ]
+   ],
+   "scrolls": [
+    [
+     "vit",
+     1,
+     4
+    ],
+    [
+     "str",
+     1,
+     4
+    ],
+    [
+     "dex",
+     1,
+     4
     ]
    ]
   },
@@ -119,6 +153,23 @@
      "slime_ring",
      0.6
     ]
+   ],
+   "scrolls": [
+    [
+     "vit",
+     1,
+     4
+    ],
+    [
+     "int",
+     1,
+     4
+    ],
+    [
+     "luk",
+     1,
+     4
+    ]
    ]
   },
   "rat": {
@@ -137,6 +188,23 @@
      "rat_tail_belt",
      0.6
     ]
+   ],
+   "scrolls": [
+    [
+     "vit",
+     1,
+     4
+    ],
+    [
+     "int",
+     1,
+     4
+    ],
+    [
+     "luk",
+     1,
+     4
+    ]
    ]
   },
   "wild_dog": {
@@ -150,10 +218,40 @@
      3
     ]
    ],
-   "uniques": [
+   "sets": [
     [
-     "dog_fang_earring",
-     0.6
+     "{job}_hat_s14",
+     1
+    ],
+    [
+     "{job}_top_s14",
+     1
+    ],
+    [
+     "{job}_shoes_s14",
+     1
+    ]
+   ],
+   "scrolls": [
+    [
+     "watk",
+     1,
+     4
+    ],
+    [
+     "dex",
+     1,
+     4
+    ],
+    [
+     "luk",
+     1,
+     4
+    ],
+    [
+     "vit",
+     3,
+     1
     ]
    ]
   },
@@ -168,10 +266,40 @@
      3
     ]
    ],
-   "uniques": [
+   "sets": [
     [
-     "bee_cape",
-     0.6
+     "{job}_bottom_s14",
+     1
+    ],
+    [
+     "cape_s14",
+     1
+    ],
+    [
+     "belt_s14",
+     1
+    ]
+   ],
+   "scrolls": [
+    [
+     "watk",
+     1,
+     4
+    ],
+    [
+     "dex",
+     1,
+     4
+    ],
+    [
+     "luk",
+     1,
+     4
+    ],
+    [
+     "vit",
+     3,
+     1
     ]
    ]
   },
@@ -186,10 +314,40 @@
      3
     ]
    ],
-   "uniques": [
+   "sets": [
     [
-     "tusk_gloves",
-     0.6
+     "{job}_hat_s18",
+     1
+    ],
+    [
+     "{job}_top_s18",
+     1
+    ],
+    [
+     "{job}_shoes_s18",
+     1
+    ]
+   ],
+   "scrolls": [
+    [
+     "watk",
+     1,
+     4
+    ],
+    [
+     "str",
+     1,
+     4
+    ],
+    [
+     "int",
+     1,
+     4
+    ],
+    [
+     "wmatk",
+     3,
+     1
     ]
    ]
   },
@@ -204,10 +362,40 @@
      3
     ]
    ],
-   "uniques": [
+   "sets": [
     [
-     "bear_belt",
-     0.6
+     "{job}_bottom_s18",
+     1
+    ],
+    [
+     "cape_s18",
+     1
+    ],
+    [
+     "belt_s18",
+     1
+    ]
+   ],
+   "scrolls": [
+    [
+     "watk",
+     1,
+     4
+    ],
+    [
+     "str",
+     1,
+     4
+    ],
+    [
+     "int",
+     1,
+     4
+    ],
+    [
+     "wmatk",
+     3,
+     1
     ]
    ]
   },
@@ -222,10 +410,40 @@
      3
     ]
    ],
-   "uniques": [
+   "sets": [
     [
-     "spirit_pendant",
-     0.6
+     "{job}_hat_s24",
+     1
+    ],
+    [
+     "{job}_top_s24",
+     1
+    ],
+    [
+     "{job}_shoes_s24",
+     1
+    ]
+   ],
+   "scrolls": [
+    [
+     "wmatk",
+     1,
+     4
+    ],
+    [
+     "int",
+     1,
+     4
+    ],
+    [
+     "str",
+     1,
+     4
+    ],
+    [
+     "dex",
+     3,
+     1
     ]
    ]
   },
@@ -240,10 +458,40 @@
      3
     ]
    ],
-   "uniques": [
+   "sets": [
     [
-     "mushroom_ring",
-     0.6
+     "{job}_bottom_s24",
+     1
+    ],
+    [
+     "cape_s24",
+     1
+    ],
+    [
+     "belt_s24",
+     1
+    ]
+   ],
+   "scrolls": [
+    [
+     "wmatk",
+     1,
+     4
+    ],
+    [
+     "int",
+     1,
+     4
+    ],
+    [
+     "str",
+     1,
+     4
+    ],
+    [
+     "dex",
+     3,
+     1
     ]
    ]
   },
@@ -258,10 +506,40 @@
      3
     ]
    ],
-   "uniques": [
+   "sets": [
     [
-     "soldier_gloves",
-     0.6
+     "{job}_hat_s28",
+     1
+    ],
+    [
+     "{job}_top_s28",
+     1
+    ],
+    [
+     "{job}_shoes_s28",
+     1
+    ]
+   ],
+   "scrolls": [
+    [
+     "watk",
+     1,
+     4
+    ],
+    [
+     "dex",
+     1,
+     4
+    ],
+    [
+     "luk",
+     1,
+     4
+    ],
+    [
+     "str",
+     3,
+     1
     ]
    ]
   },
@@ -276,10 +554,40 @@
      3
     ]
    ],
-   "uniques": [
+   "sets": [
     [
-     "fairy_cape",
-     0.6
+     "{job}_bottom_s28",
+     1
+    ],
+    [
+     "cape_s28",
+     1
+    ],
+    [
+     "belt_s28",
+     1
+    ]
+   ],
+   "scrolls": [
+    [
+     "watk",
+     1,
+     4
+    ],
+    [
+     "dex",
+     1,
+     4
+    ],
+    [
+     "luk",
+     1,
+     4
+    ],
+    [
+     "str",
+     3,
+     1
     ]
    ]
   },
@@ -294,10 +602,40 @@
      3
     ]
    ],
-   "uniques": [
+   "sets": [
     [
-     "gland_earring",
-     0.6
+     "{job}_hat_s34",
+     1
+    ],
+    [
+     "{job}_top_s34",
+     1
+    ],
+    [
+     "{job}_shoes_s34",
+     1
+    ]
+   ],
+   "scrolls": [
+    [
+     "wmatk",
+     1,
+     4
+    ],
+    [
+     "int",
+     1,
+     4
+    ],
+    [
+     "luk",
+     1,
+     4
+    ],
+    [
+     "watk",
+     3,
+     1
     ]
    ]
   },
@@ -312,10 +650,40 @@
      3
     ]
    ],
-   "uniques": [
+   "sets": [
     [
-     "witch_pendant",
-     0.6
+     "{job}_bottom_s34",
+     1
+    ],
+    [
+     "cape_s34",
+     1
+    ],
+    [
+     "belt_s34",
+     1
+    ]
+   ],
+   "scrolls": [
+    [
+     "wmatk",
+     1,
+     4
+    ],
+    [
+     "int",
+     1,
+     4
+    ],
+    [
+     "luk",
+     1,
+     4
+    ],
+    [
+     "watk",
+     3,
+     1
     ]
    ]
   },
@@ -330,10 +698,40 @@
      3
     ]
    ],
-   "uniques": [
+   "sets": [
     [
-     "dark_eye_ring",
-     0.6
+     "{job}_hat_s38",
+     1
+    ],
+    [
+     "{job}_top_s38",
+     1
+    ],
+    [
+     "{job}_shoes_s38",
+     1
+    ]
+   ],
+   "scrolls": [
+    [
+     "watk",
+     1,
+     4
+    ],
+    [
+     "str",
+     1,
+     4
+    ],
+    [
+     "dex",
+     1,
+     4
+    ],
+    [
+     "int",
+     3,
+     1
     ]
    ]
   },
@@ -348,10 +746,40 @@
      3
     ]
    ],
-   "uniques": [
+   "sets": [
     [
-     "beast_belt",
-     0.6
+     "{job}_bottom_s38",
+     1
+    ],
+    [
+     "cape_s38",
+     1
+    ],
+    [
+     "belt_s38",
+     1
+    ]
+   ],
+   "scrolls": [
+    [
+     "watk",
+     1,
+     4
+    ],
+    [
+     "str",
+     1,
+     4
+    ],
+    [
+     "dex",
+     1,
+     4
+    ],
+    [
+     "int",
+     3,
+     1
     ]
    ]
   },
@@ -366,10 +794,45 @@
      3
     ]
    ],
-   "uniques": [
+   "sets": [
     [
-     "cave_fang_earring",
-     0.6
+     "{job}_hat_s44",
+     1
+    ],
+    [
+     "{job}_top_s44",
+     1
+    ],
+    [
+     "{job}_shoes_s44",
+     1
+    ]
+   ],
+   "scrolls": [
+    [
+     "watk",
+     1,
+     4
+    ],
+    [
+     "dex",
+     1,
+     4
+    ],
+    [
+     "luk",
+     1,
+     4
+    ],
+    [
+     "wmatk",
+     3,
+     1
+    ],
+    [
+     "vit",
+     3,
+     1
     ]
    ]
   },
@@ -384,10 +847,45 @@
      3
     ]
    ],
-   "uniques": [
+   "sets": [
     [
-     "bat_cape",
-     0.6
+     "{job}_bottom_s44",
+     1
+    ],
+    [
+     "cape_s44",
+     1
+    ],
+    [
+     "belt_s44",
+     1
+    ]
+   ],
+   "scrolls": [
+    [
+     "watk",
+     1,
+     4
+    ],
+    [
+     "dex",
+     1,
+     4
+    ],
+    [
+     "luk",
+     1,
+     4
+    ],
+    [
+     "wmatk",
+     3,
+     1
+    ],
+    [
+     "vit",
+     3,
+     1
     ]
    ]
   },
@@ -402,10 +900,45 @@
      3
     ]
    ],
-   "uniques": [
+   "sets": [
     [
-     "venom_ring",
-     0.6
+     "{job}_hat_s48",
+     1
+    ],
+    [
+     "{job}_top_s48",
+     1
+    ],
+    [
+     "{job}_shoes_s48",
+     1
+    ]
+   ],
+   "scrolls": [
+    [
+     "wmatk",
+     1,
+     4
+    ],
+    [
+     "int",
+     1,
+     4
+    ],
+    [
+     "str",
+     1,
+     4
+    ],
+    [
+     "watk",
+     3,
+     1
+    ],
+    [
+     "luk",
+     3,
+     1
     ]
    ]
   },
@@ -420,10 +953,45 @@
      3
     ]
    ],
-   "uniques": [
+   "sets": [
     [
-     "spike_gloves",
-     0.6
+     "{job}_bottom_s48",
+     1
+    ],
+    [
+     "cape_s48",
+     1
+    ],
+    [
+     "belt_s48",
+     1
+    ]
+   ],
+   "scrolls": [
+    [
+     "wmatk",
+     1,
+     4
+    ],
+    [
+     "int",
+     1,
+     4
+    ],
+    [
+     "str",
+     1,
+     4
+    ],
+    [
+     "watk",
+     3,
+     1
+    ],
+    [
+     "luk",
+     3,
+     1
     ]
    ]
   },
@@ -438,10 +1006,45 @@
      3
     ]
    ],
-   "uniques": [
+   "sets": [
     [
-     "ore_pendant",
-     0.6
+     "{job}_hat_s54",
+     1
+    ],
+    [
+     "{job}_top_s54",
+     1
+    ],
+    [
+     "{job}_shoes_s54",
+     1
+    ]
+   ],
+   "scrolls": [
+    [
+     "watk",
+     1,
+     4
+    ],
+    [
+     "str",
+     1,
+     4
+    ],
+    [
+     "vit",
+     1,
+     4
+    ],
+    [
+     "int",
+     3,
+     1
+    ],
+    [
+     "dex",
+     3,
+     1
     ]
    ]
   },
@@ -456,10 +1059,45 @@
      3
     ]
    ],
-   "uniques": [
+   "sets": [
     [
-     "miner_belt",
-     0.6
+     "{job}_bottom_s54",
+     1
+    ],
+    [
+     "cape_s54",
+     1
+    ],
+    [
+     "belt_s54",
+     1
+    ]
+   ],
+   "scrolls": [
+    [
+     "watk",
+     1,
+     4
+    ],
+    [
+     "str",
+     1,
+     4
+    ],
+    [
+     "vit",
+     1,
+     4
+    ],
+    [
+     "int",
+     3,
+     1
+    ],
+    [
+     "dex",
+     3,
+     1
     ]
    ]
   },
@@ -474,10 +1112,567 @@
      3
     ]
    ],
-   "uniques": [
+   "sets": [
     [
-     "void_earring",
-     0.6
+     "{job}_hat_s58",
+     1
+    ],
+    [
+     "{job}_top_s58",
+     1
+    ],
+    [
+     "{job}_shoes_s58",
+     1
+    ],
+    [
+     "{job}_bottom_s58",
+     1
+    ],
+    [
+     "cape_s58",
+     1
+    ],
+    [
+     "belt_s58",
+     1
+    ]
+   ],
+   "scrolls": [
+    [
+     "watk",
+     1,
+     4
+    ],
+    [
+     "wmatk",
+     1,
+     4
+    ],
+    [
+     "str",
+     3,
+     1
+    ],
+    [
+     "dex",
+     3,
+     1
+    ],
+    [
+     "int",
+     3,
+     1
+    ],
+    [
+     "luk",
+     3,
+     1
+    ]
+   ]
+  },
+  "venom_wasp": {
+   "items": [
+    [
+     "bee_sting",
+     60
+    ],
+    [
+     "royal_jelly",
+     3
+    ]
+   ],
+   "sets": [
+    [
+     "gloves_s14",
+     4
+    ],
+    [
+     "earring_s14",
+     4
+    ],
+    [
+     "ring_s14",
+     4
+    ]
+   ],
+   "scrolls": [
+    [
+     "watk",
+     1,
+     4
+    ],
+    [
+     "dex",
+     1,
+     4
+    ],
+    [
+     "luk",
+     1,
+     4
+    ],
+    [
+     "vit",
+     3,
+     1
+    ]
+   ]
+  },
+  "black_bear": {
+   "items": [
+    [
+     "bear_pelt",
+     60
+    ],
+    [
+     "bear_paw",
+     3
+    ]
+   ],
+   "sets": [
+    [
+     "gloves_s18",
+     4
+    ],
+    [
+     "earring_s18",
+     4
+    ],
+    [
+     "ring_s18",
+     4
+    ]
+   ],
+   "scrolls": [
+    [
+     "watk",
+     1,
+     4
+    ],
+    [
+     "str",
+     1,
+     4
+    ],
+    [
+     "int",
+     1,
+     4
+    ],
+    [
+     "wmatk",
+     3,
+     1
+    ]
+   ]
+  },
+  "venom_mush_kid": {
+   "items": [
+    [
+     "tiny_cap",
+     60
+    ],
+    [
+     "glow_spore",
+     3
+    ]
+   ],
+   "sets": [
+    [
+     "gloves_s24",
+     4
+    ],
+    [
+     "earring_s24",
+     4
+    ],
+    [
+     "ring_s24",
+     4
+    ]
+   ],
+   "scrolls": [
+    [
+     "wmatk",
+     1,
+     4
+    ],
+    [
+     "int",
+     1,
+     4
+    ],
+    [
+     "str",
+     1,
+     4
+    ],
+    [
+     "dex",
+     3,
+     1
+    ]
+   ]
+  },
+  "elite_mush_soldier": {
+   "items": [
+    [
+     "toxic_cap",
+     60
+    ],
+    [
+     "soldier_badge",
+     3
+    ]
+   ],
+   "sets": [
+    [
+     "gloves_s28",
+     4
+    ],
+    [
+     "earring_s28",
+     4
+    ],
+    [
+     "ring_s28",
+     4
+    ]
+   ],
+   "scrolls": [
+    [
+     "watk",
+     1,
+     4
+    ],
+    [
+     "dex",
+     1,
+     4
+    ],
+    [
+     "luk",
+     1,
+     4
+    ],
+    [
+     "str",
+     3,
+     1
+    ]
+   ]
+  },
+  "toxic_spore_spider": {
+   "items": [
+    [
+     "spore_silk",
+     60
+    ],
+    [
+     "spore_gland",
+     3
+    ]
+   ],
+   "sets": [
+    [
+     "gloves_s34",
+     4
+    ],
+    [
+     "earring_s34",
+     4
+    ],
+    [
+     "ring_s34",
+     4
+    ]
+   ],
+   "scrolls": [
+    [
+     "wmatk",
+     1,
+     4
+    ],
+    [
+     "int",
+     1,
+     4
+    ],
+    [
+     "luk",
+     1,
+     4
+    ],
+    [
+     "watk",
+     3,
+     1
+    ]
+   ]
+  },
+  "pitch_mush_beast": {
+   "items": [
+    [
+     "beast_shell",
+     60
+    ],
+    [
+     "beast_core",
+     3
+    ]
+   ],
+   "sets": [
+    [
+     "gloves_s38",
+     4
+    ],
+    [
+     "earring_s38",
+     4
+    ],
+    [
+     "ring_s38",
+     4
+    ]
+   ],
+   "scrolls": [
+    [
+     "watk",
+     1,
+     4
+    ],
+    [
+     "str",
+     1,
+     4
+    ],
+    [
+     "dex",
+     1,
+     4
+    ],
+    [
+     "int",
+     3,
+     1
+    ]
+   ]
+  },
+  "vampire_bat": {
+   "items": [
+    [
+     "bat_wing",
+     60
+    ],
+    [
+     "echo_crystal",
+     3
+    ]
+   ],
+   "sets": [
+    [
+     "gloves_s44",
+     4
+    ],
+    [
+     "earring_s44",
+     4
+    ],
+    [
+     "ring_s44",
+     4
+    ]
+   ],
+   "scrolls": [
+    [
+     "watk",
+     1,
+     4
+    ],
+    [
+     "dex",
+     1,
+     4
+    ],
+    [
+     "luk",
+     1,
+     4
+    ],
+    [
+     "wmatk",
+     3,
+     1
+    ],
+    [
+     "vit",
+     3,
+     1
+    ]
+   ]
+  },
+  "venom_spike_spider": {
+   "items": [
+    [
+     "stone_spike",
+     60
+    ],
+    [
+     "spike_heart",
+     3
+    ]
+   ],
+   "sets": [
+    [
+     "gloves_s48",
+     4
+    ],
+    [
+     "earring_s48",
+     4
+    ],
+    [
+     "ring_s48",
+     4
+    ]
+   ],
+   "scrolls": [
+    [
+     "wmatk",
+     1,
+     4
+    ],
+    [
+     "int",
+     1,
+     4
+    ],
+    [
+     "str",
+     1,
+     4
+    ],
+    [
+     "watk",
+     3,
+     1
+    ],
+    [
+     "luk",
+     3,
+     1
+    ]
+   ]
+  },
+  "gold_ore_slime": {
+   "items": [
+    [
+     "ore_goo",
+     60
+    ],
+    [
+     "ore_core",
+     3
+    ]
+   ],
+   "sets": [
+    [
+     "gloves_s54",
+     4
+    ],
+    [
+     "earring_s54",
+     4
+    ],
+    [
+     "ring_s54",
+     4
+    ]
+   ],
+   "scrolls": [
+    [
+     "watk",
+     1,
+     4
+    ],
+    [
+     "str",
+     1,
+     4
+    ],
+    [
+     "vit",
+     1,
+     4
+    ],
+    [
+     "int",
+     3,
+     1
+    ],
+    [
+     "dex",
+     3,
+     1
+    ]
+   ]
+  },
+  "void_golem": {
+   "items": [
+    [
+     "golem_shard",
+     60
+    ],
+    [
+     "void_core",
+     3
+    ]
+   ],
+   "sets": [
+    [
+     "gloves_s58",
+     4
+    ],
+    [
+     "earring_s58",
+     4
+    ],
+    [
+     "ring_s58",
+     4
+    ]
+   ],
+   "scrolls": [
+    [
+     "watk",
+     1,
+     4
+    ],
+    [
+     "wmatk",
+     1,
+     4
+    ],
+    [
+     "str",
+     3,
+     1
+    ],
+    [
+     "dex",
+     3,
+     1
+    ],
+    [
+     "int",
+     3,
+     1
+    ],
+    [
+     "luk",
+     3,
+     1
     ]
    ]
   }
@@ -492,5 +1687,6 @@
   "eliteEternal": 2
  },
  "buffItem": 1.0,
- "_buffItem": "버프 아이템 드롭 % (상점 버프 중 무작위, 제작 전용 행운의 와인·황금 물약은 안 나옴)"
+ "_buffItem": "버프 아이템 드롭 % (상점 버프 중 무작위, 제작 전용 행운의 와인·황금 물약은 안 나옴)",
+ "_scrolls": "scrolls = [종류, 등급(1=60%·3=10%), 비중] 그 몹 주문서 드롭은 이 목록에서만 (없으면 아무거나). sets = [아이템, 확률%] 사냥터 세트 (추가 옵션 없음, {job} = 막타 직업)"
 }

@@ -42,6 +42,8 @@ public final class ZoneSpawner {
                 if (pos == null) continue;
                 String[] ms = z.mobs();
                 String key = ms[level.random.nextInt(ms.length)];
+                String[] vr = rpg.core.balance.Balance.VARIANT.get(key);   // 변종 몹 (드물게)
+                if (vr != null && level.random.nextDouble() * 100 < Double.parseDouble(vr[1])) key = vr[0];
                 Integer fixed = rpg.core.balance.Balance.FIXED_LEVEL.get(key);   // 몹 종류마다 고정 레벨
                 int lv = fixed != null ? fixed : z.level + (z.levelMax > z.level ? level.random.nextInt(z.levelMax - z.level + 1) : 0);
                 Mobs.spawn(level, key, lv, pos, z.name);

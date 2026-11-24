@@ -7,15 +7,15 @@ import java.util.Map;
 public final class ClientMobs {
     private ClientMobs() {}
 
-    public record Info(int level, double hp, double maxHp, String name, long time, float scale) {}
+    public record Info(int level, double hp, double maxHp, String name, long time, float scale, String skin, int tint) {}
 
     public static final Map<Integer, Info> MAP = new HashMap<>();
 
     /** 마지막으로 체력이 깎인 때 (머리 위 바 보이기용) */
     public static final Map<Integer, Long> HIT = new HashMap<>();
 
-    public static void update(int id, int level, double hp, double maxHp, String name, float scale) {
-        Info old = MAP.put(id, new Info(level, hp, maxHp, name, System.currentTimeMillis(), scale));
+    public static void update(int id, int level, double hp, double maxHp, String name, float scale, String skin, int tint) {
+        Info old = MAP.put(id, new Info(level, hp, maxHp, name, System.currentTimeMillis(), scale, skin, tint));
         if (old != null && hp < old.hp()) HIT.put(id, System.currentTimeMillis());
         // 엘리트면 몸통 크기 다시 계산 (WorldText.eliteSizeClient) — 엔티티는 메인 스레드에서 만짐
         if (name.startsWith("★") || old != null && old.name().startsWith("★") || scale != 1 && old == null) {

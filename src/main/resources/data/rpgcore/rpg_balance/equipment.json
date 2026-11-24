@@ -1493,20 +1493,20 @@
   "forest_lord_ring": {
    "slot": "ring",
    "job": 0,
-   "level": 20,
+   "level": 30,
    "stats": {
-    "str": 4,
-    "dex": 4,
-    "int": 4,
-    "luk": 4,
-    "atk": 2,
-    "matk": 2
+    "str": 6,
+    "dex": 6,
+    "int": 6,
+    "luk": 6,
+    "atk": 3,
+    "matk": 3
    }
   },
   "guardian_ring": {
    "slot": "ring",
    "job": 0,
-   "level": 35,
+   "level": 38,
    "stats": {
     "str": 7,
     "dex": 7,
@@ -1627,22 +1627,22 @@
   "forest_lord_belt": {
    "slot": "belt",
    "job": 0,
-   "level": 20,
+   "level": 30,
    "stats": {
-    "hp": 80,
-    "def": 5,
-    "str": 2,
-    "dex": 2,
-    "int": 2,
-    "luk": 2
+    "hp": 120,
+    "def": 7,
+    "str": 3,
+    "dex": 3,
+    "int": 3,
+    "luk": 3
    }
   },
   "guardian_pendant": {
    "slot": "pendant",
    "job": 0,
-   "level": 35,
+   "level": 38,
    "stats": {
-    "hp": 140,
+    "hp": 150,
     "mp": 100,
     "str": 4,
     "dex": 4,
@@ -1653,10 +1653,10 @@
   "guardian_cape": {
    "slot": "cape",
    "job": 0,
-   "level": 35,
+   "level": 38,
    "stats": {
     "def": 12,
-    "hp": 60,
+    "hp": 65,
     "str": 3,
     "dex": 3,
     "int": 3,
@@ -2427,6 +2427,2206 @@
     "int": 18,
     "luk": 18
    }
+  },
+  "warrior_hat_s14": {
+   "slot": "hat",
+   "job": 1,
+   "level": 14,
+   "stats": {
+    "def": 12,
+    "str": 3
+   },
+   "dropSet": "s14"
+  },
+  "warrior_top_s14": {
+   "slot": "top",
+   "job": 1,
+   "level": 14,
+   "stats": {
+    "def": 18,
+    "str": 4
+   },
+   "dropSet": "s14"
+  },
+  "warrior_bottom_s14": {
+   "slot": "bottom",
+   "job": 1,
+   "level": 14,
+   "stats": {
+    "def": 15,
+    "str": 3
+   },
+   "dropSet": "s14"
+  },
+  "warrior_shoes_s14": {
+   "slot": "shoes",
+   "job": 1,
+   "level": 14,
+   "stats": {
+    "def": 9,
+    "str": 1
+   },
+   "dropSet": "s14"
+  },
+  "archer_hat_s14": {
+   "slot": "hat",
+   "job": 2,
+   "level": 14,
+   "stats": {
+    "def": 8,
+    "dex": 3
+   },
+   "dropSet": "s14"
+  },
+  "archer_top_s14": {
+   "slot": "top",
+   "job": 2,
+   "level": 14,
+   "stats": {
+    "def": 12,
+    "dex": 4
+   },
+   "dropSet": "s14"
+  },
+  "archer_bottom_s14": {
+   "slot": "bottom",
+   "job": 2,
+   "level": 14,
+   "stats": {
+    "def": 10,
+    "dex": 3
+   },
+   "dropSet": "s14"
+  },
+  "archer_shoes_s14": {
+   "slot": "shoes",
+   "job": 2,
+   "level": 14,
+   "stats": {
+    "def": 6,
+    "dex": 1
+   },
+   "dropSet": "s14"
+  },
+  "mage_hat_s14": {
+   "slot": "hat",
+   "job": 3,
+   "level": 14,
+   "stats": {
+    "int": 3,
+    "mp": 13,
+    "def": 7
+   },
+   "dropSet": "s14"
+  },
+  "mage_top_s14": {
+   "slot": "top",
+   "job": 3,
+   "level": 14,
+   "stats": {
+    "int": 4,
+    "mp": 19,
+    "def": 9
+   },
+   "dropSet": "s14"
+  },
+  "mage_bottom_s14": {
+   "slot": "bottom",
+   "job": 3,
+   "level": 14,
+   "stats": {
+    "int": 3,
+    "mp": 13,
+    "def": 8
+   },
+   "dropSet": "s14"
+  },
+  "mage_shoes_s14": {
+   "slot": "shoes",
+   "job": 3,
+   "level": 14,
+   "stats": {
+    "int": 1,
+    "mp": 6,
+    "def": 5
+   },
+   "dropSet": "s14"
+  },
+  "thief_hat_s14": {
+   "slot": "hat",
+   "job": 4,
+   "level": 14,
+   "stats": {
+    "luk": 3,
+    "def": 8
+   },
+   "dropSet": "s14"
+  },
+  "thief_top_s14": {
+   "slot": "top",
+   "job": 4,
+   "level": 14,
+   "stats": {
+    "luk": 4,
+    "def": 12
+   },
+   "dropSet": "s14"
+  },
+  "thief_bottom_s14": {
+   "slot": "bottom",
+   "job": 4,
+   "level": 14,
+   "stats": {
+    "luk": 3,
+    "def": 10
+   },
+   "dropSet": "s14"
+  },
+  "thief_shoes_s14": {
+   "slot": "shoes",
+   "job": 4,
+   "level": 14,
+   "stats": {
+    "luk": 1,
+    "def": 6
+   },
+   "dropSet": "s14"
+  },
+  "gloves_s14": {
+   "slot": "gloves",
+   "job": 0,
+   "level": 14,
+   "stats": {
+    "atk": 1,
+    "def": 4,
+    "matk": 1
+   },
+   "dropSet": "s14"
+  },
+  "cape_s14": {
+   "slot": "cape",
+   "job": 0,
+   "level": 14,
+   "stats": {
+    "hp": 29,
+    "def": 6
+   },
+   "dropSet": "s14"
+  },
+  "belt_s14": {
+   "slot": "belt",
+   "job": 0,
+   "level": 14,
+   "stats": {
+    "hp": 46,
+    "def": 3
+   },
+   "dropSet": "s14"
+  },
+  "earring_s14": {
+   "slot": "earring",
+   "job": 0,
+   "level": 14,
+   "stats": {
+    "luk": 3,
+    "dex": 3,
+    "str": 3,
+    "int": 3
+   },
+   "dropSet": "s14"
+  },
+  "ring_s14": {
+   "slot": "ring",
+   "job": 0,
+   "level": 14,
+   "stats": {
+    "luk": 2,
+    "str": 2,
+    "dex": 2,
+    "int": 2,
+    "hp": 13
+   },
+   "dropSet": "s14"
+  },
+  "warrior_hat_s18": {
+   "slot": "hat",
+   "job": 1,
+   "level": 18,
+   "stats": {
+    "def": 14,
+    "str": 3
+   },
+   "dropSet": "s18"
+  },
+  "warrior_top_s18": {
+   "slot": "top",
+   "job": 1,
+   "level": 18,
+   "stats": {
+    "def": 21,
+    "str": 5
+   },
+   "dropSet": "s18"
+  },
+  "warrior_bottom_s18": {
+   "slot": "bottom",
+   "job": 1,
+   "level": 18,
+   "stats": {
+    "def": 18,
+    "str": 3
+   },
+   "dropSet": "s18"
+  },
+  "warrior_shoes_s18": {
+   "slot": "shoes",
+   "job": 1,
+   "level": 18,
+   "stats": {
+    "def": 11,
+    "str": 2
+   },
+   "dropSet": "s18"
+  },
+  "archer_hat_s18": {
+   "slot": "hat",
+   "job": 2,
+   "level": 18,
+   "stats": {
+    "def": 10,
+    "dex": 3
+   },
+   "dropSet": "s18"
+  },
+  "archer_top_s18": {
+   "slot": "top",
+   "job": 2,
+   "level": 18,
+   "stats": {
+    "def": 15,
+    "dex": 5
+   },
+   "dropSet": "s18"
+  },
+  "archer_bottom_s18": {
+   "slot": "bottom",
+   "job": 2,
+   "level": 18,
+   "stats": {
+    "def": 12,
+    "dex": 3
+   },
+   "dropSet": "s18"
+  },
+  "archer_shoes_s18": {
+   "slot": "shoes",
+   "job": 2,
+   "level": 18,
+   "stats": {
+    "def": 8,
+    "dex": 2
+   },
+   "dropSet": "s18"
+  },
+  "mage_hat_s18": {
+   "slot": "hat",
+   "job": 3,
+   "level": 18,
+   "stats": {
+    "int": 3,
+    "mp": 17,
+    "def": 8
+   },
+   "dropSet": "s18"
+  },
+  "mage_top_s18": {
+   "slot": "top",
+   "job": 3,
+   "level": 18,
+   "stats": {
+    "int": 5,
+    "mp": 25,
+    "def": 11
+   },
+   "dropSet": "s18"
+  },
+  "mage_bottom_s18": {
+   "slot": "bottom",
+   "job": 3,
+   "level": 18,
+   "stats": {
+    "int": 3,
+    "mp": 17,
+    "def": 9
+   },
+   "dropSet": "s18"
+  },
+  "mage_shoes_s18": {
+   "slot": "shoes",
+   "job": 3,
+   "level": 18,
+   "stats": {
+    "int": 2,
+    "mp": 8,
+    "def": 6
+   },
+   "dropSet": "s18"
+  },
+  "thief_hat_s18": {
+   "slot": "hat",
+   "job": 4,
+   "level": 18,
+   "stats": {
+    "luk": 3,
+    "def": 10
+   },
+   "dropSet": "s18"
+  },
+  "thief_top_s18": {
+   "slot": "top",
+   "job": 4,
+   "level": 18,
+   "stats": {
+    "luk": 5,
+    "def": 15
+   },
+   "dropSet": "s18"
+  },
+  "thief_bottom_s18": {
+   "slot": "bottom",
+   "job": 4,
+   "level": 18,
+   "stats": {
+    "luk": 3,
+    "def": 12
+   },
+   "dropSet": "s18"
+  },
+  "thief_shoes_s18": {
+   "slot": "shoes",
+   "job": 4,
+   "level": 18,
+   "stats": {
+    "luk": 2,
+    "def": 8
+   },
+   "dropSet": "s18"
+  },
+  "gloves_s18": {
+   "slot": "gloves",
+   "job": 0,
+   "level": 18,
+   "stats": {
+    "atk": 2,
+    "def": 5,
+    "matk": 2
+   },
+   "dropSet": "s18"
+  },
+  "cape_s18": {
+   "slot": "cape",
+   "job": 0,
+   "level": 18,
+   "stats": {
+    "hp": 34,
+    "def": 7
+   },
+   "dropSet": "s18"
+  },
+  "belt_s18": {
+   "slot": "belt",
+   "job": 0,
+   "level": 18,
+   "stats": {
+    "hp": 55,
+    "def": 3
+   },
+   "dropSet": "s18"
+  },
+  "earring_s18": {
+   "slot": "earring",
+   "job": 0,
+   "level": 18,
+   "stats": {
+    "luk": 4,
+    "dex": 4,
+    "str": 4,
+    "int": 4
+   },
+   "dropSet": "s18"
+  },
+  "ring_s18": {
+   "slot": "ring",
+   "job": 0,
+   "level": 18,
+   "stats": {
+    "luk": 3,
+    "str": 3,
+    "dex": 3,
+    "int": 3,
+    "hp": 17
+   },
+   "dropSet": "s18"
+  },
+  "warrior_hat_s24": {
+   "slot": "hat",
+   "job": 1,
+   "level": 24,
+   "stats": {
+    "def": 18,
+    "str": 4
+   },
+   "dropSet": "s24"
+  },
+  "warrior_top_s24": {
+   "slot": "top",
+   "job": 1,
+   "level": 24,
+   "stats": {
+    "def": 26,
+    "str": 7
+   },
+   "dropSet": "s24"
+  },
+  "warrior_bottom_s24": {
+   "slot": "bottom",
+   "job": 1,
+   "level": 24,
+   "stats": {
+    "def": 22,
+    "str": 4
+   },
+   "dropSet": "s24"
+  },
+  "warrior_shoes_s24": {
+   "slot": "shoes",
+   "job": 1,
+   "level": 24,
+   "stats": {
+    "def": 14,
+    "str": 2
+   },
+   "dropSet": "s24"
+  },
+  "archer_hat_s24": {
+   "slot": "hat",
+   "job": 2,
+   "level": 24,
+   "stats": {
+    "def": 13,
+    "dex": 4
+   },
+   "dropSet": "s24"
+  },
+  "archer_top_s24": {
+   "slot": "top",
+   "job": 2,
+   "level": 24,
+   "stats": {
+    "def": 18,
+    "dex": 7
+   },
+   "dropSet": "s24"
+  },
+  "archer_bottom_s24": {
+   "slot": "bottom",
+   "job": 2,
+   "level": 24,
+   "stats": {
+    "def": 15,
+    "dex": 4
+   },
+   "dropSet": "s24"
+  },
+  "archer_shoes_s24": {
+   "slot": "shoes",
+   "job": 2,
+   "level": 24,
+   "stats": {
+    "def": 10,
+    "dex": 2
+   },
+   "dropSet": "s24"
+  },
+  "mage_hat_s24": {
+   "slot": "hat",
+   "job": 3,
+   "level": 24,
+   "stats": {
+    "int": 4,
+    "mp": 22,
+    "def": 10
+   },
+   "dropSet": "s24"
+  },
+  "mage_top_s24": {
+   "slot": "top",
+   "job": 3,
+   "level": 24,
+   "stats": {
+    "int": 7,
+    "mp": 33,
+    "def": 14
+   },
+   "dropSet": "s24"
+  },
+  "mage_bottom_s24": {
+   "slot": "bottom",
+   "job": 3,
+   "level": 24,
+   "stats": {
+    "int": 4,
+    "mp": 22,
+    "def": 12
+   },
+   "dropSet": "s24"
+  },
+  "mage_shoes_s24": {
+   "slot": "shoes",
+   "job": 3,
+   "level": 24,
+   "stats": {
+    "int": 2,
+    "mp": 11,
+    "def": 8
+   },
+   "dropSet": "s24"
+  },
+  "thief_hat_s24": {
+   "slot": "hat",
+   "job": 4,
+   "level": 24,
+   "stats": {
+    "luk": 4,
+    "def": 13
+   },
+   "dropSet": "s24"
+  },
+  "thief_top_s24": {
+   "slot": "top",
+   "job": 4,
+   "level": 24,
+   "stats": {
+    "luk": 7,
+    "def": 18
+   },
+   "dropSet": "s24"
+  },
+  "thief_bottom_s24": {
+   "slot": "bottom",
+   "job": 4,
+   "level": 24,
+   "stats": {
+    "luk": 4,
+    "def": 15
+   },
+   "dropSet": "s24"
+  },
+  "thief_shoes_s24": {
+   "slot": "shoes",
+   "job": 4,
+   "level": 24,
+   "stats": {
+    "luk": 2,
+    "def": 10
+   },
+   "dropSet": "s24"
+  },
+  "gloves_s24": {
+   "slot": "gloves",
+   "job": 0,
+   "level": 24,
+   "stats": {
+    "atk": 2,
+    "def": 6,
+    "matk": 2
+   },
+   "dropSet": "s24"
+  },
+  "cape_s24": {
+   "slot": "cape",
+   "job": 0,
+   "level": 24,
+   "stats": {
+    "hp": 42,
+    "def": 8
+   },
+   "dropSet": "s24"
+  },
+  "belt_s24": {
+   "slot": "belt",
+   "job": 0,
+   "level": 24,
+   "stats": {
+    "hp": 69,
+    "def": 4
+   },
+   "dropSet": "s24"
+  },
+  "earring_s24": {
+   "slot": "earring",
+   "job": 0,
+   "level": 24,
+   "stats": {
+    "luk": 5,
+    "dex": 5,
+    "str": 5,
+    "int": 5
+   },
+   "dropSet": "s24"
+  },
+  "ring_s24": {
+   "slot": "ring",
+   "job": 0,
+   "level": 24,
+   "stats": {
+    "luk": 3,
+    "str": 3,
+    "dex": 3,
+    "int": 3,
+    "hp": 22
+   },
+   "dropSet": "s24"
+  },
+  "warrior_hat_s28": {
+   "slot": "hat",
+   "job": 1,
+   "level": 28,
+   "stats": {
+    "def": 20,
+    "str": 5
+   },
+   "dropSet": "s28"
+  },
+  "warrior_top_s28": {
+   "slot": "top",
+   "job": 1,
+   "level": 28,
+   "stats": {
+    "def": 30,
+    "str": 8
+   },
+   "dropSet": "s28"
+  },
+  "warrior_bottom_s28": {
+   "slot": "bottom",
+   "job": 1,
+   "level": 28,
+   "stats": {
+    "def": 25,
+    "str": 5
+   },
+   "dropSet": "s28"
+  },
+  "warrior_shoes_s28": {
+   "slot": "shoes",
+   "job": 1,
+   "level": 28,
+   "stats": {
+    "def": 16,
+    "str": 3
+   },
+   "dropSet": "s28"
+  },
+  "archer_hat_s28": {
+   "slot": "hat",
+   "job": 2,
+   "level": 28,
+   "stats": {
+    "def": 14,
+    "dex": 5
+   },
+   "dropSet": "s28"
+  },
+  "archer_top_s28": {
+   "slot": "top",
+   "job": 2,
+   "level": 28,
+   "stats": {
+    "def": 20,
+    "dex": 8
+   },
+   "dropSet": "s28"
+  },
+  "archer_bottom_s28": {
+   "slot": "bottom",
+   "job": 2,
+   "level": 28,
+   "stats": {
+    "def": 17,
+    "dex": 5
+   },
+   "dropSet": "s28"
+  },
+  "archer_shoes_s28": {
+   "slot": "shoes",
+   "job": 2,
+   "level": 28,
+   "stats": {
+    "def": 11,
+    "dex": 3
+   },
+   "dropSet": "s28"
+  },
+  "mage_hat_s28": {
+   "slot": "hat",
+   "job": 3,
+   "level": 28,
+   "stats": {
+    "int": 5,
+    "mp": 26,
+    "def": 11
+   },
+   "dropSet": "s28"
+  },
+  "mage_top_s28": {
+   "slot": "top",
+   "job": 3,
+   "level": 28,
+   "stats": {
+    "int": 8,
+    "mp": 39,
+    "def": 16
+   },
+   "dropSet": "s28"
+  },
+  "mage_bottom_s28": {
+   "slot": "bottom",
+   "job": 3,
+   "level": 28,
+   "stats": {
+    "int": 5,
+    "mp": 26,
+    "def": 13
+   },
+   "dropSet": "s28"
+  },
+  "mage_shoes_s28": {
+   "slot": "shoes",
+   "job": 3,
+   "level": 28,
+   "stats": {
+    "int": 3,
+    "mp": 13,
+    "def": 9
+   },
+   "dropSet": "s28"
+  },
+  "thief_hat_s28": {
+   "slot": "hat",
+   "job": 4,
+   "level": 28,
+   "stats": {
+    "luk": 5,
+    "def": 14
+   },
+   "dropSet": "s28"
+  },
+  "thief_top_s28": {
+   "slot": "top",
+   "job": 4,
+   "level": 28,
+   "stats": {
+    "luk": 8,
+    "def": 20
+   },
+   "dropSet": "s28"
+  },
+  "thief_bottom_s28": {
+   "slot": "bottom",
+   "job": 4,
+   "level": 28,
+   "stats": {
+    "luk": 5,
+    "def": 17
+   },
+   "dropSet": "s28"
+  },
+  "thief_shoes_s28": {
+   "slot": "shoes",
+   "job": 4,
+   "level": 28,
+   "stats": {
+    "luk": 3,
+    "def": 11
+   },
+   "dropSet": "s28"
+  },
+  "gloves_s28": {
+   "slot": "gloves",
+   "job": 0,
+   "level": 28,
+   "stats": {
+    "atk": 3,
+    "def": 7,
+    "matk": 3
+   },
+   "dropSet": "s28"
+  },
+  "cape_s28": {
+   "slot": "cape",
+   "job": 0,
+   "level": 28,
+   "stats": {
+    "hp": 48,
+    "def": 10
+   },
+   "dropSet": "s28"
+  },
+  "belt_s28": {
+   "slot": "belt",
+   "job": 0,
+   "level": 28,
+   "stats": {
+    "hp": 78,
+    "def": 5
+   },
+   "dropSet": "s28"
+  },
+  "earring_s28": {
+   "slot": "earring",
+   "job": 0,
+   "level": 28,
+   "stats": {
+    "luk": 6,
+    "dex": 6,
+    "str": 6,
+    "int": 6
+   },
+   "dropSet": "s28"
+  },
+  "ring_s28": {
+   "slot": "ring",
+   "job": 0,
+   "level": 28,
+   "stats": {
+    "luk": 3,
+    "str": 3,
+    "dex": 3,
+    "int": 3,
+    "hp": 26
+   },
+   "dropSet": "s28"
+  },
+  "warrior_hat_s34": {
+   "slot": "hat",
+   "job": 1,
+   "level": 34,
+   "stats": {
+    "def": 24,
+    "str": 6
+   },
+   "dropSet": "s34"
+  },
+  "warrior_top_s34": {
+   "slot": "top",
+   "job": 1,
+   "level": 34,
+   "stats": {
+    "def": 35,
+    "str": 9
+   },
+   "dropSet": "s34"
+  },
+  "warrior_bottom_s34": {
+   "slot": "bottom",
+   "job": 1,
+   "level": 34,
+   "stats": {
+    "def": 29,
+    "str": 6
+   },
+   "dropSet": "s34"
+  },
+  "warrior_shoes_s34": {
+   "slot": "shoes",
+   "job": 1,
+   "level": 34,
+   "stats": {
+    "def": 18,
+    "str": 3
+   },
+   "dropSet": "s34"
+  },
+  "archer_hat_s34": {
+   "slot": "hat",
+   "job": 2,
+   "level": 34,
+   "stats": {
+    "def": 17,
+    "dex": 6
+   },
+   "dropSet": "s34"
+  },
+  "archer_top_s34": {
+   "slot": "top",
+   "job": 2,
+   "level": 34,
+   "stats": {
+    "def": 24,
+    "dex": 9
+   },
+   "dropSet": "s34"
+  },
+  "archer_bottom_s34": {
+   "slot": "bottom",
+   "job": 2,
+   "level": 34,
+   "stats": {
+    "def": 20,
+    "dex": 6
+   },
+   "dropSet": "s34"
+  },
+  "archer_shoes_s34": {
+   "slot": "shoes",
+   "job": 2,
+   "level": 34,
+   "stats": {
+    "def": 13,
+    "dex": 3
+   },
+   "dropSet": "s34"
+  },
+  "mage_hat_s34": {
+   "slot": "hat",
+   "job": 3,
+   "level": 34,
+   "stats": {
+    "int": 6,
+    "mp": 31,
+    "def": 13
+   },
+   "dropSet": "s34"
+  },
+  "mage_top_s34": {
+   "slot": "top",
+   "job": 3,
+   "level": 34,
+   "stats": {
+    "int": 9,
+    "mp": 47,
+    "def": 18
+   },
+   "dropSet": "s34"
+  },
+  "mage_bottom_s34": {
+   "slot": "bottom",
+   "job": 3,
+   "level": 34,
+   "stats": {
+    "int": 6,
+    "mp": 31,
+    "def": 16
+   },
+   "dropSet": "s34"
+  },
+  "mage_shoes_s34": {
+   "slot": "shoes",
+   "job": 3,
+   "level": 34,
+   "stats": {
+    "int": 3,
+    "mp": 16,
+    "def": 10
+   },
+   "dropSet": "s34"
+  },
+  "thief_hat_s34": {
+   "slot": "hat",
+   "job": 4,
+   "level": 34,
+   "stats": {
+    "luk": 6,
+    "def": 17
+   },
+   "dropSet": "s34"
+  },
+  "thief_top_s34": {
+   "slot": "top",
+   "job": 4,
+   "level": 34,
+   "stats": {
+    "luk": 9,
+    "def": 24
+   },
+   "dropSet": "s34"
+  },
+  "thief_bottom_s34": {
+   "slot": "bottom",
+   "job": 4,
+   "level": 34,
+   "stats": {
+    "luk": 6,
+    "def": 20
+   },
+   "dropSet": "s34"
+  },
+  "thief_shoes_s34": {
+   "slot": "shoes",
+   "job": 4,
+   "level": 34,
+   "stats": {
+    "luk": 3,
+    "def": 13
+   },
+   "dropSet": "s34"
+  },
+  "gloves_s34": {
+   "slot": "gloves",
+   "job": 0,
+   "level": 34,
+   "stats": {
+    "atk": 3,
+    "def": 8,
+    "matk": 3
+   },
+   "dropSet": "s34"
+  },
+  "cape_s34": {
+   "slot": "cape",
+   "job": 0,
+   "level": 34,
+   "stats": {
+    "hp": 56,
+    "def": 11
+   },
+   "dropSet": "s34"
+  },
+  "belt_s34": {
+   "slot": "belt",
+   "job": 0,
+   "level": 34,
+   "stats": {
+    "hp": 92,
+    "def": 6
+   },
+   "dropSet": "s34"
+  },
+  "earring_s34": {
+   "slot": "earring",
+   "job": 0,
+   "level": 34,
+   "stats": {
+    "luk": 7,
+    "dex": 7,
+    "str": 7,
+    "int": 7
+   },
+   "dropSet": "s34"
+  },
+  "ring_s34": {
+   "slot": "ring",
+   "job": 0,
+   "level": 34,
+   "stats": {
+    "luk": 4,
+    "str": 4,
+    "dex": 4,
+    "int": 4,
+    "hp": 31
+   },
+   "dropSet": "s34"
+  },
+  "warrior_hat_s38": {
+   "slot": "hat",
+   "job": 1,
+   "level": 38,
+   "stats": {
+    "def": 26,
+    "str": 7
+   },
+   "dropSet": "s38"
+  },
+  "warrior_top_s38": {
+   "slot": "top",
+   "job": 1,
+   "level": 38,
+   "stats": {
+    "def": 38,
+    "str": 10
+   },
+   "dropSet": "s38"
+  },
+  "warrior_bottom_s38": {
+   "slot": "bottom",
+   "job": 1,
+   "level": 38,
+   "stats": {
+    "def": 32,
+    "str": 7
+   },
+   "dropSet": "s38"
+  },
+  "warrior_shoes_s38": {
+   "slot": "shoes",
+   "job": 1,
+   "level": 38,
+   "stats": {
+    "def": 20,
+    "str": 3
+   },
+   "dropSet": "s38"
+  },
+  "archer_hat_s38": {
+   "slot": "hat",
+   "job": 2,
+   "level": 38,
+   "stats": {
+    "def": 18,
+    "dex": 7
+   },
+   "dropSet": "s38"
+  },
+  "archer_top_s38": {
+   "slot": "top",
+   "job": 2,
+   "level": 38,
+   "stats": {
+    "def": 26,
+    "dex": 10
+   },
+   "dropSet": "s38"
+  },
+  "archer_bottom_s38": {
+   "slot": "bottom",
+   "job": 2,
+   "level": 38,
+   "stats": {
+    "def": 22,
+    "dex": 7
+   },
+   "dropSet": "s38"
+  },
+  "archer_shoes_s38": {
+   "slot": "shoes",
+   "job": 2,
+   "level": 38,
+   "stats": {
+    "def": 14,
+    "dex": 3
+   },
+   "dropSet": "s38"
+  },
+  "mage_hat_s38": {
+   "slot": "hat",
+   "job": 3,
+   "level": 38,
+   "stats": {
+    "int": 7,
+    "mp": 35,
+    "def": 14
+   },
+   "dropSet": "s38"
+  },
+  "mage_top_s38": {
+   "slot": "top",
+   "job": 3,
+   "level": 38,
+   "stats": {
+    "int": 10,
+    "mp": 52,
+    "def": 20
+   },
+   "dropSet": "s38"
+  },
+  "mage_bottom_s38": {
+   "slot": "bottom",
+   "job": 3,
+   "level": 38,
+   "stats": {
+    "int": 7,
+    "mp": 35,
+    "def": 17
+   },
+   "dropSet": "s38"
+  },
+  "mage_shoes_s38": {
+   "slot": "shoes",
+   "job": 3,
+   "level": 38,
+   "stats": {
+    "int": 3,
+    "mp": 17,
+    "def": 11
+   },
+   "dropSet": "s38"
+  },
+  "thief_hat_s38": {
+   "slot": "hat",
+   "job": 4,
+   "level": 38,
+   "stats": {
+    "luk": 7,
+    "def": 18
+   },
+   "dropSet": "s38"
+  },
+  "thief_top_s38": {
+   "slot": "top",
+   "job": 4,
+   "level": 38,
+   "stats": {
+    "luk": 10,
+    "def": 26
+   },
+   "dropSet": "s38"
+  },
+  "thief_bottom_s38": {
+   "slot": "bottom",
+   "job": 4,
+   "level": 38,
+   "stats": {
+    "luk": 7,
+    "def": 22
+   },
+   "dropSet": "s38"
+  },
+  "thief_shoes_s38": {
+   "slot": "shoes",
+   "job": 4,
+   "level": 38,
+   "stats": {
+    "luk": 3,
+    "def": 14
+   },
+   "dropSet": "s38"
+  },
+  "gloves_s38": {
+   "slot": "gloves",
+   "job": 0,
+   "level": 38,
+   "stats": {
+    "atk": 3,
+    "def": 9,
+    "matk": 3
+   },
+   "dropSet": "s38"
+  },
+  "cape_s38": {
+   "slot": "cape",
+   "job": 0,
+   "level": 38,
+   "stats": {
+    "hp": 62,
+    "def": 12
+   },
+   "dropSet": "s38"
+  },
+  "belt_s38": {
+   "slot": "belt",
+   "job": 0,
+   "level": 38,
+   "stats": {
+    "hp": 101,
+    "def": 7
+   },
+   "dropSet": "s38"
+  },
+  "earring_s38": {
+   "slot": "earring",
+   "job": 0,
+   "level": 38,
+   "stats": {
+    "luk": 8,
+    "dex": 8,
+    "str": 8,
+    "int": 8
+   },
+   "dropSet": "s38"
+  },
+  "ring_s38": {
+   "slot": "ring",
+   "job": 0,
+   "level": 38,
+   "stats": {
+    "luk": 4,
+    "str": 4,
+    "dex": 4,
+    "int": 4,
+    "hp": 35
+   },
+   "dropSet": "s38"
+  },
+  "warrior_hat_s44": {
+   "slot": "hat",
+   "job": 1,
+   "level": 44,
+   "stats": {
+    "def": 30,
+    "str": 8
+   },
+   "dropSet": "s44"
+  },
+  "warrior_top_s44": {
+   "slot": "top",
+   "job": 1,
+   "level": 44,
+   "stats": {
+    "def": 43,
+    "str": 12
+   },
+   "dropSet": "s44"
+  },
+  "warrior_bottom_s44": {
+   "slot": "bottom",
+   "job": 1,
+   "level": 44,
+   "stats": {
+    "def": 36,
+    "str": 8
+   },
+   "dropSet": "s44"
+  },
+  "warrior_shoes_s44": {
+   "slot": "shoes",
+   "job": 1,
+   "level": 44,
+   "stats": {
+    "def": 23,
+    "str": 4
+   },
+   "dropSet": "s44"
+  },
+  "archer_hat_s44": {
+   "slot": "hat",
+   "job": 2,
+   "level": 44,
+   "stats": {
+    "def": 21,
+    "dex": 8
+   },
+   "dropSet": "s44"
+  },
+  "archer_top_s44": {
+   "slot": "top",
+   "job": 2,
+   "level": 44,
+   "stats": {
+    "def": 30,
+    "dex": 12
+   },
+   "dropSet": "s44"
+  },
+  "archer_bottom_s44": {
+   "slot": "bottom",
+   "job": 2,
+   "level": 44,
+   "stats": {
+    "def": 25,
+    "dex": 8
+   },
+   "dropSet": "s44"
+  },
+  "archer_shoes_s44": {
+   "slot": "shoes",
+   "job": 2,
+   "level": 44,
+   "stats": {
+    "def": 16,
+    "dex": 4
+   },
+   "dropSet": "s44"
+  },
+  "mage_hat_s44": {
+   "slot": "hat",
+   "job": 3,
+   "level": 44,
+   "stats": {
+    "int": 8,
+    "mp": 40,
+    "def": 16
+   },
+   "dropSet": "s44"
+  },
+  "mage_top_s44": {
+   "slot": "top",
+   "job": 3,
+   "level": 44,
+   "stats": {
+    "int": 12,
+    "mp": 61,
+    "def": 23
+   },
+   "dropSet": "s44"
+  },
+  "mage_bottom_s44": {
+   "slot": "bottom",
+   "job": 3,
+   "level": 44,
+   "stats": {
+    "int": 8,
+    "mp": 40,
+    "def": 20
+   },
+   "dropSet": "s44"
+  },
+  "mage_shoes_s44": {
+   "slot": "shoes",
+   "job": 3,
+   "level": 44,
+   "stats": {
+    "int": 4,
+    "mp": 20,
+    "def": 13
+   },
+   "dropSet": "s44"
+  },
+  "thief_hat_s44": {
+   "slot": "hat",
+   "job": 4,
+   "level": 44,
+   "stats": {
+    "luk": 8,
+    "def": 21
+   },
+   "dropSet": "s44"
+  },
+  "thief_top_s44": {
+   "slot": "top",
+   "job": 4,
+   "level": 44,
+   "stats": {
+    "luk": 12,
+    "def": 30
+   },
+   "dropSet": "s44"
+  },
+  "thief_bottom_s44": {
+   "slot": "bottom",
+   "job": 4,
+   "level": 44,
+   "stats": {
+    "luk": 8,
+    "def": 25
+   },
+   "dropSet": "s44"
+  },
+  "thief_shoes_s44": {
+   "slot": "shoes",
+   "job": 4,
+   "level": 44,
+   "stats": {
+    "luk": 4,
+    "def": 16
+   },
+   "dropSet": "s44"
+  },
+  "gloves_s44": {
+   "slot": "gloves",
+   "job": 0,
+   "level": 44,
+   "stats": {
+    "atk": 4,
+    "def": 10,
+    "matk": 4
+   },
+   "dropSet": "s44"
+  },
+  "cape_s44": {
+   "slot": "cape",
+   "job": 0,
+   "level": 44,
+   "stats": {
+    "hp": 70,
+    "def": 14
+   },
+   "dropSet": "s44"
+  },
+  "belt_s44": {
+   "slot": "belt",
+   "job": 0,
+   "level": 44,
+   "stats": {
+    "hp": 115,
+    "def": 8
+   },
+   "dropSet": "s44"
+  },
+  "earring_s44": {
+   "slot": "earring",
+   "job": 0,
+   "level": 44,
+   "stats": {
+    "luk": 9,
+    "dex": 9,
+    "str": 9,
+    "int": 9
+   },
+   "dropSet": "s44"
+  },
+  "ring_s44": {
+   "slot": "ring",
+   "job": 0,
+   "level": 44,
+   "stats": {
+    "luk": 5,
+    "str": 5,
+    "dex": 5,
+    "int": 5,
+    "hp": 40
+   },
+   "dropSet": "s44"
+  },
+  "warrior_hat_s48": {
+   "slot": "hat",
+   "job": 1,
+   "level": 48,
+   "stats": {
+    "def": 33,
+    "str": 9
+   },
+   "dropSet": "s48"
+  },
+  "warrior_top_s48": {
+   "slot": "top",
+   "job": 1,
+   "level": 48,
+   "stats": {
+    "def": 46,
+    "str": 13
+   },
+   "dropSet": "s48"
+  },
+  "warrior_bottom_s48": {
+   "slot": "bottom",
+   "job": 1,
+   "level": 48,
+   "stats": {
+    "def": 38,
+    "str": 9
+   },
+   "dropSet": "s48"
+  },
+  "warrior_shoes_s48": {
+   "slot": "shoes",
+   "job": 1,
+   "level": 48,
+   "stats": {
+    "def": 25,
+    "str": 4
+   },
+   "dropSet": "s48"
+  },
+  "archer_hat_s48": {
+   "slot": "hat",
+   "job": 2,
+   "level": 48,
+   "stats": {
+    "def": 23,
+    "dex": 9
+   },
+   "dropSet": "s48"
+  },
+  "archer_top_s48": {
+   "slot": "top",
+   "job": 2,
+   "level": 48,
+   "stats": {
+    "def": 33,
+    "dex": 13
+   },
+   "dropSet": "s48"
+  },
+  "archer_bottom_s48": {
+   "slot": "bottom",
+   "job": 2,
+   "level": 48,
+   "stats": {
+    "def": 27,
+    "dex": 9
+   },
+   "dropSet": "s48"
+  },
+  "archer_shoes_s48": {
+   "slot": "shoes",
+   "job": 2,
+   "level": 48,
+   "stats": {
+    "def": 17,
+    "dex": 4
+   },
+   "dropSet": "s48"
+  },
+  "mage_hat_s48": {
+   "slot": "hat",
+   "job": 3,
+   "level": 48,
+   "stats": {
+    "int": 9,
+    "mp": 44,
+    "def": 17
+   },
+   "dropSet": "s48"
+  },
+  "mage_top_s48": {
+   "slot": "top",
+   "job": 3,
+   "level": 48,
+   "stats": {
+    "int": 13,
+    "mp": 66,
+    "def": 25
+   },
+   "dropSet": "s48"
+  },
+  "mage_bottom_s48": {
+   "slot": "bottom",
+   "job": 3,
+   "level": 48,
+   "stats": {
+    "int": 9,
+    "mp": 44,
+    "def": 22
+   },
+   "dropSet": "s48"
+  },
+  "mage_shoes_s48": {
+   "slot": "shoes",
+   "job": 3,
+   "level": 48,
+   "stats": {
+    "int": 4,
+    "mp": 22,
+    "def": 14
+   },
+   "dropSet": "s48"
+  },
+  "thief_hat_s48": {
+   "slot": "hat",
+   "job": 4,
+   "level": 48,
+   "stats": {
+    "luk": 9,
+    "def": 23
+   },
+   "dropSet": "s48"
+  },
+  "thief_top_s48": {
+   "slot": "top",
+   "job": 4,
+   "level": 48,
+   "stats": {
+    "luk": 13,
+    "def": 33
+   },
+   "dropSet": "s48"
+  },
+  "thief_bottom_s48": {
+   "slot": "bottom",
+   "job": 4,
+   "level": 48,
+   "stats": {
+    "luk": 9,
+    "def": 27
+   },
+   "dropSet": "s48"
+  },
+  "thief_shoes_s48": {
+   "slot": "shoes",
+   "job": 4,
+   "level": 48,
+   "stats": {
+    "luk": 4,
+    "def": 17
+   },
+   "dropSet": "s48"
+  },
+  "gloves_s48": {
+   "slot": "gloves",
+   "job": 0,
+   "level": 48,
+   "stats": {
+    "atk": 4,
+    "def": 11,
+    "matk": 4
+   },
+   "dropSet": "s48"
+  },
+  "cape_s48": {
+   "slot": "cape",
+   "job": 0,
+   "level": 48,
+   "stats": {
+    "hp": 75,
+    "def": 15
+   },
+   "dropSet": "s48"
+  },
+  "belt_s48": {
+   "slot": "belt",
+   "job": 0,
+   "level": 48,
+   "stats": {
+    "hp": 124,
+    "def": 9
+   },
+   "dropSet": "s48"
+  },
+  "earring_s48": {
+   "slot": "earring",
+   "job": 0,
+   "level": 48,
+   "stats": {
+    "luk": 10,
+    "dex": 10,
+    "str": 10,
+    "int": 10
+   },
+   "dropSet": "s48"
+  },
+  "ring_s48": {
+   "slot": "ring",
+   "job": 0,
+   "level": 48,
+   "stats": {
+    "luk": 5,
+    "str": 5,
+    "dex": 5,
+    "int": 5,
+    "hp": 44
+   },
+   "dropSet": "s48"
+  },
+  "warrior_hat_s54": {
+   "slot": "hat",
+   "job": 1,
+   "level": 54,
+   "stats": {
+    "def": 37,
+    "str": 10
+   },
+   "dropSet": "s54"
+  },
+  "warrior_top_s54": {
+   "slot": "top",
+   "job": 1,
+   "level": 54,
+   "stats": {
+    "def": 51,
+    "str": 15
+   },
+   "dropSet": "s54"
+  },
+  "warrior_bottom_s54": {
+   "slot": "bottom",
+   "job": 1,
+   "level": 54,
+   "stats": {
+    "def": 42,
+    "str": 10
+   },
+   "dropSet": "s54"
+  },
+  "warrior_shoes_s54": {
+   "slot": "shoes",
+   "job": 1,
+   "level": 54,
+   "stats": {
+    "def": 28,
+    "str": 5
+   },
+   "dropSet": "s54"
+  },
+  "archer_hat_s54": {
+   "slot": "hat",
+   "job": 2,
+   "level": 54,
+   "stats": {
+    "def": 26,
+    "dex": 10
+   },
+   "dropSet": "s54"
+  },
+  "archer_top_s54": {
+   "slot": "top",
+   "job": 2,
+   "level": 54,
+   "stats": {
+    "def": 37,
+    "dex": 15
+   },
+   "dropSet": "s54"
+  },
+  "archer_bottom_s54": {
+   "slot": "bottom",
+   "job": 2,
+   "level": 54,
+   "stats": {
+    "def": 29,
+    "dex": 10
+   },
+   "dropSet": "s54"
+  },
+  "archer_shoes_s54": {
+   "slot": "shoes",
+   "job": 2,
+   "level": 54,
+   "stats": {
+    "def": 19,
+    "dex": 5
+   },
+   "dropSet": "s54"
+  },
+  "mage_hat_s54": {
+   "slot": "hat",
+   "job": 3,
+   "level": 54,
+   "stats": {
+    "int": 10,
+    "mp": 50,
+    "def": 19
+   },
+   "dropSet": "s54"
+  },
+  "mage_top_s54": {
+   "slot": "top",
+   "job": 3,
+   "level": 54,
+   "stats": {
+    "int": 15,
+    "mp": 75,
+    "def": 28
+   },
+   "dropSet": "s54"
+  },
+  "mage_bottom_s54": {
+   "slot": "bottom",
+   "job": 3,
+   "level": 54,
+   "stats": {
+    "int": 10,
+    "mp": 50,
+    "def": 25
+   },
+   "dropSet": "s54"
+  },
+  "mage_shoes_s54": {
+   "slot": "shoes",
+   "job": 3,
+   "level": 54,
+   "stats": {
+    "int": 5,
+    "mp": 25,
+    "def": 16
+   },
+   "dropSet": "s54"
+  },
+  "thief_hat_s54": {
+   "slot": "hat",
+   "job": 4,
+   "level": 54,
+   "stats": {
+    "luk": 10,
+    "def": 26
+   },
+   "dropSet": "s54"
+  },
+  "thief_top_s54": {
+   "slot": "top",
+   "job": 4,
+   "level": 54,
+   "stats": {
+    "luk": 15,
+    "def": 37
+   },
+   "dropSet": "s54"
+  },
+  "thief_bottom_s54": {
+   "slot": "bottom",
+   "job": 4,
+   "level": 54,
+   "stats": {
+    "luk": 10,
+    "def": 29
+   },
+   "dropSet": "s54"
+  },
+  "thief_shoes_s54": {
+   "slot": "shoes",
+   "job": 4,
+   "level": 54,
+   "stats": {
+    "luk": 5,
+    "def": 19
+   },
+   "dropSet": "s54"
+  },
+  "gloves_s54": {
+   "slot": "gloves",
+   "job": 0,
+   "level": 54,
+   "stats": {
+    "atk": 5,
+    "def": 12,
+    "matk": 5
+   },
+   "dropSet": "s54"
+  },
+  "cape_s54": {
+   "slot": "cape",
+   "job": 0,
+   "level": 54,
+   "stats": {
+    "hp": 84,
+    "def": 17
+   },
+   "dropSet": "s54"
+  },
+  "belt_s54": {
+   "slot": "belt",
+   "job": 0,
+   "level": 54,
+   "stats": {
+    "hp": 138,
+    "def": 10
+   },
+   "dropSet": "s54"
+  },
+  "earring_s54": {
+   "slot": "earring",
+   "job": 0,
+   "level": 54,
+   "stats": {
+    "luk": 11,
+    "dex": 11,
+    "str": 11,
+    "int": 11
+   },
+   "dropSet": "s54"
+  },
+  "ring_s54": {
+   "slot": "ring",
+   "job": 0,
+   "level": 54,
+   "stats": {
+    "luk": 6,
+    "str": 6,
+    "dex": 6,
+    "int": 6,
+    "hp": 50
+   },
+   "dropSet": "s54"
+  },
+  "warrior_hat_s58": {
+   "slot": "hat",
+   "job": 1,
+   "level": 58,
+   "stats": {
+    "def": 39,
+    "str": 11
+   },
+   "dropSet": "s58"
+  },
+  "warrior_top_s58": {
+   "slot": "top",
+   "job": 1,
+   "level": 58,
+   "stats": {
+    "def": 54,
+    "str": 16
+   },
+   "dropSet": "s58"
+  },
+  "warrior_bottom_s58": {
+   "slot": "bottom",
+   "job": 1,
+   "level": 58,
+   "stats": {
+    "def": 45,
+    "str": 11
+   },
+   "dropSet": "s58"
+  },
+  "warrior_shoes_s58": {
+   "slot": "shoes",
+   "job": 1,
+   "level": 58,
+   "stats": {
+    "def": 29,
+    "str": 5
+   },
+   "dropSet": "s58"
+  },
+  "archer_hat_s58": {
+   "slot": "hat",
+   "job": 2,
+   "level": 58,
+   "stats": {
+    "def": 28,
+    "dex": 11
+   },
+   "dropSet": "s58"
+  },
+  "archer_top_s58": {
+   "slot": "top",
+   "job": 2,
+   "level": 58,
+   "stats": {
+    "def": 39,
+    "dex": 16
+   },
+   "dropSet": "s58"
+  },
+  "archer_bottom_s58": {
+   "slot": "bottom",
+   "job": 2,
+   "level": 58,
+   "stats": {
+    "def": 31,
+    "dex": 11
+   },
+   "dropSet": "s58"
+  },
+  "archer_shoes_s58": {
+   "slot": "shoes",
+   "job": 2,
+   "level": 58,
+   "stats": {
+    "def": 20,
+    "dex": 5
+   },
+   "dropSet": "s58"
+  },
+  "mage_hat_s58": {
+   "slot": "hat",
+   "job": 3,
+   "level": 58,
+   "stats": {
+    "int": 11,
+    "mp": 53,
+    "def": 20
+   },
+   "dropSet": "s58"
+  },
+  "mage_top_s58": {
+   "slot": "top",
+   "job": 3,
+   "level": 58,
+   "stats": {
+    "int": 16,
+    "mp": 80,
+    "def": 29
+   },
+   "dropSet": "s58"
+  },
+  "mage_bottom_s58": {
+   "slot": "bottom",
+   "job": 3,
+   "level": 58,
+   "stats": {
+    "int": 11,
+    "mp": 53,
+    "def": 27
+   },
+   "dropSet": "s58"
+  },
+  "mage_shoes_s58": {
+   "slot": "shoes",
+   "job": 3,
+   "level": 58,
+   "stats": {
+    "int": 5,
+    "mp": 27,
+    "def": 17
+   },
+   "dropSet": "s58"
+  },
+  "thief_hat_s58": {
+   "slot": "hat",
+   "job": 4,
+   "level": 58,
+   "stats": {
+    "luk": 11,
+    "def": 28
+   },
+   "dropSet": "s58"
+  },
+  "thief_top_s58": {
+   "slot": "top",
+   "job": 4,
+   "level": 58,
+   "stats": {
+    "luk": 16,
+    "def": 39
+   },
+   "dropSet": "s58"
+  },
+  "thief_bottom_s58": {
+   "slot": "bottom",
+   "job": 4,
+   "level": 58,
+   "stats": {
+    "luk": 11,
+    "def": 31
+   },
+   "dropSet": "s58"
+  },
+  "thief_shoes_s58": {
+   "slot": "shoes",
+   "job": 4,
+   "level": 58,
+   "stats": {
+    "luk": 5,
+    "def": 20
+   },
+   "dropSet": "s58"
+  },
+  "gloves_s58": {
+   "slot": "gloves",
+   "job": 0,
+   "level": 58,
+   "stats": {
+    "atk": 5,
+    "def": 13,
+    "matk": 5
+   },
+   "dropSet": "s58"
+  },
+  "cape_s58": {
+   "slot": "cape",
+   "job": 0,
+   "level": 58,
+   "stats": {
+    "hp": 89,
+    "def": 18
+   },
+   "dropSet": "s58"
+  },
+  "belt_s58": {
+   "slot": "belt",
+   "job": 0,
+   "level": 58,
+   "stats": {
+    "hp": 147,
+    "def": 11
+   },
+   "dropSet": "s58"
+  },
+  "earring_s58": {
+   "slot": "earring",
+   "job": 0,
+   "level": 58,
+   "stats": {
+    "luk": 12,
+    "dex": 12,
+    "str": 12,
+    "int": 12
+   },
+   "dropSet": "s58"
+  },
+  "ring_s58": {
+   "slot": "ring",
+   "job": 0,
+   "level": 58,
+   "stats": {
+    "luk": 6,
+    "str": 6,
+    "dex": 6,
+    "int": 6,
+    "hp": 53
+   },
+   "dropSet": "s58"
   }
  },
  "options": {
@@ -3716,6 +5916,1201 @@
      "int": 8,
      "luk": 8,
      "bossPct": 7
+    }
+   }
+  },
+  "s14_warrior": {
+   "name": "들풀 사냥꾼 세트",
+   "items": [
+    "warrior_hat_s14",
+    "warrior_top_s14",
+    "warrior_bottom_s14",
+    "warrior_shoes_s14",
+    "gloves_s14",
+    "cape_s14",
+    "belt_s14",
+    "earring_s14",
+    "ring_s14"
+   ],
+   "bonus": {
+    "3": {
+     "str": 4
+    },
+    "5": {
+     "hpPct": 2
+    },
+    "7": {
+     "atkPct": 2
+    },
+    "9": {
+     "dmgPct": 2,
+     "bossPct": 3
+    }
+   }
+  },
+  "s14_archer": {
+   "name": "들풀 사냥꾼 세트",
+   "items": [
+    "archer_hat_s14",
+    "archer_top_s14",
+    "archer_bottom_s14",
+    "archer_shoes_s14",
+    "gloves_s14",
+    "cape_s14",
+    "belt_s14",
+    "earring_s14",
+    "ring_s14"
+   ],
+   "bonus": {
+    "3": {
+     "dex": 4
+    },
+    "5": {
+     "hpPct": 2
+    },
+    "7": {
+     "atkPct": 2
+    },
+    "9": {
+     "dmgPct": 2,
+     "bossPct": 3
+    }
+   }
+  },
+  "s14_mage": {
+   "name": "들풀 사냥꾼 세트",
+   "items": [
+    "mage_hat_s14",
+    "mage_top_s14",
+    "mage_bottom_s14",
+    "mage_shoes_s14",
+    "gloves_s14",
+    "cape_s14",
+    "belt_s14",
+    "earring_s14",
+    "ring_s14"
+   ],
+   "bonus": {
+    "3": {
+     "int": 4
+    },
+    "5": {
+     "hpPct": 2
+    },
+    "7": {
+     "atkPct": 2
+    },
+    "9": {
+     "dmgPct": 2,
+     "bossPct": 3
+    }
+   }
+  },
+  "s14_thief": {
+   "name": "들풀 사냥꾼 세트",
+   "items": [
+    "thief_hat_s14",
+    "thief_top_s14",
+    "thief_bottom_s14",
+    "thief_shoes_s14",
+    "gloves_s14",
+    "cape_s14",
+    "belt_s14",
+    "earring_s14",
+    "ring_s14"
+   ],
+   "bonus": {
+    "3": {
+     "luk": 4
+    },
+    "5": {
+     "hpPct": 2
+    },
+    "7": {
+     "atkPct": 2
+    },
+    "9": {
+     "dmgPct": 2,
+     "bossPct": 3
+    }
+   }
+  },
+  "s18_warrior": {
+   "name": "숲 수렵꾼 세트",
+   "items": [
+    "warrior_hat_s18",
+    "warrior_top_s18",
+    "warrior_bottom_s18",
+    "warrior_shoes_s18",
+    "gloves_s18",
+    "cape_s18",
+    "belt_s18",
+    "earring_s18",
+    "ring_s18"
+   ],
+   "bonus": {
+    "3": {
+     "str": 4
+    },
+    "5": {
+     "hpPct": 2
+    },
+    "7": {
+     "atkPct": 2
+    },
+    "9": {
+     "dmgPct": 2,
+     "bossPct": 4
+    }
+   }
+  },
+  "s18_archer": {
+   "name": "숲 수렵꾼 세트",
+   "items": [
+    "archer_hat_s18",
+    "archer_top_s18",
+    "archer_bottom_s18",
+    "archer_shoes_s18",
+    "gloves_s18",
+    "cape_s18",
+    "belt_s18",
+    "earring_s18",
+    "ring_s18"
+   ],
+   "bonus": {
+    "3": {
+     "dex": 4
+    },
+    "5": {
+     "hpPct": 2
+    },
+    "7": {
+     "atkPct": 2
+    },
+    "9": {
+     "dmgPct": 2,
+     "bossPct": 4
+    }
+   }
+  },
+  "s18_mage": {
+   "name": "숲 수렵꾼 세트",
+   "items": [
+    "mage_hat_s18",
+    "mage_top_s18",
+    "mage_bottom_s18",
+    "mage_shoes_s18",
+    "gloves_s18",
+    "cape_s18",
+    "belt_s18",
+    "earring_s18",
+    "ring_s18"
+   ],
+   "bonus": {
+    "3": {
+     "int": 4
+    },
+    "5": {
+     "hpPct": 2
+    },
+    "7": {
+     "atkPct": 2
+    },
+    "9": {
+     "dmgPct": 2,
+     "bossPct": 4
+    }
+   }
+  },
+  "s18_thief": {
+   "name": "숲 수렵꾼 세트",
+   "items": [
+    "thief_hat_s18",
+    "thief_top_s18",
+    "thief_bottom_s18",
+    "thief_shoes_s18",
+    "gloves_s18",
+    "cape_s18",
+    "belt_s18",
+    "earring_s18",
+    "ring_s18"
+   ],
+   "bonus": {
+    "3": {
+     "luk": 4
+    },
+    "5": {
+     "hpPct": 2
+    },
+    "7": {
+     "atkPct": 2
+    },
+    "9": {
+     "dmgPct": 2,
+     "bossPct": 4
+    }
+   }
+  },
+  "s24_warrior": {
+   "name": "포자 정령 세트",
+   "items": [
+    "warrior_hat_s24",
+    "warrior_top_s24",
+    "warrior_bottom_s24",
+    "warrior_shoes_s24",
+    "gloves_s24",
+    "cape_s24",
+    "belt_s24",
+    "earring_s24",
+    "ring_s24"
+   ],
+   "bonus": {
+    "3": {
+     "str": 6
+    },
+    "5": {
+     "hpPct": 3
+    },
+    "7": {
+     "atkPct": 3
+    },
+    "9": {
+     "dmgPct": 3,
+     "bossPct": 4
+    }
+   }
+  },
+  "s24_archer": {
+   "name": "포자 정령 세트",
+   "items": [
+    "archer_hat_s24",
+    "archer_top_s24",
+    "archer_bottom_s24",
+    "archer_shoes_s24",
+    "gloves_s24",
+    "cape_s24",
+    "belt_s24",
+    "earring_s24",
+    "ring_s24"
+   ],
+   "bonus": {
+    "3": {
+     "dex": 6
+    },
+    "5": {
+     "hpPct": 3
+    },
+    "7": {
+     "atkPct": 3
+    },
+    "9": {
+     "dmgPct": 3,
+     "bossPct": 4
+    }
+   }
+  },
+  "s24_mage": {
+   "name": "포자 정령 세트",
+   "items": [
+    "mage_hat_s24",
+    "mage_top_s24",
+    "mage_bottom_s24",
+    "mage_shoes_s24",
+    "gloves_s24",
+    "cape_s24",
+    "belt_s24",
+    "earring_s24",
+    "ring_s24"
+   ],
+   "bonus": {
+    "3": {
+     "int": 6
+    },
+    "5": {
+     "hpPct": 3
+    },
+    "7": {
+     "atkPct": 3
+    },
+    "9": {
+     "dmgPct": 3,
+     "bossPct": 4
+    }
+   }
+  },
+  "s24_thief": {
+   "name": "포자 정령 세트",
+   "items": [
+    "thief_hat_s24",
+    "thief_top_s24",
+    "thief_bottom_s24",
+    "thief_shoes_s24",
+    "gloves_s24",
+    "cape_s24",
+    "belt_s24",
+    "earring_s24",
+    "ring_s24"
+   ],
+   "bonus": {
+    "3": {
+     "luk": 6
+    },
+    "5": {
+     "hpPct": 3
+    },
+    "7": {
+     "atkPct": 3
+    },
+    "9": {
+     "dmgPct": 3,
+     "bossPct": 4
+    }
+   }
+  },
+  "s28_warrior": {
+   "name": "버섯 기사 세트",
+   "items": [
+    "warrior_hat_s28",
+    "warrior_top_s28",
+    "warrior_bottom_s28",
+    "warrior_shoes_s28",
+    "gloves_s28",
+    "cape_s28",
+    "belt_s28",
+    "earring_s28",
+    "ring_s28"
+   ],
+   "bonus": {
+    "3": {
+     "str": 6
+    },
+    "5": {
+     "hpPct": 3
+    },
+    "7": {
+     "atkPct": 3
+    },
+    "9": {
+     "dmgPct": 3,
+     "bossPct": 4
+    }
+   }
+  },
+  "s28_archer": {
+   "name": "버섯 기사 세트",
+   "items": [
+    "archer_hat_s28",
+    "archer_top_s28",
+    "archer_bottom_s28",
+    "archer_shoes_s28",
+    "gloves_s28",
+    "cape_s28",
+    "belt_s28",
+    "earring_s28",
+    "ring_s28"
+   ],
+   "bonus": {
+    "3": {
+     "dex": 6
+    },
+    "5": {
+     "hpPct": 3
+    },
+    "7": {
+     "atkPct": 3
+    },
+    "9": {
+     "dmgPct": 3,
+     "bossPct": 4
+    }
+   }
+  },
+  "s28_mage": {
+   "name": "버섯 기사 세트",
+   "items": [
+    "mage_hat_s28",
+    "mage_top_s28",
+    "mage_bottom_s28",
+    "mage_shoes_s28",
+    "gloves_s28",
+    "cape_s28",
+    "belt_s28",
+    "earring_s28",
+    "ring_s28"
+   ],
+   "bonus": {
+    "3": {
+     "int": 6
+    },
+    "5": {
+     "hpPct": 3
+    },
+    "7": {
+     "atkPct": 3
+    },
+    "9": {
+     "dmgPct": 3,
+     "bossPct": 4
+    }
+   }
+  },
+  "s28_thief": {
+   "name": "버섯 기사 세트",
+   "items": [
+    "thief_hat_s28",
+    "thief_top_s28",
+    "thief_bottom_s28",
+    "thief_shoes_s28",
+    "gloves_s28",
+    "cape_s28",
+    "belt_s28",
+    "earring_s28",
+    "ring_s28"
+   ],
+   "bonus": {
+    "3": {
+     "luk": 6
+    },
+    "5": {
+     "hpPct": 3
+    },
+    "7": {
+     "atkPct": 3
+    },
+    "9": {
+     "dmgPct": 3,
+     "bossPct": 4
+    }
+   }
+  },
+  "s34_warrior": {
+   "name": "포자 마녀 세트",
+   "items": [
+    "warrior_hat_s34",
+    "warrior_top_s34",
+    "warrior_bottom_s34",
+    "warrior_shoes_s34",
+    "gloves_s34",
+    "cape_s34",
+    "belt_s34",
+    "earring_s34",
+    "ring_s34"
+   ],
+   "bonus": {
+    "3": {
+     "str": 7
+    },
+    "5": {
+     "hpPct": 3
+    },
+    "7": {
+     "atkPct": 3
+    },
+    "9": {
+     "dmgPct": 3,
+     "bossPct": 5
+    }
+   }
+  },
+  "s34_archer": {
+   "name": "포자 마녀 세트",
+   "items": [
+    "archer_hat_s34",
+    "archer_top_s34",
+    "archer_bottom_s34",
+    "archer_shoes_s34",
+    "gloves_s34",
+    "cape_s34",
+    "belt_s34",
+    "earring_s34",
+    "ring_s34"
+   ],
+   "bonus": {
+    "3": {
+     "dex": 7
+    },
+    "5": {
+     "hpPct": 3
+    },
+    "7": {
+     "atkPct": 3
+    },
+    "9": {
+     "dmgPct": 3,
+     "bossPct": 5
+    }
+   }
+  },
+  "s34_mage": {
+   "name": "포자 마녀 세트",
+   "items": [
+    "mage_hat_s34",
+    "mage_top_s34",
+    "mage_bottom_s34",
+    "mage_shoes_s34",
+    "gloves_s34",
+    "cape_s34",
+    "belt_s34",
+    "earring_s34",
+    "ring_s34"
+   ],
+   "bonus": {
+    "3": {
+     "int": 7
+    },
+    "5": {
+     "hpPct": 3
+    },
+    "7": {
+     "atkPct": 3
+    },
+    "9": {
+     "dmgPct": 3,
+     "bossPct": 5
+    }
+   }
+  },
+  "s34_thief": {
+   "name": "포자 마녀 세트",
+   "items": [
+    "thief_hat_s34",
+    "thief_top_s34",
+    "thief_bottom_s34",
+    "thief_shoes_s34",
+    "gloves_s34",
+    "cape_s34",
+    "belt_s34",
+    "earring_s34",
+    "ring_s34"
+   ],
+   "bonus": {
+    "3": {
+     "luk": 7
+    },
+    "5": {
+     "hpPct": 3
+    },
+    "7": {
+     "atkPct": 3
+    },
+    "9": {
+     "dmgPct": 3,
+     "bossPct": 5
+    }
+   }
+  },
+  "s38_warrior": {
+   "name": "어둠 숲 세트",
+   "items": [
+    "warrior_hat_s38",
+    "warrior_top_s38",
+    "warrior_bottom_s38",
+    "warrior_shoes_s38",
+    "gloves_s38",
+    "cape_s38",
+    "belt_s38",
+    "earring_s38",
+    "ring_s38"
+   ],
+   "bonus": {
+    "3": {
+     "str": 8
+    },
+    "5": {
+     "hpPct": 3
+    },
+    "7": {
+     "atkPct": 3
+    },
+    "9": {
+     "dmgPct": 3,
+     "bossPct": 5
+    }
+   }
+  },
+  "s38_archer": {
+   "name": "어둠 숲 세트",
+   "items": [
+    "archer_hat_s38",
+    "archer_top_s38",
+    "archer_bottom_s38",
+    "archer_shoes_s38",
+    "gloves_s38",
+    "cape_s38",
+    "belt_s38",
+    "earring_s38",
+    "ring_s38"
+   ],
+   "bonus": {
+    "3": {
+     "dex": 8
+    },
+    "5": {
+     "hpPct": 3
+    },
+    "7": {
+     "atkPct": 3
+    },
+    "9": {
+     "dmgPct": 3,
+     "bossPct": 5
+    }
+   }
+  },
+  "s38_mage": {
+   "name": "어둠 숲 세트",
+   "items": [
+    "mage_hat_s38",
+    "mage_top_s38",
+    "mage_bottom_s38",
+    "mage_shoes_s38",
+    "gloves_s38",
+    "cape_s38",
+    "belt_s38",
+    "earring_s38",
+    "ring_s38"
+   ],
+   "bonus": {
+    "3": {
+     "int": 8
+    },
+    "5": {
+     "hpPct": 3
+    },
+    "7": {
+     "atkPct": 3
+    },
+    "9": {
+     "dmgPct": 3,
+     "bossPct": 5
+    }
+   }
+  },
+  "s38_thief": {
+   "name": "어둠 숲 세트",
+   "items": [
+    "thief_hat_s38",
+    "thief_top_s38",
+    "thief_bottom_s38",
+    "thief_shoes_s38",
+    "gloves_s38",
+    "cape_s38",
+    "belt_s38",
+    "earring_s38",
+    "ring_s38"
+   ],
+   "bonus": {
+    "3": {
+     "luk": 8
+    },
+    "5": {
+     "hpPct": 3
+    },
+    "7": {
+     "atkPct": 3
+    },
+    "9": {
+     "dmgPct": 3,
+     "bossPct": 5
+    }
+   }
+  },
+  "s44_warrior": {
+   "name": "동굴 탐험가 세트",
+   "items": [
+    "warrior_hat_s44",
+    "warrior_top_s44",
+    "warrior_bottom_s44",
+    "warrior_shoes_s44",
+    "gloves_s44",
+    "cape_s44",
+    "belt_s44",
+    "earring_s44",
+    "ring_s44"
+   ],
+   "bonus": {
+    "3": {
+     "str": 9
+    },
+    "5": {
+     "hpPct": 3
+    },
+    "7": {
+     "atkPct": 3
+    },
+    "9": {
+     "dmgPct": 3,
+     "bossPct": 6
+    }
+   }
+  },
+  "s44_archer": {
+   "name": "동굴 탐험가 세트",
+   "items": [
+    "archer_hat_s44",
+    "archer_top_s44",
+    "archer_bottom_s44",
+    "archer_shoes_s44",
+    "gloves_s44",
+    "cape_s44",
+    "belt_s44",
+    "earring_s44",
+    "ring_s44"
+   ],
+   "bonus": {
+    "3": {
+     "dex": 9
+    },
+    "5": {
+     "hpPct": 3
+    },
+    "7": {
+     "atkPct": 3
+    },
+    "9": {
+     "dmgPct": 3,
+     "bossPct": 6
+    }
+   }
+  },
+  "s44_mage": {
+   "name": "동굴 탐험가 세트",
+   "items": [
+    "mage_hat_s44",
+    "mage_top_s44",
+    "mage_bottom_s44",
+    "mage_shoes_s44",
+    "gloves_s44",
+    "cape_s44",
+    "belt_s44",
+    "earring_s44",
+    "ring_s44"
+   ],
+   "bonus": {
+    "3": {
+     "int": 9
+    },
+    "5": {
+     "hpPct": 3
+    },
+    "7": {
+     "atkPct": 3
+    },
+    "9": {
+     "dmgPct": 3,
+     "bossPct": 6
+    }
+   }
+  },
+  "s44_thief": {
+   "name": "동굴 탐험가 세트",
+   "items": [
+    "thief_hat_s44",
+    "thief_top_s44",
+    "thief_bottom_s44",
+    "thief_shoes_s44",
+    "gloves_s44",
+    "cape_s44",
+    "belt_s44",
+    "earring_s44",
+    "ring_s44"
+   ],
+   "bonus": {
+    "3": {
+     "luk": 9
+    },
+    "5": {
+     "hpPct": 3
+    },
+    "7": {
+     "atkPct": 3
+    },
+    "9": {
+     "dmgPct": 3,
+     "bossPct": 6
+    }
+   }
+  },
+  "s48_warrior": {
+   "name": "맹독 세트",
+   "items": [
+    "warrior_hat_s48",
+    "warrior_top_s48",
+    "warrior_bottom_s48",
+    "warrior_shoes_s48",
+    "gloves_s48",
+    "cape_s48",
+    "belt_s48",
+    "earring_s48",
+    "ring_s48"
+   ],
+   "bonus": {
+    "3": {
+     "str": 10
+    },
+    "5": {
+     "hpPct": 4
+    },
+    "7": {
+     "atkPct": 4
+    },
+    "9": {
+     "dmgPct": 4,
+     "bossPct": 6
+    }
+   }
+  },
+  "s48_archer": {
+   "name": "맹독 세트",
+   "items": [
+    "archer_hat_s48",
+    "archer_top_s48",
+    "archer_bottom_s48",
+    "archer_shoes_s48",
+    "gloves_s48",
+    "cape_s48",
+    "belt_s48",
+    "earring_s48",
+    "ring_s48"
+   ],
+   "bonus": {
+    "3": {
+     "dex": 10
+    },
+    "5": {
+     "hpPct": 4
+    },
+    "7": {
+     "atkPct": 4
+    },
+    "9": {
+     "dmgPct": 4,
+     "bossPct": 6
+    }
+   }
+  },
+  "s48_mage": {
+   "name": "맹독 세트",
+   "items": [
+    "mage_hat_s48",
+    "mage_top_s48",
+    "mage_bottom_s48",
+    "mage_shoes_s48",
+    "gloves_s48",
+    "cape_s48",
+    "belt_s48",
+    "earring_s48",
+    "ring_s48"
+   ],
+   "bonus": {
+    "3": {
+     "int": 10
+    },
+    "5": {
+     "hpPct": 4
+    },
+    "7": {
+     "atkPct": 4
+    },
+    "9": {
+     "dmgPct": 4,
+     "bossPct": 6
+    }
+   }
+  },
+  "s48_thief": {
+   "name": "맹독 세트",
+   "items": [
+    "thief_hat_s48",
+    "thief_top_s48",
+    "thief_bottom_s48",
+    "thief_shoes_s48",
+    "gloves_s48",
+    "cape_s48",
+    "belt_s48",
+    "earring_s48",
+    "ring_s48"
+   ],
+   "bonus": {
+    "3": {
+     "luk": 10
+    },
+    "5": {
+     "hpPct": 4
+    },
+    "7": {
+     "atkPct": 4
+    },
+    "9": {
+     "dmgPct": 4,
+     "bossPct": 6
+    }
+   }
+  },
+  "s54_warrior": {
+   "name": "광부 세트",
+   "items": [
+    "warrior_hat_s54",
+    "warrior_top_s54",
+    "warrior_bottom_s54",
+    "warrior_shoes_s54",
+    "gloves_s54",
+    "cape_s54",
+    "belt_s54",
+    "earring_s54",
+    "ring_s54"
+   ],
+   "bonus": {
+    "3": {
+     "str": 11
+    },
+    "5": {
+     "hpPct": 4
+    },
+    "7": {
+     "atkPct": 4
+    },
+    "9": {
+     "dmgPct": 4,
+     "bossPct": 7
+    }
+   }
+  },
+  "s54_archer": {
+   "name": "광부 세트",
+   "items": [
+    "archer_hat_s54",
+    "archer_top_s54",
+    "archer_bottom_s54",
+    "archer_shoes_s54",
+    "gloves_s54",
+    "cape_s54",
+    "belt_s54",
+    "earring_s54",
+    "ring_s54"
+   ],
+   "bonus": {
+    "3": {
+     "dex": 11
+    },
+    "5": {
+     "hpPct": 4
+    },
+    "7": {
+     "atkPct": 4
+    },
+    "9": {
+     "dmgPct": 4,
+     "bossPct": 7
+    }
+   }
+  },
+  "s54_mage": {
+   "name": "광부 세트",
+   "items": [
+    "mage_hat_s54",
+    "mage_top_s54",
+    "mage_bottom_s54",
+    "mage_shoes_s54",
+    "gloves_s54",
+    "cape_s54",
+    "belt_s54",
+    "earring_s54",
+    "ring_s54"
+   ],
+   "bonus": {
+    "3": {
+     "int": 11
+    },
+    "5": {
+     "hpPct": 4
+    },
+    "7": {
+     "atkPct": 4
+    },
+    "9": {
+     "dmgPct": 4,
+     "bossPct": 7
+    }
+   }
+  },
+  "s54_thief": {
+   "name": "광부 세트",
+   "items": [
+    "thief_hat_s54",
+    "thief_top_s54",
+    "thief_bottom_s54",
+    "thief_shoes_s54",
+    "gloves_s54",
+    "cape_s54",
+    "belt_s54",
+    "earring_s54",
+    "ring_s54"
+   ],
+   "bonus": {
+    "3": {
+     "luk": 11
+    },
+    "5": {
+     "hpPct": 4
+    },
+    "7": {
+     "atkPct": 4
+    },
+    "9": {
+     "dmgPct": 4,
+     "bossPct": 7
+    }
+   }
+  },
+  "s58_warrior": {
+   "name": "공허석 세트",
+   "items": [
+    "warrior_hat_s58",
+    "warrior_top_s58",
+    "warrior_bottom_s58",
+    "warrior_shoes_s58",
+    "gloves_s58",
+    "cape_s58",
+    "belt_s58",
+    "earring_s58",
+    "ring_s58"
+   ],
+   "bonus": {
+    "3": {
+     "str": 12
+    },
+    "5": {
+     "hpPct": 4
+    },
+    "7": {
+     "atkPct": 4
+    },
+    "9": {
+     "dmgPct": 4,
+     "bossPct": 7
+    }
+   }
+  },
+  "s58_archer": {
+   "name": "공허석 세트",
+   "items": [
+    "archer_hat_s58",
+    "archer_top_s58",
+    "archer_bottom_s58",
+    "archer_shoes_s58",
+    "gloves_s58",
+    "cape_s58",
+    "belt_s58",
+    "earring_s58",
+    "ring_s58"
+   ],
+   "bonus": {
+    "3": {
+     "dex": 12
+    },
+    "5": {
+     "hpPct": 4
+    },
+    "7": {
+     "atkPct": 4
+    },
+    "9": {
+     "dmgPct": 4,
+     "bossPct": 7
+    }
+   }
+  },
+  "s58_mage": {
+   "name": "공허석 세트",
+   "items": [
+    "mage_hat_s58",
+    "mage_top_s58",
+    "mage_bottom_s58",
+    "mage_shoes_s58",
+    "gloves_s58",
+    "cape_s58",
+    "belt_s58",
+    "earring_s58",
+    "ring_s58"
+   ],
+   "bonus": {
+    "3": {
+     "int": 12
+    },
+    "5": {
+     "hpPct": 4
+    },
+    "7": {
+     "atkPct": 4
+    },
+    "9": {
+     "dmgPct": 4,
+     "bossPct": 7
+    }
+   }
+  },
+  "s58_thief": {
+   "name": "공허석 세트",
+   "items": [
+    "thief_hat_s58",
+    "thief_top_s58",
+    "thief_bottom_s58",
+    "thief_shoes_s58",
+    "gloves_s58",
+    "cape_s58",
+    "belt_s58",
+    "earring_s58",
+    "ring_s58"
+   ],
+   "bonus": {
+    "3": {
+     "luk": 12
+    },
+    "5": {
+     "hpPct": 4
+    },
+    "7": {
+     "atkPct": 4
+    },
+    "9": {
+     "dmgPct": 4,
+     "bossPct": 7
+    }
+   }
+  },
+  "boss_start": {
+   "name": "시작의 보스 장신구 세트",
+   "items": [
+    "forest_lord_ring",
+    "forest_lord_belt",
+    "guardian_ring",
+    "guardian_pendant",
+    "guardian_cape",
+    "spider_queen_ring",
+    "spider_queen_earring",
+    "spider_queen_gloves"
+   ],
+   "bonus": {
+    "2": {
+     "str": 5,
+     "dex": 5,
+     "int": 5,
+     "luk": 5
+    },
+    "3": {
+     "hpPct": 5,
+     "mpPct": 5
+    },
+    "4": {
+     "atk": 5,
+     "matk": 5
+    },
+    "6": {
+     "dmgPct": 5
+    },
+    "8": {
+     "bossPct": 10
     }
    }
   }

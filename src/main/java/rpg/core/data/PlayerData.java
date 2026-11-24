@@ -100,7 +100,7 @@ public class PlayerData {
 
     private static final String[] STAT_KEYS = {"vit", "str", "dex", "int", "luk", "sta"};
     /** 장비 합계에서 bonus 로 옮기는 % 옵션 (잠재능력) */
-    private static final String[] EQUIP_BONUS = {"atkPct", "dmgPct", "hpPct", "critChance", "goldPct", "dropPct", "speedPct", "bossPct", "critDmg", "cdPct"};
+    private static final String[] EQUIP_BONUS = {"atkPct", "dmgPct", "hpPct", "critChance", "goldPct", "dropPct", "speedPct", "bossPct", "critDmg", "cdPct", "mpPct"};
     /** 패시브 트리 상태 (저장 안 함) */
     public transient double atkSpeedPct, warcryVal, oathVal;
     public transient long crisisReadyAt, warcryUntil, oathUntil;

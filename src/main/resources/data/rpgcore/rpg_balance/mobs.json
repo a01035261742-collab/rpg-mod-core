@@ -1819,7 +1819,7 @@
      ]
     ],
     "fragments": 5,
-    "scrollChance": 20,
+    "scrollChance": 30,
     "ring": "forest_lord_ring",
     "ringChance": 5,
     "first": "forest_hunter_medal",
@@ -2066,7 +2066,7 @@
      ]
     ],
     "fragments": 8,
-    "scrollChance": 25,
+    "scrollChance": 35,
     "ring": "guardian_ring",
     "ringChance": 5,
     "first": "mush_hunter_medal",
@@ -2439,7 +2439,7 @@
      ]
     ],
     "fragments": 10,
-    "scrollChance": 30,
+    "scrollChance": 40,
     "cubeChance": 100,
     "cubes": 3,
     "epicScrollChance": 20,
@@ -3270,5 +3270,984 @@
    }
   },
   "fixedLevel": 60
+ },
+ "venom_wasp": {
+  "entity": "minecraft:bee",
+  "name": "독침 말벌",
+  "passive": true,
+  "area": "Lv11~15",
+  "skills": [
+   {
+    "type": "shot",
+    "range": 12,
+    "cd": 4,
+    "delay": 0.8,
+    "pct": 120,
+    "len": 12,
+    "w": 1.0
+   }
+  ],
+  "levels": {
+   "9": {
+    "hp": 622,
+    "atk": 37.6,
+    "exp": 87,
+    "gold": 72
+   },
+   "10": {
+    "hp": 878,
+    "atk": 45.9,
+    "exp": 100,
+    "gold": 162
+   },
+   "11": {
+    "hp": 998,
+    "atk": 48.6,
+    "exp": 114,
+    "gold": 171
+   },
+   "12": {
+    "hp": 1140,
+    "atk": 51.3,
+    "exp": 126,
+    "gold": 189
+   },
+   "13": {
+    "hp": 1252,
+    "atk": 54.0,
+    "exp": 140,
+    "gold": 198
+   },
+   "14": {
+    "hp": 1402,
+    "atk": 56.7,
+    "exp": 153,
+    "gold": 216
+   },
+   "15": {
+    "hp": 1545,
+    "atk": 59.4,
+    "exp": 166,
+    "gold": 234
+   },
+   "16": {
+    "hp": 1778,
+    "atk": 62.1,
+    "exp": 180,
+    "gold": 243
+   },
+   "17": {
+    "hp": 2032,
+    "atk": 64.8,
+    "exp": 194,
+    "gold": 261
+   },
+   "18": {
+    "hp": 2310,
+    "atk": 67.5,
+    "exp": 207,
+    "gold": 270
+   },
+   "19": {
+    "hp": 2595,
+    "atk": 70.2,
+    "exp": 222,
+    "gold": 288
+   },
+   "20": {
+    "hp": 2918,
+    "atk": 72.9,
+    "exp": 236,
+    "gold": 297
+   }
+  },
+  "fixedLevel": 15,
+  "tint": "E67828",
+  "variantOf": "bee",
+  "variantChance": 16
+ },
+ "black_bear": {
+  "entity": "rpgcore:brown_bear",
+  "name": "흑곰",
+  "area": "Lv16~20",
+  "skills": [
+   {
+    "type": "cone",
+    "range": 4,
+    "cd": 7,
+    "delay": 0.9,
+    "pct": 160,
+    "r": 4,
+    "angle": 90
+   }
+  ],
+  "attacks": [
+   {
+    "anim": "attack",
+    "start": 10,
+    "end": 13,
+    "length": 19,
+    "range": 2.4,
+    "angle": 90,
+    "lunge": 0.4
+   }
+  ],
+  "stunArmor": 0.4,
+  "levels": {
+   "14": {
+    "hp": 2880,
+    "atk": 68.1,
+    "exp": 192,
+    "gold": 261
+   },
+   "15": {
+    "hp": 3165,
+    "atk": 71.3,
+    "exp": 208,
+    "gold": 279
+   },
+   "16": {
+    "hp": 3660,
+    "atk": 74.5,
+    "exp": 225,
+    "gold": 297
+   },
+   "17": {
+    "hp": 4170,
+    "atk": 77.7,
+    "exp": 242,
+    "gold": 306
+   },
+   "18": {
+    "hp": 4718,
+    "atk": 81.0,
+    "exp": 258,
+    "gold": 324
+   },
+   "19": {
+    "hp": 5348,
+    "atk": 84.3,
+    "exp": 276,
+    "gold": 342
+   },
+   "20": {
+    "hp": 5992,
+    "atk": 87.5,
+    "exp": 294,
+    "gold": 360
+   },
+   "21": {
+    "hp": 6532,
+    "atk": 90.7,
+    "exp": 312,
+    "gold": 378
+   },
+   "22": {
+    "hp": 7050,
+    "atk": 93.9,
+    "exp": 330,
+    "gold": 396
+   },
+   "23": {
+    "hp": 7582,
+    "atk": 97.2,
+    "exp": 346,
+    "gold": 414
+   },
+   "24": {
+    "hp": 8160,
+    "atk": 100.5,
+    "exp": 366,
+    "gold": 423
+   },
+   "25": {
+    "hp": 8745,
+    "atk": 103.7,
+    "exp": 384,
+    "gold": 432
+   }
+  },
+  "fixedLevel": 20,
+  "tint": "322D37",
+  "variantOf": "bear",
+  "variantChance": 16
+ },
+ "venom_mush_kid": {
+  "entity": "rpgcore:mush_kid",
+  "name": "독버섯 꼬마",
+  "area": "Lv21~25",
+  "skills": [
+   {
+    "type": "slam",
+    "range": 2.2,
+    "cd": 3,
+    "delay": 0.6,
+    "pct": 100,
+    "r": 1.8
+   }
+  ],
+  "attacks": [
+   {
+    "anim": "attack",
+    "start": 10,
+    "end": 13,
+    "length": 16,
+    "range": 1.6,
+    "width": 1.4,
+    "lunge": 0.35
+   }
+  ],
+  "levels": {
+   "19": {
+    "hp": 3675,
+    "atk": 56.1,
+    "exp": 222,
+    "gold": 225
+   },
+   "20": {
+    "hp": 4110,
+    "atk": 58.3,
+    "exp": 237,
+    "gold": 234
+   },
+   "21": {
+    "hp": 4470,
+    "atk": 60.5,
+    "exp": 249,
+    "gold": 252
+   },
+   "22": {
+    "hp": 4845,
+    "atk": 62.7,
+    "exp": 264,
+    "gold": 261
+   },
+   "23": {
+    "hp": 5220,
+    "atk": 64.8,
+    "exp": 278,
+    "gold": 270
+   },
+   "24": {
+    "hp": 5595,
+    "atk": 66.9,
+    "exp": 292,
+    "gold": 279
+   },
+   "25": {
+    "hp": 6015,
+    "atk": 69.1,
+    "exp": 308,
+    "gold": 288
+   },
+   "26": {
+    "hp": 6705,
+    "atk": 71.3,
+    "exp": 321,
+    "gold": 297
+   },
+   "27": {
+    "hp": 7432,
+    "atk": 73.5,
+    "exp": 336,
+    "gold": 315
+   },
+   "28": {
+    "hp": 8190,
+    "atk": 75.6,
+    "exp": 348,
+    "gold": 324
+   },
+   "29": {
+    "hp": 9038,
+    "atk": 77.7,
+    "exp": 363,
+    "gold": 333
+   },
+   "30": {
+    "hp": 9938,
+    "atk": 79.9,
+    "exp": 378,
+    "gold": 342
+   }
+  },
+  "fixedLevel": 25,
+  "tint": "963CC8",
+  "variantOf": "mush_kid",
+  "variantChance": 16
+ },
+ "elite_mush_soldier": {
+  "entity": "rpgcore:mush_soldier",
+  "name": "정예 버섯 병정",
+  "area": "Lv26~30",
+  "skills": [
+   {
+    "type": "slam",
+    "range": 3.5,
+    "cd": 7,
+    "delay": 1.2,
+    "pct": 180,
+    "r": 3.5,
+    "effect": "slow"
+   }
+  ],
+  "attacks": [
+   {
+    "anim": "attack",
+    "start": 14,
+    "end": 19,
+    "length": 23,
+    "range": 2.2,
+    "angle": 120,
+    "lunge": 0.45
+   },
+   {
+    "anim": "attack2",
+    "start": 11,
+    "end": 14,
+    "length": 19,
+    "range": 1.7,
+    "width": 1.6,
+    "knock": 0.6,
+    "lunge": 0.45
+   }
+  ],
+  "levels": {
+   "24": {
+    "hp": 6450,
+    "atk": 83.7,
+    "exp": 351,
+    "gold": 423
+   },
+   "25": {
+    "hp": 6892,
+    "atk": 86.4,
+    "exp": 369,
+    "gold": 432
+   },
+   "26": {
+    "hp": 7702,
+    "atk": 89.1,
+    "exp": 386,
+    "gold": 450
+   },
+   "27": {
+    "hp": 8535,
+    "atk": 91.8,
+    "exp": 402,
+    "gold": 468
+   },
+   "28": {
+    "hp": 9420,
+    "atk": 94.5,
+    "exp": 420,
+    "gold": 486
+   },
+   "29": {
+    "hp": 10388,
+    "atk": 97.2,
+    "exp": 438,
+    "gold": 504
+   },
+   "30": {
+    "hp": 11400,
+    "atk": 99.9,
+    "exp": 456,
+    "gold": 522
+   },
+   "31": {
+    "hp": 12142,
+    "atk": 102.6,
+    "exp": 472,
+    "gold": 531
+   },
+   "32": {
+    "hp": 12885,
+    "atk": 105.3,
+    "exp": 490,
+    "gold": 549
+   },
+   "33": {
+    "hp": 13658,
+    "atk": 108.0,
+    "exp": 507,
+    "gold": 558
+   },
+   "34": {
+    "hp": 14468,
+    "atk": 110.7,
+    "exp": 525,
+    "gold": 585
+   },
+   "35": {
+    "hp": 15285,
+    "atk": 113.4,
+    "exp": 542,
+    "gold": 603
+   }
+  },
+  "fixedLevel": 30,
+  "tint": "E6BE3C",
+  "variantOf": "mush_soldier",
+  "variantChance": 16
+ },
+ "toxic_spore_spider": {
+  "entity": "minecraft:cave_spider",
+  "name": "독포자 거미",
+  "area": "Lv31~35",
+  "skills": [
+   {
+    "type": "shot",
+    "range": 10,
+    "cd": 6,
+    "delay": 0.8,
+    "pct": 130,
+    "len": 10,
+    "w": 1.2,
+    "effect": "slow"
+   }
+  ],
+  "levels": {
+   "29": {
+    "hp": 10020,
+    "atk": 106.9,
+    "exp": 400,
+    "gold": 459
+   },
+   "30": {
+    "hp": 11010,
+    "atk": 109.9,
+    "exp": 417,
+    "gold": 477
+   },
+   "31": {
+    "hp": 11730,
+    "atk": 112.8,
+    "exp": 434,
+    "gold": 486
+   },
+   "32": {
+    "hp": 12458,
+    "atk": 115.9,
+    "exp": 450,
+    "gold": 504
+   },
+   "33": {
+    "hp": 13185,
+    "atk": 118.8,
+    "exp": 465,
+    "gold": 513
+   },
+   "34": {
+    "hp": 13958,
+    "atk": 121.7,
+    "exp": 482,
+    "gold": 531
+   },
+   "35": {
+    "hp": 14745,
+    "atk": 124.8,
+    "exp": 496,
+    "gold": 558
+   },
+   "36": {
+    "hp": 16118,
+    "atk": 127.7,
+    "exp": 513,
+    "gold": 567
+   },
+   "37": {
+    "hp": 17520,
+    "atk": 130.7,
+    "exp": 528,
+    "gold": 585
+   },
+   "38": {
+    "hp": 18990,
+    "atk": 133.6,
+    "exp": 544,
+    "gold": 594
+   },
+   "39": {
+    "hp": 20595,
+    "atk": 136.6,
+    "exp": 561,
+    "gold": 612
+   },
+   "40": {
+    "hp": 22245,
+    "atk": 139.6,
+    "exp": 578,
+    "gold": 621
+   }
+  },
+  "fixedLevel": 35,
+  "tint": "96DC3C",
+  "variantOf": "spore_spider",
+  "variantChance": 16
+ },
+ "pitch_mush_beast": {
+  "entity": "rpgcore:mush_beast",
+  "name": "칠흑 버섯 짐승",
+  "area": "Lv36~40",
+  "attacks": [
+   {
+    "anim": "attack",
+    "start": 10,
+    "end": 13,
+    "length": 20,
+    "range": 2.6,
+    "width": 1.8,
+    "lunge": 0.45
+   }
+  ],
+  "skills": [
+   {
+    "type": "slam",
+    "range": 5,
+    "cd": 8,
+    "delay": 1.4,
+    "pct": 200,
+    "r": 5
+   }
+  ],
+  "stunArmor": 0.4,
+  "levels": {
+   "34": {
+    "hp": 18195,
+    "atk": 143.9,
+    "exp": 788,
+    "gold": 873
+   },
+   "35": {
+    "hp": 19222,
+    "atk": 147.4,
+    "exp": 813,
+    "gold": 909
+   },
+   "36": {
+    "hp": 20992,
+    "atk": 151.0,
+    "exp": 838,
+    "gold": 927
+   },
+   "37": {
+    "hp": 22845,
+    "atk": 154.5,
+    "exp": 866,
+    "gold": 954
+   },
+   "38": {
+    "hp": 24772,
+    "atk": 157.9,
+    "exp": 891,
+    "gold": 972
+   },
+   "39": {
+    "hp": 26842,
+    "atk": 161.4,
+    "exp": 918,
+    "gold": 999
+   },
+   "40": {
+    "hp": 28995,
+    "atk": 164.9,
+    "exp": 945,
+    "gold": 1017
+   },
+   "41": {
+    "hp": 30368,
+    "atk": 168.5,
+    "exp": 972,
+    "gold": 1044
+   },
+   "42": {
+    "hp": 31755,
+    "atk": 172.0,
+    "exp": 999,
+    "gold": 1071
+   },
+   "43": {
+    "hp": 33158,
+    "atk": 175.5,
+    "exp": 1026,
+    "gold": 1098
+   },
+   "44": {
+    "hp": 34568,
+    "atk": 179.0,
+    "exp": 1053,
+    "gold": 1116
+   },
+   "45": {
+    "hp": 35992,
+    "atk": 182.5,
+    "exp": 1080,
+    "gold": 1143
+   }
+  },
+  "fixedLevel": 40,
+  "tint": "281E46",
+  "variantOf": "mush_beast",
+  "variantChance": 16
+ },
+ "vampire_bat": {
+  "entity": "minecraft:bat",
+  "name": "흡혈 박쥐",
+  "area": "Lv41~45",
+  "skills": [
+   {
+    "type": "dash",
+    "range": 9,
+    "cd": 5,
+    "delay": 0.7,
+    "pct": 140,
+    "len": 8,
+    "w": 1.4
+   }
+  ],
+  "chase": true,
+  "scale": 2,
+  "levels": {
+   "39": {
+    "hp": 12862,
+    "atk": 119.7,
+    "exp": 428,
+    "gold": 468
+   },
+   "40": {
+    "hp": 13635,
+    "atk": 122.9,
+    "exp": 442,
+    "gold": 477
+   },
+   "41": {
+    "hp": 14452,
+    "atk": 126.2,
+    "exp": 458,
+    "gold": 495
+   },
+   "42": {
+    "hp": 15322,
+    "atk": 129.5,
+    "exp": 474,
+    "gold": 513
+   },
+   "43": {
+    "hp": 16238,
+    "atk": 132.7,
+    "exp": 490,
+    "gold": 522
+   },
+   "44": {
+    "hp": 17212,
+    "atk": 136.0,
+    "exp": 507,
+    "gold": 540
+   },
+   "45": {
+    "hp": 18248,
+    "atk": 139.3,
+    "exp": 525,
+    "gold": 558
+   },
+   "46": {
+    "hp": 19342,
+    "atk": 142.5,
+    "exp": 543,
+    "gold": 576
+   },
+   "47": {
+    "hp": 20498,
+    "atk": 145.8,
+    "exp": 562,
+    "gold": 594
+   },
+   "48": {
+    "hp": 21728,
+    "atk": 149.1,
+    "exp": 582,
+    "gold": 612
+   },
+   "49": {
+    "hp": 23032,
+    "atk": 152.3,
+    "exp": 602,
+    "gold": 630
+   }
+  },
+  "fixedLevel": 45,
+  "tint": "AA1E28",
+  "variantOf": "cave_bat",
+  "variantChance": 16
+ },
+ "venom_spike_spider": {
+  "entity": "minecraft:spider",
+  "name": "맹독 가시거미",
+  "area": "Lv46~50",
+  "skills": [
+   {
+    "type": "cone",
+    "range": 5,
+    "cd": 7,
+    "delay": 0.9,
+    "pct": 170,
+    "r": 5,
+    "angle": 110
+   }
+  ],
+  "stunArmor": 0.4,
+  "levels": {
+   "44": {
+    "hp": 27532,
+    "atk": 155.8,
+    "exp": 738,
+    "gold": 792
+   },
+   "45": {
+    "hp": 29190,
+    "atk": 160.0,
+    "exp": 764,
+    "gold": 819
+   },
+   "46": {
+    "hp": 30938,
+    "atk": 164.3,
+    "exp": 790,
+    "gold": 837
+   },
+   "47": {
+    "hp": 32798,
+    "atk": 168.5,
+    "exp": 818,
+    "gold": 864
+   },
+   "48": {
+    "hp": 34762,
+    "atk": 172.8,
+    "exp": 846,
+    "gold": 891
+   },
+   "49": {
+    "hp": 36848,
+    "atk": 177.0,
+    "exp": 876,
+    "gold": 918
+   },
+   "50": {
+    "hp": 39060,
+    "atk": 181.2,
+    "exp": 906,
+    "gold": 945
+   },
+   "51": {
+    "hp": 41400,
+    "atk": 185.5,
+    "exp": 939,
+    "gold": 972
+   },
+   "52": {
+    "hp": 43882,
+    "atk": 189.7,
+    "exp": 970,
+    "gold": 999
+   },
+   "53": {
+    "hp": 46522,
+    "atk": 194.0,
+    "exp": 1005,
+    "gold": 1035
+   },
+   "54": {
+    "hp": 49312,
+    "atk": 198.2,
+    "exp": 1041,
+    "gold": 1062
+   }
+  },
+  "fixedLevel": 50,
+  "tint": "78E628",
+  "variantOf": "spike_spider",
+  "variantChance": 16
+ },
+ "gold_ore_slime": {
+  "entity": "minecraft:slime",
+  "name": "황금 광석 슬라임",
+  "area": "Lv51~55",
+  "skills": [
+   {
+    "type": "slam",
+    "range": 3.5,
+    "cd": 7,
+    "delay": 1.1,
+    "pct": 170,
+    "r": 3.5
+   }
+  ],
+  "stunArmor": 0.3,
+  "size": 3,
+  "split": "ore_slime_small",
+  "splitCount": 2,
+  "levels": {
+   "47": {
+    "hp": 35528,
+    "atk": 142.6,
+    "exp": 873,
+    "gold": 918
+   },
+   "48": {
+    "hp": 37658,
+    "atk": 146.4,
+    "exp": 903,
+    "gold": 945
+   },
+   "49": {
+    "hp": 39915,
+    "atk": 150.3,
+    "exp": 934,
+    "gold": 972
+   },
+   "50": {
+    "hp": 42315,
+    "atk": 154.2,
+    "exp": 968,
+    "gold": 999
+   },
+   "51": {
+    "hp": 44850,
+    "atk": 158.1,
+    "exp": 1002,
+    "gold": 1035
+   },
+   "52": {
+    "hp": 47542,
+    "atk": 162.0,
+    "exp": 1036,
+    "gold": 1062
+   },
+   "53": {
+    "hp": 50392,
+    "atk": 165.9,
+    "exp": 1072,
+    "gold": 1098
+   },
+   "54": {
+    "hp": 53422,
+    "atk": 169.8,
+    "exp": 1110,
+    "gold": 1125
+   },
+   "55": {
+    "hp": 56625,
+    "atk": 173.7,
+    "exp": 1149,
+    "gold": 1161
+   },
+   "56": {
+    "hp": 60022,
+    "atk": 177.6,
+    "exp": 1190,
+    "gold": 1197
+   },
+   "57": {
+    "hp": 63622,
+    "atk": 181.4,
+    "exp": 1232,
+    "gold": 1233
+   }
+  },
+  "fixedLevel": 55,
+  "tint": "F0C83C",
+  "variantOf": "ore_slime",
+  "variantChance": 16
+ },
+ "void_golem": {
+  "entity": "minecraft:iron_golem",
+  "name": "공허석 골렘",
+  "area": "Lv56~60",
+  "skills": [
+   {
+    "type": "slam",
+    "range": 4.5,
+    "cd": 8,
+    "delay": 1.3,
+    "pct": 200,
+    "r": 4.5,
+    "effect": "stun"
+   }
+  ],
+  "stunArmor": 0.5,
+  "levels": {
+   "53": {
+    "hp": 56295,
+    "atk": 221.8,
+    "exp": 1960,
+    "gold": 1665
+   },
+   "54": {
+    "hp": 59670,
+    "atk": 227.8,
+    "exp": 2028,
+    "gold": 1719
+   },
+   "55": {
+    "hp": 63248,
+    "atk": 233.9,
+    "exp": 2098,
+    "gold": 1773
+   },
+   "56": {
+    "hp": 67042,
+    "atk": 239.9,
+    "exp": 2172,
+    "gold": 1827
+   },
+   "57": {
+    "hp": 71062,
+    "atk": 246.0,
+    "exp": 2248,
+    "gold": 1881
+   },
+   "58": {
+    "hp": 75330,
+    "atk": 252.0,
+    "exp": 2328,
+    "gold": 1935
+   },
+   "59": {
+    "hp": 79852,
+    "atk": 258.0,
+    "exp": 2409,
+    "gold": 1989
+   },
+   "60": {
+    "hp": 84638,
+    "atk": 264.1,
+    "exp": 2493,
+    "gold": 2052
+   },
+   "61": {
+    "hp": 89722,
+    "atk": 270.1,
+    "exp": 2582,
+    "gold": 2115
+   },
+   "62": {
+    "hp": 95108,
+    "atk": 276.2,
+    "exp": 2672,
+    "gold": 2178
+   },
+   "63": {
+    "hp": 100808,
+    "atk": 282.2,
+    "exp": 2764,
+    "gold": 2241
+   }
+  },
+  "fixedLevel": 60,
+  "tint": "6E46C8",
+  "variantOf": "mine_golem",
+  "variantChance": 8
  }
 }

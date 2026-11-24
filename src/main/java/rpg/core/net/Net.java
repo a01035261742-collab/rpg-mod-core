@@ -1016,12 +1016,20 @@ public final class Net {
         CH.send(PacketDistributor.PLAYER.with(() -> p), new SyncData(p, d));
     }
 
+    /** 변종 몹 텍스처 이름 (GeckoLib 몹: textures/entity/<변종 키>.png) */
+    private static String skinOf(String key) { return rpg.core.balance.Balance.VARIANT_OF.containsKey(key) ? key : ""; }
+    /** 변종 몹 몸 색 (바닐라 몹은 몸 전체에 덧씌움), 없으면 -1 */
+    private static int tintOf(String key) {
+        String t = rpg.core.balance.Balance.TINT.get(key);
+        try { return t == null ? -1 : Integer.parseInt(t, 16); } catch (NumberFormatException ex) { return -1; }
+    }
+
     public static void mobInfo(Mob mob, MobData m) {
-        CH.send(PacketDistributor.TRACKING_ENTITY.with(() -> mob), new MobInfo(mob.getId(), m.level, m.hp, m.maxHp, m.name, (float) rpg.core.balance.Balance.scaleOf(m.key)));
+        CH.send(PacketDistributor.TRACKING_ENTITY.with(() -> mob), new MobInfo(mob.getId(), m.level, m.hp, m.maxHp, m.name, (float) rpg.core.balance.Balance.scaleOf(m.key), skinOf(m.key), tintOf(m.key)));
     }
 
     public static void mobInfoTo(ServerPlayer p, Mob mob, MobData m) {
-        CH.send(PacketDistributor.PLAYER.with(() -> p), new MobInfo(mob.getId(), m.level, m.hp, m.maxHp, m.name, (float) rpg.core.balance.Balance.scaleOf(m.key)));
+        CH.send(PacketDistributor.PLAYER.with(() -> p), new MobInfo(mob.getId(), m.level, m.hp, m.maxHp, m.name, (float) rpg.core.balance.Balance.scaleOf(m.key), skinOf(m.key), tintOf(m.key)));
     }
 
     public static void damageText(Mob mob, double amount, int type) {
@@ -1033,11 +1041,11 @@ public final class Net {
     }
 
     // ───────── 서버 → 클라: 몹 레벨·체력 ─────────
-    public record MobInfo(int id, int level, double hp, double maxHp, String name, float scale) {
-        MobInfo(FriendlyByteBuf b) { this(b.readVarInt(), b.readVarInt(), b.readDouble(), b.readDouble(), b.readUtf(64), b.readFloat()); }
-        void encode(FriendlyByteBuf b) { b.writeVarInt(id); b.writeVarInt(level); b.writeDouble(hp); b.writeDouble(maxHp); b.writeUtf(name, 64); b.writeFloat(scale); }
+    public record MobInfo(int id, int level, double hp, double maxHp, String name, float scale, String skin, int tint) {
+        MobInfo(FriendlyByteBuf b) { this(b.readVarInt(), b.readVarInt(), b.readDouble(), b.readDouble(), b.readUtf(64), b.readFloat(), b.readUtf(64), b.readInt()); }
+        void encode(FriendlyByteBuf b) { b.writeVarInt(id); b.writeVarInt(level); b.writeDouble(hp); b.writeDouble(maxHp); b.writeUtf(name, 64); b.writeFloat(scale); b.writeUtf(skin, 64); b.writeInt(tint); }
         void handle(Supplier<NetworkEvent.Context> ctx) {
-            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> rpg.core.client.ClientMobs.update(id, level, hp, maxHp, name, scale));
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> rpg.core.client.ClientMobs.update(id, level, hp, maxHp, name, scale, skin, tint));
             ctx.get().setPacketHandled(true);
         }
     }

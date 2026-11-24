@@ -207,8 +207,8 @@ public final class Dailies {
                 if (q.getBoolean("done") || q.getInt("prog") >= q.getInt("need")) continue;
                 String k = q.getString("k");
                 boolean ok = switch (k) {
-                    case "kill" -> targets(q, m.key);
-                    case "elite" -> m.elite && targets(q, m.key);
+                    case "kill" -> targets(q, m.key) || targets(q, rpg.core.balance.Balance.VARIANT_OF.getOrDefault(m.key, ""));
+                    case "elite" -> m.elite && (targets(q, m.key) || targets(q, rpg.core.balance.Balance.VARIANT_OF.getOrDefault(m.key, "")));
                     case "boss" -> boss && m.level >= rpg.core.data.RpgData.get(p).level - 10;   // 내 레벨 -10 이상 보스만
                     default -> false;
                 };

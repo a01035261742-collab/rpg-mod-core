@@ -48,6 +48,8 @@ public class RpgGeoRenderer extends GeoEntityRenderer<GeoRpgMonster> {
     @Override
     public ResourceLocation getTextureLocation(GeoRpgMonster e) {
         if (e instanceof rpg.core.entity.MushGuardian mg && !mg.phase2()) return GUARDIAN_P1;
+        var info = rpg.core.client.ClientMobs.MAP.get(e.getId());   // 변종 몹: 전용 텍스처
+        if (info != null && !info.skin().isEmpty()) return RpgCore.id("textures/entity/" + info.skin() + ".png");
         return super.getTextureLocation(e);
     }
 

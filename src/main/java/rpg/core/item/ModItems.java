@@ -72,6 +72,9 @@ public final class ModItems {
             "spider_queen_earring", "spider_queen_gloves", "spider_queen_ring", "spider_queen_medal",
             "cave_fang_earring", "bat_cape", "venom_ring", "spike_gloves", "ore_pendant", "miner_belt", "void_earring"};   // 3지역 몹 전용   // + 보스 장신구
 
+    /** 사냥터 드롭 세트 레벨 (사냥터 3~12) */
+    public static final int[] SET_LVS = {14, 18, 24, 28, 34, 38, 44, 48, 54, 58};
+
     static {
         java.util.List<String> all = new java.util.ArrayList<>(java.util.List.of(BASIC));
         for (String b : new String[]{"warrior_sword", "archer_bow", "mage_staff", "thief_dagger", "gloves", "cape", "belt", "earring", "ring", "pendant", "medal"})
@@ -107,7 +110,20 @@ public final class ModItems {
                     GEAR.add(ITEMS.register(id, () -> new rpg.core.equip.GearItems.Armor(rpg.core.equip.GearItems.LEATHER, type, new Item.Properties(), id)));
                 }
             }
+            // 사냥터 세트 방어구 (드롭 전용): <직업>_<부위>_s<레벨>
+            for (int sl : SET_LVS)
+                for (String job : new String[]{"warrior", "archer", "mage", "thief"}) {
+                    String id = job + "_" + a[0] + "_s" + sl;
+                    var mat = job.equals("warrior") ? rpg.core.equip.GearItems.IRON : rpg.core.equip.GearItems.LEATHER;
+                    GEAR.add(ITEMS.register(id, () -> new rpg.core.equip.GearItems.Armor(mat, type, new Item.Properties(), id)));
+                }
         }
+        // 사냥터 세트 장신구 (드롭 전용, 모든 직업)
+        for (int sl : SET_LVS)
+            for (String p : new String[]{"gloves", "cape", "belt", "earring", "ring"}) {
+                String id = p + "_s" + sl;
+                GEAR.add(ITEMS.register(id, () -> new rpg.core.equip.GearItems.Basic(new Item.Properties(), id)));
+            }
     }
 
     // 퀘스트 물건 (배달·가져오기)

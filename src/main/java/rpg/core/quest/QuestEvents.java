@@ -254,7 +254,7 @@ public final class QuestEvents {
                 for (int i = 0; i < q.goals().size(); i++) {
                     Quests.Goal g = q.goals().get(i);
                     if (!g.type().equals("kill") || prog[i] >= g.count()) continue;
-                    if (!g.target().equals(m.key) && !g.target().equals("*")) continue;
+                    if (!g.target().equals(m.key) && !g.target().equals(rpg.core.balance.Balance.VARIANT_OF.get(m.key)) && !g.target().equals("*")) continue;   // 변종도 기존 몹으로 셈
                     if (g.elite() && !m.elite) continue;
                     prog[i]++;
                     changed = true;
