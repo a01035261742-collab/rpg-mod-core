@@ -67,6 +67,7 @@ public final class ClientEvents {
     public static final KeyMapping QUEST_KEY = new KeyMapping("key.rpgcore.quests", InputConstants.KEY_J, CATEGORY);
     public static final KeyMapping MENU_KEY = new KeyMapping("key.rpgcore.charwin", InputConstants.KEY_C, CATEGORY);   // 캐릭터 창 (예전 M)
     public static final KeyMapping MAP_KEY = new KeyMapping("key.rpgcore.map", InputConstants.KEY_M, CATEGORY);   // 약도
+    public static final KeyMapping ACH_KEY = new KeyMapping("key.rpgcore.ach", InputConstants.KEY_U, CATEGORY);   // 업적 창
     public static final String[] SLOT_LABELS = {"Q", "E", "R", "F", "Z", "X"};
 
     /** 칸에 쓸 키 이름 (설정에서 바꾼 키 그대로, 짧게: "왼쪽 Alt" → "Alt", "마우스 버튼 4" → "M4") */
@@ -119,6 +120,7 @@ public final class ClientEvents {
             e.register(QUEST_KEY);
             e.register(MENU_KEY);
             e.register(MAP_KEY);
+            e.register(ACH_KEY);
             for (KeyMapping k : SKILL_KEYS) e.register(k);
         }
 
@@ -344,6 +346,7 @@ public final class ClientEvents {
             while (QUEST_KEY.consumeClick()) if (free && inRpg) mc.setScreen(new QuestScreen());
             while (MENU_KEY.consumeClick()) if (free && inRpg) CharWin.open(CharWin.EQUIP);   // C = 캐릭터 창 (장비 탭)
             while (MAP_KEY.consumeClick()) if (free && inRpg) mc.setScreen(new MapScreen());   // M = 약도
+            while (ACH_KEY.consumeClick()) if (free && inRpg) AchScreen.request();   // U = 업적
             for (int i = 0; i < 6; i++) {
                 if (wait[i] > 0) wait[i]--;
                 boolean pressed = false;

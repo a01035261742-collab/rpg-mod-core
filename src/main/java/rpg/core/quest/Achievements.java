@@ -193,6 +193,43 @@ public final class Achievements {
                     .withStyle(ChatFormatting.YELLOW), false);
     }
 
+    /** 업적 창 데이터 (종류별 탭, 진행값) */
+    public static rpg.core.net.Net.AchSync sync(ServerPlayer p) {
+        CompoundTag done = data(p).getCompound("done");
+        java.util.List<rpg.core.net.Net.AchRow> rows = new java.util.ArrayList<>();
+        for (Ach ac : ACHS.values()) {
+            int tab = switch (ac.type()) {
+                case "kills", "variantKinds", "elites" -> 1;
+                case "mob" -> 2;
+                case "bossKinds", "bossCount" -> 3;
+                case "sets", "star", "enhance", "destroy" -> 4;
+                default -> 0;
+            };
+            String kind = switch (ac.type()) {
+                case "level" -> "레벨";
+                case "gold" -> "보유 골드";
+                case "quests" -> "퀘스트 완료";
+                case "kills" -> "총 처치";
+                case "variantKinds" -> "변종 종류";
+                case "elites" -> "엘리트 처치";
+                case "mob" -> "처치 (변종 포함)";
+                case "bossKinds" -> "보스 종류";
+                case "bossCount" -> "보스 처치";
+                case "sets" -> "사냥터 세트 완성";
+                case "star" -> "최고 강화 ★";
+                case "enhance" -> "강화 성공";
+                case "destroy" -> "장비 파괴";
+                default -> ac.type();
+            };
+            String rw = "";
+            boolean medal = !ac.medal().isEmpty();
+            if (medal) rw = rpg.core.item.ItemIds.stack(RpgCore.MODID + ":" + ac.medal(), 1).getHoverName().getString();
+            else if (ac.gold() > 0) rw = String.format("%,d G", ac.gold());
+            rows.add(new rpg.core.net.Net.AchRow(tab, ac.name(), kind, value(p, ac), ac.need(), rw, medal, done.getBoolean(ac.id())));
+        }
+        return new rpg.core.net.Net.AchSync(rows);
+    }
+
     /** /rpg ach: 진행도 */
     public static void show(ServerPlayer p) {
         CompoundTag done = data(p).getCompound("done");

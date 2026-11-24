@@ -15,8 +15,8 @@ import rpg.core.net.Net;
 public final class CharWin {
     private CharWin() {}
 
-    public static final String[] TABS = {"장비", "스탯", "스킬", "패시브", "퀘스트", "파티", "강화", "일일"};
-    public static final int EQUIP = 0, STAT = 1, SKILL = 2, PASSIVE = 3, QUEST = 4, PARTY = 5, ENHANCE = 6, DAILY = 7;
+    public static final String[] TABS = {"장비", "스탯", "스킬", "패시브", "퀘스트", "파티", "강화", "일일", "업적"};
+    public static final int EQUIP = 0, STAT = 1, SKILL = 2, PASSIVE = 3, QUEST = 4, PARTY = 5, ENHANCE = 6, DAILY = 7, ACH = 8;
     public static final int W = 480, H = 300, CX0 = 77, CY0 = 24;
 
     /** 내용 판 안쪽 시작·끝 */
@@ -61,6 +61,7 @@ public final class CharWin {
             case PARTY -> mc.setScreen(new PartyScreen());
             case ENHANCE -> EnhanceScreen.request();
             case DAILY -> DailyScreen.request();
+            case ACH -> AchScreen.request();
             default -> {}
         }
     }

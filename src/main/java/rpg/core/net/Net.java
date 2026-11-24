@@ -150,6 +150,39 @@ public final class Net {
                 .encoder(RollCd::encode).decoder(RollCd::new).consumerMainThread(RollCd::handle).add();
         CH.messageBuilder(MapHere.class, id++, NetworkDirection.PLAY_TO_CLIENT)
                 .encoder(MapHere::encode).decoder(MapHere::new).consumerMainThread(MapHere::handle).add();
+        CH.messageBuilder(AchReq.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(AchReq::encode).decoder(AchReq::new).consumerMainThread(AchReq::handle).add();
+        CH.messageBuilder(AchSync.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(AchSync::encode).decoder(AchSync::new).consumerMainThread(AchSync::handle).add();
+    }
+
+    // ───────── 업적 창 ─────────
+    /** 클라 → 서버: 업적 창 열기 */
+    public record AchReq(int op) {
+        AchReq(FriendlyByteBuf b) { this(b.readVarInt()); }
+        void encode(FriendlyByteBuf b) { b.writeVarInt(op); }
+        void handle(Supplier<NetworkEvent.Context> ctx) {
+            ServerPlayer p = ctx.get().getSender();
+            if (p != null) CH.send(PacketDistributor.PLAYER.with(() -> p), rpg.core.quest.Achievements.sync(p));
+            ctx.get().setPacketHandled(true);
+        }
+    }
+
+    /** 업적 한 줄: tab 0 성장 · 1 사냥 · 2 몹별 · 3 보스 · 4 장비, medal = 훈장 보상 */
+    public record AchRow(int tab, String name, String kind, long cur, long need, String reward, boolean medal, boolean done) {}
+
+    public record AchSync(java.util.List<AchRow> rows) {
+        AchSync(FriendlyByteBuf b) {
+            this(b.readList(x -> new AchRow(x.readVarInt(), x.readUtf(), x.readUtf(), x.readVarLong(), x.readVarLong(), x.readUtf(), x.readBoolean(), x.readBoolean())));
+        }
+        void encode(FriendlyByteBuf b) {
+            b.writeCollection(rows, (x, r) -> { x.writeVarInt(r.tab()); x.writeUtf(r.name()); x.writeUtf(r.kind()); x.writeVarLong(r.cur()); x.writeVarLong(r.need());
+                x.writeUtf(r.reward()); x.writeBoolean(r.medal()); x.writeBoolean(r.done()); });
+        }
+        void handle(Supplier<NetworkEvent.Context> ctx) {
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> rpg.core.client.AchScreen.receive(this));
+            ctx.get().setPacketHandled(true);
+        }
     }
 
     // ───────── 서버 → 클라: 보스 BGM (빈칸 = 끄기) ─────────
