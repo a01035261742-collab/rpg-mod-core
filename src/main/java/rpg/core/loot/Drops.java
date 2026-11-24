@@ -180,7 +180,7 @@ public final class Drops {
             for (ItemStack g : one) { Gear.roll(g); out.add(g); }
         }
 
-        // 사냥터 세트: 막타 직업 것 (초보자는 무작위 직업), 추가 옵션 없음
+        // 사냥터 세트: 막타 직업 것 (초보자는 무작위 직업), 추가 옵션 4줄 (몹 전용과 같음)
         if (md != null && !md.sets().isEmpty()) {
             String[] jobs = {"warrior", "archer", "mage", "thief"};
             String job = d.job >= 1 && d.job <= 4 ? jobs[d.job - 1] : jobs[r.nextInt(4)];
@@ -188,7 +188,7 @@ public final class Drops {
                 if (!hit(r, u.chance() * mul * (m.elite ? rpg.core.balance.Balance.eliteGear : 1))) continue;
                 List<ItemStack> one = new ArrayList<>();
                 add(one, u.item().replace("{job}", job));
-                for (ItemStack g : one) { Gear.rollPlain(g); out.add(g); }
+                for (ItemStack g : one) { Gear.roll(g); out.add(g); }
             }
         }
 
