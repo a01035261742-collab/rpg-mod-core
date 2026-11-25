@@ -234,16 +234,18 @@ public final class Achievements {
         return new rpg.core.net.Net.AchSync(rows);
     }
 
-    /** /rpg ach: 진행도 */
+    /** /rpg ach: 달성 수 + 거의 다 한 것 5개 (전부는 업적 창 U) */
     public static void show(ServerPlayer p) {
         CompoundTag done = data(p).getCompound("done");
-        p.sendSystemMessage(Component.literal("── 업적 ──").withStyle(ChatFormatting.YELLOW));
-        for (Ach ac : ACHS.values()) {
-            boolean ok = done.getBoolean(ac.id());
-            long v = Math.min(value(p, ac), ac.need());
-            String rw = (ac.gold() > 0 ? String.format("%,d G", ac.gold()) : "")
-                    + (ac.medal().isEmpty() ? "" : rpg.core.item.ItemIds.stack(RpgCore.MODID + ":" + ac.medal(), 1).getHoverName().getString());
-            p.sendSystemMessage(Component.literal((ok ? "§a✔ " : "§7· ") + ac.name() + " §f" + String.format("%,d/%,d", v, ac.need()) + " §8(" + rw + ")"));
-        }
+        long ok = ACHS.values().stream().filter(ac -> done.getBoolean(ac.id())).count();
+        p.sendSystemMessage(Component.literal("── 업적 " + ok + " / " + ACHS.size() + " ── §7(전체는 U 또는 캐릭터 창 [업적])").withStyle(ChatFormatting.YELLOW));
+        ACHS.values().stream().filter(ac -> !done.getBoolean(ac.id()))
+                .sorted((x, y) -> Double.compare(Math.min(1.0, value(p, y) / (double) Math.max(1, y.need())), Math.min(1.0, value(p, x) / (double) Math.max(1, x.need()))))
+                .limit(5).forEach(ac -> {
+                    long v = Math.min(value(p, ac), ac.need());
+                    String rw = ac.medal().isEmpty() ? String.format("%,d G", ac.gold())
+                            : rpg.core.item.ItemIds.stack(RpgCore.MODID + ":" + ac.medal(), 1).getHoverName().getString();
+                    p.sendSystemMessage(Component.literal("§7· " + ac.name() + " §f" + String.format("%,d/%,d", v, ac.need()) + " §8(" + rw + ")"));
+                });
     }
 }
