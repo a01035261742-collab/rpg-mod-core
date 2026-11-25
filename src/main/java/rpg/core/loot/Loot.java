@@ -70,6 +70,7 @@ public final class Loot {
             e.setCanceled(true);
             if (ie.hasPickUpDelay() || !ie.isAlive()) return;
             net.minecraft.world.item.ItemStack st = ie.getItem();
+            net.minecraft.world.item.ItemStack orig = st.copy();   // 옮기다 보면 st 가 비어서 이름이 "공기"가 됨 → 미리 복사
             int before = st.getCount();
             for (int pass = 0; pass < 2 && !st.isEmpty(); pass++)
                 for (int i = 0; i < inv.items.size() && !st.isEmpty(); i++) {
@@ -84,7 +85,7 @@ public final class Loot {
                 }
             int got = before - st.getCount();
             if (got <= 0) return;
-            var shown = ie.getItem().copyWithCount(got);
+            var shown = orig.copyWithCount(got);
             sp.take(ie, got);
             if (st.isEmpty()) ie.discard(); else ie.setItem(st);
             sp.inventoryMenu.broadcastChanges();
