@@ -64,7 +64,7 @@ final class Casts {
         return p;
     }
 
-    /** 지속 버프: 몸 겉 은은한 색 테두리 (갑옷 위로도 보임) */
+    /** 지속 버프: 발밑 은은한 색 링 */
     static void aura(int ent, String id, int rgb, double dur) {
         if (dur <= 0) return;
         SkillFx.aura(ent + ":" + id, new L((d, t) -> {
@@ -72,7 +72,7 @@ final class Casts {
             Entity e = get(ent);
             if (e == null || !e.isAlive()) return t < 1;
             double in = Math.min(1, t / 0.3), out = Math.min(1, (dur - t) / 0.5);
-            d.cyl("aura", true, d.ent(e).add(0, -0.05, 0), e.getBbWidth() + 0.5, e.getBbHeight() + 0.25, rgb, (float) (in * out * (0.45 + 0.08 * Math.sin(t * 4))));
+            d.flat("ring_soft", true, d.ent(e).add(0, 0.03, 0), 0.55 + 0.03 * Math.sin(t * 3), rgb, (float) (in * out * (0.5 + 0.1 * Math.sin(t * 3))));   // 발밑 은은한 색 링
             return true;
         }));
     }
