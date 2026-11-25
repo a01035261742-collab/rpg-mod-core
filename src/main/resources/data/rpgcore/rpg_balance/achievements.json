@@ -1,22 +1,52 @@
 {
   "_doc": "업적: type = level|kills|mob(mob=몹 키, 변종 포함)|variantKinds|elites|bossKinds|bossCount|sets(사냥터 세트 완성 종류)|quests|star|enhance(강화 성공 횟수)|destroy|gold, need = 목표, gold = 골드 보상, medal = 훈장 아이템 (한 번만)",
+  "start": {
+    "name": "모험의 시작",
+    "type": "level",
+    "need": 1,
+    "medal": "medal_1"
+  },
   "first_step": {
     "name": "첫 걸음",
     "type": "level",
     "need": 10,
-    "gold": 1000
+    "gold": 1000,
+    "medal": "medal_10"
+  },
+  "lv20": {
+    "name": "성장하는 모험가",
+    "type": "level",
+    "need": 20,
+    "gold": 8000,
+    "medal": "medal_20"
   },
   "lv30": {
     "name": "중견 모험가",
     "type": "level",
     "need": 30,
-    "gold": 20000
+    "gold": 20000,
+    "medal": "medal_30"
+  },
+  "lv40": {
+    "name": "베테랑 모험가",
+    "type": "level",
+    "need": 40,
+    "gold": 40000,
+    "medal": "medal_40"
   },
   "lv50": {
     "name": "노련한 모험가",
     "type": "level",
     "need": 50,
-    "gold": 80000
+    "gold": 80000,
+    "medal": "medal_50"
+  },
+  "lv60": {
+    "name": "심층의 영웅",
+    "type": "level",
+    "need": 60,
+    "gold": 120000,
+    "medal": "medal_60"
   },
   "lv70": {
     "name": "정상을 향해",
