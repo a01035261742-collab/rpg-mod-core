@@ -197,10 +197,7 @@ public class MapScreen extends ScaledScreen {
             g.drawString(font, o.name(), x0 + 8, y0 + 6, Ui.TXT, true);
             g.drawString(font, "Lv." + o.lv() + (o.raid() ? "  레이드 보스" : o.boss() ? "  필드 보스" : ""), x0 + 8, y0 + 18, Ui.VAL, false);
             int yy = y0 + 34;
-            String ev = String.format("%,d", o.exp()), gv = String.format("%,d G", o.gold());
-            g.drawString(font, "경험치", x0 + 8, yy, Ui.GRAY, false); g.drawString(font, ev, x1 - 8 - font.width(ev), yy, Ui.TXT, false); yy += 12;
-            g.drawString(font, "골드", x0 + 8, yy, Ui.GRAY, false); g.drawString(font, gv, x1 - 8 - font.width(gv), yy, Ui.VAL, false); yy += 12;
-            Ui.hsep(g, x0 + 6, x1 - 6, yy + 1); yy += 6;
+            Ui.hsep(g, x0 + 6, x1 - 6, yy - 4);   // 경험치·골드 숫자는 안 보여줌 (드롭처럼)
             if (o.boss()) {
                 g.drawString(font, "주요 보상", x0 + 8, yy, Ui.GREEN, true); yy += 12;
                 for (String r : o.rewards()) { g.drawString(font, "· " + Ui.cut(font, r, cw - 24), x0 + 12, yy, Ui.TXT, false); yy += 11; }
