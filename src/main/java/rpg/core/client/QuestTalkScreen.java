@@ -61,7 +61,14 @@ public class QuestTalkScreen extends ScaledScreen {
     }
 
     private int h() {
-        return H0 + (sel != null && mode != 1 && !sel.reward().choose().isEmpty() ? PICK : 0);
+        if (sel == null) {   // 목록: 퀘스트 수만큼만 (최대 8줄, 넘으면 스크롤)
+            List<Entry> all = entries();
+            long open = all.stream().filter(en -> en.kind() != 4).count();
+            boolean locked = all.stream().anyMatch(en -> en.kind() == 4);
+            int rows = (int) Math.max(1, Math.min(ROWS, open));
+            return Math.min(H0, 44 + rows * 17 + (locked ? 14 : 0) + 8 + Ui.FOOT);
+        }
+        return H0 + (mode != 1 && !sel.reward().choose().isEmpty() ? PICK : 0);
     }
 
     @Override
