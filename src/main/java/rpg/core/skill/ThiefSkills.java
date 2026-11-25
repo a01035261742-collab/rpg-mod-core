@@ -54,7 +54,6 @@ public final class ThiefSkills {
                     CombatEvents.skillHit(p, m, pct);
                 }
                 Vec3 c = p.position().add(look.scale(1.5));
-                l.sendParticles(ParticleTypes.CRIT, c.x, p.getY() + 1.1, c.z, 8, 0.3, 0.2, 0.3, 0.2);
                 l.playSound(null, p.blockPosition(), SoundEvents.PLAYER_ATTACK_STRONG, SoundSource.PLAYERS, 0.7f, 1.4f + k * 0.2f);
                 anim(p, "double_stab", k == 0 ? ANIM_STAB : "DAGGER_AUTO2|SWORD_AUTO2");
             };
@@ -74,7 +73,6 @@ public final class ThiefSkills {
         p.hurtMarked = true;
         p.fallDistance = 0;
         ServerLevel l = p.serverLevel();
-        l.sendParticles(ParticleTypes.CLOUD, p.getX(), p.getY() + 0.2, p.getZ(), 8, 0.3, 0.05, 0.3, 0.03);
         l.playSound(null, p.blockPosition(), SoundEvents.PLAYER_ATTACK_SWEEP, SoundSource.PLAYERS, 0.5f, 1.8f);
         // 방향에 맞는 스텝 모션
         double fwd = dir.dot(look), side = dir.x * look.z - dir.z * look.x;
@@ -193,7 +191,6 @@ public final class ThiefSkills {
             if (td.buffV("plunder", now) > s.value(lv)) continue;
             td.buffEnd.put("plunder", end);
             td.buffVal.put("plunder", s.value(lv));
-            t.serverLevel().sendParticles(ParticleTypes.HAPPY_VILLAGER, t.getX(), t.getY() + 1, t.getZ(), 10, 0.4, 0.6, 0.4, 0);
             if (t != p) RpgData.sync(t);
         }
         WarriorSkills.burst(p, ParticleTypes.HAPPY_VILLAGER, SoundEvents.PLAYER_LEVELUP, 1.6f);

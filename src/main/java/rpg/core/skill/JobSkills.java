@@ -115,9 +115,7 @@ public final class JobSkills {
                 m.knockback(0.4 + ratio * 0.6, -look.x, -look.z);
                 hits++;
             }
-            Vec3 c = p.position().add(look.scale(1.8));
-            l.sendParticles(ParticleTypes.SWEEP_ATTACK, c.x, p.getY() + 1, c.z, 3 + (int) (ratio * 4), 0.8, 0.2, 0.8, 0);
-            if (ratio >= 1) l.sendParticles(ParticleTypes.EXPLOSION, c.x, p.getY() + 0.5, c.z, 1, 0, 0, 0, 0);
+            FxOut.shock(l, p.position(), range, 180, p.getYRot());   // 충격파 (치는 순간)
             l.playSound(null, p.blockPosition(), ratio >= 1 ? SoundEvents.PLAYER_ATTACK_CRIT : SoundEvents.PLAYER_ATTACK_SWEEP,
                     SoundSource.PLAYERS, 1.0f, 0.8f + (float) ratio * 0.3f);
 
@@ -288,7 +286,6 @@ public final class JobSkills {
             td.buffEnd.put("haste", now + MageSkills.dur(rpg.core.data.RpgData.get(p), Defs.value3(s, lv)));
             td.buffVal.put("haste", s.value(lv));    // 이동속도 %
             td.buffVal2.put("haste", s.value2(lv));  // 점프력 %
-            t.serverLevel().sendParticles(ParticleTypes.EFFECT, t.getX(), t.getY() + 1, t.getZ(), 15, 0.4, 0.6, 0.4, 0.05);
             rpg.core.data.RpgData.sync(t);
         }
         p.serverLevel().playSound(null, p.blockPosition(), SoundEvents.BEACON_POWER_SELECT, SoundSource.PLAYERS, 0.6f, 1.6f);

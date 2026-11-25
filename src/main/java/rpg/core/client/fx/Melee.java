@@ -25,7 +25,10 @@ final class Melee extends SkillFx.Fx {
     }
 
     Melee(Net.Fx f, JsonObject o) {
-        ent = f.e(); scale = f.a() > 0.05 ? f.a() : 1;
+        ent = f.e();
+        double len = o.has("len") ? o.get("len").getAsDouble() : 1, mul = f.dx(), atk = f.dy();
+        double rate = atk <= 0 ? 1 : mul > 0 ? atk * mul / rpg.core.compat.EpicFightCompat.BASE_ATTACK_SPEED : len * atk;   // 에픽파이트와 같은 식
+        scale = rate > 0.05 ? rate : 1;
         double yaw = Math.toRadians(f.b());
         fw = new Vec3(-Math.sin(yaw), 0, Math.cos(yaw)); rt = new Vec3(-Math.cos(yaw), 0, -Math.sin(yaw));
         anchor = new Vec3(f.x(), f.y(), f.z());

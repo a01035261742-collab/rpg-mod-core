@@ -91,6 +91,7 @@ public final class SkillFx {
                 }
             }
             case "boom" -> add(new Boom(at, f.a(), "shadow".equals(f.s())));
+            case "shock" -> add(new Shock(at, f.a(), f.s().equals("circle") ? 360 : parseD(f.s()), f.b()));
             case "sblade" -> add(new Blade(at, new Vec3(f.dx(), f.dy(), f.dz())));
             case "chain" -> add(new Chain(f.s()));
             case "field" -> { Field fl = new Field(f.s(), at, f.a(), f.b()); FIELDS.put(f.e(), fl); add(fl); }
@@ -101,6 +102,22 @@ public final class SkillFx {
     }
 
     static int parse(String s) { try { return Integer.parseInt(s.trim()); } catch (Exception e) { return -1; } }
+    static double parseD(String s) { try { return Double.parseDouble(s.trim()); } catch (Exception e) { return 360; } }
+
+    /** 충격파: 서버가 실제로 친 순간 · 바닥 고리가 범위까지 퍼짐 */
+    static final class Shock extends Fx {
+        final Vec3 c; final double r, deg, face;
+        Shock(Vec3 c, double r, double deg, double yaw) {
+            this.c = c.add(0, 0.05, 0); this.r = r; this.deg = deg;
+            double y = Math.toRadians(yaw); this.face = Math.toDegrees(Math.atan2(Math.cos(y), -Math.sin(y)));
+        }
+        boolean draw(D d, double t) {
+            double k = t / 0.3;
+            if (k > 1) return false;
+            d.arc("white", c, 0.3 + (r - 0.3) * k, 0.82, face - deg / 2, deg, 0xD8DCF0, (float) (1 - k * 0.5));
+            return true;
+        }
+    }
 
     static void add(Fx fx) {
         if (LIST.size() >= MAX) LIST.remove(0);
@@ -200,7 +217,15 @@ public final class SkillFx {
                 quad(vc, a.subtract(o), b.subtract(o), b.add(o), a.add(o), 0, 0, 1, 1, rgb, al, addv);
             }
         }
-        /** 세로로 선 판 두 장 (기둥·몸 테두리) */
+        /** 세로로 선 판 한 장, 늘 화면 쪽을 봄 (몸 테두리) */
+        void cyl(String tex, boolean addv, Vec3 base, double w, double h, int rgb, float al) {
+            if (al <= 0.002) return;
+            Vec3 r = new Vec3(left.x(), 0, left.z());
+            r = r.lengthSqr() < 1e-4 ? new Vec3(1, 0, 0) : r.normalize().scale(w / 2);
+            VertexConsumer vc = addv ? add(tex) : norm(tex);
+            quad(vc, base.add(r), base.subtract(r), base.subtract(r).add(0, h, 0), base.add(r).add(0, h, 0), 0, 0, 1, 1, rgb, al, addv);
+        }
+        /** 세로로 선 판 두 장 (기둥) */
         void pillar(String tex, boolean addv, Vec3 base, double w, double h, int rgb, float al) {
             VertexConsumer vc = addv ? add(tex) : norm(tex);
             for (int k = 0; k < 2; k++) {

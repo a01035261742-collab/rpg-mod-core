@@ -141,8 +141,6 @@ public final class MageSkills {
                 td.buffVal.put("blessed_hand", d.bonus("healBuff"));
                 if (t != p) RpgData.sync(t);
             }
-            t.serverLevel().sendParticles(ParticleTypes.HEART, t.getX(), t.getY() + 1.2, t.getZ(), 5, 0.4, 0.4, 0.4, 0);
-            t.serverLevel().sendParticles(ParticleTypes.HAPPY_VILLAGER, t.getX(), t.getY() + 1, t.getZ(), 10, 0.4, 0.6, 0.4, 0);
         }
         if (d.bonus("healDmg") > 0 && total > 0) {   // 빛의 사도
             double dmg = total * d.bonus("healDmg") / 100.0;
@@ -167,7 +165,6 @@ public final class MageSkills {
             if (td.buffV("bless", now) > s.value(lv)) continue;   // 더 센 블레스가 걸려 있으면 그대로
             td.buffEnd.put("bless", end);
             td.buffVal.put("bless", s.value(lv));
-            t.serverLevel().sendParticles(ParticleTypes.END_ROD, t.getX(), t.getY() + 1, t.getZ(), 15, 0.4, 0.6, 0.4, 0.05);
             if (t != p) RpgData.sync(t);
         }
         WarriorSkills.burst(p, ParticleTypes.END_ROD, SoundEvents.BEACON_ACTIVATE, 1.5f);

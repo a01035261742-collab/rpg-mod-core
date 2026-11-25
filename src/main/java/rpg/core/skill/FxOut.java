@@ -28,9 +28,15 @@ public final class FxOut {
     /** 근접 스킬 모션 재생됨 → 검기 (스킬:모션, 공속 배율) */
     public static void melee(ServerPlayer p, String skill, String anim) {
         if (anim == null || anim.isEmpty()) return;
-        PlayerData d = RpgData.get(p);
-        double scale = 1 + (rpg.core.world.RpgWorld.in(p) ? d.atkSpeedPct / 100.0 : 0);
-        send(p.serverLevel(), "melee", p.getId(), p.position(), Vec3.ZERO, scale, p.getYRot(), skill + ":" + anim);
+        // 에픽파이트 공격 모션 속도: 속도 설정(SPEED)이 있으면 공속 × 배수 / 1.6, 없으면 모션 길이 × 공속 (클라가 계산)
+        double atk = p.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_SPEED);
+        double mul = rpg.core.compat.EpicFightCompat.SPEED.getOrDefault(anim, 0f);
+        send(p.serverLevel(), "melee", p.getId(), p.position(), new Vec3(mul, atk, 0), 1, p.getYRot(), skill + ":" + anim);
+    }
+
+    /** 충격파: 실제 타격 순간 (kind sector · circle, 반지름, 각도, 바라보는 방향) */
+    public static void shock(ServerLevel l, Vec3 c, double r, double deg, float yaw) {
+        send(l, "shock", 0, c, Vec3.ZERO, r, yaw, deg >= 360 ? "circle" : String.valueOf(deg));
     }
 
     /** 스킬 사용 성공 (버프·이동·파티 스킬) — before = 쓰기 전 위치 */

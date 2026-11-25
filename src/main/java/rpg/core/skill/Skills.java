@@ -170,7 +170,6 @@ public final class Skills {
         d.sprintEnd = now + Math.round(s.duration() * 20);
         d.sprintPct = s.value(lv);
         ServerLevel lv2 = p.serverLevel();
-        lv2.sendParticles(ParticleTypes.CLOUD, p.getX(), p.getY() + 0.2, p.getZ(), 12, 0.3, 0.05, 0.3, 0.05);
         lv2.playSound(null, p.blockPosition(), SoundEvents.PLAYER_ATTACK_SWEEP, SoundSource.PLAYERS, 0.6f, 1.6f);
         return true;
     }
@@ -183,7 +182,6 @@ public final class Skills {
         double heal = Math.round(d.level * s.value(lv) * (1 + d.bonus("healPct") / 100.0));   // 레벨 × 계수
         JobSkills.heal(p, d, p, d, heal);
         ServerLevel lv2 = p.serverLevel();
-        lv2.sendParticles(ParticleTypes.HEART, p.getX(), p.getY() + 1.2, p.getZ(), 6, 0.4, 0.4, 0.4, 0);
         lv2.playSound(null, p.blockPosition(), SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS, 0.4f, 1.8f);
         return true;
     }

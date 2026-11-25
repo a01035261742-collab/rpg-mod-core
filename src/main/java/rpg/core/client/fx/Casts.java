@@ -72,7 +72,7 @@ final class Casts {
             Entity e = get(ent);
             if (e == null || !e.isAlive()) return t < 1;
             double in = Math.min(1, t / 0.3), out = Math.min(1, (dur - t) / 0.5);
-            d.pillar("aura", true, d.ent(e).add(0, -0.05, 0), e.getBbWidth() + 0.5, e.getBbHeight() + 0.25, rgb, (float) (in * out * (0.45 + 0.08 * Math.sin(t * 4))));
+            d.cyl("aura", true, d.ent(e).add(0, -0.05, 0), e.getBbWidth() + 0.5, e.getBbHeight() + 0.25, rgb, (float) (in * out * (0.45 + 0.08 * Math.sin(t * 4))));
             return true;
         }));
     }
@@ -295,7 +295,7 @@ final class Casts {
                     for (int i = 0; i < 3; i++) {
                         if (ghost[i] == null) continue;
                         double k = (t - (0.08 + i * 0.1)) / 0.3;
-                        if (k >= 0 && k < 1) d.pillar("aura", true, ghost[i], 0.9, 1.9, 0x7A4AE0, (float) (0.9 * (1 - k)));
+                        if (k >= 0 && k < 1) d.cyl("aura", true, ghost[i], 0.9, 1.9, 0x7A4AE0, (float) (0.9 * (1 - k)));
                     }
                     return true;
                 }));

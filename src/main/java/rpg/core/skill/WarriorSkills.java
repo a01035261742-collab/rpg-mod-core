@@ -93,14 +93,12 @@ public final class WarriorSkills {
                 Vec3 v = p.getDeltaMovement();
                 p.setDeltaMovement(v.x * 0.3, v.y, v.z * 0.3);
                 p.hurtMarked = true;
-                l.sendParticles(ParticleTypes.CLOUD, pile.x, pile.y + 0.3, pile.z, 12, 0.8, 0.1, 0.8, 0.02);
                 return true;
             }
             if (t < 5) {
                 p.setDeltaMovement(dir.x * step, 0, dir.z * step);
                 p.hurtMarked = true;
                 p.fallDistance = 0;
-                l.sendParticles(ParticleTypes.CLOUD, p.getX(), p.getY() + 0.2, p.getZ(), 2, 0.2, 0.05, 0.2, 0);
             }
             return false;
         });
@@ -123,8 +121,6 @@ public final class WarriorSkills {
                 if (!p.isAlive()) return;
                 ServerLevel l = p.serverLevel();
                 for (Mob m : BranchSkills.mobsAround(l, p.position(), 3.5)) CombatEvents.skillHit(p, m, pct);
-                l.sendParticles(ParticleTypes.SWEEP_ATTACK, p.getX(), p.getY() + 1, p.getZ(), 6, 1.6, 0.2, 1.6, 0);
-                l.sendParticles(ParticleTypes.DAMAGE_INDICATOR, p.getX(), p.getY() + 1, p.getZ(), 5, 1.2, 0.3, 1.2, 0.1);
                 l.playSound(null, p.blockPosition(), SoundEvents.PLAYER_ATTACK_SWEEP, SoundSource.PLAYERS, 0.8f, 0.6f + k * 0.08f);
             };
             JobSkills.later(p, SPIN_FIRST + i * SPIN_GAP, hit);   // 모션은 처음 한 번, 타는 모션 도는 동안 고르게
@@ -146,8 +142,6 @@ public final class WarriorSkills {
             CombatEvents.skillHit(p, m, pct);
         }
         Vec3 c = p.position().add(look.scale(1.8));
-        l.sendParticles(ParticleTypes.SWEEP_ATTACK, c.x, p.getY() + 1, c.z, step == 2 ? 5 : 2, step == 2 ? 1.2 : 0.6, 0.2, step == 2 ? 1.2 : 0.6, 0);
-        if (step == 2) l.sendParticles(ParticleTypes.CRIT, c.x, p.getY() + 1, c.z, 20, 1.2, 0.4, 1.2, 0.3);
         l.playSound(null, p.blockPosition(), step == 2 ? SoundEvents.PLAYER_ATTACK_CRIT : SoundEvents.PLAYER_ATTACK_SWEEP, SoundSource.PLAYERS, 1f, 0.9f + step * 0.1f);
         anim(p, "combo_slash_" + (step + 1), ANIM_COMBO[step]);
         d.comboStep = step == 2 ? 0 : step + 1;   // 3타 끝나면 0 → Skills.spend 가 3초 쿨
@@ -162,20 +156,12 @@ public final class WarriorSkills {
         PlayerData d = RpgData.get(p);
         long now = p.level().getGameTime();
         ServerLevel l = p.serverLevel();
-        if (d.buff("iron_body", now))   // 아이언 바디: 발밑 회색 반짝
-            l.sendParticles(ParticleTypes.CRIT, p.getX(), p.getY() + 0.1, p.getZ(), 2, 0.4, 0.05, 0.4, 0);
-        if (d.buff("iron_wall", now))   // 철벽: 몸 주변 흰 방패 반짝
-            l.sendParticles(ParticleTypes.END_ROD, p.getX(), p.getY() + 1, p.getZ(), 3, 0.5, 0.6, 0.5, 0);
-        if (d.buff("berserk", now))     // 광폭화: 붉은 기운
-            l.sendParticles(new net.minecraft.core.particles.DustParticleOptions(new org.joml.Vector3f(0.9f, 0.1f, 0.05f), 1.2f),
-                    p.getX(), p.getY() + 1, p.getZ(), 4, 0.35, 0.6, 0.35, 0);
+        // 유지 표시는 클라 이펙트(몸 테두리)로 바뀜
     }
 
     /** 버프 시작 연출: 소리 + 한 번 번쩍 */
     static void burst(ServerPlayer p, net.minecraft.core.particles.ParticleOptions fx, net.minecraft.sounds.SoundEvent snd, float pitch) {
         ServerLevel l = p.serverLevel();
-        l.sendParticles(fx, p.getX(), p.getY() + 1, p.getZ(), 30, 0.5, 0.8, 0.5, 0.15);
-        l.sendParticles(ParticleTypes.FLASH, p.getX(), p.getY() + 1, p.getZ(), 1, 0, 0, 0, 0);
         l.playSound(null, p.blockPosition(), snd, SoundSource.PLAYERS, 0.9f, pitch);
     }
 }

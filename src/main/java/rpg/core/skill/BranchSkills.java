@@ -131,9 +131,7 @@ public final class BranchSkills {
         for (Mob m : mobsAround(l, p.position(), 8)) {
             MobData md = Combat.mob(m);
             MobAI.taunt(m, md, p, ticks);
-            l.sendParticles(ParticleTypes.ANGRY_VILLAGER, m.getX(), m.getY() + m.getBbHeight() + 0.3, m.getZ(), 3, 0.2, 0.1, 0.2, 0);
         }
-        l.sendParticles(ParticleTypes.SONIC_BOOM, p.getX(), p.getY() + 1, p.getZ(), 1, 0, 0, 0, 0);
         l.playSound(null, p.blockPosition(), SoundEvents.RAVAGER_ROAR, SoundSource.PLAYERS, 0.7f, 1.3f);
         return true;
     }
@@ -173,7 +171,14 @@ public final class BranchSkills {
         p.hurtMarked = true;
         double pct = s.value(lv);
         p.serverLevel().playSound(null, p.blockPosition(), SoundEvents.PLAYER_ATTACK_KNOCKBACK, SoundSource.PLAYERS, 0.8f, 0.7f);
+        boolean[] played = {false};
         task(p, t -> {
+            // 꼭대기(내려오기 시작)에서 내려찍기 모션 → 땅에 닿을 때 칼이 내려옴
+            if (!played[0] && t >= 3 && p.getDeltaMovement().y <= 0) {
+                played[0] = true;
+                if (!rpg.core.compat.EpicFightCompat.playSkill(p, "leap_slam", WarriorSkills.ANIM_DASH))
+                    p.swing(net.minecraft.world.InteractionHand.MAIN_HAND, true);
+            }
             if (t < 4 || (!p.onGround() && t < 30)) return false;   // 내려올 때까지
             p.fallDistance = 0;
             ServerLevel l = p.serverLevel();
@@ -181,10 +186,9 @@ public final class BranchSkills {
                 CombatEvents.skillHit(p, m, pct);
                 m.setDeltaMovement(m.getDeltaMovement().add(0, 0.3, 0));
             }
-            l.sendParticles(ParticleTypes.EXPLOSION, p.getX(), p.getY() + 0.2, p.getZ(), 4, 1, 0.1, 1, 0);
-            l.sendParticles(ParticleTypes.CLOUD, p.getX(), p.getY() + 0.1, p.getZ(), 20, 1.4, 0.05, 1.4, 0.05);
             l.playSound(null, p.blockPosition(), SoundEvents.GENERIC_EXPLODE, SoundSource.PLAYERS, 0.6f, 1.3f);
-            if (!rpg.core.compat.EpicFightCompat.playSkill(p, "leap_slam", WarriorSkills.ANIM_DASH))
+            FxOut.shock(l, p.position(), 4.5, 360, p.getYRot());   // 착지 충격파
+            if (!played[0] && !rpg.core.compat.EpicFightCompat.playSkill(p, "leap_slam", WarriorSkills.ANIM_DASH))
                 p.swing(net.minecraft.world.InteractionHand.MAIN_HAND, true);
             return true;
         });
@@ -271,10 +275,8 @@ public final class BranchSkills {
             p.displayClientMessage(net.minecraft.network.chat.Component.literal("갈 수 있는 곳이 없어요").withStyle(net.minecraft.ChatFormatting.GRAY), true);
             return false;
         }
-        l.sendParticles(ParticleTypes.PORTAL, p.getX(), p.getY() + 1, p.getZ(), 30, 0.3, 0.6, 0.3, 0.3);
         p.teleportTo(to.x, to.y, to.z);
         p.fallDistance = 0;
-        l.sendParticles(ParticleTypes.REVERSE_PORTAL, to.x, to.y + 1, to.z, 30, 0.3, 0.6, 0.3, 0.05);
         l.playSound(null, p.blockPosition(), SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 0.7f, 1.3f);
         return true;
     }
@@ -287,8 +289,6 @@ public final class BranchSkills {
             if (td.isDown()) continue;
             double amount = Math.round(Combat.statAttack(p, d) * s.value(lv) / 100.0 * (1 + td.bonus("healPct") / 100.0));   // 마법 스공 비례 고정 수치
             heal(p, d, t, td, amount);
-            t.serverLevel().sendParticles(ParticleTypes.HEART, t.getX(), t.getY() + 1.2, t.getZ(), 5, 0.4, 0.4, 0.4, 0);
-            t.serverLevel().sendParticles(ParticleTypes.HAPPY_VILLAGER, t.getX(), t.getY() + 1, t.getZ(), 10, 0.4, 0.6, 0.4, 0);
         }
         p.serverLevel().playSound(null, p.blockPosition(), SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.PLAYERS, 1.0f, 1.2f);
         return true;
@@ -342,7 +342,6 @@ public final class BranchSkills {
                 if (k % 2 == 0)   // 2타마다 짧은 찌르기 모션 번갈아 (긴 모션에 묶여 못 움직이던 문제)
                     ThiefSkills.anim(p, "flurry", (k / 2) % 2 == 0 ? "DAGGER_AUTO1|SWORD_AUTO1" : "DAGGER_AUTO2|SWORD_AUTO2");
                 Vec3 c = p.position().add(look.scale(1.5));
-                l.sendParticles(ParticleTypes.CRIT, c.x, p.getY() + 1.1, c.z, 8, 0.4, 0.3, 0.4, 0.2);
                 l.playSound(null, p.blockPosition(), SoundEvents.PLAYER_ATTACK_STRONG, SoundSource.PLAYERS, 0.6f, 1.5f);
             };
             if (i == 0) hit.run(); else JobSkills.later(p, i * 3, hit);
