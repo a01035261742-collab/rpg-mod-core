@@ -270,6 +270,33 @@ public final class ClientEvents {
             if (mc.player.getInventory().selected != 0) mc.player.getInventory().selected = 0;
         }
 
+        /** RPG 월드: 무기 없이(맨손 등) 땅·벽을 보고 때려도 블록 대신 평타 (Epic Fight 가 블록 조준이면 공격을 안 함).
+         *  조준 결과를 '허공'으로 바꿈: 틱 시작 · 마우스 누를 때 · 공격 키 처리 직전 세 군데 (어느 쪽이 먼저 읽어도 되게) */
+        private static void unBlock() {
+            Minecraft mc = Minecraft.getInstance();
+            var p = mc.player;
+            if (p == null || mc.screen != null || p.isCreative() || !ClientRpg.inRpg()) return;
+            var it = p.getMainHandItem().getItem();
+            if (it instanceof rpg.core.equip.GearItems.Weapon || it instanceof rpg.core.equip.GearItems.Bow) return;   // 무기는 원래 됨
+            if (mc.hitResult instanceof net.minecraft.world.phys.BlockHitResult b && b.getType() == net.minecraft.world.phys.HitResult.Type.BLOCK)
+                mc.hitResult = net.minecraft.world.phys.BlockHitResult.miss(b.getLocation(), b.getDirection(), b.getBlockPos());
+        }
+
+        @SubscribeEvent(priority = net.minecraftforge.eventbus.api.EventPriority.HIGHEST)
+        public static void unBlockTick(TickEvent.ClientTickEvent e) {
+            if (e.phase == TickEvent.Phase.START && Minecraft.getInstance().options.keyAttack.isDown()) unBlock();
+        }
+
+        @SubscribeEvent(priority = net.minecraftforge.eventbus.api.EventPriority.HIGHEST)
+        public static void unBlockMouse(net.minecraftforge.client.event.InputEvent.MouseButton.Pre e) {
+            if (e.getButton() == 0 && e.getAction() == 1) unBlock();
+        }
+
+        @SubscribeEvent(priority = net.minecraftforge.eventbus.api.EventPriority.HIGHEST)
+        public static void unBlockAttack(net.minecraftforge.client.event.InputEvent.InteractionKeyMappingTriggered e) {
+            if (e.isAttack()) unBlock();
+        }
+
         @SubscribeEvent
         public static void noHotbarScroll(net.minecraftforge.client.event.InputEvent.MouseScrollingEvent e) {
             Minecraft mc = Minecraft.getInstance();

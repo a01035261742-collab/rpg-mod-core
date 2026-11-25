@@ -93,6 +93,30 @@ public final class Loot {
         }
     }
 
+    /** RPG 대륙: 손(핫바 0번 = 무기 칸)에 무기 아닌 게 들어가 있으면 가방 빈칸으로 옮김.
+     *  퀘스트 보상·상점·제작처럼 인벤토리에 바로 넣는 것도 빈 손이면 0번 칸으로 들어가서 (바닐라가 0번부터 채움) */
+    @SubscribeEvent
+    public static void handGuard(TickEvent.PlayerTickEvent e) {
+        if (e.phase != TickEvent.Phase.END || !(e.player instanceof ServerPlayer sp) || sp.tickCount % 5 != 0) return;
+        if (sp.isCreative() || sp.hasPermissions(2) || !rpg.core.world.RpgWorld.in(sp)) return;   // 관리자(구역 지팡이 등)는 그대로
+        var inv = sp.getInventory();
+        var hand = inv.items.get(0);
+        if (hand.isEmpty() || hand.getItem() instanceof rpg.core.equip.GearItems.Weapon || hand.getItem() instanceof rpg.core.equip.GearItems.Bow) return;
+        if (sp.isUsingItem()) return;   // 잠깐 쥐고 쓰는 중
+        // 같은 것과 합치기 → 빈칸 (0번 빼고)
+        for (int i = 1; i < inv.items.size() && !hand.isEmpty(); i++) {
+            var cur = inv.items.get(i);
+            if (!cur.isEmpty() && net.minecraft.world.item.ItemStack.isSameItemSameTags(cur, hand) && cur.getCount() < cur.getMaxStackSize()) {
+                int n = Math.min(hand.getCount(), cur.getMaxStackSize() - cur.getCount());
+                cur.grow(n); hand.shrink(n);
+            }
+        }
+        for (int i = 1; i < inv.items.size() && !hand.isEmpty(); i++)
+            if (inv.items.get(i).isEmpty()) { inv.items.set(i, hand.copy()); hand.setCount(0); }
+        if (hand.isEmpty()) inv.items.set(0, net.minecraft.world.item.ItemStack.EMPTY);
+        sp.inventoryMenu.broadcastChanges();
+    }
+
     /** 주운 아이템 알림 (오른쪽 아래) */
     @SubscribeEvent
     public static void picked(net.minecraftforge.event.entity.player.PlayerEvent.ItemPickupEvent e) {
