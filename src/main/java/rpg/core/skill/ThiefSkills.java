@@ -96,11 +96,8 @@ public final class ThiefSkills {
             extra = true;
             try { CombatEvents.skillHit(p, mob, pct); } finally { extra = false; }
             ServerLevel l = p.serverLevel();
-            Vec3 a = p.getEyePosition(), b = mob.position().add(0, mob.getBbHeight() * 0.6, 0);
-            for (int i = 0; i <= 8; i++) {
-                Vec3 q = a.add(b.subtract(a).scale(i / 8.0));
-                l.sendParticles(ParticleTypes.SMOKE, q.x, q.y, q.z, 1, 0, 0, 0, 0);
-            }
+            Vec3 a = p.position().add(BranchSkills.flatLook(p).scale(1.5)).add(0, 1.0, 0), b = mob.position().add(0, mob.getBbHeight() * 0.6, 0);
+            FxOut.sblade(l, a, b);
             l.playSound(null, mob.blockPosition(), SoundEvents.TRIDENT_HIT, SoundSource.PLAYERS, 0.4f, 1.8f);
         });
     }
@@ -151,8 +148,7 @@ public final class ThiefSkills {
             if (md != null) md.decoyUntil = 0;
             if (c.owner.isAlive()) CombatEvents.skillHit(c.owner, m, c.pct);
         }
-        l.sendParticles(ParticleTypes.EXPLOSION_EMITTER, at.x, at.y + 0.5, at.z, 1, 0, 0, 0, 0);
-        l.sendParticles(ParticleTypes.LARGE_SMOKE, at.x, at.y + 0.5, at.z, 30, 1.5, 0.5, 1.5, 0.05);
+        FxOut.boom(l, "shadow", at, 4);
         l.playSound(null, net.minecraft.core.BlockPos.containing(at), SoundEvents.GENERIC_EXPLODE, SoundSource.PLAYERS, 0.9f, 1.2f);
     }
 

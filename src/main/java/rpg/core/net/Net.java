@@ -156,6 +156,28 @@ public final class Net {
                 .encoder(AchReq::encode).decoder(AchReq::new).consumerMainThread(AchReq::handle).add();
         CH.messageBuilder(AchSync.class, id++, NetworkDirection.PLAY_TO_CLIENT)
                 .encoder(AchSync::encode).decoder(AchSync::new).consumerMainThread(AchSync::handle).add();
+        CH.messageBuilder(Fx.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(Fx::encode).decoder(Fx::new).consumerMainThread(Fx::handle).add();
+    }
+
+    // ───────── 서버 → 클라: 스킬 이펙트 (k 종류 · e 엔티티/번호 · 위치 · 방향 · a b 숫자 · s 글자) ─────────
+    public record Fx(String k, int e, double x, double y, double z, double dx, double dy, double dz, float a, float b, String s) {
+        Fx(FriendlyByteBuf f) {
+            this(f.readUtf(), f.readVarInt(), f.readDouble(), f.readDouble(), f.readDouble(), f.readFloat(), f.readFloat(), f.readFloat(), f.readFloat(), f.readFloat(), f.readUtf());
+        }
+        void encode(FriendlyByteBuf f) {
+            f.writeUtf(k); f.writeVarInt(e); f.writeDouble(x); f.writeDouble(y); f.writeDouble(z);
+            f.writeFloat((float) dx); f.writeFloat((float) dy); f.writeFloat((float) dz); f.writeFloat(a); f.writeFloat(b); f.writeUtf(s);
+        }
+        void handle(Supplier<NetworkEvent.Context> ctx) {
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> rpg.core.client.fx.SkillFx.receive(this));
+            ctx.get().setPacketHandled(true);
+        }
+    }
+
+    /** 이펙트 보내기: 그 자리 64칸 안 플레이어 모두 */
+    public static void fx(net.minecraft.server.level.ServerLevel l, Fx f) {
+        for (ServerPlayer p : l.players()) if (p.distanceToSqr(f.x(), f.y(), f.z()) < 64 * 64) CH.send(PacketDistributor.PLAYER.with(() -> p), f);
     }
 
     // ───────── 업적 창 ─────────

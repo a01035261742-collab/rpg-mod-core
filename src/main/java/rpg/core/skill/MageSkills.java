@@ -71,12 +71,7 @@ public final class MageSkills {
                 CombatEvents.skillHit(p, t3, pct);
                 ServerLevel l = p.serverLevel();
                 Vec3 c = t3.position().add(0, t3.getBbHeight() * 0.6, 0);
-                double side = k == 0 ? 1 : -1;
-                for (int line = -1; line <= 1; line++)   // 대각선 발톱 3줄
-                    for (int j = -3; j <= 3; j++) {
-                        double a = j * 0.15;
-                        l.sendParticles(CLAW, c.x + a * side + line * 0.18, c.y - a, c.z + line * 0.1, 1, 0, 0, 0, 0);
-                    }
+                FxOut.flash(l, "claw" + k, c);   // 발톱 자국
                 l.playSound(null, t3.blockPosition(), SoundEvents.PLAYER_ATTACK_SWEEP, SoundSource.PLAYERS, 0.6f, 1.6f + k * 0.2f);
             };
             if (i == 0) hit.run(); else JobSkills.later(p, 3, hit);
@@ -96,10 +91,12 @@ public final class MageSkills {
         Mob cur = first;
         Vec3 from = p.getEyePosition().add(0, -0.3, 0);
         double pct = s.value(lv);
+        List<Vec3> pts = new ArrayList<>();
+        pts.add(p.position().add(BranchSkills.flatLook(p).scale(1.5)).add(0, 1.0, 0));   // 몸 앞 가운데에서 나감
         for (int i = 0; i < 5 && cur != null; i++) {
             hit.add(cur);
             Vec3 to = cur.position().add(0, cur.getBbHeight() * 0.6, 0);
-            bolt(l, from, to);
+            pts.add(to);
             CombatEvents.skillHit(p, cur, pct * (1 - 0.1 * i));
             from = to;
             Mob next = null;
@@ -111,6 +108,7 @@ public final class MageSkills {
             }
             cur = next;
         }
+        FxOut.chain(l, pts);
         l.playSound(null, first.blockPosition(), SoundEvents.LIGHTNING_BOLT_IMPACT, SoundSource.PLAYERS, 0.5f, 1.6f);
         anim(p, "chain_lightning");
         return true;

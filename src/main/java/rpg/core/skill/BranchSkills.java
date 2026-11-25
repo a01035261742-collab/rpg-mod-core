@@ -103,7 +103,7 @@ public final class BranchSkills {
         d.buffVal.put(id, v);
         d.buffVal2.put(id, v2);
         ServerLevel l = p.serverLevel();
-        l.sendParticles(fx, p.getX(), p.getY() + 1, p.getZ(), 20, 0.4, 0.6, 0.4, 0.1);
+        if (!FxOut.HANDLED.contains(id)) l.sendParticles(fx, p.getX(), p.getY() + 1, p.getZ(), 20, 0.4, 0.6, 0.4, 0.1);
         l.playSound(null, p.blockPosition(), snd, SoundSource.PLAYERS, 0.7f, 1.0f);
         return true;
     }
@@ -221,8 +221,7 @@ public final class BranchSkills {
     public static void explode(ServerPlayer p, Vec3 at, double pct, double r) {
         ServerLevel l = p.serverLevel();
         for (Mob m : mobsAround(l, at.subtract(0, 0.5, 0), r)) CombatEvents.skillHit(p, m, pct);
-        l.sendParticles(ParticleTypes.EXPLOSION, at.x, at.y, at.z, 3, r / 3, 0.2, r / 3, 0);
-        l.sendParticles(ParticleTypes.FLAME, at.x, at.y, at.z, 20, r / 2, 0.3, r / 2, 0.05);
+        FxOut.boom(l, "fire", at, r);
         l.playSound(null, net.minecraft.core.BlockPos.containing(at), SoundEvents.GENERIC_EXPLODE, SoundSource.PLAYERS, 0.7f, 1.4f);
         PlayerData d = RpgData.get(p);
         double inc = d.bonus("incendiaryPct");
@@ -233,7 +232,7 @@ public final class BranchSkills {
         int max = 2 + (int) Math.round(d.bonus("trapMaster")) * 2;   // 기본 2개, 덫 장인 +2
         List<Field> mine = new ArrayList<>();
         for (Field f : FIELDS) if (f.owner == p && f.kind.equals("trap")) mine.add(f);
-        while (mine.size() >= max) FIELDS.remove(mine.remove(0));   // 오래된 덫부터 사라짐
+        while (mine.size() >= max) { Field old = mine.remove(0); FIELDS.remove(old); FxOut.fieldEnd(p.serverLevel(), old.fxId, old.pos); }   // 오래된 덫부터 사라짐
         int root = (int) Math.round((s.value2(lv) + d.bonus("trapRoot")) * 20);
         addField(p, "trap", p.position(), 1.2, (int) Math.round(s.duration() * 20), s.value(lv), root, 0);
         p.serverLevel().playSound(null, p.blockPosition(), SoundEvents.CHAIN_PLACE, SoundSource.PLAYERS, 1.0f, 0.8f);
@@ -420,6 +419,7 @@ public final class BranchSkills {
         final ServerPlayer owner; final String kind; final double speed, range, pct, radius;
         Vec3 pos, dir; double travelled, dot; int dotTicks;
         int pierce = 1;   // 몇 마리까지 뚫고 지나감 (홀리 애로우 3)
+        final int fxId = FxOut.nextId(); boolean sent; Vec3 endAt;   // 이펙트
         final java.util.Set<Integer> done = new java.util.HashSet<>();
         Shot(ServerPlayer o, String kind, double speed, double range, double pct, double radius) {
             owner = o; this.kind = kind; this.speed = speed; this.range = range; this.pct = pct; this.radius = radius;
@@ -432,6 +432,7 @@ public final class BranchSkills {
     /** 장판: trap 덫(a 피해%, b 속박 틱) / fire 불길(a 초당 피해) / mist 독안개(a 초당 피해, b 둔화%) */
     private static final class Field {
         final ServerPlayer owner; final String kind; final Vec3 pos; final double r, a, b; final long end;
+        final int fxId = FxOut.nextId();
         Field(ServerPlayer o, String kind, Vec3 pos, double r, long end, double a, double b) {
             owner = o; this.kind = kind; this.pos = pos; this.r = r; this.end = end; this.a = a; this.b = b;
         }
@@ -439,7 +440,9 @@ public final class BranchSkills {
     private static final List<Field> FIELDS = new ArrayList<>();
 
     private static void addField(ServerPlayer p, String kind, Vec3 pos, double r, int ticks, double a, double b, double unused) {
-        FIELDS.add(new Field(p, kind, pos, r, p.level().getGameTime() + ticks, a, b));
+        Field f = new Field(p, kind, pos, r, p.level().getGameTime() + ticks, a, b);
+        FIELDS.add(f);
+        if (!kind.equals("fire")) FxOut.field(p.serverLevel(), f.fxId, kind, pos, r, ticks / 20.0);
     }
 
     /** 조건이 될 때까지 매 틱 확인 (t = 지난 틱, true 면 끝) */
@@ -459,43 +462,37 @@ public final class BranchSkills {
                     TASKS.remove(t);
             }
         }
-        if (!SHOTS.isEmpty()) for (Shot s : List.copyOf(SHOTS)) if (stepShot(s)) SHOTS.remove(s);
-        if (!FIELDS.isEmpty()) for (Field f : List.copyOf(FIELDS)) if (stepField(f)) FIELDS.remove(f);
+        if (!SHOTS.isEmpty()) for (Shot s : List.copyOf(SHOTS)) if (stepShot(s)) {
+            SHOTS.remove(s);
+            FxOut.shotEnd(s.owner.serverLevel(), s.fxId, s.kind, s.endAt != null ? s.endAt : s.pos, s.radius);
+        }
+        if (!FIELDS.isEmpty()) for (Field f : List.copyOf(FIELDS)) if (stepField(f)) {
+            FIELDS.remove(f);
+            if (!f.kind.equals("fire")) FxOut.fieldEnd(f.owner.serverLevel(), f.fxId, f.pos);
+        }
     }
 
     private static boolean stepShot(Shot b) {
         if (!b.owner.isAlive() || b.owner.hasDisconnected()) return true;
         ServerLevel l = b.owner.serverLevel();
+        if (!b.sent) { b.sent = true; FxOut.shot(b.owner, b.fxId, b.kind, b.pos, b.dir, b.speed, b.range); }
         Vec3 next = b.pos.add(b.dir.scale(b.speed));
         var bh = l.clip(new ClipContext(b.pos, next, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, b.owner));
         Vec3 end = bh.getType() != HitResult.Type.MISS ? bh.getLocation() : next;
         EntityHitResult hit = ProjectileUtil.getEntityHitResult(l, b.owner, b.pos, end, new AABB(b.pos, end).inflate(0.6),
                 x -> x instanceof Mob m && m.isAlive() && !m.isSpectator() && Combat.isRpgMob(m) && !b.done.contains(x.getId()));
-        for (int i = 0; i < 3; i++) {
-            Vec3 q = b.pos.add(end.subtract(b.pos).scale(i / 3.0));
-            switch (b.kind) {
-                case "fire" -> {
-                    l.sendParticles(ParticleTypes.FLAME, q.x, q.y, q.z, 2, 0.08, 0.08, 0.08, 0.01);
-                    l.sendParticles(ParticleTypes.SMOKE, q.x, q.y, q.z, 1, 0.05, 0.05, 0.05, 0);
-                }
-                case "holy" -> l.sendParticles(ParticleTypes.END_ROD, q.x, q.y, q.z, 1, 0.02, 0.02, 0.02, 0);
-                default -> l.sendParticles(ParticleTypes.CRIT, q.x, q.y, q.z, 1, 0, 0, 0, 0);
-            }
-        }
         Vec3 at = hit != null ? hit.getLocation() : bh.getType() != HitResult.Type.MISS ? end : null;
         if (at != null) {
+            b.endAt = at;
             if (b.radius > 0) {   // 파이어 볼: 터지며 범위 피해 + 화상
                 for (Mob m : mobsAround(l, at.subtract(0, 0.5, 0), b.radius)) {
                     CombatEvents.skillHit(b.owner, m, b.pct);
                     CombatEvents.dot(b.owner, m, "burn", b.dot, b.dotTicks);
                 }
-                l.sendParticles(ParticleTypes.EXPLOSION, at.x, at.y, at.z, 2, 0.5, 0.3, 0.5, 0);
-                l.sendParticles(ParticleTypes.FLAME, at.x, at.y, at.z, 40, b.radius / 2, 0.4, b.radius / 2, 0.06);
                 l.playSound(null, net.minecraft.core.BlockPos.containing(at), SoundEvents.GENERIC_EXPLODE, SoundSource.PLAYERS, 0.6f, 1.5f);
             } else if (hit != null && hit.getEntity() instanceof Mob t) {
                 CombatEvents.skillHit(b.owner, t, b.pct);
-                l.sendParticles(b.kind.equals("holy") ? ParticleTypes.END_ROD : ParticleTypes.CRIT,
-                        t.getX(), t.getY() + t.getBbHeight() * 0.6, t.getZ(), 10, 0.25, 0.25, 0.25, 0.05);
+                FxOut.flash(l, b.kind, t.position().add(0, t.getBbHeight() * 0.6, 0));
                 l.playSound(null, t.blockPosition(), b.kind.equals("holy") ? SoundEvents.AMETHYST_BLOCK_HIT : SoundEvents.TRIDENT_HIT,
                         SoundSource.PLAYERS, 0.8f, 1.4f);
                 b.done.add(t.getId());
@@ -523,12 +520,6 @@ public final class BranchSkills {
         if (now > f.end) return true;
         switch (f.kind) {
             case "trap" -> {
-                if (now % 10 == 0) {
-                    for (int i = 0; i < 6; i++) {
-                        double a = i * Math.PI / 3;
-                        l.sendParticles(TRAP, f.pos.x + Math.cos(a) * 0.6, f.pos.y + 0.1, f.pos.z + Math.sin(a) * 0.6, 1, 0, 0, 0, 0);
-                    }
-                }
                 if (now % 2 != 0) return false;
                 List<Mob> in = mobsAround(l, f.pos, f.r);
                 if (in.isEmpty()) return false;
@@ -542,8 +533,8 @@ public final class BranchSkills {
                     CombatEvents.skillHit(f.owner, m, f.a);
                     MobData md = Combat.mob(m);
                     if (md != null) md.slow(100, now, now + (long) f.b);   // 속박
-                    l.sendParticles(ParticleTypes.CRIT, m.getX(), m.getY() + 0.3, m.getZ(), 12, 0.3, 0.1, 0.3, 0.1);
                 }
+                FxOut.fieldSnap(l, f.fxId, f.pos);   // 덫 닫힘
                 l.playSound(null, net.minecraft.core.BlockPos.containing(f.pos), SoundEvents.CHAIN_BREAK, SoundSource.PLAYERS, 1.0f, 0.7f);
                 return true;
             }
@@ -552,7 +543,6 @@ public final class BranchSkills {
                 if (now % 20 == 0) for (Mob m : mobsAround(l, f.pos, f.r)) CombatEvents.fixedHit(f.owner, m, f.a);
             }
             default -> {   // mist
-                if (now % 4 == 0) l.sendParticles(MIST, f.pos.x, f.pos.y + 0.6, f.pos.z, 12, f.r / 2, 0.5, f.r / 2, 0);
                 if (now % 10 == 0) for (Mob m : mobsAround(l, f.pos, f.r)) {   // 독 상태이상 (안에 있는 동안 계속 갱신)
                     CombatEvents.dot(f.owner, m, "poison", f.a, 60);
                     MobData md = Combat.mob(m);

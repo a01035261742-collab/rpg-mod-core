@@ -117,6 +117,7 @@ public final class Skills {
             RpgData.sync(p);
             return;
         }
+        net.minecraft.world.phys.Vec3 before = p.position();
         boolean ok = switch (id) {
             case "sprint" -> sprint(p, d, s, lv, now);
             case "first_aid" -> firstAid(p, d, s, lv);
@@ -124,6 +125,7 @@ public final class Skills {
         };
         if (!ok) return;
         spend(d, s, lv, now);
+        FxOut.cast(p, d, id, before);   // 이펙트
         RpgData.sync(p);
     }
 

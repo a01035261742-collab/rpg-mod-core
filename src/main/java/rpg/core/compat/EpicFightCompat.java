@@ -369,9 +369,13 @@ public final class EpicFightCompat {
     /** 스킬용: 바꿔 끼운 이름이 있으면 그것, 없으면 기본 후보들 */
     public static boolean playSkill(ServerPlayer p, String skill, String defaults) {
         String o = OVERRIDE.get(skill);
-        if (o != null) return o.equals("NONE") || playAnim(p, o);
-        return playAnim(p, defaults);
+        if ("NONE".equals(o)) return true;
+        boolean ok = playAnim(p, o != null ? o : defaults);
+        if (ok && MELEE_FX.contains(skill)) rpg.core.skill.FxOut.melee(p, skill, LAST.get("played"));   // 검기
+        return ok;
     }
+    private static final java.util.Set<String> MELEE_FX = java.util.Set.of("power_strike", "charge_rush", "leap_slam", "blood_spin",
+            "combo_slash_1", "combo_slash_2", "combo_slash_3", "double_stab", "flurry");
 
     /** Animations 클래스의 모션 이름 목록 (filter 포함하는 것만) */
     public static java.util.List<String> animNames(String filter) {

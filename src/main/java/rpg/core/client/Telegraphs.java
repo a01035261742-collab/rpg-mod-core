@@ -23,6 +23,7 @@ public final class Telegraphs {
 
     private record T(Net.Telegraph t, long start, long end, boolean off) {}
     private static final List<T> LIST = new ArrayList<>();
+    private static final java.util.Set<T> FIRED = java.util.Collections.newSetFromMap(new java.util.IdentityHashMap<>());   // 터짐 이펙트 낸 것
 
     public static void add(Net.Telegraph t) {
         if (t.shape() == 99) { LIST.clear(); return; }   // 바닥 정리 (보스 페이즈 전환 등)
@@ -56,7 +57,7 @@ public final class Telegraphs {
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null) { LIST.clear(); TRACKS.clear(); return; }
         long now = System.currentTimeMillis();
-        LIST.removeIf(x -> now > x.end() + 150);
+        LIST.removeIf(x -> { boolean r = now > x.end() + 150; if (r) FIRED.remove(x); return r; });
         TRACKS.removeIf(k -> now > k.end());
         float pt = e.getPartialTick();
         Vec3 cam = e.getCamera().getPosition();
@@ -70,6 +71,8 @@ public final class Telegraphs {
             float p = (float) Math.min(1, Math.max(0, (now - x.start()) / (double) Math.max(1, x.end() - x.start())));
             Net.Telegraph t = x.t();
             float y = (float) (groundY(mc, t) + 0.06);
+            if (p >= 1f && (t.shape() == 0 || t.shape() == 2 || t.shape() == 40 || t.shape() == 42) && FIRED.add(x))
+                rpg.core.client.fx.SkillFx.burst(t, y);   // 다 차면 그 모양 그대로 터짐 (원·부채꼴)
             if (t.shape() >= 60) {   // 거미줄 장판 (회색, 밟으면 느려짐): 그대로
                 Net.Telegraph b = new Net.Telegraph(t.shape() - 60, t.x(), t.y(), t.z(), t.dx(), t.dz(), t.a(), t.b(), t.ticks());
                 float yy = y + 0.03f;

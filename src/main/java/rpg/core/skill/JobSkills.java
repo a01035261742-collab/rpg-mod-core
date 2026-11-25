@@ -82,7 +82,7 @@ public final class JobSkills {
         d.buffVal.put(s.id(), s.value(lv));
         d.buffVal2.put(s.id(), s.value2(lv));
         ServerLevel l = p.serverLevel();
-        l.sendParticles(fx, p.getX(), p.getY() + 1, p.getZ(), 20, 0.4, 0.6, 0.4, 0.1);
+        if (!FxOut.HANDLED.contains(s.id())) l.sendParticles(fx, p.getX(), p.getY() + 1, p.getZ(), 20, 0.4, 0.6, 0.4, 0.1);
         l.playSound(null, p.blockPosition(), snd, SoundSource.PLAYERS, 0.6f, 1.2f);
         return true;
     }
