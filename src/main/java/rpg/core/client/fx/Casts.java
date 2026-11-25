@@ -77,14 +77,14 @@ final class Casts {
         }));
     }
 
-    static void start(Net.Fx f) {
-        String[] s = f.s().split("\\|");
-        String id = s[0];
+    static void start(Net.Fx pk) {
+        String[] sp0 = pk.s().split("\\|");
+        String id = sp0[0];
         List<Integer> ids = new ArrayList<>();
-        for (int i = 1; i < s.length; i++) ids.add(SkillFx.parse(s[i]));
-        int me = f.e();
-        double dur = f.a();
-        Vec3 pos = new Vec3(f.x(), f.y(), f.z()), before = new Vec3(f.dx(), f.dy(), f.dz());
+        for (int i = 1; i < sp0.length; i++) ids.add(SkillFx.parse(sp0[i]));
+        int me = pk.e();
+        double dur = pk.a();
+        Vec3 pos = new Vec3(pk.x(), pk.y(), pk.z()), before = new Vec3(pk.dx(), pk.dy(), pk.dz());
         switch (id) {
             case "heal" -> {
                 Rise[] r = new Rise[ids.size()];
