@@ -71,8 +71,8 @@ public final class Telegraphs {
             float p = (float) Math.min(1, Math.max(0, (now - x.start()) / (double) Math.max(1, x.end() - x.start())));
             Net.Telegraph t = x.t();
             float y = (float) (groundY(mc, t) + 0.06);
-            if (p >= 1f && (t.shape() == 0 || t.shape() == 2 || t.shape() == 40 || t.shape() == 42) && FIRED.add(x))
-                rpg.core.client.fx.SkillFx.burst(t, y);   // 다 차면 그 모양 그대로 터짐 (원·부채꼴)
+            if (p >= 1f && (t.shape() == 0 || t.shape() == 2) && FIRED.add(x))
+                rpg.core.client.fx.SkillFx.burst(t, y);   // 다 차면 그 모양 그대로 터짐 (빨간 원·부채꼴만: 보라 포효는 피해 없음)
             if (t.shape() >= 60) {   // 거미줄 장판 (회색, 밟으면 느려짐): 그대로
                 Net.Telegraph b = new Net.Telegraph(t.shape() - 60, t.x(), t.y(), t.z(), t.dx(), t.dz(), t.a(), t.b(), t.ticks());
                 float yy = y + 0.03f;
