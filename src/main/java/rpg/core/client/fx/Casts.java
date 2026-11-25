@@ -295,7 +295,7 @@ final class Casts {
                     for (int i = 0; i < 3; i++) {
                         if (ghost[i] == null) continue;
                         double k = (t - (0.08 + i * 0.1)) / 0.3;
-                        if (k >= 0 && k < 1) d.cyl("aura", true, ghost[i], 0.9, 1.9, 0x7A4AE0, (float) (0.9 * (1 - k)));
+                        if (k >= 0 && k < 1) d.flat("ring_soft", true, ghost[i].add(0, 0.03, 0), 0.45 + 0.2 * k, 0x7A4AE0, (float) (0.9 * (1 - k)));   // 지나간 자리 보라 링
                     }
                     return true;
                 }));
